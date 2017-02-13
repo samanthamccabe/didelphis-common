@@ -88,6 +88,10 @@ public class SequenceFactory {
 		borderSequence = new BasicSequence(borderSegment);
 	}
 
+	public FormatterMode getFormatterMode() {
+		return formatterMode;
+	}
+
 	private Segment defineBorderSegment(FeatureSpecification specification, FeatureArray<Double> standardArray) {
 		return featureModel.containsKey("#") ? featureModel.getSegment("#") : new Segment("#", standardArray, specification);
 	}
@@ -193,7 +197,7 @@ public class SequenceFactory {
 	}
 
 	public List<String> getSegmentedString(String string) {
-		return SegmenterUtil.getSegmentedString(string, getKeys(), formatterMode);
+		return SegmenterUtil.getSegmentedString(string, getSpecialStrings(), formatterMode);
 	}
 
 	public FeatureModel getFeatureModel() {
@@ -206,7 +210,7 @@ public class SequenceFactory {
 
 	public String getBestMatch(String tail) {
 
-		Collection<String> keys = getKeys();
+		Collection<String> keys = getSpecialStrings();
 
 		String bestMatch = "";
 		for (String key : keys) {
@@ -255,7 +259,7 @@ public class SequenceFactory {
 			'}';
 	}
 
-	private Collection<String> getKeys() {
+	public Collection<String> getSpecialStrings() {
 		Collection<String> keys = new ArrayList<>();
 		keys.addAll(variableStore.getKeys());
 		keys.addAll(featureModel.getSymbols());

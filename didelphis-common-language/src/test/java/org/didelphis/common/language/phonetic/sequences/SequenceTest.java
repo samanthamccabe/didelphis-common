@@ -287,7 +287,7 @@ public class SequenceTest {
 	public void testIndices03() {
 		Sequence sequence = FACTORY.getSequence("subverterunt");
 
-		List<Integer> expected = new ArrayList<Integer>();
+		List<Integer> expected = new ArrayList<>();
 		expected.add(4);
 		expected.add(7);
 
@@ -300,7 +300,7 @@ public class SequenceTest {
 	public void testIndices04() {
 		Sequence sequence = FACTORY.getSequence("aonaontada");
 
-		List<Integer> expected = new ArrayList<Integer>();
+		List<Integer> expected = new ArrayList<>();
 		expected.add(0);
 		expected.add(3);
 		List<Integer> received = sequence.indicesOf(FACTORY.getSequence("ao"));

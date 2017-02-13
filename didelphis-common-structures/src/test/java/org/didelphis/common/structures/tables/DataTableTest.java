@@ -50,9 +50,9 @@ public class DataTableTest {
 	
 	@Test
 	public void testGetColumn() {
-		Collection<String> list1 = new ArrayList<String>();
-		Collection<String> list2 = new ArrayList<String>();
-		Collection<String> list3 = new ArrayList<String>();
+		Collection<String> list1 = new ArrayList<>();
+		Collection<String> list2 = new ArrayList<>();
+		Collection<String> list3 = new ArrayList<>();
 
 		Collections.addAll(list1, "1", "2", "3");
 		Collections.addAll(list2, "a", "b", "c");
@@ -70,9 +70,9 @@ public class DataTableTest {
 	
 	@Test
 	public void testGetRows() {
-		Collection<String> row1 = new ArrayList<String>();
-		Collection<String> row2 = new ArrayList<String>();
-		Collection<String> row3 = new ArrayList<String>();
+		Collection<String> row1 = new ArrayList<>();
+		Collection<String> row2 = new ArrayList<>();
+		Collection<String> row3 = new ArrayList<>();
 
 		Collections.addAll(row1, "1", "a", "L");
 		Collections.addAll(row2, "2", "b", "M");
@@ -89,21 +89,21 @@ public class DataTableTest {
 	}
 
 	private static ColumnTable<String> createTable() {
-		List<String> list1 = new ArrayList<String>();
-		List<String> list2 = new ArrayList<String>();
-		List<String> list3 = new ArrayList<String>();
+		List<String> list1 = new ArrayList<>();
+		List<String> list2 = new ArrayList<>();
+		List<String> list3 = new ArrayList<>();
 
 		Collections.addAll(list1, "1", "2", "3");
 		Collections.addAll(list2, "a", "b", "c");
 		Collections.addAll(list3, "L", "M", "N");
 
 		// If this is NOT a LinkedHashMap the get(i,j) method will not work correctly
-		Map<String, List<String>> map = new LinkedHashMap<String, List<String>>();
+		Map<String, List<String>> map = new LinkedHashMap<>();
 
 		map.put("X", list1);
 		map.put("Y", list2);
 		map.put("Z", list3);
 
-		return new DataTable<String>(map);
+		return new DataTable<>(map);
 	}
 }

@@ -16,7 +16,6 @@ package org.didelphis.common.language.phonetic.model;
 
 import org.didelphis.common.language.enums.FormatterMode;
 import org.didelphis.common.language.phonetic.Segment;
-import org.didelphis.common.language.phonetic.Segmenter;
 import org.didelphis.common.language.phonetic.features.FeatureArray;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -38,7 +37,6 @@ public class StandardFeatureModelTest extends ModelTestBase {
 	private static final Double INF = Double.NEGATIVE_INFINITY;
 
 	private static final FeatureModel MODEL = loadModel("AT_hybrid.model", FormatterMode.INTELLIGENT);
-
 
 	@Test
 	public void testLoad01() {
@@ -90,7 +88,6 @@ public class StandardFeatureModelTest extends ModelTestBase {
 	}
 	
 	private static void testBestSymbol(String string) {
-//		Segment segment = Segmenter.getSegment(string, MODEL, FormatterMode.INTELLIGENT);
 		Segment segment = MODEL.getSegment(string);
 		FeatureArray<Double> array = segment.getFeatures();
 		String bestSymbol = MODEL.getBestSymbol(array);

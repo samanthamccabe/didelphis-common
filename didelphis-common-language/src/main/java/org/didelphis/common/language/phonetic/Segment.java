@@ -19,7 +19,6 @@
 
 package org.didelphis.common.language.phonetic;
 
-import com.sun.istack.internal.NotNull;
 import org.didelphis.common.language.phonetic.features.FeatureArray;
 import org.didelphis.common.language.phonetic.features.SparseFeatureArray;
 import org.didelphis.common.language.phonetic.features.StandardFeatureArray;
@@ -204,7 +203,7 @@ public class Segment implements SpecificationBearer, Comparable<Segment> {
 	}
 
 	@Override
-	public int compareTo(@NotNull Segment o) {
+	public int compareTo(Segment o) {
 		if (equals(o)) {
 			return 0;
 		} else {

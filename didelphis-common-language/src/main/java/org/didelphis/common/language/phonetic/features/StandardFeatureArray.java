@@ -33,7 +33,7 @@ public final class StandardFeatureArray<T extends Number & Comparable<T>>
 	public StandardFeatureArray(T value, FeatureSpecification specification) {
 		this.specification = specification;
 		int size = specification.size();
-		features = new ArrayList<T>(size);
+		features = new ArrayList<>(size);
 		for (int i = 0; i < size; i++) {
 			features.add(value);
 		}
@@ -41,18 +41,18 @@ public final class StandardFeatureArray<T extends Number & Comparable<T>>
 
 	public StandardFeatureArray(List<T> list, FeatureSpecification specification) {
 		this.specification = specification;
-		features = new ArrayList<T>(list);
+		features = new ArrayList<>(list);
 	}
 	
 	public StandardFeatureArray(StandardFeatureArray<T> array) {
 		specification = array.getSpecification();
-		features = new ArrayList<T>(array.features);
+		features = new ArrayList<>(array.features);
 	}
 
 	public StandardFeatureArray(FeatureArray<T> array) {
 		specification = array.getSpecification();
 		int size = specification.size();
-		features = new ArrayList<T>(size);
+		features = new ArrayList<>(size);
 		for (int i = 0; i < size; i++) {
 			features.add(array.get(i));
 		}

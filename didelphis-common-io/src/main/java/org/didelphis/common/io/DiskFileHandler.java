@@ -57,7 +57,7 @@ public class DiskFileHandler implements FileHandler {
 			writer.write(data.toString());
 			return true;
 		} catch (IOException e) {
-			e.printStackTrace(); // TODO:
+			LOGGER.error("Failed to write to path {}", path, e);
 		}
 		return false;
 	}
@@ -69,8 +69,8 @@ public class DiskFileHandler implements FileHandler {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof DiskFileHandler)) return false;
+		if (this == o) { return true; }
+		if (!(o instanceof DiskFileHandler)) { return false; }
 		DiskFileHandler that = (DiskFileHandler) o;
 		return Objects.equals(encoding, that.encoding);
 	}

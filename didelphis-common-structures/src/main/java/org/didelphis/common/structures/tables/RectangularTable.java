@@ -29,7 +29,7 @@ public final class RectangularTable<E> extends AbstractTable<E> {
 
 	private RectangularTable(int row, int col) {
 		super(row, col);
-		array = new ArrayList<E>(row * col);
+		array = new ArrayList<>(row * col);
 	}
 
 	public RectangularTable(E defaultValue, int row, int col) {

@@ -30,7 +30,7 @@ public class SymmetricTableTest {
 
 	@BeforeClass
 	public static void init() {
-		indexedList = new SymmetricTable<String>("", 6);
+		indexedList = new SymmetricTable<>("", 6);
 	}
 	
 }

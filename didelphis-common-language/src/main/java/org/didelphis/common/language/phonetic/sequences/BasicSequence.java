@@ -32,6 +32,8 @@ public final class BasicSequence extends AbstractSequence {
 	private static final transient Logger LOGGER = LoggerFactory.getLogger(
 		  BasicSequence.class);
 
+	public static final Sequence EMPTY = new BasicSequence(FeatureSpecification.EMPTY);
+	
 	public BasicSequence(Sequence sequence) {
 		super(sequence);
 	}
@@ -43,10 +45,6 @@ public final class BasicSequence extends AbstractSequence {
 	// Used to produce empty copies with the same model
 	public BasicSequence(FeatureSpecification featureSpecification) {
 		super(featureSpecification);
-	}
-
-	private BasicSequence() {
-		this(FeatureSpecification.EMPTY);
 	}
 
 	private BasicSequence(Collection<Segment> segments,
@@ -70,12 +68,8 @@ public final class BasicSequence extends AbstractSequence {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-		if (obj instanceof BasicSequence) {
-			return super.equals(obj);
-		}
+		if (obj == null) { return false; }
+		if (obj instanceof BasicSequence) { return super.equals(obj); }
 		return false;
 	}
 
@@ -148,31 +142,23 @@ public final class BasicSequence extends AbstractSequence {
 		validateModelOrWarn(target);
 
 		int size = target.size();
-		
-		if (size > size() || size == 0) {
-			return -1;
-		}
-//		int index = 0;
+		if (size > size() || size == 0) { return -1; }
 
-//		if (size <= size() && !target.isEmpty()) {
-			int index = indexOf(target.getFirst());
-			if (index >= 0 && index + size <= size()) {
-				// originally was equals, but use matches instead
-				Sequence subsequence = subsequence(index, index + size);
-				if (!target.matches(subsequence)) {
-					index = -1;
-				}
+		int index = indexOf(target.getFirst());
+		if (index >= 0 && index + size <= size()) {
+			// originally was equals, but use matches instead
+			Sequence subsequence = subsequence(index, index + size);
+			if (!target.matches(subsequence)) {
+				index = -1;
 			}
-//		}
+		}
 		return index;
 	}
 
 	@Override
 	public int indexOf(Sequence target, int start) {
 		validateModelOrWarn(target);
-
 		int index = subsequence(start).indexOf(target);
-
 		return (index >= 0) ? index + start : index;
 	}
 
@@ -191,9 +177,7 @@ public final class BasicSequence extends AbstractSequence {
 			int from = index + target.size();
 			Sequence subsequence = result.subsequence(from);
 			index = subsequence.indexOf(source);
-			if (index < 0) {
-				break;
-			}
+			if (index < 0) { break; }
 			index += from;
 		}
 		return result;
@@ -202,12 +186,11 @@ public final class BasicSequence extends AbstractSequence {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(segmentList.size() * 2);
-
-		sb.append('⟨');
+//		sb.append('⟨');
 		for (Segment segment : segmentList) {
 			sb.append(segment.getSymbol());
 		}
-		sb.append('⟩');
+//		sb.append('⟩');
 		return sb.toString();
 	}
 
@@ -244,7 +227,13 @@ public final class BasicSequence extends AbstractSequence {
 
 	@Override
 	public boolean startsWith(Sequence sequence) {
-		return indexOf(sequence) == 0;
+		if (isEmpty() || sequence.size() > size()) { return false; }
+		for (int i = 0; i < sequence.size(); i++) {
+			if (!get(i).matches(sequence.get(i))) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override

@@ -16,14 +16,12 @@ package org.didelphis.common.language.enums;
 
 import org.didelphis.common.language.phonetic.Formatter;
 import org.didelphis.common.language.phonetic.Segmenter;
-import org.didelphis.common.language.phonetic.SegmenterUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
-
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -94,57 +92,56 @@ public enum FormatterMode implements Segmenter, Formatter {
 		@Override
 		public List<String> split(String string, Iterable<String> special) {
 			String word = normalize(string);
-			
+
 			List<String> strings = new ArrayList<>();
 			StringBuilder sb = new StringBuilder(4);
 			for (int i = 0; i < word.length(); ) {
 				// Get the word from current position on
-
-				int index = parseParens(string, i);
-				if (index >= 0) {
-					if (i > 0) {
+				int index = parseParens(word, i);
+				if (index > 0) {
+					if (sb.length() > 0) {
 						strings.add(sb.toString());
 					}
-					strings.add(string.substring(i, index));
+					String substring = word.substring(i, index);
+					strings.add(substring);
 					sb = new StringBuilder(4);
 					i = index;
 				} else {
-
-				String substring = word.substring(i);
-				// Find the longest string in keys which the substring starts
-				String key = getBestMatch(substring, special);
-				if (sb.length() == 0) {
-					// Assume that the first sb must be a base-character
-					// This doesn't universally work (pre-nasalized, pre-aspirated),
-					// but we don't support this in our model yet
-					if (key.isEmpty()) {
-						// No special error handling if word starts with diacritic,
-						// but may be desirable
-						sb.append(word.charAt(i));
-					} else {
-						sb.append(key);
-						i = key.length() - 1;
-					}
-				} else {
-					char ch = word.charAt(i); // Grab current character
-					if (isAttachable(ch)) {   // is it a standard diacritic?
-						sb.append(ch);
-					} else {
-						// Not a diacritic
-						if (sb.length() > 0) {
-							strings.add(sb.toString());
-						}
-						sb = new StringBuilder(4);
+					String substring = word.substring(i);
+					// Find the longest string in keys which the substring starts
+					String key = getBestMatch(substring, special);
+					if (sb.length() == 0) {
+						// Assume that the first sb must be a base-character
+						// This doesn't universally work (pre-nasalized, pre-aspirated),
+						// but we don't support this in our model yet
 						if (key.isEmpty()) {
-							sb.append(ch);
+							// No special error handling if word starts with
+							// diacritic, but may be desirable
+							sb.append(word.charAt(i));
 						} else {
 							sb.append(key);
 							i += key.length() - 1;
 						}
+					} else {
+						char ch = word.charAt(i); // Grab current character
+						if (isAttachable(ch)) {   // is it a standard diacritic?
+							sb.append(ch);
+						} else {
+							// Not a diacritic
+							if (sb.length() > 0) {
+								strings.add(sb.toString());
+							}
+							sb = new StringBuilder(4);
+							if (key.isEmpty()) {
+								sb.append(ch);
+							} else {
+								sb.append(key);
+								i += key.length() - 1;
+							}
+						}
 					}
+					i++;
 				}
-				i++;
-			}
 			}
 			if (sb.length() > 0) {
 				strings.add(sb.toString());
@@ -212,6 +209,7 @@ public enum FormatterMode implements Segmenter, Formatter {
 			int index = parseParens(string, i);
 			if (index >= 0) {
 				strings.add(string.substring(i, index));
+				i = index - 1;
 			} else {
 				String substring = string.substring(i);
 				String matchedSpecial = "";
@@ -256,7 +254,7 @@ public enum FormatterMode implements Segmenter, Formatter {
 
 	@Override
 	public String normalize(String string) {
-		return form == null ? string : Normalizer.normalize(string, form);
+		return (form == null) ? string : Normalizer.normalize(string, form);
 	}
 
 	private final transient Logger logger = LoggerFactory.getLogger(FormatterMode.class);

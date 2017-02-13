@@ -48,11 +48,11 @@ public class VariableStore {
 	private final Map<String, List<String>> variables;
 
 	public VariableStore() {
-		variables = new LinkedHashMap<String, List<String>>(INITIAL_CAPACITY);
+		variables = new LinkedHashMap<>(INITIAL_CAPACITY);
 	}
 
 	public VariableStore(VariableStore otherStore) {
-		variables = new HashMap<String, List<String>>(otherStore.variables);
+		variables = new HashMap<>(otherStore.variables);
 	}
 
 	public boolean isEmpty() {
@@ -91,7 +91,7 @@ public class VariableStore {
 			String key = parts[0];
 			String[] elements = DELIMITER_PATTERN.split(parts[1]);
 
-			List<String> expanded = new ArrayList<String>();
+			List<String> expanded = new ArrayList<>();
 			for (String value : elements) {
 				expanded.addAll(expandVariables(value));
 			}
@@ -106,8 +106,8 @@ public class VariableStore {
 	}
 
 	private Collection<String> expandVariables(String element) {
-		List<List<String>> list = new ArrayList<List<String>>();
-		List<List<String>> swap = new ArrayList<List<String>>();
+		List<List<String>> list = new ArrayList<>();
+		List<List<String>> swap = new ArrayList<>();
 
 		List<String> segmentedString = SegmenterUtil.getSegmentedString(element, getKeys(), FormatterMode.NONE);
 		list.add(segmentedString);
@@ -122,7 +122,7 @@ public class VariableStore {
 					if (contains(string)) {
 						modified = true;
 						for (String s : get(string)) {
-							List<String> newList = new ArrayList<String>(strings);
+							List<String> newList = new ArrayList<>(strings);
 							newList.set(i, s);
 							swap.add(newList);
 						}
@@ -132,11 +132,11 @@ public class VariableStore {
 			}
 			if (!swap.isEmpty()) {
 				list = swap;
-				swap = new ArrayList<List<String>>();
+				swap = new ArrayList<>();
 			}
 		}
 
-		Collection<String> expansions = new ArrayList<String>();
+		Collection<String> expansions = new ArrayList<>();
 		for (List<String> strings : list) {
 			StringBuilder sb = new StringBuilder(strings.size());
 			for (String string : strings) {
@@ -150,7 +150,7 @@ public class VariableStore {
 
 	public Set<String> getKeys() {
 		if (variables.isEmpty()) {
-			return new HashSet<String>();
+			return new HashSet<>();
 		} else {
 			return variables.keySet();
 		}

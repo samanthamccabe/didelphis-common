@@ -52,7 +52,7 @@ public class SequenceFactoryTest {
 
 	@Test
 	public void testReserved() {
-		Set<String> reserved = new HashSet<String>();
+		Set<String> reserved = new HashSet<>();
 		reserved.add("ph");
 		reserved.add("th");
 		reserved.add("kh");

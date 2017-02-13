@@ -29,8 +29,8 @@ public class LexiconMap {
 	private final Map<String, Lexicon> lexicons;
 
 	public LexiconMap() {
-		paths = new LinkedHashMap<String, String>();
-		lexicons = new LinkedHashMap<String, Lexicon>();
+		paths = new LinkedHashMap<>();
+		lexicons = new LinkedHashMap<>();
 	}
 
 	public void addLexicon(String handle, String path, Lexicon words) {
