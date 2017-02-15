@@ -15,7 +15,6 @@
 package org.didelphis.common.language.phonetic;
 
 
-import org.didelphis.common.language.phonetic.sequences.BasicSequence;
 import org.didelphis.common.language.phonetic.sequences.Sequence;
 
 import java.util.ArrayList;

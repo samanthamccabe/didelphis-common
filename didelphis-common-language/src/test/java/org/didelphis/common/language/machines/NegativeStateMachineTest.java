@@ -213,7 +213,7 @@ public class NegativeStateMachineTest extends MachineTestBase {
 	@Test
 	public void testVariables01() {
 
-		VariableStore store = new VariableStore();
+		VariableStore store = new VariableStore(FormatterMode.NONE);
 		store.add("C = p t k");
 
 		String expression = "!C";
@@ -232,7 +232,7 @@ public class NegativeStateMachineTest extends MachineTestBase {
 	@Test
 	public void testVariables02() {
 
-		VariableStore store = new VariableStore();
+		VariableStore store = new VariableStore(FormatterMode.NONE);
 		store.add("C = ph th kh");
 
 		String expression = "!C";
@@ -256,7 +256,7 @@ public class NegativeStateMachineTest extends MachineTestBase {
 	@Test
 	public void testVariables03() {
 
-		VariableStore store = new VariableStore();
+		VariableStore store = new VariableStore(FormatterMode.NONE);
 		store.add("C = ph th kh kwh");
 
 		String expression = "!C";

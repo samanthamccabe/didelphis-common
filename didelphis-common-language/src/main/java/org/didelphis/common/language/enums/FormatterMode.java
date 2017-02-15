@@ -108,12 +108,14 @@ public enum FormatterMode implements Segmenter, Formatter {
 					i = index;
 				} else {
 					String substring = word.substring(i);
-					// Find the longest string in keys which the substring starts
+					// Find the longest string in keys which the substring 
+					// starts
 					String key = getBestMatch(substring, special);
 					if (sb.length() == 0) {
 						// Assume that the first sb must be a base-character
-						// This doesn't universally work (pre-nasalized, pre-aspirated),
-						// but we don't support this in our model yet
+						// This doesn't universally work (pre-nasalized, 
+						// pre-aspirated), but we don't support this in our 
+						// model yet
 						if (key.isEmpty()) {
 							// No special error handling if word starts with
 							// diacritic, but may be desirable
@@ -123,8 +125,8 @@ public enum FormatterMode implements Segmenter, Formatter {
 							i += key.length() - 1;
 						}
 					} else {
-						char ch = word.charAt(i); // Grab current character
-						if (isAttachable(ch)) {   // is it a standard diacritic?
+						char ch = word.charAt(i);
+						if (isAttachable(ch)) { // is it a standard diacritic?
 							sb.append(ch);
 						} else {
 							// Not a diacritic

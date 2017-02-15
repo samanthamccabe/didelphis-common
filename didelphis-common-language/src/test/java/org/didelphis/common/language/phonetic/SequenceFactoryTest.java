@@ -34,7 +34,10 @@ import static org.junit.Assert.assertTrue;
  */
 public class SequenceFactoryTest {
 
-
+	//TODO: model with specification but no symbols / modifiers
+	
+	//TODO: model with empty spec but defined symbols / modifiers
+	
 	@Test
 	public void testGetSequence01() throws IOException {
 		InputStream stream = SequenceFactoryTest.class.getClassLoader().getResourceAsStream("AT_hybrid.model");
@@ -59,7 +62,7 @@ public class SequenceFactoryTest {
 
 		SequenceFactory factory = new SequenceFactory(
 			StandardFeatureModel.EMPTY_MODEL,
-			new VariableStore(),
+			new VariableStore(FormatterMode.NONE),
 			reserved,
 			FormatterMode.NONE);
 

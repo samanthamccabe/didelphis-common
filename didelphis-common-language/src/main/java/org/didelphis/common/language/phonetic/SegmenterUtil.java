@@ -22,6 +22,7 @@ package org.didelphis.common.language.phonetic;
 import org.didelphis.common.language.enums.FormatterMode;
 import org.didelphis.common.language.phonetic.features.FeatureArray;
 import org.didelphis.common.language.phonetic.features.SparseFeatureArray;
+import org.didelphis.common.language.phonetic.features.StandardFeatureArray;
 import org.didelphis.common.language.phonetic.model.FeatureModel;
 import org.didelphis.common.language.phonetic.model.FeatureSpecification;
 import org.didelphis.common.language.phonetic.model.StandardFeatureModel;
@@ -89,9 +90,10 @@ public final class SegmenterUtil {
 		}
 	}
 */
+	@Deprecated
 	public static Segment getSegment(String string, FeatureModel model,
 	                                 Segmenter formatterMode) {
-		return getSegment(string, model, new HashSet<>(), formatterMode);
+		return getSegment(string, model, null, formatterMode);
 	}
 
 	@Deprecated
@@ -99,27 +101,7 @@ public final class SegmenterUtil {
 	                                 FeatureModel model,
 	                                 Collection<String> reservedStrings,
 	                                 Segmenter formatterMode) {
-//		Collection<String> keys = getKeys(model, reservedStrings);
-//		List<String> strings = formatterMode.split(string, keys);
-
-		FeatureArray<Double> array;
-//		if (!strings.isEmpty()) {
-		if (!string.isEmpty()) {
-//			if (string.startsWith("[")) {
-//				model.getSegment(string);
-//			} else {
-//			String bestMatch = "";
-//			for (String symbol : model.getSymbols()) {
-//				if (string.startsWith(symbol) && bestMatch.length() < string.length()) {
-//					bestMatch = symbol;
-//				}
-//			}
-//				array = model.getValue(bestMatch);
-//			}
 			return model.getSegment(string);
-		}
-		array = new SparseFeatureArray<>(model.getSpecification());
-		return new Segment(string, array, model.getSpecification());
 	}
 
 	@Deprecated
@@ -127,16 +109,6 @@ public final class SegmenterUtil {
 	                                              Iterable<String> keys,
 	                                              Segmenter formatterMode
 	) {
-//		String normalString = formatterMode.normalize(word);
-//		List<Symbol> segmentedSymbol = getCompositeSymbols(normalString, keys, formatterMode);
-//		List<String> list = new ArrayList<>();
-//		for (Symbol symbol : segmentedSymbol) {
-//			StringBuilder head = new StringBuilder(symbol.getHead());
-//			for (String s : symbol.getTail()) {
-//				head.append(s);
-//			}
-//			list.add(head.toString());
-//		}
 		return formatterMode.split(word, keys);
 	}
 
@@ -149,8 +121,9 @@ public final class SegmenterUtil {
 		Sequence sequence = new BasicSequence(specification);
 		for (String string : list) {
 			Segment segment;
-			if (string.startsWith("[") && !keys.contains(string)
-					&& !Objects.equals(model, StandardFeatureModel.EMPTY_MODEL)) {
+			if (reserved != null && reserved.contains(string)) {
+				segment = new Segment(string, new StandardFeatureArray<>(Double.NaN,specification), specification);
+			} else if (string.startsWith("[") && !Objects.equals(model, StandardFeatureModel.EMPTY_MODEL)) {
 				segment = specification.getSegmentFromFeatures(string);
 			} else {
 				segment = model.getSegment(string);

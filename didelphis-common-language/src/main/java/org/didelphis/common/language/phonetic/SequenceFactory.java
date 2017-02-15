@@ -60,15 +60,15 @@ public class SequenceFactory {
 	private final BasicSequence borderSequence;
 
 	private SequenceFactory() {
-		this(StandardFeatureModel.EMPTY_MODEL, new VariableStore(), new HashSet<>(), FormatterMode.NONE);
+		this(StandardFeatureModel.EMPTY_MODEL, new VariableStore(FormatterMode.NONE), new HashSet<>(), FormatterMode.NONE);
 	}
 
 	public SequenceFactory(FormatterMode modeParam) {
-		this(StandardFeatureModel.EMPTY_MODEL, new VariableStore(), new HashSet<>(), modeParam);
+		this(StandardFeatureModel.EMPTY_MODEL, new VariableStore(modeParam), new HashSet<>(), modeParam);
 	}
 
 	public SequenceFactory(FeatureModel modelParam, FormatterMode modeParam) {
-		this(modelParam, new VariableStore(), new HashSet<>(), modeParam);
+		this(modelParam, new VariableStore(modeParam), new HashSet<>(), modeParam);
 	}
 
 	public SequenceFactory(FeatureModel model, VariableStore store, Set<String> reserved, FormatterMode mode) {

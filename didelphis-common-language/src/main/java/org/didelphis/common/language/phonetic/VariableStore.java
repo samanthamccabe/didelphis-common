@@ -14,9 +14,7 @@
 
 package org.didelphis.common.language.phonetic;
 
-import org.didelphis.common.language.enums.FormatterMode;
 import org.didelphis.common.language.exceptions.ParseException;
-import org.didelphis.common.language.phonetic.sequences.BasicSequence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,27 +39,34 @@ public class VariableStore {
 
 	private static final transient Logger LOGGER = LoggerFactory.getLogger(VariableStore.class);
 
-	private static final int     INITIAL_CAPACITY  = 20;
-	private static final Pattern EQUALS_PATTERN    = Pattern.compile("\\s*=\\s*");
+	private static final int INITIAL_CAPACITY = 20;
+	
+	private static final Pattern EQUALS_PATTERN = Pattern.compile("\\s*=\\s*");
 	private static final Pattern DELIMITER_PATTERN = Pattern.compile("\\s+");
 
+	public Segmenter getSegmenter() {
+		return segmenter;
+	}
+
+	public void setSegmenter(Segmenter segmenter) {
+		this.segmenter = segmenter;
+	}
+
+	private  Segmenter segmenter;
 	private final Map<String, List<String>> variables;
 
-	public VariableStore() {
+	public VariableStore(Segmenter segmenter) {
+		this.segmenter = segmenter;
 		variables = new LinkedHashMap<>(INITIAL_CAPACITY);
 	}
 
 	public VariableStore(VariableStore otherStore) {
+		segmenter = otherStore.segmenter;
 		variables = new HashMap<>(otherStore.variables);
 	}
 
 	public boolean isEmpty() {
 		return variables.isEmpty();
-	}
-
-	@Deprecated // User should prefer contains(String)
-	public boolean contains(BasicSequence symbol) {
-		return contains(symbol.toString());
 	}
 
 	public boolean contains(String symbol) {
@@ -84,7 +89,7 @@ public class VariableStore {
 		return sb.toString().trim();
 	}
 
-	public void add(String command) throws ParseException {
+	public void add(String command) {
 		String[] parts = EQUALS_PATTERN.split(command.trim());
 
 		if (parts.length == 2) {
@@ -105,12 +110,19 @@ public class VariableStore {
 		variables.putAll(variableStore.variables);
 	}
 
+	public Set<String> getKeys() {
+		return variables.isEmpty() ? new HashSet<>() : variables.keySet();
+	}
+
+	public List<String> get(String key) {
+		return variables.get(key);
+	}
+
 	private Collection<String> expandVariables(String element) {
 		List<List<String>> list = new ArrayList<>();
 		List<List<String>> swap = new ArrayList<>();
 
-		List<String> segmentedString = SegmenterUtil.getSegmentedString(element, getKeys(), FormatterMode.NONE);
-		list.add(segmentedString);
+		list.add(segmenter.split(element, getKeys()));
 
 		boolean modified = true;
 		while (modified) {
@@ -146,18 +158,6 @@ public class VariableStore {
 		}
 
 		return expansions;
-	}
-
-	public Set<String> getKeys() {
-		if (variables.isEmpty()) {
-			return new HashSet<>();
-		} else {
-			return variables.keySet();
-		}
-	}
-
-	public List<String> get(String key) {
-		return variables.get(key);
 	}
 
 	private String getBestMatch(String tail) {
