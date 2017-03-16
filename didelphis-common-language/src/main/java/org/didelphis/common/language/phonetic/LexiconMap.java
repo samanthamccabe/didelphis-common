@@ -15,7 +15,6 @@
 package org.didelphis.common.language.phonetic;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

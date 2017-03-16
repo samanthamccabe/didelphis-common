@@ -56,7 +56,7 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 		}
 	}
 
-	public SymmetricTable(SymmetricTable<E> otherTable) {
+	protected SymmetricTable(SymmetricTable<E> otherTable) {
 		this(otherTable.getNumberRows());
 		array.addAll(otherTable.array);
 	}

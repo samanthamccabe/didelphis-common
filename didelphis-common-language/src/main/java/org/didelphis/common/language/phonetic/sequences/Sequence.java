@@ -1,7 +1,7 @@
 package org.didelphis.common.language.phonetic.sequences;
 
-import org.didelphis.common.language.phonetic.Segment;
-import org.didelphis.common.language.phonetic.SpecificationBearer;
+import org.didelphis.common.language.phonetic.ModelBearer;
+import org.didelphis.common.language.phonetic.segments.Segment;
 
 import java.util.Deque;
 import java.util.List;
@@ -9,35 +9,35 @@ import java.util.List;
 /**
  * Created by samantha on 1/30/17.
  */
-public interface Sequence
-	  extends SpecificationBearer,
-	          Deque<Segment>,
-	          List<Segment>,
-	          Comparable<Sequence> {
+public interface Sequence<N extends Number>
+	  extends ModelBearer<N>,
+	          Deque<Segment<N>>,
+	          List<Segment<N>>,
+	          Comparable<Sequence<N>> {
 
-	void add(Sequence sequence);
+	void add(Sequence<N> sequence);
 
-	void insert(Sequence sequence, int index);
+	void insert(Sequence<N> sequence, int index);
 
-	int indexOf(Sequence target);
+	int indexOf(Sequence<N> target);
 
-	int indexOf(Sequence target, int start);
+	int indexOf(Sequence<N> target, int start);
 
-	Sequence replaceAll(Sequence source, Sequence target);
+	Sequence<N> replaceAll(Sequence<N> source, Sequence<N> target);
 
-	boolean contains(Sequence sequence);
+	boolean contains(Sequence<N> sequence);
 
-	boolean startsWith(Segment segment);
+	boolean startsWith(Segment<N> segment);
 
-	boolean startsWith(Sequence sequence);
+	boolean startsWith(Sequence<N> sequence);
 
-	BasicSequence remove(int start, int end);
+	Sequence<N> remove(int start, int end);
 
-	boolean matches(Sequence sequence);
+	boolean matches(Sequence<N> sequence);
 
-	Sequence subsequence(int from, int to);
+	Sequence<N> subsequence(int from, int to);
 
-	Sequence subsequence(int from);
+	Sequence<N> subsequence(int from);
 
-	List<Integer> indicesOf(Sequence sequence);
+	List<Integer> indicesOf(Sequence<N> sequence);
 }

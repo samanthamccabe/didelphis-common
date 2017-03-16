@@ -26,7 +26,7 @@ import java.util.Objects;
  */
 public abstract class AbstractTable<E> implements Table<E> {
 
-	public static final DecimalFormat DECIMAL_FORMAT =
+	protected static final DecimalFormat DECIMAL_FORMAT =
 			new DecimalFormat(" 0.000;-0.000");
 
 	protected final int nRows;

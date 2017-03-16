@@ -37,7 +37,7 @@ public class DiskFileHandler implements FileHandler {
 
 	private final String encoding;
 
-	public DiskFileHandler(String encodingParam) {
+	private DiskFileHandler(String encodingParam) {
 		encoding = encodingParam;
 	}
 

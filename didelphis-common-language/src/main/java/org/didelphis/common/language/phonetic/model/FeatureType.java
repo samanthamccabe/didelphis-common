@@ -17,6 +17,7 @@
 
 package org.didelphis.common.language.phonetic.model;
 
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 /**
@@ -24,17 +25,25 @@ import java.util.regex.Pattern;
  * Created: 7/21/2016
  */
 public enum FeatureType {
-	BINARY("(\\+|-|−)?"),
-	TERNARY("(\\+|-|−|0)?"),
-	NUMERIC("(-?\\d+)?");
+	BINARY(Pattern.compile("[+\\-\\u2212]")),
+	TERNARY(Pattern.compile("[+0\\-\\u2212]")),
+	NUMERIC(Pattern.compile("([\\-\\u2212]?\\d+(\\.\\d+)?)"));
 
 	private final Pattern pattern;
 
-	FeatureType(String value) {
-		pattern = Pattern.compile(value);
+	FeatureType(Pattern pattern) {
+		this.pattern = pattern;
 	}
 
-	boolean matches(CharSequence value) {
+	public static FeatureType find(CharSequence string) {
+		String upperCase = string.toString().toUpperCase();
+		return Arrays.stream(values())
+				.filter(type -> type.name().equals(upperCase))
+				.findFirst()
+				.orElse(null);
+	}
+	
+	public boolean matches(CharSequence value) {
 		return pattern.matcher(value).matches();
 	}
 }

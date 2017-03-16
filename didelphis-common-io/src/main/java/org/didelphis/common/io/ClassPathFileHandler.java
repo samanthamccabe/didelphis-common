@@ -17,11 +17,7 @@ package org.didelphis.common.io;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Author: Samantha Fiona Morrigan McCabe
@@ -36,11 +32,11 @@ public class ClassPathFileHandler implements FileHandler {
 
 	private final String encoding;
 
-	public ClassPathFileHandler(String encodingParam) {
+	private ClassPathFileHandler(String encodingParam) {
 		encoding = encodingParam;
 	}
 
-	public static ClassPathFileHandler getDefaultInstance() {
+	public static ClassPathFileHandler getDefault() {
 		return DEFAULT_INSTANCE;
 	}
 

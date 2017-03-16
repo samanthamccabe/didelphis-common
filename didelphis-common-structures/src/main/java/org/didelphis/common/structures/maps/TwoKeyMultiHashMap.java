@@ -17,6 +17,9 @@
 
 package org.didelphis.common.structures.maps;
 
+import org.didelphis.common.structures.maps.interfaces.TwoKeyMap;
+import org.didelphis.common.structures.maps.interfaces.TwoKeyMultiMap;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,6 +30,12 @@ import java.util.Set;
 public class TwoKeyMultiHashMap<T, U, V>
 		extends TwoKeyHashMap<T, U, Set<V>>
 		implements TwoKeyMultiMap<T, U, V> {
+	
+	public TwoKeyMultiHashMap() {}
+	
+	public TwoKeyMultiHashMap(TwoKeyMap<T, U, Set<V>> map) {
+		super(map);
+	}
 	
 	@Override
 	public void add(T k1, U k2, V value) {

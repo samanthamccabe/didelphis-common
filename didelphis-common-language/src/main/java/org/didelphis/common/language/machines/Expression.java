@@ -14,66 +14,20 @@
 
 package org.didelphis.common.language.machines;
 
-import org.didelphis.common.language.enums.FormatterMode;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 /**
  * Created with IntelliJ IDEA.
  * User: Samantha Fiona Morrigan McCabe
  * Date: 9/1/13
  * Time: 9:34 PM
- * Expression creates and stores a compact representation of a regular expression string
- * and is used as a preprocessor for the creation of state-machines for regex matching
+ * Expression creates and stores a compact representation of a regular 
+ * expression string and is used as a preprocessor for the creation of 
+ * state-machines for regex matching
  */
 public class Expression {
 	private String  expression    = "";
 	private String  metacharacter = "";
 	private boolean negative;
-
-
-	public static List<Expression> getExpressions(String string, Collection<String> keys, FormatterMode formatterMode) {
-
-		List<String> strings = formatterMode.split(string, keys);
-
-		List<Expression> list = new ArrayList<>();
-		if (!strings.isEmpty()) {
-
-			Expression buffer = new Expression();
-			for (String symbol : strings) {
-				if (symbol.equals("*") || symbol.equals("?") || symbol.equals("+")) {
-					buffer.setMetacharacter(symbol);
-					buffer = updateBuffer(list, buffer);
-				} else if (symbol.equals("!")) {
-					// first in an expression
-					buffer = updateBuffer(list, buffer);
-					buffer.setNegative(true);
-				} else {
-					buffer = updateBuffer(list, buffer);
-					buffer.setExpression(symbol);
-				}
-			}
-			if (!buffer.getExpression().isEmpty()) {
-				list.add(buffer);
-			}
-		}
-		return list;
-	}
-
-	private static Expression updateBuffer(Collection<Expression> list, Expression buffer) {
-		// Add the contents of buffer if not empty
-		if (!buffer.isEmpty()) {
-			list.add(buffer);
-			return new Expression();
-		} else {
-			return buffer;
-		}
-	}
-
-
-
+	
 	@Override
 	public String toString() {
 		return (negative ? "!" : "") + expression + metacharacter;

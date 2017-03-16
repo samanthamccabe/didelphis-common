@@ -19,10 +19,11 @@ package org.didelphis.common.language.phonetic;
 import org.didelphis.common.language.enums.FormatterMode;
 import org.didelphis.common.language.phonetic.features.FeatureArray;
 import org.didelphis.common.language.phonetic.features.SparseFeatureArray;
-import org.didelphis.common.language.phonetic.features.StandardFeatureArray;
-import org.didelphis.common.language.phonetic.model.FeatureModel;
-import org.didelphis.common.language.phonetic.model.FeatureSpecification;
-import org.didelphis.common.language.phonetic.model.StandardFeatureModel;
+import org.didelphis.common.language.phonetic.model.empty.EmptyFeatureMapping;
+import org.didelphis.common.language.phonetic.model.interfaces.FeatureMapping;
+import org.didelphis.common.language.phonetic.model.interfaces.FeatureModel;
+import org.didelphis.common.language.phonetic.segments.Segment;
+import org.didelphis.common.language.phonetic.segments.StandardSegment;
 import org.didelphis.common.language.phonetic.sequences.BasicSequence;
 import org.didelphis.common.language.phonetic.sequences.Sequence;
 import org.slf4j.Logger;
@@ -35,105 +36,96 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Author: Samantha Fiona Morrigan McCabe
  * Created: 11/23/2014
  */
-public class SequenceFactory {
+public class SequenceFactory<N extends Number> {
 
 	private static final transient Logger LOGGER = LoggerFactory.getLogger(SequenceFactory.class);
+	
+	private static final Pattern BACKREFERENCE_PATTERN = Pattern.compile("(\\$[^$]*\\d+)");
 
-	private static final SequenceFactory EMPTY_FACTORY  = new SequenceFactory();
-
-	private static final Pattern BACKREFERENCE_PATTERN = Pattern.compile("(\\$[^\\$]*\\d+)");
-
-	private final FeatureModel featureModel;
+	private final FeatureMapping<N> featureMapping;
 	private final VariableStore variableStore;
 	private final FormatterMode formatterMode;
 	private final Set<String>   reservedStrings;
 
-	private final Segment  dotSegment;
-	private final Segment  borderSegment;
+	private final Segment<N> dotSegment;
+	private final Segment<N> borderSegment;
 
-	private final BasicSequence dotSequence;
-	private final BasicSequence borderSequence;
-
-	private SequenceFactory() {
-		this(StandardFeatureModel.EMPTY_MODEL, new VariableStore(FormatterMode.NONE), new HashSet<>(), FormatterMode.NONE);
+	private final Sequence<N> dotSequence;
+	private final Sequence<N> borderSequence;
+	
+	public SequenceFactory(FeatureMapping<N> mapping, FormatterMode mode) {
+		this(mapping, new VariableStore(mode), new HashSet<>(), mode);
 	}
 
-	public SequenceFactory(FormatterMode modeParam) {
-		this(StandardFeatureModel.EMPTY_MODEL, new VariableStore(modeParam), new HashSet<>(), modeParam);
-	}
-
-	public SequenceFactory(FeatureModel modelParam, FormatterMode modeParam) {
-		this(modelParam, new VariableStore(modeParam), new HashSet<>(), modeParam);
-	}
-
-	public SequenceFactory(FeatureModel model, VariableStore store, Set<String> reserved, FormatterMode mode) {
-		featureModel    = model;
+	public SequenceFactory(FeatureMapping<N> mapping, VariableStore store, Set<String> reserved, FormatterMode mode) {
+		featureMapping = mapping;
 		variableStore   = store;
 		reservedStrings = reserved;
 		formatterMode   = mode;
 
-		FeatureSpecification specification = featureModel.getSpecification();
-		FeatureArray<Double> sparseArray = new SparseFeatureArray<>(specification);
-		FeatureArray<Double> standardArray = new StandardFeatureArray<>(FeatureSpecification.UNDEFINED_VALUE, specification);
+		FeatureModel<N> model = featureMapping.getFeatureModel();
+		FeatureArray<N> sparseArray = new SparseFeatureArray<>(model);
 
-		dotSegment = new Segment(".", sparseArray, specification);
-		borderSegment = defineBorderSegment(specification, standardArray);
+		//TODO: make these immutable
+		dotSegment = new StandardSegment<>(".", sparseArray, model);
+		borderSegment = new StandardSegment<>("#", sparseArray, model);
 
-		dotSequence    = new BasicSequence(dotSegment);
-		borderSequence = new BasicSequence(borderSegment);
+		dotSequence    = new BasicSequence<>(dotSegment);
+		borderSequence = new BasicSequence<>(borderSegment);
 	}
 
 	public FormatterMode getFormatterMode() {
 		return formatterMode;
 	}
 
-	private Segment defineBorderSegment(FeatureSpecification specification, FeatureArray<Double> standardArray) {
-		return featureModel.containsKey("#") ? featureModel.getSegment("#") : new Segment("#", standardArray, specification);
-	}
-
-	public static SequenceFactory getEmptyFactory() {
-		return EMPTY_FACTORY;
+	private Segment<N> defineBorderSegment(FeatureModel<N> specification, FeatureArray<N> standardArray) {
+		return featureMapping.containsKey("#") 
+			  ? featureMapping.getSegment("#")
+			  : new StandardSegment<>("#", standardArray, specification);
 	}
 
 	public void reserve(String string) {
 		reservedStrings.add(string);
 	}
 
-	public Segment getDotSegment() {
+	public Segment<N> getDotSegment() {
 		return dotSegment;
 	}
 
-	public Segment getBorderSegment() {
+	public Segment<N> getBorderSegment() {
 		return borderSegment;
 	}
 
-	public BasicSequence getDotSequence() {
+	public Sequence<N> getDotSequence() {
 		return dotSequence;
 	}
 
-	public BasicSequence getBorderSequence() {
+	public Sequence<N> getBorderSequence() {
 		return borderSequence;
 	}
 
-	public Segment getSegment(String string) {
-		if (!featureModel.containsKey("#") && string.equals("#")) {
+	public Segment<N> getSegment(String string) {
+		if (!featureMapping.containsKey("#") && string.equals("#")) {
 			return borderSegment;
 		} else if (string.equals(".")) {
 			return dotSegment;
 		} else {
-			return SegmenterUtil.getSegment(string, featureModel, reservedStrings, formatterMode);
+//			return SegmenterUtil.getSegment(string,
+//					featureMapping, reservedStrings, formatterMode);
+			return featureMapping.getSegment(string);
 		}
 	}
 
 	public Lexicon getLexiconFromSingleColumn(Iterable<String> list) {
 		Lexicon lexicon = new Lexicon();
 		for (String entry : list) {
-			Sequence sequence = getSequence(entry);
+			Sequence<N> sequence = getSequence(entry);
 			lexicon.add(sequence);
 		}
 		return lexicon;
@@ -142,7 +134,7 @@ public class SequenceFactory {
 	public Lexicon getLexiconFromSingleColumn(String... list) {
 		Lexicon lexicon = new Lexicon();
 		for (String entry : list) {
-			Sequence sequence = getSequence(entry);
+			Sequence<N> sequence = getSequence(entry);
 			lexicon.add(sequence);
 		}
 		return lexicon;
@@ -152,9 +144,9 @@ public class SequenceFactory {
 		Lexicon lexicon = new Lexicon();
 
 		for (List<String> row : lists) {
-			List<Sequence> lexRow = new ArrayList<>();
+			List<Sequence<N>> lexRow = new ArrayList<>();
 			for (String entry : row) {
-				Sequence sequence = getSequence(entry);
+				Sequence<N> sequence = getSequence(entry);
 				lexRow.add(sequence);
 			}
 			lexicon.add(lexRow);
@@ -162,24 +154,21 @@ public class SequenceFactory {
 		return lexicon;
 	}
 
-	public Sequence getNewSequence() {
+	public Sequence<N> getNewSequence() {
 		return getSequence("");
 	}
 
-	public Sequence getSequence(String word) {
+	public Sequence<N> getSequence(String word) {
 		if (word.equals("#")) {
-			Sequence sequence = new BasicSequence(featureModel.getSpecification());
-			sequence.add(borderSegment);
-			return sequence;
+			return borderSequence;
 		} else if (word.equals(".")) {
-			Sequence sequence = new BasicSequence(featureModel.getSpecification());
-			sequence.add(dotSegment);
-			return sequence;
+			return dotSequence;
 		} else {
 			Collection<String> keys = new ArrayList<>();
 			keys.addAll(variableStore.getKeys());
 			keys.addAll(reservedStrings);
-			return SegmenterUtil.getSequence(word, featureModel, keys, formatterMode);
+			// nota bene:   
+			return SegmenterUtil.getSequence(word, featureMapping, keys, formatterMode);
 		}
 	}
 
@@ -187,21 +176,18 @@ public class SequenceFactory {
 		return variableStore.contains(label);
 	}
 
-	public List<Sequence> getVariableValues(String label) {
-		List<String> strings = variableStore.get(label);
-		List<Sequence> sequences = new ArrayList<>();
-		for (String string : strings) {
-			sequences.add(getSequence(string));
-		}
-		return sequences;
+	public List<Sequence<N>> getVariableValues(String label) {
+		return variableStore.get(label).stream()
+				.map(word -> getSequence(word))
+				.collect(Collectors.toList());
 	}
 
 	public List<String> getSegmentedString(String string) {
 		return SegmenterUtil.getSegmentedString(string, getSpecialStrings(), formatterMode);
 	}
 
-	public FeatureModel getFeatureModel() {
-		return featureModel;
+	public FeatureMapping<N> getFeatureMapping() {
+		return featureMapping;
 	}
 
 	public VariableStore getVariableStore() {
@@ -225,44 +211,20 @@ public class SequenceFactory {
 		return bestMatch;
 	}
 
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (null == obj) return false;
-		if (getClass() != obj.getClass()) return false;
-
-		SequenceFactory that = (SequenceFactory) obj;
-		return featureModel.equals(that.featureModel) &&
-						formatterMode == that.formatterMode &&
-						reservedStrings.equals(that.reservedStrings) &&
-						variableStore.equals(that.variableStore);
-	}
-
-	@Override
-	public int hashCode() {
-		int result = 1175;
-		result = 31 * result + featureModel.hashCode();
-		result = 31 * result + variableStore.hashCode();
-		result = 31 * result + formatterMode.hashCode();
-		result = 31 * result + reservedStrings.hashCode();
-		return result;
-	}
-
 	@Override
 	public String toString() {
 		return "SequenceFactory{" +
-			", featureModel=" + featureModel +
-			", variableStore=" + variableStore +
-			", formatterMode=" + formatterMode +
-			", reservedStrings=" + reservedStrings +
-			'}';
+		       ", featureMapping=" + featureMapping +
+		       ", variableStore=" + variableStore +
+		       ", formatterMode=" + formatterMode +
+		       ", reservedStrings=" + reservedStrings +
+		       '}';
 	}
 
 	public Collection<String> getSpecialStrings() {
 		Collection<String> keys = new ArrayList<>();
 		keys.addAll(variableStore.getKeys());
-		keys.addAll(featureModel.getSymbols());
+//		keys.addAll(featureMapping); // TODO: 
 		keys.addAll(reservedStrings);
 		return keys;
 	}

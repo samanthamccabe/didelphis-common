@@ -1,5 +1,6 @@
 package org.didelphis.common.structures.maps;
 
+import org.didelphis.common.structures.maps.interfaces.TwoKeyMap;
 import org.didelphis.common.structures.tuples.Triple;
 import org.didelphis.common.structures.tuples.Tuple;
 
@@ -16,10 +17,16 @@ public class TwoKeyHashMap<T,U,V>
 		extends HashMap<T, Map<U,V>>
 		implements TwoKeyMap<T, U, V> {
 	
+	public TwoKeyHashMap() {}
+	
+	protected TwoKeyHashMap(TwoKeyMap<T, U, V> map) {
+		super(map);
+	}
+	
 	@Override
 	public V get(T k1, U k2) {
 		Map<U, V> map = get(k1);
-		return (map == null)? null : map.get(k2);
+		return (map == null) ? null : map.get(k2);
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package org.didelphis.common.structures.maps;
 
-import org.junit.Test;
+import org.didelphis.common.structures.maps.interfaces.TwoKeyMultiMap;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,7 +12,7 @@ import java.util.Set;
 public class TestTwoKeyMultiHashMap extends TestBaseTwoKeyMap {
 
 	@Test
-	public void testAdd() {
+	void testAdd() {
 		TwoKeyMultiMap<String, String, String> map = new TwoKeyMultiHashMap<>();
 		map.add("a", "b", "v1");
 		map.add("a", "b", "v2");

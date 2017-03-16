@@ -15,10 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.      *
  ******************************************************************************/
 
-package org.didelphis.common.language.phonetic.model;
+package org.didelphis.common.language.phonetic.model.interfaces;
+
+import org.didelphis.common.language.phonetic.features.FeatureArray;
+import org.didelphis.common.language.phonetic.model.Constraint;
+
+import java.util.List;
 
 /**
- * Samantha Fiona Morrigan McCabe Created: 7/3/2016
+ * Samantha Fiona Morrigan McCabe
+ * Created: 7/31/2016
+ * 
+ * A feature featureModel which includes constraints feature co-occurances
  */
-public class FeatureMapping {
+public interface FeatureModel<N extends Number>
+		extends FeatureSpecification {
+
+	/**
+	 * Retrieve this model's value {@code Constraint}s
+	 * @return a list of feature value constraints; should be immutable
+	 */
+	List<Constraint<N>> getConstraints();
+
+	/**
+	 * Parses a well-formed 
+	 * @param string
+	 * @return a parsed {@code FeatureArray} or {@code null} if parsing fails
+	 */
+	FeatureArray<N> parseFeatureString(String string);
 }

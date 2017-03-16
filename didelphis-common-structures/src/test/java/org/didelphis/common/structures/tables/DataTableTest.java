@@ -85,7 +85,7 @@ public class DataTableTest {
 	
 	@Test(expected = IndexOutOfBoundsException.class)
 	public void testIndexOutOfBounds() {
-		TABLE.getRow(3);
+		List<String> ignored = TABLE.getRow(3);
 	}
 
 	private static ColumnTable<String> createTable() {

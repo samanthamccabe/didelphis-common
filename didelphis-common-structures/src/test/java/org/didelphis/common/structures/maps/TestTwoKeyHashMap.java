@@ -1,12 +1,12 @@
 package org.didelphis.common.structures.maps;
 
-import org.junit.Test;
+import org.didelphis.common.structures.maps.interfaces.TwoKeyMap;
+import org.junit.jupiter.api.Assertions;
 import org.didelphis.common.structures.tuples.Tuple;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.HashSet;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created by samantha on 1/16/17.
@@ -14,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 public class TestTwoKeyHashMap extends TestBaseTwoKeyMap {
 	
 	@Test
-	public void testPutAndGet() {
+	void testPutAndGet() {
 		TwoKeyMap<String, String, String> map = new TwoKeyHashMap<>();
 		map.put("a", "b", "c");
 		
@@ -24,7 +24,7 @@ public class TestTwoKeyHashMap extends TestBaseTwoKeyMap {
 	}
 
 	@Test
-	public void testContains() {
+	void testContains() {
 		TwoKeyMap<String, String, String> map = new TwoKeyHashMap<>();
 		map.put("a1", "b1", "v1");
 		map.put("a2", "b2", "v2");
@@ -40,7 +40,7 @@ public class TestTwoKeyHashMap extends TestBaseTwoKeyMap {
 	}
 
 	@Test
-	public void testKeys() {
+	void testKeys() {
 		TwoKeyMap<String, String, String> map = new TwoKeyHashMap<>();
 		map.put("a1", "b1", "v1");
 		map.put("a2", "b2", "v2");
@@ -51,6 +51,6 @@ public class TestTwoKeyHashMap extends TestBaseTwoKeyMap {
 		expected.add(new Tuple<>("a2", "b2"));
 		expected.add(new Tuple<>("a3", "b3"));
 
-		assertEquals("Unexpected Key Set", expected, map.keys());
+		Assertions.assertEquals(expected, map.keys(), "Unexpected Key Set");
 	}
 }

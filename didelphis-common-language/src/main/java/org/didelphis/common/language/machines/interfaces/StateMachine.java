@@ -12,23 +12,40 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.common.language.machines;
+package org.didelphis.common.language.machines.interfaces;
 
-import org.didelphis.common.language.phonetic.sequences.Sequence;
+import org.didelphis.common.language.machines.Graph;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
 
 /**
  * Samantha Fiona Morrigan McCabe
  * Created: 4/7/2015
  */
-public interface Machine {
+public interface StateMachine<T> {
 
+	MachineParser<T> getParser();
+
+	MachineMatcher<T> getMatcher();
+
+	String getId();
+
+	/**
+	 * Returns a map of {@code StateMachine} ids to its associated graph. This
+	 * ensures accessibility for machines which contain multiple embedded state
+	 * machines.
+	 * @return {@code Map} from {@code StateMachine} id → {@code Graph}
+	 */
+	Map<String, Graph<T>> getGraphs();
+	
 	/**
 	 * Returns the indices
 	 * @param startIndex
 	 * @param target
 	 * @return
 	 */
-	Collection<Integer> getMatchIndices(int startIndex, Sequence target);
+	Collection<Integer> getMatchIndices(int startIndex, T target);
 }

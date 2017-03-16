@@ -3,7 +3,6 @@ package org.didelphis.common.io;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -35,7 +34,7 @@ public final class IOUtil {
 		}
 	}
 
-	public static String readString(Reader reader) throws IOException {
+	private static String readString(Reader reader) throws IOException {
 		StringBuilder sb = new StringBuilder(0x1000);
 		int r = reader.read();
 		while (r >= 0) {

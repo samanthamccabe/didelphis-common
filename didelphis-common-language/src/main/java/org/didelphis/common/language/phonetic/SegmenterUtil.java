@@ -19,13 +19,11 @@
 
 package org.didelphis.common.language.phonetic;
 
-import org.didelphis.common.language.enums.FormatterMode;
-import org.didelphis.common.language.phonetic.features.FeatureArray;
 import org.didelphis.common.language.phonetic.features.SparseFeatureArray;
-import org.didelphis.common.language.phonetic.features.StandardFeatureArray;
-import org.didelphis.common.language.phonetic.model.FeatureModel;
-import org.didelphis.common.language.phonetic.model.FeatureSpecification;
-import org.didelphis.common.language.phonetic.model.StandardFeatureModel;
+import org.didelphis.common.language.phonetic.model.interfaces.FeatureMapping;
+import org.didelphis.common.language.phonetic.model.interfaces.FeatureModel;
+import org.didelphis.common.language.phonetic.segments.Segment;
+import org.didelphis.common.language.phonetic.segments.StandardSegment;
 import org.didelphis.common.language.phonetic.sequences.BasicSequence;
 import org.didelphis.common.language.phonetic.sequences.Sequence;
 import org.slf4j.Logger;
@@ -33,9 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Segmenter provides functionality to split strings into an an array where
@@ -91,50 +87,50 @@ public final class SegmenterUtil {
 	}
 */
 	@Deprecated
-	public static Segment getSegment(String string, FeatureModel model,
-	                                 Segmenter formatterMode) {
-		return getSegment(string, model, null, formatterMode);
+	public static <N extends Number> Segment<N> getSegment(
+			String string, 
+			FeatureMapping<N> mapping,
+			Segmenter formatterMode) {
+		return getSegment(string, mapping, null, formatterMode);
 	}
 
 	@Deprecated
-	public static Segment getSegment(String string,
-	                                 FeatureModel model,
-	                                 Collection<String> reservedStrings,
-	                                 Segmenter formatterMode) {
-			return model.getSegment(string);
+	public static <N extends Number> Segment<N> getSegment(
+			String string,
+			FeatureMapping<N> featureMapping,
+			Collection<String> reservedStrings,
+			Segmenter formatterMode) {
+			return featureMapping.getSegment(string);
 	}
 
 	@Deprecated
-	public static List<String> getSegmentedString(String word,
-	                                              Iterable<String> keys,
-	                                              Segmenter formatterMode
-	) {
+	public static List<String> getSegmentedString(String word, Iterable<String> keys, Segmenter formatterMode) {
 		return formatterMode.split(word, keys);
 	}
 
-	public static Sequence getSequence(String word, FeatureModel model, 
-	                                   Collection<String> reserved,
-	                                   Segmenter formatterMode) {
-		Collection<String> keys = getKeys(model, reserved);
+	public static <N extends Number> Sequence<N> getSequence(String word, FeatureMapping<N> featureMapping, Collection<String> reserved, Segmenter formatterMode) {
+		Collection<String> keys = getKeys(featureMapping, reserved);
 		List<String> list = formatterMode.split(word, keys);
-		FeatureSpecification specification = model.getSpecification();
-		Sequence sequence = new BasicSequence(specification);
+		FeatureModel<N> featureModel = featureMapping.getFeatureModel();
+		Sequence<N> sequence = new BasicSequence<>(featureModel);
 		for (String string : list) {
-			Segment segment;
+			Segment<N> segment;
 			if (reserved != null && reserved.contains(string)) {
-				segment = new Segment(string, new StandardFeatureArray<>(Double.NaN,specification), specification);
-			} else if (string.startsWith("[") && !Objects.equals(model, StandardFeatureModel.EMPTY_MODEL)) {
-				segment = specification.getSegmentFromFeatures(string);
+				segment = new StandardSegment<>(string, new SparseFeatureArray<>(featureModel), featureModel);
+			} else if (string.startsWith("[") && featureMapping.getSpecification().size() > 0) {
+				segment = new StandardSegment<>(string, featureModel.parseFeatureString(string), featureModel);
 			} else {
-				segment = model.getSegment(string);
+				segment = featureMapping.getSegment(string);
 			}
 			sequence.add(segment);
 		}
 		return sequence;
 	}
 
-	private static Collection<String> getKeys(FeatureModel model, Collection<String> reserved) {
-		Collection<String> keys = new ArrayList<>(model.getSymbols());
+	private static <N extends Number> Collection<String> getKeys(
+			FeatureMapping<N> mapping,
+			Collection<String> reserved) {
+		Collection<String> keys = new ArrayList<>(mapping.getSymbols());
 		if (reserved != null) {
 			keys.addAll(reserved);
 		}

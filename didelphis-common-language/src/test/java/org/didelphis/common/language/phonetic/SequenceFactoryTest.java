@@ -14,19 +14,20 @@
 
 package org.didelphis.common.language.phonetic;
 
+import org.didelphis.common.io.ClassPathFileHandler;
 import org.didelphis.common.language.enums.FormatterMode;
-import org.didelphis.common.language.phonetic.model.FeatureModel;
-import org.didelphis.common.language.phonetic.model.StandardFeatureModel;
+import org.didelphis.common.language.phonetic.model.doubles.DoubleFeatureMapping;
+import org.didelphis.common.language.phonetic.model.empty.EmptyFeatureMapping;
+import org.didelphis.common.language.phonetic.model.interfaces.FeatureMapping;
+import org.didelphis.common.language.phonetic.model.interfaces.FeatureModel;
+import org.didelphis.common.language.phonetic.model.loaders.FeatureModelLoader;
 import org.didelphis.common.language.phonetic.sequences.Sequence;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Samantha Fiona Morrigan McCabe
@@ -39,34 +40,39 @@ public class SequenceFactoryTest {
 	//TODO: model with empty spec but defined symbols / modifiers
 	
 	@Test
-	public void testGetSequence01() throws IOException {
-		InputStream stream = SequenceFactoryTest.class.getClassLoader().getResourceAsStream("AT_hybrid.model");
+	void testGetSequence01() throws IOException {
+		String name = "AT_hybrid.model";
+		
 		FormatterMode formatterMode = FormatterMode.INTELLIGENT;
 		
-		FeatureModel model = new StandardFeatureModel(stream, formatterMode);
-		
+		ClassPathFileHandler handler = ClassPathFileHandler.getDefault();
+
 		String word = "avaːm";
 
-		SequenceFactory factory = new SequenceFactory(model, formatterMode);
+		DoubleFeatureMapping mapping = DoubleFeatureMapping.load(name,
+				handler,
+				formatterMode);
 
-		Sequence sequence = factory.getSequence(word);
-		assertTrue(!sequence.isEmpty());
+		SequenceFactory<Double> factory = new SequenceFactory<>(mapping, formatterMode);
+
+		Sequence<Double> sequence = factory.getSequence(word);
+		Assertions.assertTrue(!sequence.isEmpty());
 	}
 
 	@Test
-	public void testReserved() {
+	void testReserved() {
 		Set<String> reserved = new HashSet<>();
 		reserved.add("ph");
 		reserved.add("th");
 		reserved.add("kh");
 
-		SequenceFactory factory = new SequenceFactory(
-			StandardFeatureModel.EMPTY_MODEL,
-			new VariableStore(FormatterMode.NONE),
+		SequenceFactory<Double> factory = new SequenceFactory<>(
+				EmptyFeatureMapping.DOUBLE, 
+				new VariableStore(FormatterMode.NONE),
 			reserved,
 			FormatterMode.NONE);
 
-		Sequence expected = factory.getSequence("");
+		Sequence<Double> expected = factory.getSequence("");
 		expected.add(factory.getSegment("a"));
 		expected.add(factory.getSegment("ph"));
 		expected.add(factory.getSegment("a"));
@@ -77,6 +83,6 @@ public class SequenceFactoryTest {
 
 		Sequence received = factory.getSequence("aphathakha");
 
-		assertEquals(expected, received);
+		Assertions.assertEquals(expected, received);
 	}
 }

@@ -14,7 +14,7 @@
 
 package org.didelphis.common.language.phonetic;
 
-import org.didelphis.common.language.phonetic.model.FeatureSpecification;
+import org.didelphis.common.language.phonetic.model.interfaces.FeatureSpecification;
 
 /**
  * Samantha Fiona Morrigan McCabe
@@ -22,9 +22,5 @@ import org.didelphis.common.language.phonetic.model.FeatureSpecification;
  */
 public interface SpecificationBearer {
 
-	/**
-	 * Returns the model used by this ModelBearer
-	 * @return the FeatureModel; must never be null
-	 */
 	FeatureSpecification getSpecification();
 }
