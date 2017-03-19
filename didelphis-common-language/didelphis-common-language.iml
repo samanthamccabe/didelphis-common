@@ -12,6 +12,16 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="didelphis-common-utilities" />
+    <orderEntry type="library" name="Maven: org.apache.tinkerpop:gremlin-core:3.2.4" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.tinkerpop:gremlin-shaded:3.2.4" level="project" />
+    <orderEntry type="library" name="Maven: commons-configuration:commons-configuration:1.10" level="project" />
+    <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.6" level="project" />
+    <orderEntry type="library" name="Maven: org.yaml:snakeyaml:1.15" level="project" />
+    <orderEntry type="library" name="Maven: org.javatuples:javatuples:1.2" level="project" />
+    <orderEntry type="library" name="Maven: com.carrotsearch:hppc:0.7.1" level="project" />
+    <orderEntry type="library" name="Maven: com.jcabi:jcabi-manifests:1.1" level="project" />
+    <orderEntry type="library" name="Maven: com.jcabi:jcabi-log:0.14" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:jcl-over-slf4j:1.7.21" level="project" />
     <orderEntry type="module" module-name="didelphis-common-io" />
     <orderEntry type="module" module-name="didelphis-common-structures" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.9" level="project" />

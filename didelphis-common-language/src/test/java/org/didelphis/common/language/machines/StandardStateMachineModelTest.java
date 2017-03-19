@@ -19,14 +19,11 @@ import org.didelphis.common.io.FileHandler;
 import org.didelphis.common.language.enums.FormatterMode;
 import org.didelphis.common.language.enums.ParseDirection;
 import org.didelphis.common.language.exceptions.ParseException;
-import org.didelphis.common.language.machines.interfaces.MachineParser;
 import org.didelphis.common.language.machines.interfaces.StateMachine;
 import org.didelphis.common.language.machines.sequences.SequenceMatcher;
 import org.didelphis.common.language.machines.sequences.SequenceParser;
 import org.didelphis.common.language.phonetic.SequenceFactory;
 import org.didelphis.common.language.phonetic.model.doubles.DoubleFeatureMapping;
-import org.didelphis.common.language.phonetic.model.interfaces.FeatureModel;
-import org.didelphis.common.language.phonetic.model.loaders.FeatureModelLoader;
 import org.didelphis.common.language.phonetic.sequences.Sequence;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -54,7 +51,7 @@ public class StandardStateMachineModelTest {
 
 		FormatterMode mode = FormatterMode.INTELLIGENT;
 
-		FileHandler handler = ClassPathFileHandler.getDefault();
+		FileHandler handler = ClassPathFileHandler.INSTANCE;
 		
 		factory = new SequenceFactory<>(DoubleFeatureMapping.load(name, handler, mode), mode);
 	}

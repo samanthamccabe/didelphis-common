@@ -5,7 +5,11 @@ import org.didelphis.common.language.machines.Expression;
 import org.didelphis.common.language.machines.interfaces.MachineParser;
 import org.didelphis.common.language.phonetic.SequenceFactory;
 import org.didelphis.common.language.phonetic.VariableStore;
+import org.didelphis.common.language.phonetic.features.FeatureArray;
+import org.didelphis.common.language.phonetic.features.SparseFeatureArray;
+import org.didelphis.common.language.phonetic.model.interfaces.FeatureModel;
 import org.didelphis.common.language.phonetic.segments.Segment;
+import org.didelphis.common.language.phonetic.segments.StandardSegment;
 import org.didelphis.common.language.phonetic.sequences.BasicSequence;
 import org.didelphis.common.language.phonetic.sequences.Sequence;
 
@@ -38,9 +42,14 @@ public class SequenceParser<N extends Number> implements MachineParser<Sequence<
 					.stream()
 					.map(word -> factory.getSequence(word))
 					.collect(Collectors.toList());
-			specials.put(key, values);	
+			specials.put(key, values);
 		}
-		epsilon = new BasicSequence<>(factory.getFeatureMapping().getFeatureModel());
+		
+		// Generate epsilon / lambda symbol
+		FeatureModel<N> model = factory.getFeatureMapping().getFeatureModel();
+		FeatureArray<N> array = new SparseFeatureArray<>(model);
+		Segment<N> segment = new StandardSegment<>("\uD835\uDF06", array, model);
+		epsilon = new BasicSequence<>(segment);
 	}
 	
 	@Override

@@ -14,7 +14,7 @@
 
 package org.didelphis.common.structures.tables;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,20 +25,20 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Samantha Fiona Morrigan McCabe
  * Created: 8/27/2015
  */
-public class DataTableTest {
-	private static final transient Logger LOGGER = LoggerFactory.getLogger(DataTableTest.class);
+class DataTableTest {
 
 	private static final ColumnTable<String> TABLE = createTable();
 
 	@Test
-	public void testGet() {
+	void testGet() {
 		assertEquals("1", TABLE.get(0, 0));
 		assertEquals("2", TABLE.get(0, 1));
 		assertEquals("3", TABLE.get(0, 2));
@@ -49,7 +49,7 @@ public class DataTableTest {
 	}
 	
 	@Test
-	public void testGetColumn() {
+	void testGetColumn() {
 		Collection<String> list1 = new ArrayList<>();
 		Collection<String> list2 = new ArrayList<>();
 		Collection<String> list3 = new ArrayList<>();
@@ -64,12 +64,12 @@ public class DataTableTest {
 	}
 	
 	@Test
-	public void testGetBadColumn() {
+	void testGetBadColumn() {
 		assertNull(TABLE.getColumn("0"));
 	}
 	
 	@Test
-	public void testGetRows() {
+	void testGetRows() {
 		Collection<String> row1 = new ArrayList<>();
 		Collection<String> row2 = new ArrayList<>();
 		Collection<String> row3 = new ArrayList<>();
@@ -83,9 +83,10 @@ public class DataTableTest {
 		assertEquals(row3, TABLE.getRow(2));
 	}
 	
-	@Test(expected = IndexOutOfBoundsException.class)
-	public void testIndexOutOfBounds() {
-		List<String> ignored = TABLE.getRow(3);
+	@Test
+	void testIndexOutOfBounds() {
+		assertThrows(IndexOutOfBoundsException.class, () -> TABLE.getRow(3));
+
 	}
 
 	private static ColumnTable<String> createTable() {

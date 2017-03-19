@@ -37,7 +37,7 @@ public class FeatureSpecificationTest {
 
 	private static FeatureSpecification load() {
 		String path = "AT_hybrid.spec";
-		FileHandler handler = ClassPathFileHandler.getDefault();
+		FileHandler handler = ClassPathFileHandler.INSTANCE;
 		return FeatureModelLoader.loadDouble(path, handler);
 	}
 

@@ -14,30 +14,19 @@
 
 package org.didelphis.common.io;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.InputStream;
 
 /**
  * Author: Samantha Fiona Morrigan McCabe
  * Created: 10/11/2014
  */
-public class ClassPathFileHandler implements FileHandler {
-
-	private static final transient Logger LOGGER = LoggerFactory.getLogger(ClassPathFileHandler.class);
-
-	private static final String DEFAULT_ENCODING = "UTF-8";
-	private static final ClassPathFileHandler DEFAULT_INSTANCE = new ClassPathFileHandler(DEFAULT_ENCODING);
-
+public enum ClassPathFileHandler implements FileHandler {
+	INSTANCE;
+	
 	private final String encoding;
 
-	private ClassPathFileHandler(String encodingParam) {
-		encoding = encodingParam;
-	}
-
-	public static ClassPathFileHandler getDefault() {
-		return DEFAULT_INSTANCE;
+	ClassPathFileHandler() {
+		encoding = "UTF-8";
 	}
 
 	@Override

@@ -24,7 +24,7 @@ import java.util.Objects;
  * The map is from 'path' to data, so a test can instantiate the class
  * with this object, either providing it data, or reading from it;
  */
-public class MockFileHandler implements FileHandler {
+public final class MockFileHandler implements FileHandler {
 
 	private final Map<String, CharSequence> mockFileSystem;
 

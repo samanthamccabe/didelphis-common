@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * Created by samantha on 12/20/16.
  */
-public class TestTwoKeyMultiHashMap extends TestBaseTwoKeyMap {
+class TwoKeyMultiHashMapTest extends TwoKeyMapTestBase {
 
 	@Test
 	void testAdd() {

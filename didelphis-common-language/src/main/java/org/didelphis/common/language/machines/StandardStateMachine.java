@@ -122,13 +122,13 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 
 		// At the beginning of the process, we are in the start-state
 		// so we find out what arcs leave the node.
-		List<Tuple<Integer, String>> states = new ArrayList<>();
+		Collection<Tuple<Integer, String>> states = new ArrayList<>();
 
 		// Add an initial state at the beginning of the sequence
 		states.add(new Tuple<>(startIndex, startStateId));
 
 		// if the condition is empty, it will always match
-		List<Tuple<Integer, String>> swap = new ArrayList<>();
+		Collection<Tuple<Integer, String>> swap = new ArrayList<>();
 		while (!states.isEmpty()) {
 			for (Tuple<Integer, String> state : states) {
 				String currentNode = state.getRight();
@@ -137,8 +137,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 				// Check internal state machines
 				Collection<Integer> matchIndices;
 				if (machinesMap.containsKey(currentNode)) {
-					matchIndices = machinesMap.get(currentNode)
-							.getMatchIndices(index, target);
+					matchIndices = machinesMap.get(currentNode).getMatchIndices(index, target);
 				} else {
 					matchIndices = new HashSet<>();
 					matchIndices.add(index);

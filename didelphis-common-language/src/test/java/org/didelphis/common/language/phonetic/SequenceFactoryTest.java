@@ -15,6 +15,7 @@
 package org.didelphis.common.language.phonetic;
 
 import org.didelphis.common.io.ClassPathFileHandler;
+import org.didelphis.common.io.FileHandler;
 import org.didelphis.common.language.enums.FormatterMode;
 import org.didelphis.common.language.phonetic.model.doubles.DoubleFeatureMapping;
 import org.didelphis.common.language.phonetic.model.empty.EmptyFeatureMapping;
@@ -35,17 +36,13 @@ import java.util.Set;
  */
 public class SequenceFactoryTest {
 
-	//TODO: model with specification but no symbols / modifiers
-	
-	//TODO: model with empty spec but defined symbols / modifiers
-	
 	@Test
 	void testGetSequence01() throws IOException {
 		String name = "AT_hybrid.model";
 		
 		FormatterMode formatterMode = FormatterMode.INTELLIGENT;
 		
-		ClassPathFileHandler handler = ClassPathFileHandler.getDefault();
+		FileHandler handler = ClassPathFileHandler.INSTANCE;
 
 		String word = "avaːm";
 

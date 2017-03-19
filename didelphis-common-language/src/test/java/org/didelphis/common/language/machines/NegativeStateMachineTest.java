@@ -17,7 +17,6 @@ package org.didelphis.common.language.machines;
 import org.didelphis.common.io.ClassPathFileHandler;
 import org.didelphis.common.io.FileHandler;
 import org.didelphis.common.language.enums.FormatterMode;
-import org.didelphis.common.language.enums.ParseDirection;
 import org.didelphis.common.language.machines.interfaces.MachineParser;
 import org.didelphis.common.language.machines.interfaces.StateMachine;
 import org.didelphis.common.language.machines.sequences.SequenceMatcher;
@@ -25,16 +24,15 @@ import org.didelphis.common.language.machines.sequences.SequenceParser;
 import org.didelphis.common.language.phonetic.SequenceFactory;
 import org.didelphis.common.language.phonetic.VariableStore;
 import org.didelphis.common.language.phonetic.model.doubles.DoubleFeatureMapping;
-import org.didelphis.common.language.phonetic.model.empty.EmptyFeatureModel;
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureMapping;
-import org.didelphis.common.language.phonetic.model.interfaces.FeatureModel;
-import org.didelphis.common.language.phonetic.model.loaders.FeatureModelLoader;
 import org.didelphis.common.language.phonetic.sequences.Sequence;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.HashSet;
+
+import static org.didelphis.common.language.enums.ParseDirection.FORWARD;
 
 /**
  * Samantha Fiona Morrigan McCabe
@@ -49,7 +47,7 @@ public class NegativeStateMachineTest {
 	private static SequenceFactory<Double> loadModel() {
 		String name = "AT_hybrid.model";
 		FormatterMode mode = FormatterMode.INTELLIGENT;
-		FileHandler handler = ClassPathFileHandler.getDefault();
+		FileHandler handler = ClassPathFileHandler.INSTANCE;
 		FeatureMapping<Double> mapping = DoubleFeatureMapping.load(name, handler, mode);
 		return new SequenceFactory<>(mapping, mode);
 	}
@@ -210,16 +208,6 @@ public class NegativeStateMachineTest {
 		fail(machine, "bab");
 		fail(machine, "cbc");
 
-		// Length 3 - tail
-		// This is important as a distinction between:
-		//     A) !{a b c}+
-		//     B) !{a b c}+#
-		// in that (A) will accept these but (B) will not:
-		// TODO: these remain a problem ----------------------------------------
-		fail(machine, "xa");
-		fail(machine, "yb");
-		fail(machine, "zc");
-
 		// Pass
 		test(machine, "x");
 		test(machine, "y");
@@ -231,13 +219,32 @@ public class NegativeStateMachineTest {
 	}
 
 	@Test
+	void testSet03Special() {
+		StateMachine<Sequence<Double>> machine = getMachine("!{a b c}+#");
+//		System.out.println(Graphs.asGML(machine));
+
+		// This is important as a distinction between:
+		//     A) !{a b c}+
+		//     B) !{a b c}+#
+		// in that (A) will accept these but (B) will not:
+
+		fail(machine, "xa");
+		fail(machine, "yb");
+		fail(machine, "zc");
+
+		fail(machine, "xya");
+		fail(machine, "yzb");
+		fail(machine, "zxc");
+	}
+
+	@Test
 	void testVariables01() {
 
 		VariableStore store = new VariableStore(FormatterMode.NONE);
 		store.add("C = p t k");
 
 		String expression = "!C";
-
+		
 		StateMachine<Sequence<Double>> machine = getMachine(store, expression);
 
 		test(machine, "a");
@@ -301,7 +308,7 @@ public class NegativeStateMachineTest {
 		fail(machine, "kwh");
 	}
 
-	private static StateMachine<Sequence<Double>> getMachine(VariableStore store, String expression) {
+	private static StateMachine<Sequence<Double>> getMachine(VariableStore store, String exp) {
 		SequenceFactory<Double> factory = new SequenceFactory<>(
 			  MAPPING,
 			  store,
@@ -311,13 +318,13 @@ public class NegativeStateMachineTest {
 
 		SequenceParser<Double> parser = new SequenceParser<>(factory);
 		SequenceMatcher<Double> matcher = new SequenceMatcher<>(parser);
-		return StandardStateMachine.create("M0", expression, parser, matcher, ParseDirection.FORWARD);
+		return StandardStateMachine.create("M0", exp, parser, matcher, FORWARD);
 	}
 	
-	private static StateMachine<Sequence<Double>> getMachine(String expression) {
+	private static StateMachine<Sequence<Double>> getMachine(String exp) {
 		SequenceParser<Double> parser = new SequenceParser<>(FACTORY);
 		SequenceMatcher<Double> matcher = new SequenceMatcher<>(parser);
-		return StandardStateMachine.create("M0", expression, parser, matcher, ParseDirection.FORWARD);
+		return StandardStateMachine.create("M0", exp, parser, matcher, FORWARD);
 	}
 
 	private static void test(StateMachine<Sequence<Double>> stateMachine,

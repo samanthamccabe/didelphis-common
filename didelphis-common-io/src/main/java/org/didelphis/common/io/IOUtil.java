@@ -1,5 +1,8 @@
 package org.didelphis.common.io;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,7 +15,9 @@ import java.io.Reader;
  * Created by samantha on 1/21/17.
  */
 public final class IOUtil {
-	
+
+	private static final transient Logger LOGGER = LoggerFactory.getLogger(IOUtil.class);
+
 	private IOUtil() {}
 	
 	public static String readPath(String path) {
@@ -20,18 +25,18 @@ public final class IOUtil {
 		try (InputStream stream = new FileInputStream(file)) {
 			return readStream(stream);
 		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
+			LOGGER.error("Failed to read from path {}", path, e);
 		}
+		return null;
 	}
 	
 	public static String readStream(InputStream stream) {
 		try (Reader reader = new BufferedReader(new InputStreamReader(stream))) {
 			return readString(reader);
 		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
+			LOGGER.error("Failed to read from stream", e);
 		}
+		return null;
 	}
 
 	private static String readString(Reader reader) throws IOException {

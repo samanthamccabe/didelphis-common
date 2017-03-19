@@ -15,6 +15,7 @@
 package org.didelphis.common.language.phonetic.sequences;
 
 import org.didelphis.common.io.ClassPathFileHandler;
+import org.didelphis.common.io.FileHandler;
 import org.didelphis.common.language.enums.FormatterMode;
 import org.didelphis.common.language.phonetic.SequenceFactory;
 import org.didelphis.common.language.phonetic.model.doubles.DoubleFeatureMapping;
@@ -68,7 +69,7 @@ public class SequenceTest {
 		FormatterMode mode = FormatterMode.INTELLIGENT;
 		String name = "AT_hybrid.model";
 
-		ClassPathFileHandler handler = ClassPathFileHandler.getDefault();
+		FileHandler handler = ClassPathFileHandler.INSTANCE;
 		FeatureMapping<Double> mapping =  DoubleFeatureMapping.load(name, handler, mode);
 		SequenceFactory<Double> factory = new SequenceFactory<>(mapping, mode);
 
@@ -87,7 +88,7 @@ public class SequenceTest {
 
 		String name = "AT_hybrid.model";
 
-		ClassPathFileHandler handler = ClassPathFileHandler.getDefault();
+		FileHandler handler = ClassPathFileHandler.INSTANCE;
 		FeatureMapping<Double> mapping =DoubleFeatureMapping.load(name, handler, mode);
 		SequenceFactory<Double> factory = new SequenceFactory<>(mapping, mode);
 

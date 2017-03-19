@@ -11,7 +11,7 @@ import java.util.HashSet;
 /**
  * Created by samantha on 1/16/17.
  */
-public class TestTwoKeyHashMap extends TestBaseTwoKeyMap {
+class TwoKeyHashMapTest extends TwoKeyMapTestBase {
 	
 	@Test
 	void testPutAndGet() {

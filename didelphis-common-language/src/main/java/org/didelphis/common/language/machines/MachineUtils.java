@@ -1,16 +1,8 @@
 package org.didelphis.common.language.machines;
 
 import org.didelphis.common.language.machines.interfaces.StateMachine;
-import org.didelphis.common.language.phonetic.sequences.Sequence;
-import org.didelphis.common.utilities.graphs.edge.DisplayEdge;
-import org.didelphis.common.utilities.graphs.node.DisplayGroup;
-import org.didelphis.common.utilities.graphs.node.DisplayNode;
-import org.didelphis.common.utilities.graphs.node.NodeShape;
-import org.didelphis.common.utilities.graphs.node.NodeStyleBuilder;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by samantha on 3/14/17.
@@ -19,8 +11,10 @@ public final class MachineUtils {
 	
 	private MachineUtils() {}
 
-	private void generate(StateMachine machine) {
-		
+	private <T> void generate(StateMachine<T> machine) {
+		for (Map.Entry<String, Graph<T>> e : machine.getGraphs().entrySet()) {
+			
+		}
 	}
 /*
 	private Set<DisplayNode> getDisplayNodes(StateMachine machine) {

@@ -20,6 +20,7 @@ import org.didelphis.common.language.machines.interfaces.MachineParser;
 import org.didelphis.common.language.machines.interfaces.StateMachine;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -41,9 +42,9 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 	public static <T> StateMachine<T> create(String id, String expression, MachineParser<T> parser, MachineMatcher<T> matcher, ParseDirection direction) {
 		// Create the actual branch, the one we don't want to match
 		StateMachine<T> negative = StandardStateMachine.create(id + 'N',
-				expression, parser,matcher, direction);
+				expression, parser, matcher, direction);
 		StateMachine<T> positive = StandardStateMachine.create(id + 'P',
-				expression, parser,matcher, direction);
+				expression, parser, matcher, direction);
 
 		// This is less elegant that I'd prefer, but bear with me:
 		// We will extract the graph and id-machine map and then the graph for
@@ -60,13 +61,13 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 		Graph<T> copy  = new Graph<>(graph);
 
 		graph.clear();
-		for (String key : copy.keySet()) {
-			for (Map.Entry<T, Set<String>> entry : copy.get(key).entrySet()) {
+		for (Map.Entry<String, Map<T, Set<String>>> mapEntry : copy.entrySet()) {
+			for (Map.Entry<T, Set<String>> entry : mapEntry.getValue().entrySet()) {
 				T arc = entry.getKey();
 				Set<String> value = entry.getValue();
 				// lambda / epsilon transition
 				if (Objects.equals(arc,parser.epsilon())) {
-						graph.put(key, parser.epsilon(), value);
+						graph.put(mapEntry.getKey(), parser.epsilon(), value);
 				} else if (parser.getSpecials().containsKey(arc.toString())) {
 					Collection<Integer> lengths = new HashSet<>();
 					for (T special : parser.getSpecials().get(arc.toString())) {
@@ -74,10 +75,11 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 					}
 					T dot = parser.getDot();
 					for (Integer length : lengths) {
-						buildDotChain(graph, key, value, length, dot);
+						buildDotChain(graph,
+								mapEntry.getKey(), value, length, dot);
 					}
 				} else {
-					graph.put(key, parser.getDot(), value);
+					graph.put(mapEntry.getKey(), parser.getDot(), value);
 				}
 			}
 		}
@@ -135,11 +137,11 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 		if (!negativeIndices.isEmpty()) {
 			int positive = new TreeSet<>(positiveIndices).last();
 			int negative = new TreeSet<>(negativeIndices).last();
-			return positive != negative ? positiveIndices : new TreeSet<>();
+			return positive != negative ? positiveIndices : Collections.emptySet();
 		} else if (!positiveIndices.isEmpty()) {
 			return positiveIndices;
 		} else {
-			return new TreeSet<>();
+			return Collections.emptySet();
 		}
 
 		/* This is left here as reference; not used because this method

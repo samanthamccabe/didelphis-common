@@ -15,6 +15,7 @@
 package org.didelphis.common.language.phonetic;
 
 import org.didelphis.common.io.ClassPathFileHandler;
+import org.didelphis.common.io.FileHandler;
 import org.didelphis.common.language.enums.FormatterMode;
 import org.didelphis.common.language.phonetic.features.FeatureArray;
 import org.didelphis.common.language.phonetic.model.doubles.DoubleFeatureMapping;
@@ -264,7 +265,7 @@ public class StandardSegmentTest {
 	private static SequenceFactory<Double> loadFactory() {
 
 		String name = "AT_hybrid.model";
-		ClassPathFileHandler handler = ClassPathFileHandler.getDefault();
+		FileHandler handler = ClassPathFileHandler.INSTANCE;
 		FormatterMode mode = FormatterMode.INTELLIGENT;
 		DoubleFeatureMapping mapping = DoubleFeatureMapping.load(name, handler, mode);
 
