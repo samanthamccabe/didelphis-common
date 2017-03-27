@@ -17,14 +17,11 @@ package org.didelphis.common.language.machines;
 import org.didelphis.common.language.enums.FormatterMode;
 import org.didelphis.common.language.enums.ParseDirection;
 import org.didelphis.common.language.exceptions.ParseException;
-import org.didelphis.common.language.machines.interfaces.MachineMatcher;
-import org.didelphis.common.language.machines.interfaces.MachineParser;
 import org.didelphis.common.language.machines.interfaces.StateMachine;
 import org.didelphis.common.language.machines.sequences.SequenceMatcher;
 import org.didelphis.common.language.machines.sequences.SequenceParser;
 import org.didelphis.common.language.phonetic.SequenceFactory;
 import org.didelphis.common.language.phonetic.model.doubles.DoubleFeatureMapping;
-import org.didelphis.common.language.phonetic.model.empty.EmptyFeatureModel;
 import org.didelphis.common.language.phonetic.sequences.Sequence;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -32,6 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -45,7 +44,8 @@ public class StandardStateMachineTest {
 	private static final transient Logger LOGGER = LoggerFactory.getLogger(
 			StandardStateMachineTest.class);
 
-	private static final SequenceFactory<Double> factory = factory();
+	private static final SequenceFactory<Double> FACTORY = factory();
+	private static final int TIMEOUT = 2;
 
 	private static SequenceFactory<Double> factory() {
 		return new SequenceFactory<>(
@@ -53,11 +53,14 @@ public class StandardStateMachineTest {
 				FormatterMode.NONE);
 	}
 
-	private static void test(StateMachine<Sequence<Double>> stateMachine,
-			String target) {
-		Collection<Integer> matchIndices = testMachine(stateMachine, target);
-		Assertions.assertFalse(matchIndices.isEmpty(),
-				"Machine failed to accept input: " + target);
+	private static void test(StateMachine<Sequence<Double>> machine, String target) {
+		
+		final Collection<Integer> matchIndices = new ArrayList<>();
+		Assertions.assertTimeoutPreemptively(Duration.ofSeconds(5),() -> {
+			Collection<Integer> collection = testMachine(machine, target);
+			matchIndices.addAll(collection);
+		});
+		Assertions.assertFalse(matchIndices.isEmpty(), "Machine failed to accept input: " + target);
 	}
 
 	@Test
@@ -285,6 +288,42 @@ public class StandardStateMachineTest {
 	}
 
 	@Test
+	void testComplex06() {
+		StateMachine<Sequence<Double>> machine = getMachine("{r l}{i u}s");
+
+		test(machine, "ris");
+		test(machine, "rus");
+
+		test(machine, "lis");
+		test(machine, "lus");
+
+		fail(machine, "is");
+		fail(machine, "us");
+
+		fail(machine, "rs");
+		fail(machine, "ls");
+	}
+
+	@Test
+	void testComplex07() {
+		StateMachine<Sequence<Double>> machine = getMachine("{r l}?{i u}?s");
+
+		test(machine, "s");
+
+		test(machine, "is");
+		test(machine, "us");
+		
+		test(machine, "rs");
+		test(machine, "ls");
+
+		test(machine, "ris");
+		test(machine, "rus");
+
+		test(machine, "lis");
+		test(machine, "lus");
+	}
+
+	@Test
 	void testComplex02() {
 		StateMachine<Sequence<Double>> machine = getMachine(
 				"{r l}?{a e o ā ē ō}{i u}?{n m l r}?{pʰ tʰ kʰ cʰ}us");
@@ -307,7 +346,7 @@ public class StandardStateMachineTest {
 	void testComplex04() {
 		StateMachine<Sequence<Double>> machine = getMachine(
 				"{a e o ā ē ō}{pʰ tʰ kʰ cʰ}us");
-
+		
 		test(machine, "apʰus");
 		test(machine, "atʰus");
 		test(machine, "akʰus");
@@ -447,7 +486,7 @@ public class StandardStateMachineTest {
 	}
 
 	private static StateMachine<Sequence<Double>> getMachine(String expression) {
-		SequenceParser<Double> parser = new SequenceParser<>(factory);
+		SequenceParser<Double> parser = new SequenceParser<>(FACTORY);
 		SequenceMatcher<Double> matcher = new SequenceMatcher<>(parser);
 		return StandardStateMachine.create("M0",
 				expression,
@@ -456,16 +495,20 @@ public class StandardStateMachineTest {
 				ParseDirection.FORWARD);
 	}
 
-	private static void fail(StateMachine<Sequence<Double>> stateMachine,
+	private static void fail(StateMachine<Sequence<Double>> machine,
 			String target) {
-		Collection<Integer> matchIndices = testMachine(stateMachine, target);
+		final Collection<Integer> matchIndices = new ArrayList<>();
+		Assertions.assertTimeoutPreemptively(Duration.ofSeconds(TIMEOUT),() -> {
+			Collection<Integer> collection = testMachine(machine, target);
+			matchIndices.addAll(collection);
+		});
 		Assertions.assertTrue(matchIndices.isEmpty(),
 				"Machine accepted input it should not have: " + target);
 	}
 
 	private static Collection<Integer> testMachine(
-			StateMachine<Sequence<Double>> stateMachine, String target) {
-		Sequence<Double> sequence = factory.getSequence(target);
-		return stateMachine.getMatchIndices(0, sequence);
+			StateMachine<Sequence<Double>> machine, String target) {
+		Sequence<Double> sequence = FACTORY.getSequence(target);
+		return machine.getMatchIndices(0, sequence);
 	}
 }

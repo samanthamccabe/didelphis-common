@@ -221,7 +221,6 @@ public class NegativeStateMachineTest {
 	@Test
 	void testSet03Special() {
 		StateMachine<Sequence<Double>> machine = getMachine("!{a b c}+#");
-//		System.out.println(Graphs.asGML(machine));
 
 		// This is important as a distinction between:
 		//     A) !{a b c}+

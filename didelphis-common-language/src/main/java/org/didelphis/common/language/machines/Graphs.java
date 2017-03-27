@@ -31,10 +31,10 @@ public final class Graphs {
 		Map<String, Integer> idToIndex = new HashMap<>();
 		int nodeIndex = 1;
 
-		nodeIndex = populatePrimary(nodeIndex,
-				machine,
-				stringBuilder,
-				idToIndex);
+//		populatePrimary(nodeIndex,
+//				machine,
+//				stringBuilder,
+//				idToIndex);
 
 		populate(nodeIndex, machine, stringBuilder, idToIndex);
 
@@ -42,8 +42,10 @@ public final class Graphs {
 		return stringBuilder.toString();
 	}
 
-	private static <T> int populatePrimary(int nodeIndex,
-			StateMachine<T> machine, StringBuilder stringBuilder,
+	private static <T> int populatePrimary(
+			int nodeIndex,
+			StateMachine<T> machine,
+			StringBuilder stringBuilder,
 			Map<String, Integer> idToIndex) {
 		if (machine instanceof StandardStateMachine) {
 			Iterable<StateMachine<T>> values = ((StandardStateMachine<T>) machine)
@@ -54,17 +56,17 @@ public final class Graphs {
 						stateMachine,
 						stringBuilder,
 						idToIndex);
-				if (stateMachine instanceof StandardStateMachine) {
-					Iterable<StateMachine<T>> machines = ((StandardStateMachine<T>) stateMachine)
-							.getMachinesMap()
-							.values();
-					for (StateMachine<T> subMachine : machines) {
-						nodeIndex = populate(nodeIndex,
-								subMachine,
-								stringBuilder,
-								idToIndex);
-					}
-				}
+//				if (stateMachine instanceof StandardStateMachine) {
+//					Iterable<StateMachine<T>> machines = ((StandardStateMachine<T>) stateMachine)
+//							.getMachinesMap()
+//							.values();
+//					for (StateMachine<T> subMachine : machines) {
+//						nodeIndex = populate(nodeIndex,
+//								subMachine,
+//								stringBuilder,
+//								idToIndex);
+//					}
+//				}
 			}
 		}
 		return nodeIndex;

@@ -129,25 +129,26 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 	@Override
 	public Collection<Integer> getMatchIndices(int startIndex, T target) {
 
-		Collection<Integer> positiveIndices = positiveMachine.getMatchIndices(
+		Collection<Integer> posIndices = positiveMachine.getMatchIndices(
 				startIndex, target);
-		Collection<Integer> negativeIndices = negativeMachine.getMatchIndices(
+		Collection<Integer> negIndices = negativeMachine.getMatchIndices(
 				startIndex, target);
 
-		if (!negativeIndices.isEmpty()) {
-			int positive = new TreeSet<>(positiveIndices).last();
-			int negative = new TreeSet<>(negativeIndices).last();
-			return positive != negative ? positiveIndices : Collections.emptySet();
-		} else if (!positiveIndices.isEmpty()) {
-			return positiveIndices;
+		if (!negIndices.isEmpty() && !posIndices.isEmpty()) {
+			// Machine has matched both branches
+			int positive = new TreeSet<>(posIndices).last();
+			int negative = new TreeSet<>(negIndices).last();
+			return positive == negative ? Collections.emptySet() : posIndices;
+		} else if (!posIndices.isEmpty()) {
+			return posIndices;
 		} else {
 			return Collections.emptySet();
 		}
 
 		/* This is left here as reference; not used because this method
-		 * is not greedy - this was the first attempt
+		 * is not greedy - this was the first attempt, but does not work
 		// Complement --- remove negatives from positives
-		positiveIndices.removeAll(negativeIndices);
+		positiveIndices.removeAll(negIndices);
 		return positiveIndices;
 		*/
 	}

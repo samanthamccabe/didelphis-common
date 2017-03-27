@@ -3,7 +3,6 @@ package org.didelphis.common.language.machines.sequences;
 import org.didelphis.common.language.machines.interfaces.MachineMatcher;
 import org.didelphis.common.language.phonetic.SequenceFactory;
 import org.didelphis.common.language.phonetic.sequences.Sequence;
-import org.didelphis.common.structures.tuples.Tuple;
 
 import java.util.Collection;
 import java.util.Map;
@@ -30,8 +29,8 @@ public class SequenceMatcher<N extends Number>
 		
 		Sequence<N> tail = target.subsequence(index);
 
-		if (tail.isEmpty() && Objects.equals(arc, factory.getBorderSequence())) {
-			return index + 1;
+		if (Objects.equals(arc, factory.getBorderSequence())) {
+			return (tail.isEmpty() || index == 0) ? index + 1 : -1;
 		}
 
 		if (Objects.equals(arc, parser.epsilon())) {
@@ -47,16 +46,17 @@ public class SequenceMatcher<N extends Number>
 			return -1;
 		}
 		
-		if (tail.startsWith(arc)) {
-			// Should work for both cases which have the same behavior
-			return index + arc.size();
-		}
-		
 		if (arc.equals(factory.getDotSequence())) {
 			if (!tail.isEmpty() && !tail.startsWith(factory.getBorderSegment())) {
 				return index + arc.size();
 			}
 		}
+		
+		if (tail.startsWith(arc)) {
+			// Should work for both cases which have the same behavior
+			return index + arc.size();
+		}
+		
 		// Else: the pattern fails to match
 		return -1;
 	}

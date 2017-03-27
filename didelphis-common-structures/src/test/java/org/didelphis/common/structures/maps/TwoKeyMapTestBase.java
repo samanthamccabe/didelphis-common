@@ -3,8 +3,9 @@ package org.didelphis.common.structures.maps;
 import org.didelphis.common.structures.maps.interfaces.TwoKeyMap;
 import org.junit.Assert;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.is;
+
 
 /**
  * Created by samantha on 1/16/17.
