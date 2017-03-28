@@ -27,7 +27,6 @@ class MockFileHandlerTest {
 		handler = new MockFileHandler(map);
 	}
 	
-	
 	@Test
 	void testHashCode() {
 		assertEquals(Objects.hash(map), handler.hashCode() );
