@@ -14,115 +14,40 @@
 
 package org.didelphis.common.language.machines;
 
-import org.didelphis.common.language.phonetic.sequences.Sequence;
+import org.didelphis.common.structures.maps.GeneralTwoKeyMultiMap;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal.Symbols.map;
 
 /**
  * Samantha Fiona Morrigan McCabe
  * Created: 1/28/2016
  */
-public class Graph {
-	private final Map<String, Map<Sequence, Set<String>>> map;
-
+public class Graph<T> extends GeneralTwoKeyMultiMap<String, T, String> {
+	
+	private static final int HASH_ID = 0xa857a183;
+	
 	public Graph() {
-		map = new HashMap<>();
 	}
 
-	public Graph(Graph graph) {
-		map = new HashMap<>(graph.map);
+	public Graph(GeneralTwoKeyMultiMap<String, T, String> graph) {
+		super(graph);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Graph)) return false;
+		Graph<?> graph = (Graph<?>) o;
+		return super.equals(graph);
 	}
 
 	@Override
 	public int hashCode() {
-		return map.hashCode();
-	}
-
-	public Map<String, Map<Sequence, Set<String>>> getMap() {
-		return map;
-	}
-
-	public boolean isEmpty() {
-		return map.isEmpty();
-	}
-
-	public Set<String> getKeys() {
-		return map.keySet();
-	}
-
-	public Map<Sequence, Set<String>> remove(String k1) {
-		return map.remove(k1);
-	}
-
-	public void clear() {
-		map.clear();
-	}
-
-	public Map<Sequence, Set<String>> get(String k1) {
-		return map.get(k1);
-	}
-
-	public Set<String> get(String k1, Sequence k2) {
-		return map.get(k1).get(k2);
-	}
-
-	public boolean contains(String k1) {
-		return map.containsKey(k1);
-	}
-
-	public Set<Map.Entry<Sequence, Set<String>>> getEntries(String k1) {
-		return map.get(k1).entrySet();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) { return true; }
-		if (null == obj) { return false; }
-		if (getClass() != obj.getClass()) { return false; }
-		Graph other = (Graph) obj;
-		return map.equals(other.getMap());
-	}
-
-	private Set<Sequence> getKeys(String k1) {
-		return map.get(k1).keySet();
-	}
-
-	public void put(String k1, Sequence k2, String value) {
-		Set<String> set = new HashSet<>();
-		set.add(value);
-		put(k1,k2,set);
-	}
-
-	public void put(String k1, Sequence k2, Set<String> values) {
-		Map<Sequence, Set<String>> innerMap;
-		if (map.containsKey(k1)) {
-			innerMap = map.get(k1);
-		} else {
-			innerMap = new HashMap<>();
-		}
-
-		Set<String> set;
-		if (innerMap.containsKey(k2)) {
-			set = innerMap.get(k2);
-		} else {
-			set = new HashSet<>();
-		}
-		set.addAll(values);
-		innerMap.put(k2, set);
-		map.put(k1, innerMap);
-	}
-
-	public boolean contains(String k1, Sequence k2) {
-		return map.containsKey(k1) && map.get(k1).containsKey(k2);
+		return ~(HASH_ID * super.hashCode() >> 2);
 	}
 
 	@Override
 	public String toString() {
-		return "Graph{" +
-			"map=" + map +
-			'}';
+		return "Graph{" + "map=" + map + '}';
 	}
 }

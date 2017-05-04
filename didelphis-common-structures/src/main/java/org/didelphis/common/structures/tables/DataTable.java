@@ -14,9 +14,6 @@
 
 package org.didelphis.common.structures.tables;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -30,9 +27,7 @@ import java.util.Objects;
  * Created: 8/23/2015
  */
 public final class DataTable<E> implements ColumnTable<E> {
-
-	private static final transient Logger LOGGER = LoggerFactory.getLogger(DataTable.class);
-
+	
 	private final Map<String, List<E>> columns;
 
 	private final List<List<E>> rows;
@@ -40,6 +35,15 @@ public final class DataTable<E> implements ColumnTable<E> {
 
 	private final int nRows;
 
+	public DataTable(DataTable<E> table) {
+		columns = new LinkedHashMap<>();
+		table.columns.forEach((key,value) -> columns.put(key, new ArrayList<E>(value)));
+		
+		rows = new ArrayList<>(table.rows);
+		keys = new ArrayList<>(table.keys);
+		nRows = table.nRows;
+	}
+	
 	public DataTable(Map<String, List<E>> map) {
 		columns = new LinkedHashMap<>();
 		keys = new ArrayList<>();
@@ -52,7 +56,8 @@ public final class DataTable<E> implements ColumnTable<E> {
 			Iterator<List<E>> iterator = map.values().iterator();
 			numberOfRows = iterator.next().size();
 			while (iterator.hasNext()) {
-				rangeCheck(numberOfRows, iterator);
+				int size = iterator.next().size();
+				rangeCheck(numberOfRows, size);
 			}
 			columns.putAll(map);
 			keys.addAll(map.keySet());
@@ -86,12 +91,7 @@ public final class DataTable<E> implements ColumnTable<E> {
 
 	@Override
 	public String toString() {
-		return "DataTable{" +
-				"columns=" + columns +
-				", rows=" + rows +
-				", keys=" + keys +
-				", nRows=" + nRows +
-				'}';
+		return "DataTable{keys=" + keys + ", nRows=" + nRows + ", columns=" + columns + '}';
 	}
 
 	@Override
@@ -129,30 +129,30 @@ public final class DataTable<E> implements ColumnTable<E> {
 	}
 
 	@Override
-	public E get(int i, int j) {
-		checkRowIndex(j);
-		return columns.get(keys.get(i)).get(j);
+	public E get(int col, int row) {
+		checkRowIndex(row);
+		return columns.get(keys.get(col)).get(row);
 	}
 
 	@Override
 
-	public void set(E element, int i, int j) {
-		checkRowIndex(j);
-		columns.get(keys.get(i)).set(j, element);
+	public void set(int col, int row, E element) {
+		checkRowIndex(row);
+		columns.get(keys.get(col)).set(row, element);
 	}
 
 	@Override
-	public int getNumberRows() {
+	public int getRows() {
 		return nRows;
 	}
 
 	@Override
-	public int getNumberColumns() {
+	public int getColumns() {
 		return keys.size();
 	}
 
 	@Override
-	public String getPrettyTable() {
+	public String formattedTable() {
 		StringBuilder sb = new StringBuilder();
 
 		Iterator<String> keyItr = keys.iterator();
@@ -179,8 +179,8 @@ public final class DataTable<E> implements ColumnTable<E> {
 		return Collections.unmodifiableCollection(rows).iterator();
 	}
 
-	private void rangeCheck(int n, Iterator<List<E>> iterator) {
-		if (n != iterator.next().size()) {
+	private static void rangeCheck(int n, int i) {
+		if (n != i) {
 			throw new IllegalArgumentException(
 					"DataTable cannot be instantiated using a Map whose " +
 							"values are Lists of inconsistent length");

@@ -32,59 +32,68 @@ public final class RectangularTable<E> extends AbstractTable<E> {
 		array = new ArrayList<>(row * col);
 	}
 
+	public RectangularTable(List<List<E>> values, int row, int col) {
+		this(row, col);
+		for (Iterable<E> iterable : values) {
+			for (E element : iterable) {
+				array.add(element);
+			}
+		}
+	}
+	
 	public RectangularTable(E defaultValue, int row, int col) {
 		this(row, col);
-
 		for (int i = 0; i < row * col; i++) {
 			array.add(defaultValue);
 		}
 	}
 
 	public RectangularTable(RectangularTable<E> table) {
-		this(table.getNumberRows(), table.getNumberColumns());
+		this(table.getRows(), table.getColumns());
 		array.addAll(table.array);
 	}
 
 	/**
 	 * Retrieve the element at the specified location
 	 *
-	 * @param i the index for column
-	 * @param j the index for row
+	 * @param col the index for column
+	 * @param row the index for row
 	 *
 	 * @return the object stored at these coordinates
 	 */
 	@Override
-	public E get(int i, int j) {
-		rangeCheck(i, nRows);
-		rangeCheck(j, nCols);
-		return array.get(getIndex(i, j));
+	public E get(int col, int row) {
+		rangeCheck(col, getColumns());
+		rangeCheck(row, getRows());
+		int index = getIndex(col, row);
+		return array.get(index);
 	}
 
 	/**
 	 * Put an element into the specified location in the Table
-	 *
+	 *  @param col the index for column
+	 * @param row the index for row
 	 * @param element the object to place at the specified coordinates
-	 * @param i the index for column
-	 * @param j the index for row
 	 */
 	@Override
-	public void set(E element, int i, int j) {
-		rangeCheck(i, nRows);
-		rangeCheck(j, nCols);
-		int index = getIndex(i, j);
+	public void set(int col, int row, E element) {
+		rangeCheck(col, getColumns());
+		rangeCheck(row, getRows());
+		int index = getIndex(col, row);
 		array.set(index, element);
 	}
 
+	@Deprecated
 	@Override
-	public String getPrettyTable() {
+	public String formattedTable() {
 		StringBuilder sb = new StringBuilder(array.size() * 8);
 
 		int i = 1;
 		for (E e : array) {
 			if (e instanceof Double) {
 				sb.append(DECIMAL_FORMAT.format(e));
-				if (i % nCols == 0) {
-					sb.append("\n");
+				if (i % getColumns() == 0) {
+					sb.append('\n');
 				} else {
 					sb.append("  ");
 				}
@@ -97,23 +106,24 @@ public final class RectangularTable<E> extends AbstractTable<E> {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(super.hashCode(), array);
+		return Objects.hash(array, getColumns(), getRows());
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (!(o instanceof RectangularTable)) return false;
-		if (!super.equals(o)) return false;
 		RectangularTable<?> that = (RectangularTable<?>) o;
-		return Objects.equals(array, that.array);
+		return Objects.equals(array, that.array)
+		       && getRows() == that.getRows()
+		       && getColumns() == that.getColumns();
 	}
 
 	@Override
 	public String toString() {
 		return "RectangularTable{" +
-				"numberRows=" + nRows +
-				", numberColumns=" + nCols +
+				"numberRows=" + getRows() +
+				", numberColumns=" + getColumns() +
 				", array=" + array +
 				'}';
 	}
@@ -122,13 +132,13 @@ public final class RectangularTable<E> extends AbstractTable<E> {
 	 * Computes and returns the absolute index of the internal array based on
 	 * the provided coordinates.
 	 *
-	 * @param i the column position
-	 * @param j the row position
+	 * @param col the column position
+	 * @param row the row position
 	 *
 	 * @return the absolute index of the internal array based on the provided
 	 * coordinates.
 	 */
-	private int getIndex(int i, int j) {
-		return i + j * nRows;
+	private int getIndex(int col, int row) {
+		return col + row * getColumns();
 	}
 }

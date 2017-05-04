@@ -14,7 +14,6 @@
 
 package org.didelphis.common.language.phonetic;
 
-
 import org.didelphis.common.language.phonetic.sequences.Sequence;
 
 import java.util.ArrayList;
@@ -25,33 +24,33 @@ import java.util.List;
  * Samantha Fiona Morrigan McCabe
  * Created: 1/17/2015
  */
-public class Lexicon implements Iterable<List<Sequence>> {
+public class Lexicon<N extends Number> implements Iterable<List<Sequence<N>>> {
 
-	private final List<List<Sequence>> lexicon;
+	private final List<List<Sequence<N>>> lexicon;
 
 	public Lexicon() {
 		lexicon = new ArrayList<>();
 	}
 
-	public void add(Sequence sequence) {
-		List<Sequence> row = new ArrayList<>();
+	public void add(Sequence<N> sequence) {
+		List<Sequence<N>> row = new ArrayList<>();
 		row.add(sequence);
 		lexicon.add(row);
 	}
 
-	public void add(List<Sequence> row ) {
+	public void add(List<Sequence<N>> row ) {
 		lexicon.add(row);
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		Iterator<List<Sequence>> iterator = lexicon.iterator();
+		Iterator<List<Sequence<N>>> iterator = lexicon.iterator();
 		while (iterator.hasNext()) {
-			List<Sequence> line = iterator.next();
-			Iterator<Sequence> it = line.iterator();
+			List<Sequence<N>> line = iterator.next();
+			Iterator<Sequence<N>> it = line.iterator();
 			while (it.hasNext()) {
-				Sequence sequence = it.next();
+				Sequence<N> sequence = it.next();
 				sb.append(sequence);
 				if (it.hasNext()) {
 					sb.append("\\t");
@@ -70,7 +69,7 @@ public class Lexicon implements Iterable<List<Sequence>> {
 		if (o == null) { return false; }
 		if (getClass() != o.getClass()) { return false; }
 
-		Lexicon lexicon1 = (Lexicon) o;
+		Lexicon<?> lexicon1 = (Lexicon<?>) o;
 		return lexicon.equals(lexicon1.lexicon);
 	}
 
@@ -80,7 +79,7 @@ public class Lexicon implements Iterable<List<Sequence>> {
 	}
 
 	@Override
-	public Iterator<List<Sequence>> iterator() {
+	public Iterator<List<Sequence<N>>> iterator() {
 		return lexicon.iterator();
 	}
 }

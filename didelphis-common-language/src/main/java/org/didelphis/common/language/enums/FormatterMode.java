@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.didelphis.common.utilities.Split.*;
+
 /**
  * This type is to succeed the earlier SegmentationMode and Normalizer mode
  * enums by merging their functionality. We originally supported types that
@@ -37,6 +39,7 @@ import java.util.regex.Pattern;
  * Created: 1/14/2015
  */
 public enum FormatterMode implements Segmenter, Formatter {
+	
 	// No change to input strings
 	NONE(null) {
 		@Override
@@ -202,51 +205,6 @@ public enum FormatterMode implements Segmenter, Formatter {
 				         type == Character.NON_SPACING_MARK;
 		}
 	};
-	
-	private static List<String> splitToList(String string,
-	                                        Iterable<String> special) {
-		List<String> strings = new ArrayList<>();
-		for (int i = 0; i < string.length(); i++) {
-
-			int index = parseParens(string, i);
-			if (index >= 0) {
-				strings.add(string.substring(i, index));
-				i = index - 1;
-			} else {
-				String substring = string.substring(i);
-				String matchedSpecial = "";
-				for (String s : special) {
-					if (substring.startsWith(s)) {
-						matchedSpecial = s;
-						break;
-					}
-				}
-
-				if (!matchedSpecial.isEmpty()) {
-					strings.add(matchedSpecial);
-					i += matchedSpecial.length() - 1;
-				} else {
-					strings.add(string.substring(i, i+1));
-				}
-			}
-		}
-		return strings;
-	}
-	
-	private static int parseParens(CharSequence string, int index) {
-		char character = string.charAt(index);
-
-		switch (character) {
-			case '[':
-				return getIndex(string, '[', ']', index);
-			case '(':
-				return getIndex(string, '(', ')', index);
-			case '{':
-				return getIndex(string, '{', '}', index);
-			default:
-				return -1;
-		}
-	}
 
 	private final Normalizer.Form form;
 
@@ -260,26 +218,4 @@ public enum FormatterMode implements Segmenter, Formatter {
 	}
 
 	private final transient Logger logger = LoggerFactory.getLogger(FormatterMode.class);
-
-	private static  int getIndex(CharSequence string, char left, char right, int startIndex) {
-		int count = 1;
-		int endIndex = startIndex;
-
-		boolean matched = false;
-		for (int i = startIndex + 1; i < string.length() && !matched; i++) {
-			char ch = string.charAt(i);
-			if (ch == right && count == 1) {
-				matched = true;
-				endIndex = i;
-			} else if (ch == right) {
-				count++;
-			} else if (ch == left) {
-				count--;
-			}
-		}
-//		if (!matched) {
-//			logger.warn("Unmatched " + left + " in " + string);
-//		}
-		return endIndex + 1;
-	}
 }

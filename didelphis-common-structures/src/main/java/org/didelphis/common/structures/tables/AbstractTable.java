@@ -18,7 +18,6 @@
 package org.didelphis.common.structures.tables;
 
 import java.text.DecimalFormat;
-import java.util.Objects;
 
 /**
  * Samantha Fiona Morrigan McCabe
@@ -26,38 +25,25 @@ import java.util.Objects;
  */
 public abstract class AbstractTable<E> implements Table<E> {
 
-	public static final DecimalFormat DECIMAL_FORMAT =
+	protected static final DecimalFormat DECIMAL_FORMAT =
 			new DecimalFormat(" 0.000;-0.000");
 
-	protected final int nRows;
-	protected final int nCols;
+	private final int rows;
+	private final int columns;
 
-	protected AbstractTable(int k, int l) {
-		nRows = k;
-		nCols = l;
+	protected AbstractTable(int rows, int columns) {
+		this.rows = rows;
+		this.columns = columns;
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hash(nRows, nCols);
+	public int getRows() {
+		return rows;
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof AbstractTable)) return false;
-		AbstractTable<?> that = (AbstractTable<?>) o;
-		return (nRows == that.nRows) && (nCols == that.nCols);
-	}
-
-	@Override
-	public int getNumberRows() {
-		return nRows;
-	}
-
-	@Override
-	public int getNumberColumns() {
-		return nCols;
+	public int getColumns() {
+		return columns;
 	}
 
 	protected static void rangeCheck(int index, int size) {

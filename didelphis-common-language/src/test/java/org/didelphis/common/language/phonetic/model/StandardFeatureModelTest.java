@@ -15,16 +15,13 @@
 package org.didelphis.common.language.phonetic.model;
 
 import org.didelphis.common.language.enums.FormatterMode;
-import org.didelphis.common.language.phonetic.Segment;
 import org.didelphis.common.language.phonetic.features.FeatureArray;
-import org.junit.Test;
+import org.didelphis.common.language.phonetic.model.interfaces.FeatureMapping;
+import org.didelphis.common.language.phonetic.segments.Segment;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Samantha Fiona Morrigan McCabe
@@ -36,61 +33,61 @@ public class StandardFeatureModelTest extends ModelTestBase {
 	private static final Double NAN = Double.NaN;
 	private static final Double INF = Double.NEGATIVE_INFINITY;
 
-	private static final FeatureModel MODEL = loadModel("AT_hybrid.model", FormatterMode.INTELLIGENT);
+	private static final FeatureMapping<Double> MAPPING = loadMapping("AT_hybrid.model", FormatterMode.INTELLIGENT);
 
 	@Test
-	public void testLoad01() {
-		assertFalse(MODEL.getFeatureMap().isEmpty());
-		assertFalse(MODEL.getModifiers().isEmpty());
+	void testLoad01() {
+		Assertions.assertFalse(MAPPING.getFeatureMap().isEmpty());
+		Assertions.assertFalse(MAPPING.getModifiers().isEmpty());
 	}
 
 	@Test
-	public void testLoad02() {
-		StandardFeatureModel model = loadModel("AT_hybrid.mapping", FormatterMode.INTELLIGENT);
-		assertNotNull(model.getSpecification());
-		assertTrue(model.getSpecification().size() > 0);
+	void testLoad02() {
+		FeatureMapping<Double> model = loadMapping("AT_hybrid.mapping", FormatterMode.INTELLIGENT);
+		Assertions.assertNotNull(model.getSpecification());
+		Assertions.assertTrue(model.getSpecification().size() > 0);
 	}
 
 	@Test
-	public void testLoad_AT_Hybrid() {
-		FeatureModel model = loadModel("AT_hybrid.model", FormatterMode.INTELLIGENT);
-		assertFalse(model.getFeatureMap().isEmpty());
-		assertFalse(model.getModifiers().isEmpty());
+	void testLoad_AT_Hybrid() {
+		FeatureMapping<Double> model = loadMapping("AT_hybrid.model", FormatterMode.INTELLIGENT);
+		Assertions.assertFalse(model.getFeatureMap().isEmpty());
+		Assertions.assertFalse(model.getModifiers().isEmpty());
 	}
 	
 	@Test
-	public void testGetStringFromFeatures01()  {
+	void testGetStringFromFeatures01()  {
 		testBestSymbol("g");
 	}
 
 	@Test
-	public void testGetStringFromFeatures02()  {
+	void testGetStringFromFeatures02()  {
 		testBestSymbol("gʱ");
 	}
 
 	@Test
-	public void testGetStringFromFeatures03()  {
+	void testGetStringFromFeatures03()  {
 		testBestSymbol("gʲ");
 	}
 
 	@Test
-	public void testGetStringFromFeatures04()  {
+	void testGetStringFromFeatures04()  {
 		testBestSymbol("kʷʰ");
 	}
 
 	@Test
-	public void testGetStringFromFeatures05()  {
+	void testGetStringFromFeatures05()  {
 		testBestSymbol("kːʷʰ");
 	}
 
-	private static void testNaN(double v) {
-		assertTrue("Value was " + v + " not NaN", Double.isNaN(v));
+	static void testNaN(double v) {
+		Assertions.assertTrue(Double.isNaN(v), "Value was " + v + " not NaN");
 	}
 	
 	private static void testBestSymbol(String string) {
-		Segment segment = MODEL.getSegment(string);
+		Segment<Double> segment = MAPPING.getSegment(string);
 		FeatureArray<Double> array = segment.getFeatures();
-		String bestSymbol = MODEL.getBestSymbol(array);
-		assertEquals(string, bestSymbol);
+		String bestSymbol = MAPPING.findBestSymbol(array);
+		Assertions.assertEquals(string, bestSymbol);
 	}
 }

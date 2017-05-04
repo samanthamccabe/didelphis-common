@@ -1,30 +1,30 @@
 %FEATURE_MODEL
 
-%	Feature	Model v0.7
+% Feature Model v0.7
 
-FEATURES
-consonantal	con	binary  %  0
-sonorant	son	binary  %  1
-continuant	cnt	binary  %  2
-ejective	eje	binary  %  3
-release		rel	binary  %  4
-lateral		lat	binary  %  5
-nasal		nas	binary  %  6
-labial		lab	binary  %  7
-round		rnd	binary  %  8
-coronal		cor	numeric %  9
-dorsal		dor	binary  % 10
-front		frn	ternary % 11
-high		hgh	ternary % 12
-atr			atr	binary  % 13
-voice		vce	binary  % 14
-creaky		crk	ternary % 15
-breathy		bth	binary  % 16
-distributed	dst	binary  % 17
-long		lng	binary  % 18
+FEATURES %**********************************************************************
+consonantal	con	binary	%  0
+sonorant	son	binary	%  1
+continuant	cnt	binary	%  2
+ejective	eje	binary	%  3
+release		rel	binary	%  4
+lateral		lat	binary	%  5
+nasal		nas	binary	%  6
+labial		lab	binary	%  7
+round		rnd	binary	%  8
+coronal		cor	numeric	%  9
+dorsal		dor	binary	% 10
+front		frn	ternary	% 11
+high		hgh	ternary	% 12
+atr			atr	binary	% 13
+voice		vce	binary	% 14
+creaky		crk	ternary	% 15
+breathy		bth	binary	% 16
+distributed	dst	binary	% 17
+long		lng	binary	% 18
 upper		upr	binary	% 19
 
-ALIASES
+ALIASES %***********************************************************************
 [+vot]    = [+breathy]
 [-vot]    = [-breathy]
 
@@ -43,7 +43,7 @@ ALIASES
 [retroflex]    = [4:coronal, -distributed]
 [palatal]      = [4:coronal, +distributed, +front, +high]
 
-CONSTRAINTS
+CONSTRAINTS %*******************************************************************
 % [+nas] and [+lat] cannot co-occur
 [+nasal]   > [-lateral]
 [+lateral] > [-nasal]
@@ -72,7 +72,7 @@ CONSTRAINTS
 [+continuant]  > [-ejective]
 [+voice]       > [-ejective]
 
-% Distrubuted requires a closure or near closure
+% Distributed requires a closure or near closure
 [+distributed] > [+consonantal]
 [-consonantal] > [-distributed]
 

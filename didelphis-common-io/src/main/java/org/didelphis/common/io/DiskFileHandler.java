@@ -28,23 +28,16 @@ import java.util.Objects;
  * Author: Samantha Fiona Morrigan McCabe
  * Created: 10/11/2014
  */
-public class DiskFileHandler implements FileHandler {
+public final class DiskFileHandler implements FileHandler {
 
 	private static final transient Logger LOGGER = LoggerFactory.getLogger(DiskFileHandler.class);
-
-	private static final String DEFAULT_ENCODING = "UTF-8";
-	private static final DiskFileHandler DEFAULT_INSTANCE = new DiskFileHandler(DEFAULT_ENCODING);
 
 	private final String encoding;
 
 	public DiskFileHandler(String encodingParam) {
 		encoding = encodingParam;
 	}
-
-	public static DiskFileHandler getDefaultInstance() {
-		return DEFAULT_INSTANCE;
-	}
-
+	
 	@Override
 	public CharSequence read(String path) {
 		return IOUtil.readPath(path);

@@ -13,38 +13,43 @@
 
 package org.didelphis.common.language.phonetic.model;
 
-import org.didelphis.common.language.phonetic.SpecificationBearer;
+import org.didelphis.common.language.phonetic.ModelBearer;
 import org.didelphis.common.language.phonetic.features.FeatureArray;
+import org.didelphis.common.language.phonetic.model.interfaces.FeatureModel;
+import org.didelphis.common.language.phonetic.model.interfaces.FeatureSpecification;
+
+import java.util.regex.Pattern;
 
 /**
  * Samantha Fiona Morrigan McCabe
  * Created: 3/1/2016
  */
-public class Constraint implements SpecificationBearer {
+public class Constraint<N extends Number> implements ModelBearer<N> {
 
+	private static final Pattern COMPILE = Pattern.compile("\\s+");
+	
 	private final String label;
 	
-	private final FeatureSpecification specification;
+	private final FeatureModel<N> featureModel;
+	private final FeatureArray<N> source;
+	private final FeatureArray<N> target;
 
-	private final FeatureArray<Double> source;
-	private final FeatureArray<Double> target;
+	public Constraint(CharSequence label,
+	                  FeatureArray<N> source,
+	                  FeatureArray<N> target,
+	                  FeatureModel<N> featureModel) {
 
-	public Constraint(String label,
-	                  FeatureArray<Double> source,
-	                  FeatureArray<Double> target,
-	                  FeatureSpecification specification) {
-
-		this.label = label.replaceAll("\\s+"," ");
+		this.label = COMPILE.matcher(label).replaceAll(" ");
 		this.source = source;
 		this.target = target;
-		this.specification = specification;
+		this.featureModel = featureModel;
 	}
 
-	public FeatureArray<Double> getTarget() {
+	public FeatureArray<N> getTarget() {
 		return target;
 	}
 
-	public FeatureArray<Double> getSource() {
+	public FeatureArray<N> getSource() {
 		return source;
 	}
 
@@ -58,8 +63,7 @@ public class Constraint implements SpecificationBearer {
 		if (this == obj) { return true; }
 		if (!(obj instanceof Constraint)) { return false; }
 
-		Constraint constraint = (Constraint) obj;
-
+		Constraint<?> constraint = (Constraint<?>) obj;
 		return source.equals(constraint.source) &&
 		       target.equals(constraint.source);
 	}
@@ -70,7 +74,12 @@ public class Constraint implements SpecificationBearer {
 	}
 
 	@Override
+	public FeatureModel<N> getFeatureModel() {
+		return featureModel;
+	}
+
+	@Override
 	public FeatureSpecification getSpecification() {
-		return specification;
+		return featureModel;
 	}
 }

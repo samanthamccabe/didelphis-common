@@ -17,16 +17,14 @@
 
 package org.didelphis.common.language.phonetic.model;
 
-import org.didelphis.common.language.phonetic.features.FeatureArray;
-import org.junit.Test;
+import org.didelphis.common.io.ClassPathFileHandler;
+import org.didelphis.common.io.FileHandler;
+import org.didelphis.common.language.phonetic.model.interfaces.FeatureSpecification;
+import org.didelphis.common.language.phonetic.model.loaders.FeatureModelLoader;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
 /**
  * Samantha Fiona Morrigan McCabe Created: 7/4/2016
@@ -39,49 +37,31 @@ public class FeatureSpecificationTest {
 
 	private static FeatureSpecification load() {
 		String path = "AT_hybrid.spec";
-		try {
-			return FeatureSpecification.loadFromClassPath(path);
-		} catch (IOException e) {
-			LOGGER.error("Failed to load {}", path, e);
-		}
-		return FeatureSpecification.EMPTY;
+		FileHandler handler = ClassPathFileHandler.INSTANCE;
+		return FeatureModelLoader.loadDouble(path, handler);
 	}
 
 	@Test
-	public void testSize() {
+	void testSize() {
 		int size = MODEL.size();
-		assertEquals(20, size);
+		Assertions.assertEquals(20, size);
 	}
 
 	@Test
-	public void testGetIndexSonorant() {
+	void testGetIndexSonorant() {
 		int index = MODEL.getIndex("sonorant");
-		assertEquals(1, index);
+		Assertions.assertEquals(1, index);
 	}
 
 	@Test
-	public void testGetIndexLong() {
+	void testGetIndexLong() {
 		int index = MODEL.getIndex("long");
-		assertEquals(18, index);
+		Assertions.assertEquals(18, index);
 	}
 
 	@Test
-	public void testGetIndexBadFeature() {
+	void testGetIndexBadFeature() {
 		int index = MODEL.getIndex("x");
-		assertEquals(-1, index);
-	}
-
-	@Test
-	public void getSegmentFromFeatures() {
-		FeatureArray<Double> features =
-				MODEL.getSegmentFromFeatures("[+con -son]").getFeatures();
-		assertEquals(1, features.get(0), 0.001);
-		assertEquals(-1, features.get(1), 0.001);
-	}
-
-	@Test
-	public void testConstraints() {
-		List<Constraint> constraints = MODEL.getConstraints();
-		assertFalse("Constraints should not empty", constraints.isEmpty());
+		Assertions.assertEquals(-1, index);
 	}
 }

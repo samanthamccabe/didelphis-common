@@ -37,23 +37,16 @@ import java.util.regex.Pattern;
  */
 public class VariableStore {
 
-	private static final transient Logger LOGGER = LoggerFactory.getLogger(VariableStore.class);
+	private static final transient Logger LOGGER = LoggerFactory.getLogger(
+			VariableStore.class);
 
 	private static final int INITIAL_CAPACITY = 20;
-	
+
 	private static final Pattern EQUALS_PATTERN = Pattern.compile("\\s*=\\s*");
 	private static final Pattern DELIMITER_PATTERN = Pattern.compile("\\s+");
 
-	public Segmenter getSegmenter() {
-		return segmenter;
-	}
-
-	public void setSegmenter(Segmenter segmenter) {
-		this.segmenter = segmenter;
-	}
-
-	private  Segmenter segmenter;
 	private final Map<String, List<String>> variables;
+	private Segmenter segmenter;    
 
 	public VariableStore(Segmenter segmenter) {
 		this.segmenter = segmenter;
@@ -63,6 +56,14 @@ public class VariableStore {
 	public VariableStore(VariableStore otherStore) {
 		segmenter = otherStore.segmenter;
 		variables = new HashMap<>(otherStore.variables);
+	}
+
+	public Segmenter getSegmenter() {
+		return segmenter;
+	}
+
+	public void setSegmenter(Segmenter segmenter) {
+		this.segmenter = segmenter;
 	}
 
 	public boolean isEmpty() {
@@ -102,7 +103,9 @@ public class VariableStore {
 			}
 			variables.put(key, expanded);
 		} else {
-			throw new ParseException("Variable definition can only contain one = sign.", command);
+			throw new ParseException(
+					"Variable definition can only contain one = sign.",
+					command);
 		}
 	}
 

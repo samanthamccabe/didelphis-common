@@ -14,9 +14,13 @@
 
 package org.didelphis.common.language.phonetic.features;
 
-import org.didelphis.common.language.phonetic.model.FeatureSpecification;
+import org.didelphis.common.language.phonetic.model.Constraint;
+import org.didelphis.common.language.phonetic.model.interfaces.FeatureModel;
+import org.didelphis.common.language.phonetic.model.interfaces.FeatureSpecification;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -24,34 +28,34 @@ import java.util.List;
  * Samantha Fiona Morrigan McCabe
  * Created: 3/26/2016
  */
-public final class StandardFeatureArray<T extends Number & Comparable<T>>
-		implements FeatureArray<T> {
+public final class StandardFeatureArray<N extends Number>
+		implements FeatureArray<N> {
 	
-	private final FeatureSpecification specification;
-	private final List<T> features;
+	private final FeatureModel<N> featureModel;
+	private final List<N> features;
 
-	public StandardFeatureArray(T value, FeatureSpecification specification) {
-		this.specification = specification;
-		int size = specification.size();
+	public StandardFeatureArray(N value, FeatureModel<N> featureModel) {
+		this.featureModel = featureModel;
+		int size = featureModel.size();
 		features = new ArrayList<>(size);
 		for (int i = 0; i < size; i++) {
 			features.add(value);
 		}
 	}
 
-	public StandardFeatureArray(List<T> list, FeatureSpecification specification) {
-		this.specification = specification;
+	public StandardFeatureArray(List<N> list, FeatureModel<N> featureModel) {
+		this.featureModel = featureModel;
 		features = new ArrayList<>(list);
 	}
 	
-	public StandardFeatureArray(StandardFeatureArray<T> array) {
-		specification = array.getSpecification();
+	public StandardFeatureArray(StandardFeatureArray<N> array) {
+		featureModel = array.getFeatureModel();
 		features = new ArrayList<>(array.features);
 	}
 
-	public StandardFeatureArray(FeatureArray<T> array) {
-		specification = array.getSpecification();
-		int size = specification.size();
+	public StandardFeatureArray(FeatureArray<N> array) {
+		featureModel = array.getFeatureModel();
+		int size = featureModel.size();
 		features = new ArrayList<>(size);
 		for (int i = 0; i < size; i++) {
 			features.add(array.get(i));
@@ -64,30 +68,27 @@ public final class StandardFeatureArray<T extends Number & Comparable<T>>
 	}
 
 	@Override
-	public void set(int index, T value) {
+	public void set(int index, N value) {
 		features.set(index, value);
+		applyConstraints(index);
 	}
 
 	@Override
-	public T get(int index) {
+	public N get(int index) {
 		return features.get(index);
 	}
 
 	@Override
-	public boolean matches(FeatureArray<T> array) {
+	public boolean matches(FeatureArray<N> array) {
 		if (size() != array.size()) {
 			throw new IllegalArgumentException(
 					"Attempting to compare arrays of different lengths");
 		}
 
 		for (int i = 0; i < size(); i++) {
-			T a = get(i);
-			T b = array.get(i);
-			boolean matches =
-					a == null ||
-					b == null ||
-					a.equals(b);
-			if (!matches) {
+			N x = get(i);
+			N y = array.get(i);
+			if (!matches(x, y)) {
 				return false;
 			}
 		}
@@ -95,45 +96,75 @@ public final class StandardFeatureArray<T extends Number & Comparable<T>>
 	}
 
 	@Override
-	public void alter(FeatureArray<T> array) {
+	public FeatureSpecification getSpecification() {
+		return featureModel;
+	}
+
+	private boolean matches(N x, N y) {
+		return (x == null || y == null || x.equals(y));
+	}
+
+	@Override
+	public void alter(FeatureArray<N> array) {
 		if (size() != array.size()) {
 			throw new IllegalArgumentException(
 					"Attempting to compare arrays of different lengths");
 		}
 
+		final Collection<Integer> alteredIndices = new HashSet<>();
 		for (int i = 0; i < features.size(); i++) {
-			T t = array.get(i);
-			if (t != null) {
-				features.set(i, t);
+			N n = array.get(i);
+			if (n != null) {
+				alteredIndices.add(i);
+				features.set(i, n);
 			}
+		}
+		for (int index : alteredIndices) {
+			applyConstraints(index);
 		}
 	}
 
+	private void applyConstraints(int index) {
+		for (Constraint<N> constraint : featureModel.getConstraints()) {
+			if (constraint.getSource().get(index) != null
+			    && matches(constraint.getSource())) {
+				alter(constraint.getTarget());
+			}
+		}
+	}
+	
 	@Override
-	public boolean contains(T value) {
+	public boolean contains(N value) {
 		return features.contains(value);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public int compareTo(FeatureArray<T> o) {
+	public int compareTo(FeatureArray<N> o) {
 		if (size() != o.size()) {
 			throw new IllegalArgumentException(
 					"Attempting to compare arrays of different lengths");
 		}
 
 		for (int i = 0; i < size(); i++) {
-			T a = get(i);
-			T b = o.get(i);
+			N x = get(i);
+			N y = o.get(i);
 			int comparison;
 
-			if (a == null && b == null) {
+			if (x == null && y == null) {
 				comparison = 0;
-			} else if (a == null) {
+			} else if (x == null) {
 				comparison = -1;
-			}else if (b == null) {
+			}else if (y == null) {
 				comparison = 1;
 			} else {
-				comparison = a.compareTo(b);
+				if (x instanceof Comparable && y instanceof Comparable) {
+					Comparable<Object> xC = (Comparable<Object>) x;
+					Comparable<Object> yC = (Comparable<Object>) y;
+					comparison = xC.compareTo(yC);
+				} else {
+					comparison = String.valueOf(x).compareTo(String.valueOf(y));
+				}
 			}
 			if (comparison != 0) {
 				return comparison;
@@ -165,12 +196,21 @@ public final class StandardFeatureArray<T extends Number & Comparable<T>>
 	}
 
 	@Override
-	public Iterator<T> iterator() {
+	public Iterator<N> iterator() {
 		return features.iterator();
 	}
 
 	@Override
-	public FeatureSpecification getSpecification() {
-		return specification;
+	public FeatureModel<N> getFeatureModel() {
+		return featureModel;
+	}
+
+	private  void applyConstraint(int index, Constraint<N> constraint) {
+		FeatureArray<N> source = constraint.getSource();
+		if (source.get(index) != null) {
+			if (matches(source)) {
+				alter(constraint.getTarget());
+			}
+		}
 	}
 }

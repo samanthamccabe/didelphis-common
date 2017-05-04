@@ -14,9 +14,6 @@
 
 package org.didelphis.common.io;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -27,7 +24,7 @@ import java.util.Objects;
  * The map is from 'path' to data, so a test can instantiate the class
  * with this object, either providing it data, or reading from it;
  */
-public class MockFileHandler implements FileHandler {
+public final class MockFileHandler implements FileHandler {
 
 	private final Map<String, CharSequence> mockFileSystem;
 
@@ -64,7 +61,4 @@ public class MockFileHandler implements FileHandler {
 		return true;
 	}
 
-	private CharSequence readString(String path) {
-		return mockFileSystem.get(path);
-	}
 }

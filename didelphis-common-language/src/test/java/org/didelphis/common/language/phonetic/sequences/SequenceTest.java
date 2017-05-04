@@ -14,55 +14,34 @@
 
 package org.didelphis.common.language.phonetic.sequences;
 
+import org.didelphis.common.io.ClassPathFileHandler;
+import org.didelphis.common.io.FileHandler;
 import org.didelphis.common.language.enums.FormatterMode;
 import org.didelphis.common.language.phonetic.SequenceFactory;
-import org.didelphis.common.language.phonetic.model.FeatureModel;
-import org.didelphis.common.language.phonetic.model.StandardFeatureModel;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.didelphis.common.language.phonetic.model.doubles.DoubleFeatureMapping;
+import org.didelphis.common.language.phonetic.model.empty.EmptyFeatureMapping;
+import org.didelphis.common.language.phonetic.model.interfaces.FeatureMapping;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 public class SequenceTest {
 
-	private static final transient Logger LOGGER = LoggerFactory.getLogger(SequenceTest.class);
+	private static final transient Logger LOGGER = LoggerFactory.getLogger(
+			SequenceTest.class);
 
-	private static final SequenceFactory FACTORY = new SequenceFactory(FormatterMode.INTELLIGENT);
-
-	private static void testIndexOf(String e, Sequence sequence, int i) {
-		assertEqual(i, sequence.indexOf(FACTORY.getSequence(e)));
-	}
-
-	private static void testNotStarstWith(Sequence sequence, String testString) {
-		boolean doesStartWith = isStartWith(sequence, testString);
-		assertFalse(doesStartWith);
-	}
-
-	private static boolean isStartWith(Sequence sequence, String testString) {
-		Sequence testSequence = FACTORY.getSequence(testString);
-		return sequence.startsWith(testSequence);
-	}
-
-	private static void assertEqual(int a, int b) {
-		assertTrue(a == b);
-	}
-
-	private static void assertNotEqual(Object a, Object b) {
-		assertFalse(a.equals(b));
-	}
+	private static final SequenceFactory<Double> FACTORY = new SequenceFactory<>(
+			EmptyFeatureMapping.DOUBLE,
+			FormatterMode.INTELLIGENT);
 
 	@Test
-	public void testMatches01() {
-		Sequence sequence = FACTORY.getSequence("an");
+	void testMatches01() {
+		Sequence<Double> sequence = FACTORY.getSequence("an");
 
 		assertMatches(sequence, FACTORY.getSequence("an"));
 
@@ -70,8 +49,8 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void testMatches02() {
-		Sequence sequence = FACTORY.getSequence("a");
+	void testMatches02() {
+		Sequence<Double> sequence = FACTORY.getSequence("a");
 
 		assertMatches(sequence, FACTORY.getSequence("a"));
 
@@ -84,16 +63,15 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void testMatches03() throws IOException {
+	void testMatches03() throws IOException {
 		FormatterMode mode = FormatterMode.INTELLIGENT;
+		String name = "AT_hybrid.model";
 
-		InputStream stream = SequenceTest.class.getClassLoader().getResourceAsStream("AT_hybrid.model");
+		FileHandler handler = ClassPathFileHandler.INSTANCE;
+		FeatureMapping<Double> mapping =  DoubleFeatureMapping.load(name, handler, mode);
+		SequenceFactory<Double> factory = new SequenceFactory<>(mapping, mode);
 
-		FeatureModel model = new StandardFeatureModel(stream, mode);
-
-		SequenceFactory factory = new SequenceFactory(model, mode);
-
-		Sequence sequence = factory.getSequence("a[-continuant, -son]");
+		Sequence<Double> sequence = factory.getSequence("a[-continuant, -son]");
 
 		assertMatches(sequence, factory.getSequence("ap"));
 		assertMatches(sequence, factory.getSequence("at"));
@@ -103,15 +81,17 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void testMatches04() throws IOException {
+	void testMatches04() throws IOException {
 		FormatterMode mode = FormatterMode.INTELLIGENT;
 
-		InputStream stream = SequenceTest.class.getClassLoader().getResourceAsStream("AT_hybrid.model");
+		String name = "AT_hybrid.model";
 
-		FeatureModel model = new StandardFeatureModel(stream, mode);
-		SequenceFactory factory = new SequenceFactory(model, mode);
+		FileHandler handler = ClassPathFileHandler.INSTANCE;
+		FeatureMapping<Double> mapping =DoubleFeatureMapping.load(name, handler, mode);
+		SequenceFactory<Double> factory = new SequenceFactory<>(mapping, mode);
 
-		Sequence sequence = factory.getSequence("a[-continuant, +rel, -voice]");
+		Sequence<Double> sequence = factory.getSequence(
+				"a[-continuant, +rel, -voice]");
 
 		assertMatches(sequence, factory.getSequence("apf"));
 		assertMatches(sequence, factory.getSequence("ats"));
@@ -132,54 +112,46 @@ public class SequenceTest {
 		assertNotMatches(sequence, factory.getSequence("aa"));
 	}
 
-	private static void assertMatches(Sequence left, Sequence right) {
-		assertTrue("\'" + left + "\' does not match " + right, left.matches(right));
-	}
+	@Test
+	void testGet() {
+		Sequence<Double> received = FACTORY.getSequence("Sequences");
 
-	private static void assertNotMatches(Sequence left, Sequence right) {
-		assertFalse("\'" + left + "\' should not match " + right, left.matches(right));
+		Assertions.assertEquals(FACTORY.getSegment("S"), received.get(0));
+		Assertions.assertEquals(FACTORY.getSegment("e"), received.get(1));
+		Assertions.assertEquals(FACTORY.getSegment("q"), received.get(2));
+		Assertions.assertEquals(FACTORY.getSegment("s"), received.get(8));
+		Assertions.assertEquals(FACTORY.getSegment("S"), received.getFirst());
+		Assertions.assertEquals(FACTORY.getSegment("s"), received.getLast());
 	}
 
 	@Test
-	public void testGet() {
-		Sequence received = FACTORY.getSequence("Sequences");
-
-		assertEquals(FACTORY.getSegment("S"), received.get(0));
-		assertEquals(FACTORY.getSegment("e"), received.get(1));
-		assertEquals(FACTORY.getSegment("q"), received.get(2));
-		assertEquals(FACTORY.getSegment("s"), received.get(8));
-		assertEquals(FACTORY.getSegment("S"), received.getFirst());
-		assertEquals(FACTORY.getSegment("s"), received.getLast());
-	}
-
-	@Test
-	public void testAddSequence() {
-		Sequence received = FACTORY.getSequence("Sequ");
-		Sequence addition = FACTORY.getSequence("ence");
-		Sequence expected = FACTORY.getSequence("Sequence");
+	void testAddSequence() {
+		Sequence<Double> received = FACTORY.getSequence("Sequ");
+		Sequence<Double> addition = FACTORY.getSequence("ence");
+		Sequence<Double> expected = FACTORY.getSequence("Sequence");
 
 		received.add(addition);
 
-		assertEquals(expected, received);
+		Assertions.assertEquals(expected, received);
 	}
 
 	@Test
-	public void testAddArray() {
+	void testAddArray() {
 
-		Sequence received = FACTORY.getSequence("a");
+		Sequence<Double> received = FACTORY.getSequence("a");
 		received.add(FACTORY.getSegment("w"));
 		received.add(FACTORY.getSegment("o"));
 		received.add(FACTORY.getSegment("r"));
 		received.add(FACTORY.getSegment("d"));
 
-		Sequence expected = FACTORY.getSequence("aword");
+		Sequence<Double> expected = FACTORY.getSequence("aword");
 
-		assertEquals(expected, received);
+		Assertions.assertEquals(expected, received);
 	}
 
 	@Test
-	public void testEquals01() {
-		assertEquals("sardo", "sardo");
+	void testEquals01() {
+		Assertions.assertEquals("sardo", "sardo");
 
 		assertNotEqual("sardo", "sardox");
 		assertNotEqual("sardo", "sārdo");
@@ -190,44 +162,44 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void testEquals02() {
-		assertEquals("pʰāḱʰus", "pʰāḱʰus");
+	void testEquals02() {
+		Assertions.assertEquals("pʰāḱʰus", "pʰāḱʰus");
 		assertNotEqual("pʰāḱʰus", "bāḱʰus");
 	}
 
 	@Test
-	public void testSubsequence01() {
+	void testSubsequence01() {
 
-		Sequence sequence = FACTORY.getSequence("expiated");
-		Sequence expected = FACTORY.getSequence("iated");
-		Sequence received = sequence.subsequence(3);
+		Sequence<Double> sequence = FACTORY.getSequence("expiated");
+		Sequence<Double> expected = FACTORY.getSequence("iated");
+		Sequence<Double> received = sequence.subsequence(3);
 
-		assertEquals(expected, received);
+		Assertions.assertEquals(expected, received);
 	}
 
 	@Test
-	public void testSubsequence02() {
+	void testSubsequence02() {
 
-		Sequence sequence = FACTORY.getSequence("expiated");
-		Sequence expected = FACTORY.getSequence("iat");
-		Sequence received = sequence.subsequence(3, 6);
+		Sequence<Double> sequence = FACTORY.getSequence("expiated");
+		Sequence<Double> expected = FACTORY.getSequence("iat");
+		Sequence<Double> received = sequence.subsequence(3, 6);
 
-		assertEquals(expected, received);
+		Assertions.assertEquals(expected, received);
 	}
 
 	@Test
-	public void testSubsequence03() {
+	void testSubsequence03() {
 
-		Sequence sequence = FACTORY.getSequence("expiated");
-		Sequence expected = FACTORY.getSequence("xpiat");
-		Sequence received = sequence.subsequence(1, 6);
+		Sequence<Double> sequence = FACTORY.getSequence("expiated");
+		Sequence<Double> expected = FACTORY.getSequence("xpiat");
+		Sequence<Double> received = sequence.subsequence(1, 6);
 
-		assertEquals(expected, received);
+		Assertions.assertEquals(expected, received);
 	}
 
 	@Test
-	public void testIndexOf01() {
-		Sequence sequence = FACTORY.getSequence("expiated");
+	void testIndexOf01() {
+		Sequence<Double> sequence = FACTORY.getSequence("expiated");
 
 		testIndexOf("e", sequence, 0);
 		testIndexOf("ex", sequence, 0);
@@ -272,9 +244,9 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void testIndexOf02() {
+	void testIndexOf02() {
 		//                                01234567
-		Sequence sequence = FACTORY.getSequence("subverterunt");
+		Sequence<Double> sequence = FACTORY.getSequence("subverterunt");
 
 		assertEqual(-1, sequence.indexOf(FACTORY.getSequence("s"), 2));
 		assertEqual(0, sequence.indexOf(FACTORY.getSequence("s"), 0));
@@ -284,8 +256,8 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void testIndices03() {
-		Sequence sequence = FACTORY.getSequence("subverterunt");
+	void testIndices03() {
+		Sequence<Double> sequence = FACTORY.getSequence("subverterunt");
 
 		List<Integer> expected = new ArrayList<>();
 		expected.add(4);
@@ -293,139 +265,140 @@ public class SequenceTest {
 
 		List<Integer> received = sequence.indicesOf(FACTORY.getSequence("er"));
 
-		assertEquals(expected, received);
+		Assertions.assertEquals(expected, received);
 	}
 
 	@Test
-	public void testIndices04() {
-		Sequence sequence = FACTORY.getSequence("aonaontada");
+	void testIndices04() {
+		Sequence<Double> sequence = FACTORY.getSequence("aonaontada");
 
 		List<Integer> expected = new ArrayList<>();
 		expected.add(0);
 		expected.add(3);
 		List<Integer> received = sequence.indicesOf(FACTORY.getSequence("ao"));
 
-		assertEquals(expected, received);
+		Assertions.assertEquals(expected, received);
 	}
 
 	@Test
-	public void testRemove01() {
-		Sequence sequence = FACTORY.getSequence("abcdefghijk");
-		Sequence expected = FACTORY.getSequence("cdefghijk");
+	void testRemove01() {
+		Sequence<Double> sequence = FACTORY.getSequence("abcdefghijk");
+		Sequence<Double> expected = FACTORY.getSequence("cdefghijk");
 
-//		Sequence received = sequence.copy();
-		Sequence received = new BasicSequence(sequence);
-		Sequence removed = received.remove(0, 2);
+		//		Sequence<Double> received = sequence.copy();
+		Sequence<Double> received = new BasicSequence(sequence);
+		Sequence<Double> removed = received.remove(0, 2);
 
-		assertEquals(expected, received);
-		assertEquals(removed, FACTORY.getSequence("ab"));
+		Assertions.assertEquals(expected, received);
+		Assertions.assertEquals(removed, FACTORY.getSequence("ab"));
 	}
 
 	@Test
-	public void testRemove02() {
-		Sequence sequence = FACTORY.getSequence("abcdefghijk");
-		Sequence expected = FACTORY.getSequence("defghijk");
+	void testRemove02() {
+		Sequence<Double> sequence = FACTORY.getSequence("abcdefghijk");
+		Sequence<Double> expected = FACTORY.getSequence("defghijk");
 
-		Sequence received = new BasicSequence(sequence);
-		Sequence removed = received.remove(0, 3);
+		Sequence<Double> received = new BasicSequence(sequence);
+		Sequence<Double> removed = received.remove(0, 3);
 
-		assertEquals(expected, received);
-		assertEquals(removed, FACTORY.getSequence("abc"));
+		Assertions.assertEquals(expected, received);
+		Assertions.assertEquals(removed, FACTORY.getSequence("abc"));
 	}
 
 	@Test
-	public void testRemove03() {
-		Sequence sequence = FACTORY.getSequence("abcdefghijk");
-		Sequence expected = FACTORY.getSequence("adefghijk");
+	void testRemove03() {
+		Sequence<Double> sequence = FACTORY.getSequence("abcdefghijk");
+		Sequence<Double> expected = FACTORY.getSequence("adefghijk");
 
-		Sequence received = new BasicSequence(sequence);
-		Sequence removed = received.remove(1, 3);
+		Sequence<Double> received = new BasicSequence(sequence);
+		Sequence<Double> removed = received.remove(1, 3);
 
-		assertEquals(expected, received);
-		assertEquals(removed, FACTORY.getSequence("bc"));
+		Assertions.assertEquals(expected, received);
+		Assertions.assertEquals(removed, FACTORY.getSequence("bc"));
 	}
 
 	@Test
-	public void testRemove04() {
-		Sequence sequence = FACTORY.getSequence("abcdefghijk");
-		Sequence expected = FACTORY.getSequence("abcghijk");
+	void testRemove04() {
+		Sequence<Double> sequence = FACTORY.getSequence("abcdefghijk");
+		Sequence<Double> expected = FACTORY.getSequence("abcghijk");
 
-		Sequence received = new BasicSequence(sequence);
-		Sequence removed = received.remove(3, 6);
+		Sequence<Double> received = new BasicSequence(sequence);
+		Sequence<Double> removed = received.remove(3, 6);
 
-		assertEquals(expected, received);
-		assertEquals(removed, FACTORY.getSequence("def"));
+		Assertions.assertEquals(expected, received);
+		Assertions.assertEquals(removed, FACTORY.getSequence("def"));
 	}
 
 	@Test
-	public void testRemove05() {
-		Sequence sequence = FACTORY.getSequence("abcdefghijk");
-		Sequence expected = FACTORY.getSequence("abcdhijk");
+	void testRemove05() {
+		Sequence<Double> sequence = FACTORY.getSequence("abcdefghijk");
+		Sequence<Double> expected = FACTORY.getSequence("abcdhijk");
 
-		Sequence received = new BasicSequence(sequence);
-		Sequence removed = received.remove(4, 7);
+		Sequence<Double> received = new BasicSequence(sequence);
+		Sequence<Double> removed = received.remove(4, 7);
 
-		assertEquals(expected, received);
-		assertEquals(removed, FACTORY.getSequence("efg"));
-	}
-
-
-	@Test
-	public void testReplaceAllSequences01() {
-		Sequence sequence = FACTORY.getSequence("aoSaontada");
-		Sequence expected = FACTORY.getSequence("ouSountada");
-		Sequence received = sequence.replaceAll(FACTORY.getSequence("ao"), FACTORY.getSequence("ou"));
-
-		assertEquals(expected, received);
-	}
-
-
-	@Test
-	public void testReplaceAllSequences02() {
-		Sequence sequence = FACTORY.getSequence("farcical");
-		Sequence expected = FACTORY.getSequence("faarcicaal");
-		Sequence received = sequence.replaceAll(FACTORY.getSequence("a"), FACTORY.getSequence("aa"));
-
-		assertEquals(expected, received);
-	}
-
-
-	@Test
-	public void testReplaceAllSequences03() {
-		Sequence sequence = FACTORY.getSequence("farcical");
-		Sequence expected = FACTORY.getSequence("faearcicaeal");
-		Sequence received = sequence.replaceAll(FACTORY.getSequence("a"), FACTORY.getSequence("aea"));
-
-		assertEquals(expected, received);
-	}
-	
-	@Test
-	public void testReplaceAllSequences04() {
-		Sequence sequence = FACTORY.getSequence("onomotopaea");
-		Sequence expected = FACTORY.getSequence("ɔɤnɔɤmɔɤtɔɤpaea");
-		Sequence received = sequence.replaceAll(FACTORY.getSequence("o"), FACTORY.getSequence("ɔɤ"));
-
-		assertEquals(expected, received);
+		Assertions.assertEquals(expected, received);
+		Assertions.assertEquals(removed, FACTORY.getSequence("efg"));
 	}
 
 	@Test
-	public void testStartsWith01() {
-		Sequence sequence = FACTORY.getSequence("tekton");
+	void testReplaceAllSequences01() {
+		Sequence<Double> sequence = FACTORY.getSequence("aoSaontada");
+		Sequence<Double> expected = FACTORY.getSequence("ouSountada");
+		Sequence<Double> received = sequence.replaceAll(FACTORY.getSequence("ao"),
+				FACTORY.getSequence("ou"));
 
-		assertTrue(sequence.startsWith(FACTORY.getSequence("tekton")));
-		assertTrue(sequence.startsWith(FACTORY.getSequence("tekto")));
-		assertTrue(sequence.startsWith(FACTORY.getSequence("tekt")));
-		assertTrue(sequence.startsWith(FACTORY.getSequence("tek")));
-		assertTrue(sequence.startsWith(FACTORY.getSequence("te")));
+		Assertions.assertEquals(expected, received);
 	}
-	
-	@Test
-	public void testStartsWith02() {
-		Sequence sequence = FACTORY.getSequence("ton");
 
-		assertTrue(sequence.startsWith(FACTORY.getSequence("t")));
-		assertTrue(sequence.startsWith(FACTORY.getSequence("to")));
-		assertTrue(sequence.startsWith(FACTORY.getSequence("ton")));
+	@Test
+	void testReplaceAllSequences02() {
+		Sequence<Double> sequence = FACTORY.getSequence("farcical");
+		Sequence<Double> expected = FACTORY.getSequence("faarcicaal");
+		Sequence<Double> received = sequence.replaceAll(FACTORY.getSequence("a"),
+				FACTORY.getSequence("aa"));
+
+		Assertions.assertEquals(expected, received);
+	}
+
+	@Test
+	void testReplaceAllSequences03() {
+		Sequence<Double> sequence = FACTORY.getSequence("farcical");
+		Sequence<Double> expected = FACTORY.getSequence("faearcicaeal");
+		Sequence<Double> received = sequence.replaceAll(FACTORY.getSequence("a"),
+				FACTORY.getSequence("aea"));
+
+		Assertions.assertEquals(expected, received);
+	}
+
+	@Test
+	void testReplaceAllSequences04() {
+		Sequence<Double> sequence = FACTORY.getSequence("onomotopaea");
+		Sequence<Double> expected = FACTORY.getSequence("ɔɤnɔɤmɔɤtɔɤpaea");
+		Sequence<Double> received = sequence.replaceAll(FACTORY.getSequence("o"),
+				FACTORY.getSequence("ɔɤ"));
+
+		Assertions.assertEquals(expected, received);
+	}
+
+	@Test
+	void testStartsWith01() {
+		Sequence<Double> sequence = FACTORY.getSequence("tekton");
+
+		Assertions.assertTrue(sequence.startsWith(FACTORY.getSequence("tekton")));
+		Assertions.assertTrue(sequence.startsWith(FACTORY.getSequence("tekto")));
+		Assertions.assertTrue(sequence.startsWith(FACTORY.getSequence("tekt")));
+		Assertions.assertTrue(sequence.startsWith(FACTORY.getSequence("tek")));
+		Assertions.assertTrue(sequence.startsWith(FACTORY.getSequence("te")));
+	}
+
+	@Test
+	void testStartsWith02() {
+		Sequence<Double> sequence = FACTORY.getSequence("ton");
+
+		Assertions.assertTrue(sequence.startsWith(FACTORY.getSequence("t")));
+		Assertions.assertTrue(sequence.startsWith(FACTORY.getSequence("to")));
+		Assertions.assertTrue(sequence.startsWith(FACTORY.getSequence("ton")));
 
 		testNotStarstWith(sequence, "tons");
 		testNotStarstWith(sequence, "tekton");
@@ -435,12 +408,49 @@ public class SequenceTest {
 		testNotStarstWith(sequence, "te");
 	}
 
-
 	@Test
-	public void testStartsWith03() {
-		Sequence sequence = FACTORY.getSequence("elə");
+	void testStartsWith03() {
+		Sequence<Double> sequence = FACTORY.getSequence("elə");
 
-		assertFalse(sequence.startsWith(FACTORY.getSequence("eʔo")));
+		Assertions.assertFalse(sequence.startsWith(FACTORY.getSequence("eʔo")));
+	}
+
+	private static void testIndexOf(String e, Sequence<Double> sequence,
+			int i) {
+		assertEqual(i, sequence.indexOf(FACTORY.getSequence(e)));
+	}
+
+	private static void testNotStarstWith(Sequence<Double> sequence,
+			String testString) {
+		boolean doesStartWith = isStartWith(sequence, testString);
+		Assertions.assertFalse(doesStartWith);
+	}
+
+	private static boolean isStartWith(Sequence<Double> sequence,
+			String testString) {
+		Sequence<Double> testSequence = FACTORY.getSequence(testString);
+		return sequence.startsWith(testSequence);
+	}
+
+	private static void assertEqual(int a, int b) {
+		Assertions.assertEquals(a, b);
+	}
+
+	private static void assertNotEqual(java.io.Serializable a,
+			java.io.Serializable b) {
+		Assertions.assertFalse(a.equals(b));
+	}
+
+	private static void assertMatches(Sequence<Double> left,
+			Sequence<Double> right) {
+		Assertions.assertTrue(left.matches(right),
+				"\'" + left + "\' does not match " + right);
+	}
+
+	private static void assertNotMatches(Sequence<Double> left,
+			Sequence<Double> right) {
+		Assertions.assertFalse(left.matches(right),
+				"\'" + left + "\' should not match " + right);
 	}
 }
 

@@ -19,13 +19,15 @@ package org.didelphis.common.structures.tables;
  * Created: 11/30/2014
  */
 public interface Table<E> {
-	E get(int i, int j);
+	
+	E get(int col, int row);
 
-	void set(E element, int i, int j);
+	void set(int col, int row, E element);
 
-	int getNumberRows();
+	int getRows();
 
-	int getNumberColumns();
+	int getColumns();
 
-	String getPrettyTable();
+	@Deprecated
+	String formattedTable();
 }

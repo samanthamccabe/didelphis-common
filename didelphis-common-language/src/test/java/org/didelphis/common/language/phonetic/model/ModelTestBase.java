@@ -14,22 +14,28 @@
 
 package org.didelphis.common.language.phonetic.model;
 
+import org.didelphis.common.io.ClassPathFileHandler;
+import org.didelphis.common.io.FileHandler;
 import org.didelphis.common.language.enums.FormatterMode;
 import org.didelphis.common.language.phonetic.SequenceFactory;
-
-import java.io.InputStream;
+import org.didelphis.common.language.phonetic.model.doubles.DoubleFeatureMapping;
+import org.didelphis.common.language.phonetic.model.interfaces.FeatureMapping;
+import org.didelphis.common.language.phonetic.model.interfaces.FeatureModel;
+import org.didelphis.common.language.phonetic.model.loaders.FeatureModelLoader;
 
 /**
  * Created by samantha on 10/10/15.
  */
-public  class ModelTestBase {
+public abstract class ModelTestBase {
 
-	protected static SequenceFactory loadFactory(String resourceName, FormatterMode mode) {
-		return new SequenceFactory(loadModel(resourceName, mode), mode);
+	protected static SequenceFactory<Double> loadFactory(String resourceName, FormatterMode mode) {
+		return new SequenceFactory<>(loadMapping(resourceName, mode), mode);
 	}
 
-	protected static StandardFeatureModel loadModel(String resourceName, FormatterMode mode) {
-		InputStream stream = ModelTestBase.class.getClassLoader().getResourceAsStream(resourceName);
-		return new StandardFeatureModel(stream, mode);
+	protected static FeatureMapping<Double> loadMapping(String resourceName, FormatterMode mode) {
+//		InputStream stream = ModelTestBase.class.getClassLoader().getResourceAsStream(resourceName);
+//		return new DefaultFeatureMapping<>(stream, mode);
+		FileHandler handler = ClassPathFileHandler.INSTANCE;
+		return DoubleFeatureMapping.load(resourceName, handler, mode);
 	}
 }
