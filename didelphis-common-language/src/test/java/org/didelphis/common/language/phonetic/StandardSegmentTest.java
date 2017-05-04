@@ -21,12 +21,15 @@ import org.didelphis.common.language.phonetic.features.FeatureArray;
 import org.didelphis.common.language.phonetic.model.doubles.DoubleFeatureMapping;
 import org.didelphis.common.language.phonetic.segments.Segment;
 import org.didelphis.common.language.phonetic.sequences.SequenceTest;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.regex.Pattern;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Samantha Fiona Morrigan McCabe
@@ -46,7 +49,7 @@ public class StandardSegmentTest {
 		String string = "[-continuant, +release]";
 		Segment<Double> received = FACTORY.getSegment(string);
 		Segment<Double> expected = FACTORY.getSegment("[-continuant, +release]");
-		Assertions.assertEquals(expected, received);
+		assertEquals(expected, received);
 	}
 
 	@Test
@@ -54,7 +57,7 @@ public class StandardSegmentTest {
 		Segment<Double> alias = FACTORY.getSegment("[high]");
 		Segment<Double> segment = FACTORY.getSegment("[+high]");
 
-		Assertions.assertTrue(alias.matches(segment));
+		assertTrue(alias.matches(segment));
 	}
 
 	@Test
@@ -62,7 +65,7 @@ public class StandardSegmentTest {
 		Segment<Double> alias = FACTORY.getSegment("[mid]");
 		Segment<Double> segment = FACTORY.getSegment("[0:high]");
 
-		Assertions.assertTrue(alias.matches(segment));
+		assertTrue(alias.matches(segment));
 	}
 
 	@Test
@@ -70,7 +73,7 @@ public class StandardSegmentTest {
 		Segment<Double> alias = FACTORY.getSegment("[low]");
 		Segment<Double> segment = FACTORY.getSegment("[-high]");
 
-		Assertions.assertTrue(alias.matches(segment));
+		assertTrue(alias.matches(segment));
 	}
 
 	@Test
@@ -78,7 +81,7 @@ public class StandardSegmentTest {
 		Segment<Double> alias = FACTORY.getSegment("[retroflex]");
 		Segment<Double> segment = FACTORY.getSegment("[4:coronal, -distributed]");
 
-		Assertions.assertTrue(alias.matches(segment));
+		assertTrue(alias.matches(segment));
 	}
 
 	@Test
@@ -86,7 +89,7 @@ public class StandardSegmentTest {
 		Segment<Double> alias = FACTORY.getSegment("[palatal]");
 		Segment<Double> segment = FACTORY.getSegment("[4:coronal, +distributed]");
 
-		Assertions.assertTrue(alias.matches(segment));
+		assertTrue(alias.matches(segment));
 	}
 
 	@Test
@@ -99,16 +102,16 @@ public class StandardSegmentTest {
 
 		Segment<Double> received = FACTORY.getSegment("[-continuant, -son]");
 
-		Assertions.assertTrue(segmentP.matches(received));
-		Assertions.assertTrue(segmentT.matches(received));
-		Assertions.assertTrue(segmentK.matches(received));
+		assertTrue(segmentP.matches(received));
+		assertTrue(segmentT.matches(received));
+		assertTrue(segmentK.matches(received));
 
-		Assertions.assertTrue(received.matches(segmentP));
-		Assertions.assertTrue(received.matches(segmentT));
-		Assertions.assertTrue(received.matches(segmentK));
+		assertTrue(received.matches(segmentP));
+		assertTrue(received.matches(segmentT));
+		assertTrue(received.matches(segmentK));
 
-		Assertions.assertFalse(segmentA.matches(received));
-		Assertions.assertFalse(received.matches(segmentA));
+		assertFalse(segmentA.matches(received));
+		assertFalse(received.matches(segmentA));
 	}
 
 	@Test
@@ -116,8 +119,8 @@ public class StandardSegmentTest {
 		Segment<Double> a = FACTORY.getSegment("a");
 		Segment<Double> n = FACTORY.getSegment("n");
 
-		Assertions.assertFalse(a.matches(n), "a matches n");
-		Assertions.assertFalse(n.matches(a), "n matches a");
+		assertFalse(a.matches(n), "a matches n");
+		assertFalse(n.matches(a), "n matches a");
 	}
 
 	@Test
@@ -127,8 +130,8 @@ public class StandardSegmentTest {
 
 		Segment<Double> a = FACTORY.getSegment("a");
 
-		Assertions.assertTrue(a.matches(segment));
-		Assertions.assertTrue(segment.matches(a));
+		assertTrue(a.matches(segment));
+		assertTrue(segment.matches(a));
 	}
 
 	@Test
@@ -136,8 +139,8 @@ public class StandardSegmentTest {
 		Segment<Double> x = FACTORY.getSegment("x");
 		Segment<Double> e = FACTORY.getSegment("e");
 
-		Assertions.assertFalse(e.matches(x));
-		Assertions.assertFalse(x.matches(e));
+		assertFalse(e.matches(x));
+		assertFalse(x.matches(e));
 	}
 
 	@Test
@@ -145,7 +148,7 @@ public class StandardSegmentTest {
 		Segment<Double> p = FACTORY.getSegment("p");
 		Segment<Double> b = FACTORY.getSegment("b");
 
-		Assertions.assertTrue(p.compareTo(b) == -1);
+		assertEquals(p.compareTo(b), -1);
 	}
 
 	@Test
@@ -153,7 +156,7 @@ public class StandardSegmentTest {
 		Segment<Double> p = FACTORY.getSegment("p");
 		Segment<Double> t = FACTORY.getSegment("t");
 
-		Assertions.assertTrue(p.compareTo(t) == 1);
+		assertEquals(1, p.compareTo(t));
 	}
 
 	@Test
@@ -166,7 +169,7 @@ public class StandardSegmentTest {
 		double received = features.get(5);
 		double expected = -1.0;
 
-		Assertions.assertEquals(expected, received, 0.00001);
+		assertEquals(expected, received, 0.00001);
 	}
 
 	@Test
@@ -189,7 +192,7 @@ public class StandardSegmentTest {
 		double expected = -1.0;
 		double received = features.get(6);
 
-		Assertions.assertEquals(expected, received, 0.00001);
+		assertEquals(expected, received, 0.00001);
 	}
 
 	@Test
@@ -285,6 +288,6 @@ public class StandardSegmentTest {
 
 		message = INFINITY_PATTERN.matcher(message).replaceAll("____");
 		message = DECIMAL_PATTERN.matcher(message).replaceAll("$1 $2");
-		Assertions.assertTrue(alter.matches(matching), message);
+		assertTrue(alter.matches(matching), message);
 	}
 }

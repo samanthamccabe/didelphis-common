@@ -1,10 +1,11 @@
 package org.didelphis.common.structures.maps;
 
 import org.didelphis.common.structures.maps.interfaces.TwoKeyMap;
-import org.junit.Assert;
 
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 /**
@@ -16,21 +17,21 @@ public abstract class TwoKeyMapTestBase {
 	
 	static <T, U, V> void testGet(TwoKeyMap<T, U, V> map, T k1, U k2, V v) {
 		String string = "key (" + k1 + ',' + k2 + ") retrieved unexpected value";
-		Assert.assertThat(string, map.get(k1, k2), is(v));
+		assertEquals(v, map.get(k1, k2), string);
 	}
 
 	static <T, U, V> void testNullGet(TwoKeyMap<T, U, V> map, T k1, U k2) {
 		String string = "key (" + k1 + ',' + k2 + ") should not exist";
-		Assert.assertThat(string, map.get(k1, k2), nullValue());
+		assertNull(map.get(k1, k2), string);
 	}
 
 	static <T, U, V> void testContains(TwoKeyMap<T, U, V> map, T k1, U k2) {
 		String string = "key (" + k1 + ',' + k2 + ") should be found in map";
-		Assert.assertThat(string, map.contains(k1, k2), is(true));
+		assertTrue(map.contains(k1, k2),string);
 	}
 
 	static <T, U, V> void testNotContains(TwoKeyMap<T, U, V> map, T k1, U k2) {
 		String string = "key (" + k1 + ',' + k2 + ") should *not* be found in map";
-		Assert.assertThat(string, map.contains(k1, k2), is(false));
+		assertFalse(map.contains(k1, k2),string);
 	}
 }

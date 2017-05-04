@@ -20,6 +20,13 @@ package org.didelphis.common.structures.tuples;
 import java.util.Objects;
 
 /**
+ * {@code Tuple} is a class which should be used judiciously. It's main purpose 
+ * is to help provide views of key sets in two-key maps.
+ *
+ * In many contexts, use of a class like this might indicate poor design. As it
+ * is, {@code Tuple} is used to provide an {@code Iterator} for two-key maps.
+ *
+ *
  * Samantha Fiona Morrigan McCabe
  * Created: 4/10/2016
  */
@@ -31,6 +38,11 @@ public class Tuple<L, R> {
 	public Tuple(L left, R right) {
 		this.left = left;
 		this.right = right;
+	}
+
+	public Tuple(Tuple<L, R> tuple) {
+		left = tuple.left;
+		right = tuple.right;
 	}
 
 	public L getLeft() {

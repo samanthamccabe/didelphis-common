@@ -19,7 +19,6 @@ package org.didelphis.common.language.phonetic;
 import org.didelphis.common.language.enums.FormatterMode;
 import org.didelphis.common.language.phonetic.features.FeatureArray;
 import org.didelphis.common.language.phonetic.features.SparseFeatureArray;
-import org.didelphis.common.language.phonetic.model.empty.EmptyFeatureMapping;
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureMapping;
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureModel;
 import org.didelphis.common.language.phonetic.segments.Segment;
@@ -84,12 +83,6 @@ public class SequenceFactory<N extends Number> {
 		return formatterMode;
 	}
 
-	private Segment<N> defineBorderSegment(FeatureModel<N> specification, FeatureArray<N> standardArray) {
-		return featureMapping.containsKey("#") 
-			  ? featureMapping.getSegment("#")
-			  : new StandardSegment<>("#", standardArray, specification);
-	}
-
 	public void reserve(String string) {
 		reservedStrings.add(string);
 	}
@@ -116,14 +109,12 @@ public class SequenceFactory<N extends Number> {
 		} else if (string.equals(".")) {
 			return dotSegment;
 		} else {
-//			return SegmenterUtil.getSegment(string,
-//					featureMapping, reservedStrings, formatterMode);
 			return featureMapping.getSegment(string);
 		}
 	}
 
-	public Lexicon getLexiconFromSingleColumn(Iterable<String> list) {
-		Lexicon lexicon = new Lexicon();
+	public Lexicon<N> getLexiconFromSingleColumn(Iterable<String> list) {
+		Lexicon<N> lexicon = new Lexicon<>();
 		for (String entry : list) {
 			Sequence<N> sequence = getSequence(entry);
 			lexicon.add(sequence);
@@ -131,8 +122,8 @@ public class SequenceFactory<N extends Number> {
 		return lexicon;
 	}
 
-	public Lexicon getLexiconFromSingleColumn(String... list) {
-		Lexicon lexicon = new Lexicon();
+	public Lexicon<N> getLexiconFromSingleColumn(String... list) {
+		Lexicon<N> lexicon = new Lexicon<N>();
 		for (String entry : list) {
 			Sequence<N> sequence = getSequence(entry);
 			lexicon.add(sequence);
@@ -140,10 +131,10 @@ public class SequenceFactory<N extends Number> {
 		return lexicon;
 	}
 
-	public Lexicon getLexicon(Iterable<List<String>> lists) {
-		Lexicon lexicon = new Lexicon();
+	public Lexicon<N> getLexicon(Iterable<List<String>> lists) {
+		Lexicon<N> lexicon = new Lexicon<>();
 
-		for (List<String> row : lists) {
+		for (Iterable<String> row : lists) {
 			List<Sequence<N>> lexRow = new ArrayList<>();
 			for (String entry : row) {
 				Sequence<N> sequence = getSequence(entry);
@@ -167,7 +158,7 @@ public class SequenceFactory<N extends Number> {
 			Collection<String> keys = new ArrayList<>();
 			keys.addAll(variableStore.getKeys());
 			keys.addAll(reservedStrings);
-			// nota bene:   
+			
 			return SegmenterUtil.getSequence(word, featureMapping, keys, formatterMode);
 		}
 	}
@@ -196,8 +187,7 @@ public class SequenceFactory<N extends Number> {
 
 	public String getBestMatch(String tail) {
 
-		Collection<String> keys = getSpecialStrings();
-
+		Iterable<String> keys = getSpecialStrings();
 		String bestMatch = "";
 		for (String key : keys) {
 			if (tail.startsWith(key) && bestMatch.length() < key.length()) {

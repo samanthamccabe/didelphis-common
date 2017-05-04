@@ -17,34 +17,61 @@
 
 package org.didelphis.common.structures.maps;
 
-import org.didelphis.common.structures.maps.interfaces.TwoKeyMap;
+import org.didelphis.common.structures.contracts.Delegating;
 import org.didelphis.common.structures.maps.interfaces.TwoKeyMultiMap;
 
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Samantha Fiona Morrigan McCabe
  * Created: 4/10/2016
  */
-public class TwoKeyMultiHashMap<T, U, V>
-		extends TwoKeyHashMap<T, U, Set<V>>
+public class GeneralTwoKeyMultiMap<T, U, V> 
+		extends GeneralTwoKeyMap<T, U, Collection<V>>
 		implements TwoKeyMultiMap<T, U, V> {
+
+	private static final int HASH_ID = 0x50de3d56;
 	
-	public TwoKeyMultiHashMap() {}
+	public GeneralTwoKeyMultiMap() {
+	}
+
+	public GeneralTwoKeyMultiMap(Map<T, Map<U, Collection<V>>> delegateMap) {
+		super(delegateMap);
+	}
 	
-	public TwoKeyMultiHashMap(TwoKeyMap<T, U, Set<V>> map) {
-		super(map);
+	public GeneralTwoKeyMultiMap(GeneralTwoKeyMultiMap<T, U, V> map) {
+		this(MapUtils.copyMultiMap(map.getDelegate()));
+	}
+
+	@Override
+	public void add(T k1, U k2, V value) {
+		if (contains(k1, k2)) {
+			get(k1, k2).add(value);
+		} else {
+			Collection<V> set = new HashSet<>();
+			set.add(value);
+			put(k1, k2, set);
+		}
 	}
 	
 	@Override
-	public void add(T k1, U k2, V value) {
-		if (contains(k1,k2)) {
-			get(k1,k2).add(value);
-		} else {
-			Set<V> set = new HashSet<>();
-			set.add(value);
-			put(k1,k2,set);
-		}
+	public int hashCode() {
+		return HASH_ID * Objects.hash(getDelegate());
+	}
+	
+	@Override
+	public boolean equals(Object object) {
+		if (object == this) return true;
+		if (!(object instanceof GeneralTwoKeyMultiMap)) return false;
+		Delegating<?> map = (Delegating<?>) object;
+		return getDelegate().equals(map.getDelegate());
+	}
+	
+	@Override
+	public String toString() {
+		return getClass().getName() + "{"+getDelegate()+"}";
 	}
 }

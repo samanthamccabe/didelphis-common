@@ -18,15 +18,16 @@ import org.didelphis.common.language.enums.ParseDirection;
 import org.didelphis.common.language.machines.interfaces.MachineMatcher;
 import org.didelphis.common.language.machines.interfaces.MachineParser;
 import org.didelphis.common.language.machines.interfaces.StateMachine;
+import org.didelphis.common.structures.tuples.Triple;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Samantha Fiona Morrigan McCabe
@@ -61,28 +62,26 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 		Graph<T> copy  = new Graph<>(graph);
 
 		graph.clear();
-		for (Map.Entry<String, Map<T, Set<String>>> mapEntry : copy.entrySet()) {
-			for (Map.Entry<T, Set<String>> entry : mapEntry.getValue().entrySet()) {
-				T arc = entry.getKey();
-				Set<String> value = entry.getValue();
+//		for (Map.Entry<String, Map<T, Collection<String>>> mapEntry : copy.entrySet()) {
+//			for (Map.Entry<T, Collection<String>> entry : mapEntry.getValue().entrySet()) {
+		for (Triple<String, T, Collection<String>> triple : copy) {
+			
+		T arc = triple.getSecondElement();
+				Collection<String> targets = triple.getThirdElement();
 				// lambda / epsilon transition
-				if (Objects.equals(arc,parser.epsilon())) {
-						graph.put(mapEntry.getKey(), parser.epsilon(), value);
+				String source = triple.getFirstElement();
+				if (Objects.equals(arc, parser.epsilon())) {
+						graph.put(source, parser.epsilon(), targets);
 				} else if (parser.getSpecials().containsKey(arc.toString())) {
-					Collection<Integer> lengths = new HashSet<>();
-					for (T special : parser.getSpecials().get(arc.toString())) {
-						lengths.add(parser.lengthOf(special));
-					}
 					T dot = parser.getDot();
-					for (Integer length : lengths) {
-						buildDotChain(graph,
-								mapEntry.getKey(), value, length, dot);
+					for (Integer length :  collectLengths(parser, arc)) {
+						buildDotChain(graph, source, targets, length, dot);
 					}
 				} else {
-					graph.put(mapEntry.getKey(), parser.getDot(), value);
+					graph.put(source, parser.getDot(), targets);
 				}
 			}
-		}
+		
 
 		if (positive instanceof StandardStateMachine) {
 			for (StateMachine<T> machine : ((StandardStateMachine<T>) positive).getMachinesMap().values()) {
@@ -95,6 +94,14 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 				}
 			}
 		}
+	}
+
+	private static <T> Set<Integer> collectLengths(MachineParser<T> parser, T arc) {
+		return parser.getSpecials()
+				.get(arc.toString())
+				.stream()
+				.map(parser::lengthOf)
+				.collect(Collectors.toSet());
 	}
 
 	private NegativeStateMachine(String id, StateMachine<T> negative, StateMachine<T> positive) {
@@ -161,7 +168,7 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 				'}';
 	}
 
-	private static <T> void buildDotChain(Graph<T> graph, String key, Set<String> endValues, int length, T dot) {
+	private static <T> void buildDotChain(Graph<T> graph, String key, Collection<String> endValues, int length, T dot) {
 		String thisState = key;
 		for (int i = 0; i < length - 1; i++) {
 			String nextState = key + '-' + i;

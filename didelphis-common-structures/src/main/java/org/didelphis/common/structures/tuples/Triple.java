@@ -20,6 +20,12 @@ package org.didelphis.common.structures.tuples;
 import java.util.Objects;
 
 /**
+ * Triple is a class which should be used judiciously. It's main purpose is to
+ * help provide views of keys-value in two-key maps, and of the arcs in a graph.
+ * 
+ * In many contexts, use of a class like this might indicate poor design. As it
+ * is, {@code Triple} is used to provide an {@code Iterator} for two-key maps.
+ * 
  * Samantha Fiona Morrigan McCabe
  * Created: 4/10/2016
  */

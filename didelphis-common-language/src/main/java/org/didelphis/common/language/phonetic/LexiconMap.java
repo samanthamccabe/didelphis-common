@@ -17,32 +17,33 @@ package org.didelphis.common.language.phonetic;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Samantha Fiona Morrigan McCabe
  * Created: 1/16/2015
  */
-public class LexiconMap {
+public class LexiconMap<N extends Number> {
 
 	private final Map<String, String>  paths;
-	private final Map<String, Lexicon> lexicons;
+	private final Map<String, Lexicon<N>> lexicons;
 
 	public LexiconMap() {
 		paths = new LinkedHashMap<>();
 		lexicons = new LinkedHashMap<>();
 	}
 
-	public void addLexicon(String handle, String path, Lexicon words) {
+	public void addLexicon(String handle, String path, Lexicon<N> words) {
 		paths.put(handle, path);
 		lexicons.put(handle, words);
 	}
 
-	public void addAll(LexiconMap m) {
-		paths.putAll(m.paths);
-		lexicons.putAll(m.lexicons);
+	public void addAll(LexiconMap<N> map) {
+		paths.putAll(map.paths);
+		lexicons.putAll(map.lexicons);
 	}
 
-	public Lexicon getLexicon(String handle) {
+	public Lexicon<N> getLexicon(String handle) {
 		return lexicons.get(handle);
 	}
 
@@ -58,11 +59,11 @@ public class LexiconMap {
 		return lexicons.keySet();
 	}
 
-	public Collection<Lexicon> values() {
+	public Collection<Lexicon<N>> values() {
 		return lexicons.values();
 	}
 
-	public Lexicon remove(String handle) {
+	public Lexicon<N> remove(String handle) {
 		paths.remove(handle);
 		return lexicons.remove(handle);
 	}
@@ -70,5 +71,19 @@ public class LexiconMap {
 	@Override
 	public String toString() {
 		return "LexiconMap:" + lexicons;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof LexiconMap)) return false;
+		LexiconMap<?> that = (LexiconMap<?>) o;
+		return Objects.equals(paths, that.paths)
+		       && Objects.equals(lexicons, that.lexicons);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(paths, lexicons);
 	}
 }

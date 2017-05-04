@@ -161,11 +161,11 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 					indices.addAll(indicesToCheck);
 				}
 
-				if (graph.containsKey(currentNode)) {
+				if (graph.getDelegate().containsKey(currentNode)) {
 					for (Integer mIndex : indicesToCheck) {
 						// ----------------------------------------------------
-						Map<T, Set<String>> map = graph.get(currentNode);
-						for (Map.Entry<T, Set<String>> entry : map.entrySet()) {
+						Map<T, Collection<String>> map = graph.getDelegate().get(currentNode);
+						for (Map.Entry<T, Collection<String>> entry : map.entrySet()) {
 							T arc = entry.getKey();
 							for (String node : entry.getValue()) {
 								int match = matcher.match(target, arc, mIndex);
@@ -181,11 +181,6 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 			swap = new ArrayList<>();
 		}
 		return indices;
-	}
-
-	public Graph<T> getGraph() {
-		//noinspection ReturnOfCollectionOrArrayField
-		return graph;
 	}
 
 	@Override

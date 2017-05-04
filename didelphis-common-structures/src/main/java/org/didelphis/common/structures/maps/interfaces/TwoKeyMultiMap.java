@@ -17,13 +17,13 @@
 
 package org.didelphis.common.structures.maps.interfaces;
 
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * Samantha Fiona Morrigan McCabe
  * Created: 4/10/2016
  */
-public interface TwoKeyMultiMap<T, U, V> extends TwoKeyMap<T, U, Set<V>> {
+public interface TwoKeyMultiMap<T, U, V> extends TwoKeyMap<T, U, Collection<V>> {
 
 	/**
 	 * Inserts a new value under the two keys

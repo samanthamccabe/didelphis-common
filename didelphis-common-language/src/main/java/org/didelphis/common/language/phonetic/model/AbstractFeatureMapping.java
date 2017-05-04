@@ -43,8 +43,6 @@ public abstract class AbstractFeatureMapping<N extends Number>
 
 	private static final transient Logger LOGGER = LoggerFactory.getLogger(AbstractFeatureMapping.class);
 
-//	public static final FeatureModel<?> EMPTY_MODEL = new AbstractFeatureMapping();
-	
 	private final FeatureModel<N> featureModel;
 	
 	private final Map<String, FeatureArray<N>> featureMap;

@@ -52,7 +52,8 @@ public class VariableStore {
 		this.segmenter = segmenter;
 		variables = new LinkedHashMap<>(INITIAL_CAPACITY);
 	}
-	private VariableStore(VariableStore otherStore) {
+
+	public VariableStore(VariableStore otherStore) {
 		segmenter = otherStore.segmenter;
 		variables = new HashMap<>(otherStore.variables);
 	}

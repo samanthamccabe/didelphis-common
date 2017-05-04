@@ -25,15 +25,16 @@ import org.didelphis.common.language.machines.sequences.SequenceParser;
 import org.didelphis.common.language.phonetic.SequenceFactory;
 import org.didelphis.common.language.phonetic.model.doubles.DoubleFeatureMapping;
 import org.didelphis.common.language.phonetic.sequences.Sequence;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Samantha Fiona Morrigan McCabe
@@ -45,7 +46,7 @@ public class StandardStateMachineModelTest {
 
 	private static SequenceFactory<Double> factory;
 
-	@BeforeClass
+	@BeforeAll
 	public static void loadModel() {
 		String name = "AT_hybrid.model";
 
@@ -56,9 +57,9 @@ public class StandardStateMachineModelTest {
 		factory = new SequenceFactory<>(DoubleFeatureMapping.load(name, handler, mode), mode);
 	}
 	
-	@Test(expected = ParseException.class)
-	public void testBasicStateMachine00() {
-		getMachine("[]");
+	@Test
+	void testBasicStateMachine00() {
+		assertThrows(ParseException.class, () -> getMachine("[]"));
 	}
 
 	@Test
@@ -290,13 +291,15 @@ public class StandardStateMachineModelTest {
 	private static void test(StateMachine<Sequence<Double>> stateMachine,
 			String target) {
 		Collection<Integer> matchIndices = testMachine(stateMachine, target);
-		assertFalse("Machine failed to accept input: " + target, matchIndices.isEmpty());
+		String message = "Machine failed to accept input: " + target;
+		assertFalse(matchIndices.isEmpty(),message);
 	}
 
 	private static void fail(StateMachine<Sequence<Double>> stateMachine,
 			String target) {
 		Collection<Integer> matchIndices = testMachine(stateMachine, target);
-		assertTrue("Machine accepted input it should not have: " + target, matchIndices.isEmpty());
+		String message = "Machine accepted input it should not have: " + target;
+		assertTrue(matchIndices.isEmpty(), message);
 	}
 
 	private static Collection<Integer> testMachine(

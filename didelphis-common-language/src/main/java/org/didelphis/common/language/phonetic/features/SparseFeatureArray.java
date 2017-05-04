@@ -17,10 +17,13 @@ package org.didelphis.common.language.phonetic.features;
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureModel;
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureSpecification;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by samantha on 3/27/16.
@@ -39,7 +42,10 @@ public final class SparseFeatureArray<N extends Number>
 	public SparseFeatureArray(List<N> list, FeatureModel<N> featureModel) {
 		this(featureModel);
 		for (int i = 0; i < list.size(); i++) {
-			features.put(i, list.get(i));
+			N value = list.get(i);
+			if (value != null) {
+				features.put(i, value);
+			}
 		}
 	}
 
@@ -145,7 +151,10 @@ public final class SparseFeatureArray<N extends Number>
 
 	@Override
 	public Iterator<N> iterator() {
-		return features.values().iterator();
+		final List<N> list = new ArrayList<>(size());
+		Collections.fill(list, null);
+		features.forEach(list::set);
+		return list.iterator();
 	}
 
 	@Override
@@ -165,13 +174,6 @@ public final class SparseFeatureArray<N extends Number>
 	}
 
 	@Override
-	public int hashCode() {
-		int result = features.hashCode();
-		result = 31 * result + features.hashCode();
-		return result;
-	}
-
-	@Override
 	public FeatureModel<N> getFeatureModel() {
 		return featureModel;
 	}
@@ -179,6 +181,11 @@ public final class SparseFeatureArray<N extends Number>
 	@Override
 	public FeatureSpecification getSpecification() {
 		return featureModel;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(features, features.size(), size());
 	}
 
 	private void indexCheck(int index) {

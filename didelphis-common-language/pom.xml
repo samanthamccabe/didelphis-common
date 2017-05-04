@@ -5,7 +5,7 @@
     <parent>
         <artifactId>didelphis-common</artifactId>
         <groupId>org.didelphis.common</groupId>
-        <version>${didelphis-common.version}</version>
+        <version>0.1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,19 +15,19 @@
         <dependency>
             <groupId>org.didelphis.common</groupId>
             <artifactId>didelphis-common-utilities</artifactId>
-            <version>${didelphis-common.version}</version>
+            <version>0.1.0-SNAPSHOT</version>
         </dependency>
         
         <dependency>
             <groupId>org.didelphis.common</groupId>
             <artifactId>didelphis-common-io</artifactId>
-            <version>${didelphis-common.version}</version>
+            <version>0.1.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.didelphis.common</groupId>
             <artifactId>didelphis-common-structures</artifactId>
-            <version>${didelphis-common.version}</version>
+            <version>0.1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

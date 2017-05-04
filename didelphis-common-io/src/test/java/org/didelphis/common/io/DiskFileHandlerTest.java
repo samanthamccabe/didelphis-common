@@ -13,9 +13,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
  * Created by samantha on 3/16/17.
@@ -39,8 +38,7 @@ class DiskFileHandlerTest {
 		}
 
 		CharSequence sequence = handler.read(filePath);
-		
-		assertThat(payload, is(sequence.toString()));
+		assertEquals(payload, sequence.toString());
 		
 		// If deleting the file immediately fails, attempt to delete it on
 		// JVM shutdown, when the tests conclude
@@ -59,7 +57,7 @@ class DiskFileHandlerTest {
 		
 		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 			String collect = reader.lines().collect(Collectors.joining("\n"));
-			assertThat(collect, is(payload));
+			assertEquals(payload, collect);
 		} catch (FileNotFoundException e) {
 			LOGGER.error("Failed to read from file {}, file not found", filePath, e);
 		} catch (IOException e) {
@@ -75,8 +73,8 @@ class DiskFileHandlerTest {
 	
 	@Test
 	void testEquals() {
-		assertThat(new DiskFileHandler("UTF-8"), is(handler));
-		assertThat(new DiskFileHandler("ISO-8869-1"), not(handler));
+		assertEquals(handler, new DiskFileHandler("UTF-8"));
+		assertNotEquals(handler, new DiskFileHandler("ISO-8869-1"));
 	}
 
 }

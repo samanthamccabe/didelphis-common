@@ -50,7 +50,7 @@ public final class Split {
 	}
 
 	/**
-	 * 
+	 * Finds the closing bracket which accompanies
 	 * @param string
 	 * @param index
 	 * @return

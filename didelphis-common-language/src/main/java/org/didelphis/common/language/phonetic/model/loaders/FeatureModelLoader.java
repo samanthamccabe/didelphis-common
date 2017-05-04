@@ -5,8 +5,8 @@ import org.didelphis.common.language.exceptions.ParseException;
 import org.didelphis.common.language.phonetic.features.FeatureArray;
 import org.didelphis.common.language.phonetic.model.Constraint;
 import org.didelphis.common.language.phonetic.model.DefaultFeatureSpecification;
-import org.didelphis.common.language.phonetic.model.doubles.DoubleFeatureModel;
 import org.didelphis.common.language.phonetic.model.FeatureType;
+import org.didelphis.common.language.phonetic.model.doubles.DoubleFeatureModel;
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureModel;
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureSpecification;
 
@@ -63,21 +63,29 @@ public final class FeatureModelLoader {
 			if (line.isEmpty()) {
 				continue;
 			}
-			
+
 			ParseZone zone = ParseZone.determineZone(line);
 			if (zone == null) {
 				//noinspection EnumSwitchStatementWhichMissesCases
 				switch (currentZone) { // Should not be possible to be null
-						case FEATURES:
-							featureZone.add(line.toLowerCase());
-							break;
-						case CONSTRAINTS:
-							rawConstraints.add(line);
-							break;
-						case ALIASES:
-							rawAliases.add(line);
-							break;
-					}
+					case SPECIFICATION:
+						break;
+					case FEATURES:
+						featureZone.add(line.toLowerCase());
+						break;
+					case CONSTRAINTS:
+						rawConstraints.add(line);
+						break;
+					case SYMBOLS:
+						break;
+					case MODIFIERS:
+						break;
+					case ALIASES:
+						rawAliases.add(line);
+						break;
+					case NONE:
+						break;
+				}
 			} else {
 				currentZone = zone;
 			}
@@ -104,7 +112,7 @@ public final class FeatureModelLoader {
 		List<Constraint<Double>> cons = new ArrayList<>();
 		FeatureModel<Double> model = new DoubleFeatureModel(spec, cons, aliases);
 		
-		for (String string : rawAliases) {
+		for (CharSequence string : rawAliases) {
 			String[] split = EQUALS.split(string, 2);
 			String alias = BRACKETS.matcher(split[0]).replaceAll("");
 			String value = split[1];

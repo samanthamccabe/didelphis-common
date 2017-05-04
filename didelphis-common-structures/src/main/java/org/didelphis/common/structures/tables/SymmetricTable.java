@@ -17,6 +17,7 @@ package org.didelphis.common.structures.tables;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.IntStream;
 
 /**
  * @param <E>
@@ -34,9 +35,7 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 
 	public SymmetricTable(int n, List<E> array) {
 		super(n, n);
-
-		int size = n + ((n * n) / 2);
-
+		int size = n + ((n * n - n) / 2);
 		if (array.size() == size) {
 			this.array = new ArrayList<>(array);
 		} else {
@@ -49,7 +48,6 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 
 	public SymmetricTable(E defaultValue, int n) {
 		this(n);
-
 		int number = getIndex(n, n) - 1;
 		for (int i = 0; i < number; i++) {
 			array.add(defaultValue);
@@ -57,33 +55,33 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 	}
 
 	protected SymmetricTable(SymmetricTable<E> otherTable) {
-		this(otherTable.getNumberRows());
+		this(otherTable.getRows());
 		array.addAll(otherTable.array);
 	}
 
 	@Override
-	public E get(int i, int j) {
-		return array.get(getIndex(i, j));
+	public E get(int col, int row) {
+		return array.get(getIndex(col, row));
 	}
 
 	@Override
-	public void set(E element, int i, int j) {
-		int index = getIndex(i, j);
+	public void set(int col, int row, E element) {
+		int index = getIndex(col, row);
 		array.set(index, element);
 	}
 
+	@Deprecated
 	@Override
-	public String getPrettyTable() {
-
+	public String formattedTable() {
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < getNumberRows(); i++) {
+		for (int i = 0; i < getRows(); i++) {
 			for (int j = 0; j <= i; j++) {
 				sb.append(get(i, j));
 				if (j < i) {
 					sb.append('\t');
 				}
 			}
-			if (i < (getNumberRows() - 1)) {
+			if (i < (getRows() - 1)) {
 				sb.append('\n');
 			}
 		}
@@ -92,38 +90,29 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(super.hashCode(), array);
+		return Objects.hash(array);
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (!(o instanceof SymmetricTable)) return false;
-		if (!super.equals(o)) return false;
 		SymmetricTable<?> that = (SymmetricTable<?>) o;
-		return Objects.equals(array, that.array);
+		return Objects.equals(array, that.array) 
+		       && getRows() == that.getRows() 
+		       && getColumns() == that.getColumns();
 	}
 
 	@Override
 	public String toString() {
-		return "SymmetricTable{" +
-				"array=" + array +
-				'}';
+		return "SymmetricTable{" + array + '}';
 	}
 
 	private static int getIndex(int i, int j) {
-		if (j > i) {
-			return getRowStart(j) + i;
-		} else {
-			return getRowStart(i) + j;
-		}
+		return j > i ? getRowStart(j) + i : getRowStart(i) + j;
 	}
 
 	private static int getRowStart(int row) {
-		int sum = 0;
-		for (int i = 0; i <= row; i++) {
-			sum += i;
-		}
-		return sum;
+		return IntStream.rangeClosed(0, row).sum();
 	}
 }

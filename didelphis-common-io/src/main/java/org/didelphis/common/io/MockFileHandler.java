@@ -61,7 +61,4 @@ public final class MockFileHandler implements FileHandler {
 		return true;
 	}
 
-	private CharSequence readString(String path) {
-		return mockFileSystem.get(path);
-	}
 }

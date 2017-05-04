@@ -21,8 +21,6 @@ import org.didelphis.common.language.phonetic.SequenceFactory;
 import org.didelphis.common.language.phonetic.model.doubles.DoubleFeatureMapping;
 import org.didelphis.common.language.phonetic.model.empty.EmptyFeatureMapping;
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureMapping;
-import org.didelphis.common.language.phonetic.model.interfaces.FeatureModel;
-import org.didelphis.common.language.phonetic.model.loaders.FeatureModelLoader;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -435,7 +433,7 @@ public class SequenceTest {
 	}
 
 	private static void assertEqual(int a, int b) {
-		Assertions.assertTrue(a == b);
+		Assertions.assertEquals(a, b);
 	}
 
 	private static void assertNotEqual(java.io.Serializable a,
