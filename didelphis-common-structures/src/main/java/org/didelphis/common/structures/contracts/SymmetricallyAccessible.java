@@ -44,4 +44,19 @@ public interface SymmetricallyAccessible<K> {
 			return compare < 0 ? new Tuple<>(k1, k2) : new Tuple<>(k2, k1);
 		}
 	}
+
+	/**
+	 * Retrieves the canonical ordering for the provided key pair. An ordering
+	 * is canonical when only one ordering is stored in an underlying data
+	 * structure.
+	 * 
+	 * @param tuple the key-pair whose canonical representation is to be
+	 * determined
+	 * @return the canonical ordering of the key pair used in the underlying
+	 * structure. Null iff no ordering of {@code k1} and {@code k2} has an
+	 * associated value.
+	 */
+	default Tuple<K, K> canonicalKeyPair(Tuple<K, K> tuple) {
+		return canonicalKeyPair(tuple.getLeft(), tuple.getRight());
+	}
 }

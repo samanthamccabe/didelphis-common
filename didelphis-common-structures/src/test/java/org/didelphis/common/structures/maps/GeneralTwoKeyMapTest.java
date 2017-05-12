@@ -6,23 +6,18 @@ import org.didelphis.common.structures.tuples.Tuple;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 
 /**
  * Created by samantha on 1/16/17.
  */
 class GeneralTwoKeyMapTest extends TwoKeyMapTestBase {
-
-
-	private static final Supplier<Map<String, String>> SUPPLIER = () -> new HashMap<>();
 
 	@Test
 	void iterator() {
@@ -83,6 +78,24 @@ class GeneralTwoKeyMapTest extends TwoKeyMapTestBase {
 		expected.add(new Tuple<>("a3", "b3"));
 
 		assertEquals(expected, map.keys(), "Unexpected Key Set");
+	}
+	
+	@Test
+	void testAssociatedKeys() {
+		TwoKeyMap<String, String, String> map = new GeneralTwoKeyMap<>();
+		map.put("A", "1a", "v1a");
+		
+		map.put("B", "2a", "v2a");
+		map.put("B", "2b", "v2b");
+		
+		map.put("C", "3a", "v3a");
+		map.put("C", "3b", "v3b");
+		map.put("C", "3c", "v3c");
+		
+		assertEquals(1,map.getAssociatedKeys("A").size());
+		assertEquals(2,map.getAssociatedKeys("B").size());
+		assertEquals(3,map.getAssociatedKeys("C").size());
+		assertNull(map.getAssociatedKeys("X"));
 	}
 	
 	@Test

@@ -1,5 +1,6 @@
 package org.didelphis.common.structures.maps.interfaces;
 
+import org.didelphis.common.structures.Structure;
 import org.didelphis.common.structures.tuples.Triple;
 import org.didelphis.common.structures.tuples.Tuple;
 
@@ -9,7 +10,7 @@ import java.util.Collection;
  * Created by samantha on 1/15/17.
  */
 public interface TwoKeyMap<T, U, V>
-		extends Iterable<Triple<T, U, V>> {
+		extends Iterable<Triple<T, U, V>>, Structure {
 
 	/**
 	 * Return the value stored under the two keys
@@ -21,6 +22,15 @@ public interface TwoKeyMap<T, U, V>
 	 */
 	V get(T k1, U k2);
 
+	/**
+	 * Returns all keys associated with the provided key such that, together,
+	 * they have an associated value
+	 * @param k1 the first key; may be null
+	 * @return a collection of the second keys associated with the provided key;
+	 * null if the provided key is not present
+	 */
+	Collection<U> getAssociatedKeys(T k1);
+	
 	/**
 	 * Inserts a new value under the two keys
 	 *
@@ -47,30 +57,11 @@ public interface TwoKeyMap<T, U, V>
 
 	/**
 	 * Removes the value associated with the provided keys.
-	 * @param k1
-	 * @param k2
+	 * @param k1 the first key; may be null
+	 * @param k2 the second key; may be null
 	 * @return the value associated with the provided key pair, if it exists; if
 	 * no key pair exists, this operation will return null;
 	 */
 	V remove(T k1, U k2);
 
-	/**
-	 * Returns the size of the map, based on the totaly number of values or
-	 * unique key pairs
-	 * @return the number of values in the map; guaranteed to be greater than 0
-	 */
-	int size();
-
-	/**
-	 * Tests if the map is empty.
-	 * @return true iff there is at least one key pair.
-	 */
-	boolean isEmpty();
-
-	/**
-	 * Deletes all contents from the map.
-	 * @return true iff contents were deleted; if the map was already empty,
-	 * this operation will return false.
-	 */
-	boolean clear();
 }

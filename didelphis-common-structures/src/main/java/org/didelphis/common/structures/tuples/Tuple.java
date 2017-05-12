@@ -52,6 +52,10 @@ public class Tuple<L, R> {
 	public R getRight() {
 		return right;
 	}
+	
+	public boolean contains(Object entry) {
+		return Objects.equals(entry, left) || Objects.equals(entry, right);
+	}
 
 	@Override
 	public int hashCode() {
