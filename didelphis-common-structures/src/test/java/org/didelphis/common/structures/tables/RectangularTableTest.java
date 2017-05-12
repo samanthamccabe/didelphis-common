@@ -37,10 +37,10 @@ class RectangularTableTest {
 	@Test
 	void constructor1() {
 		RectangularTable<String> table1 = new RectangularTable<>("X", 2, 2);
-		assertEquals("X", table1.get(0,0));
-		assertEquals("X", table1.get(1,0));
-		assertEquals("X", table1.get(0,1));
-		assertEquals("X", table1.get(1,1));
+		assertEquals("X", table1.get(0, 0));
+		assertEquals("X", table1.get(0, 1));
+		assertEquals("X", table1.get(1, 0));
+		assertEquals("X", table1.get(1, 1));
 	}
 
 	@Test
@@ -53,12 +53,12 @@ class RectangularTableTest {
 		Collections.addAll(data, row1, row2);
 
 		RectangularTable<String> table1 = new RectangularTable<>(data, 2, 3);
-		assertEquals("0", table1.get(0,0));
-		assertEquals("1", table1.get(1,0));
-		assertEquals("2", table1.get(2,0));
-		assertEquals("3", table1.get(0,1));
-		assertEquals("4", table1.get(1,1));
-		assertEquals("5", table1.get(2,1));
+		assertEquals("0", table1.get(0, 0));
+		assertEquals("1", table1.get(0, 1));
+		assertEquals("2", table1.get(0, 2));
+		assertEquals("3", table1.get(1, 0));
+		assertEquals("4", table1.get(1, 1));
+		assertEquals("5", table1.get(1, 2));
 	}
 	
 	@Test
@@ -69,21 +69,21 @@ class RectangularTableTest {
 
 	@Test
 	void get() {
-		assertEquals("9", table.get(0, 3));
-		assertEquals("A", table.get(1, 3));
-		assertEquals("B", table.get(2, 3));
+		assertEquals("9", table.get(3, 0));
+		assertEquals("A", table.get(3, 1));
+		assertEquals("B", table.get(3, 2));
 	}
 
 	@Test
 	void set() {
 		RectangularTable<String> table1 = new RectangularTable<>(table);
-		table1.set(0, 3, "X");
-		table1.set(1, 3, "Y");
-		table1.set(2, 3, "Z");
+		table1.set(3, 0, "X");
+		table1.set(3, 1, "Y");
+		table1.set(3, 2, "Z");
 		
-		assertEquals("X", table1.get(0, 3));
-		assertEquals("Y", table1.get(1, 3));
-		assertEquals("Z", table1.get(2, 3));
+		assertEquals("X", table1.get(3, 0));
+		assertEquals("Y", table1.get(3, 1));
+		assertEquals("Z", table1.get(3, 2));
 	}
 
 	@Test
@@ -106,9 +106,9 @@ class RectangularTableTest {
 	void testHashCode() {
 		RectangularTable<String> table1 = new RectangularTable<>(table);
 		RectangularTable<String> table2 = new RectangularTable<>(table);
-		table2.set(0, 3, "X");
-		table2.set(1, 3, "Y");
-		table2.set(2, 3, "Z");
+		table2.set(3, 0, "X");
+		table2.set(3, 1, "Y");
+		table2.set(3, 2, "Z");
 		
 		assertEquals(table.hashCode(), table1.hashCode());
 		assertNotEquals(table.hashCode(), table2.hashCode());
@@ -118,9 +118,9 @@ class RectangularTableTest {
 	void testToString() {
 		RectangularTable<String> table1 = new RectangularTable<>(table);
 		RectangularTable<String> table2 = new RectangularTable<>(table);
-		table2.set(0, 3, "X");
-		table2.set(1, 3, "Y");
-		table2.set(2, 3, "Z");
+		table2.set(3, 0, "X");
+		table2.set(3, 1, "Y");
+		table2.set(3, 2, "Z");
 
 		assertEquals(table.toString(), table1.toString());
 		assertNotEquals(table.toString(), table2.toString());

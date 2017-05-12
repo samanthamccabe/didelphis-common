@@ -79,7 +79,7 @@ class DataTableTest {
 	@Test
 	void testSet() {
 		table.set(1, 1, "0");
-		assertEquals("0", table.get(1,1));
+		assertEquals("0", table.get(1, 1));
 	}
 
 	@Test
@@ -141,12 +141,12 @@ class DataTableTest {
 	@Test
 	void testGet() {
 		assertEquals("1", table.get(0, 0));
-		assertEquals("2", table.get(0, 1));
-		assertEquals("3", table.get(0, 2));
+		assertEquals("2", table.get(1, 0));
+		assertEquals("3", table.get(2, 0));
 
-		assertEquals("a", table.get(1, 0));
+		assertEquals("a", table.get(0, 1));
 		assertEquals("b", table.get(1, 1));
-		assertEquals("c", table.get(1, 2));
+		assertEquals("c", table.get(2, 1));
 	}
 
 	@Test
@@ -193,7 +193,7 @@ class DataTableTest {
 	void testHashCode() {
 		DataTable<String> table1 = new DataTable<>(table);
 		DataTable<String> table2 = new DataTable<>(table);
-		table2.set(2,2,"XXX");
+		table2.set(2, 2, "XXX");
 
 		assertEquals(table.hashCode(), table1.hashCode());
 		assertNotEquals(table.hashCode(), table2.hashCode());
@@ -204,7 +204,7 @@ class DataTableTest {
 	void testToString() {
 		DataTable<String> table1 = new DataTable<>(table);
 		DataTable<String> table2 = new DataTable<>(table);
-		table2.set(2,2,"XXX");
+		table2.set(2, 2, "XXX");
 
 		assertEquals(table.toString(), table1.toString());
 		assertNotEquals(table.toString(), table2.toString());

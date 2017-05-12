@@ -56,13 +56,13 @@ public final class RectangularTable<E> extends AbstractTable<E> {
 	/**
 	 * Retrieve the element at the specified location
 	 *
-	 * @param col the index for column
 	 * @param row the index for row
 	 *
+	 * @param col the index for column
 	 * @return the object stored at these coordinates
 	 */
 	@Override
-	public E get(int col, int row) {
+	public E get(int row, int col) {
 		rangeCheck(col, getColumns());
 		rangeCheck(row, getRows());
 		int index = getIndex(col, row);
@@ -71,12 +71,12 @@ public final class RectangularTable<E> extends AbstractTable<E> {
 
 	/**
 	 * Put an element into the specified location in the Table
-	 *  @param col the index for column
 	 * @param row the index for row
+	 * @param col the index for column
 	 * @param element the object to place at the specified coordinates
 	 */
 	@Override
-	public void set(int col, int row, E element) {
+	public void set(int row, int col, E element) {
 		rangeCheck(col, getColumns());
 		rangeCheck(row, getRows());
 		int index = getIndex(col, row);

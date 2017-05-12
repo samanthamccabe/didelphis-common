@@ -20,9 +20,9 @@ package org.didelphis.common.structures.tables;
  */
 public interface Table<E> {
 	
-	E get(int col, int row);
+	E get(int row, int col);
 
-	void set(int col, int row, E element);
+	void set(int row, int col, E element);
 
 	int getRows();
 

@@ -37,7 +37,7 @@ class SymmetricTableTest {
 	@Test
 	void constructorDefaultValue() {
 		SymmetricTable<String>  table1 = new SymmetricTable<>("", 3);
-		assertEquals("", table1.get(1,1));
+		assertEquals("", table1.get(1, 1));
 		assertEquals(3, table1.getColumns());
 		assertEquals(3, table1.getRows());
 	}
@@ -53,17 +53,7 @@ class SymmetricTableTest {
 	
 	@Test
 	void get() {
-		assertEquals("A", table.get(0,0));
-		assertEquals("B", table.get(0,1));
-		assertEquals("C", table.get(1,1));
-		assertEquals("D", table.get(0,2));
-		assertEquals("E", table.get(1,2));
-		assertEquals("F", table.get(2,2));
-		assertEquals("G", table.get(0,3));
-		assertEquals("H", table.get(1,3));
-		assertEquals("J", table.get(2,3));
-		assertEquals("K", table.get(3,3));
-		
+		assertEquals("A", table.get(0, 0));
 		assertEquals("B", table.get(1, 0));
 		assertEquals("C", table.get(1, 1));
 		assertEquals("D", table.get(2, 0));
@@ -72,6 +62,16 @@ class SymmetricTableTest {
 		assertEquals("G", table.get(3, 0));
 		assertEquals("H", table.get(3, 1));
 		assertEquals("J", table.get(3, 2));
+		assertEquals("K", table.get(3, 3));
+		
+		assertEquals("B", table.get(0, 1));
+		assertEquals("C", table.get(1, 1));
+		assertEquals("D", table.get(0, 2));
+		assertEquals("E", table.get(1, 2));
+		assertEquals("F", table.get(2, 2));
+		assertEquals("G", table.get(0, 3));
+		assertEquals("H", table.get(1, 3));
+		assertEquals("J", table.get(2, 3));
 		assertEquals("K", table.get(3, 3));
 	}
 
@@ -82,10 +82,10 @@ class SymmetricTableTest {
 		table.set(2, 2, "Y");
 		table.set(3, 3, "Z");
 		
-		assertEquals("W",table.get(0,0));
-		assertEquals("X",table.get(1,1));
-		assertEquals("Y",table.get(2,2));
-		assertEquals("Z",table.get(3,3));
+		assertEquals("W",table.get(0, 0));
+		assertEquals("X",table.get(1, 1));
+		assertEquals("Y",table.get(2, 2));
+		assertEquals("Z",table.get(3, 3));
 	}
 
 	@Test
@@ -94,9 +94,9 @@ class SymmetricTableTest {
 		SymmetricTable<String> table2 = new SymmetricTable<>(table);
 
 		table2.set(0, 0, "W");
-		table2.set(1, 0, "X");
-		table2.set(2, 1, "Y");
-		table2.set(3, 2, "Z");
+		table2.set(0, 1, "X");
+		table2.set(1, 2, "Y");
+		table2.set(2, 3, "Z");
 		
 		assertEquals(table.hashCode(), table1.hashCode());
 		assertNotEquals(table.hashCode(), table2.hashCode());
@@ -109,9 +109,9 @@ class SymmetricTableTest {
 		SymmetricTable<String> table2 = new SymmetricTable<>(table);
 
 		table2.set(0, 0, "W");
-		table2.set(1, 0, "X");
-		table2.set(2, 1, "Y");
-		table2.set(3, 2, "Z");
+		table2.set(0, 1, "X");
+		table2.set(1, 2, "Y");
+		table2.set(2, 3, "Z");
 
 		assertEquals(table.toString(), table1.toString());
 		assertNotEquals(table.toString(), table2.toString());

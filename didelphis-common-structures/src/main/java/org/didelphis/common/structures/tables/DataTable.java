@@ -129,14 +129,14 @@ public final class DataTable<E> implements ColumnTable<E> {
 	}
 
 	@Override
-	public E get(int col, int row) {
+	public E get(int row, int col) {
 		checkRowIndex(row);
 		return columns.get(keys.get(col)).get(row);
 	}
 
 	@Override
 
-	public void set(int col, int row, E element) {
+	public void set(int row, int col, E element) {
 		checkRowIndex(row);
 		columns.get(keys.get(col)).set(row, element);
 	}
