@@ -60,12 +60,12 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 	}
 
 	@Override
-	public E get(int col, int row) {
+	public E get(int row, int col) {
 		return array.get(getIndex(col, row));
 	}
 
 	@Override
-	public void set(int col, int row, E element) {
+	public void set(int row, int col, E element) {
 		int index = getIndex(col, row);
 		array.set(index, element);
 	}
@@ -76,7 +76,7 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < getRows(); i++) {
 			for (int j = 0; j <= i; j++) {
-				sb.append(get(i, j));
+				sb.append(get(j, i));
 				if (j < i) {
 					sb.append('\t');
 				}

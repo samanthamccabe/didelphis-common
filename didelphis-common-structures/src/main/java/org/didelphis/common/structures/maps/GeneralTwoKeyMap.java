@@ -41,6 +41,11 @@ public class GeneralTwoKeyMap<T, U, V>
 	}
 
 	@Override
+	public Collection<U> getAssociatedKeys(T k1) {
+		return delegate.containsKey(k1) ? delegate.get(k1).keySet() : null;
+	}
+	
+	@Override
 	public void put(T k1, U k2, V value) {
 		Map<U, V> map = delegate.containsKey(k1)
 		                ? delegate.get(k1) 
