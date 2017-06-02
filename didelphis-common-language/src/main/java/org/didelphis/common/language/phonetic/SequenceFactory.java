@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
  */
 public class SequenceFactory<N extends Number> {
 
-	private static final transient Logger LOGGER = LoggerFactory.getLogger(SequenceFactory.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SequenceFactory.class);
 	
 	private static final Pattern BACKREFERENCE_PATTERN = Pattern.compile("(\\$[^$]*\\d+)");
 

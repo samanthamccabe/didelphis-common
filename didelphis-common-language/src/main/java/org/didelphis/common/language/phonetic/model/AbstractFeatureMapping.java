@@ -41,7 +41,7 @@ import java.util.Set;
 public abstract class AbstractFeatureMapping<N extends Number>
 		implements FeatureMapping<N> {
 
-	private static final transient Logger LOGGER = LoggerFactory.getLogger(AbstractFeatureMapping.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractFeatureMapping.class);
 
 	private final FeatureModel<N> featureModel;
 	

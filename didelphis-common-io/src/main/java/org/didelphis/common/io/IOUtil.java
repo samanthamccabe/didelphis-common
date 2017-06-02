@@ -16,7 +16,7 @@ import java.io.Reader;
  */
 public final class IOUtil {
 
-	private static final transient Logger LOGGER = LoggerFactory.getLogger(IOUtil.class);
+	private static final Logger LOG = LoggerFactory.getLogger(IOUtil.class);
 
 	private IOUtil() {}
 	
@@ -25,7 +25,7 @@ public final class IOUtil {
 		try (InputStream stream = new FileInputStream(file)) {
 			return readStream(stream);
 		} catch (IOException e) {
-			LOGGER.error("Failed to read from path {}", path, e);
+			LOG.error("Failed to read from path {}", path, e);
 		}
 		return null;
 	}
@@ -34,7 +34,7 @@ public final class IOUtil {
 		try (Reader reader = new BufferedReader(new InputStreamReader(stream))) {
 			return readString(reader);
 		} catch (IOException e) {
-			LOGGER.error("Failed to read from stream", e);
+			LOG.error("Failed to read from stream", e);
 		}
 		return null;
 	}

@@ -1,29 +1,44 @@
 package org.didelphis.common.structures.maps;
 
+import org.didelphis.common.structures.contracts.Delegating;
 import org.didelphis.common.structures.maps.interfaces.TwoKeyMultiMap;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * Created by samantha on 4/25/17.
  */
+@SuppressWarnings("rawtypes")
 public class SymmetricalTwoKeyMultiMap<K, V> 
 		extends SymmetricalTwoKeyMap<K, Collection<V>>
 		implements TwoKeyMultiMap<K, K, V> {
 	
 	private static final int HASH_ID = 0xd2a5dbb1;
+	private final Class<? extends Collection> type;
 
 	public SymmetricalTwoKeyMultiMap() {
+		//noinspection unchecked
+		type = HashSet.class;
 	}
 	
-	public SymmetricalTwoKeyMultiMap(SymmetricalTwoKeyMultiMap<K, V> map) {
-		this(MapUtils.copyMultiMap(map.getDelegate())); 
+	public SymmetricalTwoKeyMultiMap(
+			@NotNull Delegating<Map<K, Map<K, Collection<V>>>> delegating,
+			@NotNull Class<? extends Collection> type
+	) {
+		super(delegating);
+		this.type = type;
 	}
 
-	public SymmetricalTwoKeyMultiMap(Map<K, Map<K, Collection<V>>> delegateMap) {
+	public SymmetricalTwoKeyMultiMap(
+			@NotNull Map<K, Map<K, Collection<V>>> delegateMap,
+			@NotNull Class<? extends Collection> type
+	) {
 		super(delegateMap);
+		this.type = type;
 	}
 	
 	@Override
@@ -32,7 +47,7 @@ public class SymmetricalTwoKeyMultiMap<K, V>
 		if (collection != null) {
 			collection.add(value);
 		} else {
-			Collection<V> set = new HashSet<>();
+			Collection<V> set = MapUtils.newCollection(type);
 			set.add(value);
 			put(k1, k2, set);
 		}

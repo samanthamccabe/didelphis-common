@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
  */
 public abstract class AbstractFeatureMappingLoader<N extends Number> {
 
-	private static final transient Logger LOG = LoggerFactory.getLogger(AbstractFeatureMappingLoader.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractFeatureMappingLoader.class);
 
 	private static final String SYMBOLS     = "SYMBOLS";
 	private static final String MODIFIERS   = "MODIFIERS";

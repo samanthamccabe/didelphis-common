@@ -42,7 +42,7 @@ import java.util.List;
  */
 public final class SegmenterUtil {
 
-	private static final transient Logger LOGGER = LoggerFactory.getLogger(SegmenterUtil.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SegmenterUtil.class);
 
 	// Prevent the class from being instantiated
 	private SegmenterUtil() {}
@@ -198,7 +198,7 @@ public final class SegmenterUtil {
 			}
 		}
 		if (!matched) {
-			LOGGER.warn("Unmatched " + left + " in " + string);
+			LOG.warn("Unmatched " + left + " in " + string);
 		}
 		return endIndex;
 	}

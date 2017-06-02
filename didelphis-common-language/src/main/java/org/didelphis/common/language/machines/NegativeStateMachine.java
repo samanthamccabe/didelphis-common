@@ -48,7 +48,7 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 				expression, parser, matcher, direction);
 
 		// This is less elegant that I'd prefer, but bear with me:
-		// We will extract the graph and id-machine map and then the graph for
+		// We will extract the graph and id-machine maps and then the graph for
 		// *each* machine recursively. We do this in order to replace each
 		// literal terminal symbol with the literal dot (.) character
 		buildPositiveBranch(parser, positive);

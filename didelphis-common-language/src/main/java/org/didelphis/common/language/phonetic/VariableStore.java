@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
  */
 public class VariableStore {
 
-	private static final transient Logger LOGGER = LoggerFactory.getLogger(
+	private static final Logger LOG = LoggerFactory.getLogger(
 			VariableStore.class);
 
 	private static final int INITIAL_CAPACITY = 20;

@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class StandardStateMachineModelTest {
 
-	private static final transient Logger LOGGER = LoggerFactory.getLogger(StandardStateMachineModelTest.class);
+	private static final Logger LOG = LoggerFactory.getLogger(StandardStateMachineModelTest.class);
 
 	private static SequenceFactory<Double> factory;
 

@@ -1,7 +1,9 @@
 package org.didelphis.common.structures.maps;
 
+import org.didelphis.common.structures.contracts.Delegating;
 import org.didelphis.common.structures.contracts.SymmetricallyAccessible;
 import org.didelphis.common.structures.tuples.Tuple;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Map;
@@ -18,13 +20,13 @@ public class SymmetricalTwoKeyMap<K, V>
 	private static final int HASH_ID = 0x4B23275D;
 
 	public SymmetricalTwoKeyMap() {}
-	
-	public SymmetricalTwoKeyMap(SymmetricalTwoKeyMap<K, V> map) {
-		super(MapUtils.copyTwoKeyMap(map.getDelegate()));
-	}
 
-	public SymmetricalTwoKeyMap(Map<K, Map<K, V>> delegateMap) {
-		super(delegateMap);
+	public SymmetricalTwoKeyMap(@NotNull Map<K, Map<K, V>> map) {
+		super(map);
+	}
+	
+	public SymmetricalTwoKeyMap(@NotNull Delegating<Map<K, Map<K, V>>> delegating) {
+		super(delegating);
 	}
 	
 	@Override
@@ -49,7 +51,7 @@ public class SymmetricalTwoKeyMap<K, V>
 				.collect(Collectors.toSet());
 	}
 
-		@Override
+	@Override
 	public boolean contains(K k1, K k2) {
 		Tuple<K, K> tuple = canonicalKeyPair(k1, k2);
 		return super.contains(tuple.getLeft(), tuple.getRight());

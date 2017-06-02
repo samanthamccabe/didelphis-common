@@ -4,10 +4,11 @@ import org.didelphis.common.structures.contracts.Delegating;
 import org.didelphis.common.structures.maps.interfaces.TwoKeyMap;
 import org.didelphis.common.structures.tuples.Triple;
 import org.didelphis.common.structures.tuples.Tuple;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
@@ -21,17 +22,28 @@ public class GeneralTwoKeyMap<T, U, V>
 	private static final int HASH_ID = 0xb20ad93b;
 
 	private final Map<T, Map<U, V>> delegate;
+	
+	@SuppressWarnings("rawtypes")
+	private final Class<? extends Map> type;
 
 	public GeneralTwoKeyMap() {
 		delegate = new HashMap<>();
+		//noinspection unchecked
+		type = HashMap.class;
 	}
 
-	public GeneralTwoKeyMap(Map<T, Map<U, V>> delegateMap) {
-		this.delegate = delegateMap;
+	public GeneralTwoKeyMap(@NotNull Map<T, Map<U, V>> delegate) {
+		this.delegate = delegate;
+		//noinspection unchecked
+		type = delegate.getClass();
 	}
 
-	public GeneralTwoKeyMap(GeneralTwoKeyMap<T, U, V> map) {
-		this(MapUtils.copyTwoKeyMap(map.getDelegate()));
+	public GeneralTwoKeyMap(@NotNull Delegating<Map<T, Map<U, V>>> delegating) {
+		Map<T, Map<U, V>> map = delegating.getDelegate();
+
+		//noinspection unchecked
+		type = map.getClass();
+		delegate = MapUtils.copyTwoKeyMap(map, type);
 	}
 
 	@Override
@@ -47,22 +59,21 @@ public class GeneralTwoKeyMap<T, U, V>
 	
 	@Override
 	public void put(T k1, U k2, V value) {
-		Map<U, V> map = delegate.containsKey(k1)
+		Map<U, V> map = delegate.containsKey(k1) 
 		                ? delegate.get(k1) 
-		                : new HashMap<>();
+		                : MapUtils.newMap(type);
 		map.put(k2, value);
 		delegate.put(k1, map);
 	}
 
 	@Override
 	public boolean contains(T k1, U k2) {
-		return delegate.containsKey(k1) &&
-		       delegate.get(k1).containsKey(k2);
+		return delegate.containsKey(k1) && delegate.get(k1).containsKey(k2);
 	}
 
 	@Override
 	public Collection<Tuple<T, U>> keys() {
-		Collection<Tuple<T, U>> keys = new HashSet<>();
+		Collection<Tuple<T, U>> keys = new ArrayList<>();
 		for (Map.Entry<T, Map<U, V>> entry : delegate.entrySet()) {
 			T k1 = entry.getKey();
 			for (U k2 : entry.getValue().keySet()) {
@@ -83,7 +94,7 @@ public class GeneralTwoKeyMap<T, U, V>
 	@Override
 	public int size() {
 		return delegate.values()
-				.stream()
+				.parallelStream()
 				.mapToInt(map -> map.values().size())
 				.sum();
 	}
@@ -100,9 +111,10 @@ public class GeneralTwoKeyMap<T, U, V>
 		return wasCleared;
 	}
 
+	@NotNull
 	@Override
 	public Iterator<Triple<T, U, V>> iterator() {
-		Collection<Triple<T, U, V>> triples = new HashSet<>();
+		Collection<Triple<T, U, V>> triples = new ArrayList<>();
 		for (Map.Entry<T, Map<U, V>> e1 : delegate.entrySet()) {
 			T k1 = e1.getKey();
 			for (Map.Entry<U, V> e2 : e1.getValue().entrySet()) {

@@ -44,7 +44,7 @@ import static org.didelphis.common.utilities.Patterns.template;
  */
 public final class StandardStateMachine<T> implements StateMachine<T> {
 
-	private static final transient Logger LOGGER = LoggerFactory.getLogger(
+	private static final Logger LOG = LoggerFactory.getLogger(
 			StandardStateMachine.class);
 
 	private static final Pattern ILLEGAL = template("#$1|$1$1", "[*+?]");

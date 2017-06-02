@@ -32,7 +32,7 @@ import java.util.List;
 
 public class SequenceTest {
 
-	private static final transient Logger LOGGER = LoggerFactory.getLogger(
+	private static final Logger LOG = LoggerFactory.getLogger(
 			SequenceTest.class);
 
 	private static final SequenceFactory<Double> FACTORY = new SequenceFactory<>(

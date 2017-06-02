@@ -15,21 +15,21 @@ package org.didelphis.common.structures;
 public interface Structure {
 	
 	/**
-	 * Returns the size of the map, based on the totaly number of values or
+	 * Returns the size of the maps, based on the totaly number of values or
 	 * unique key pairs
-	 * @return the number of values in the map; guaranteed to be greater than 0
+	 * @return the number of values in the maps; guaranteed to be greater than 0
 	 */
 	int size();
 
 	/**
-	 * Tests if the map is empty.
+	 * Tests if the maps is empty.
 	 * @return true iff there is at least one key pair.
 	 */
 	boolean isEmpty();
 
 	/**
-	 * Deletes all contents from the map.
-	 * @return true iff contents were deleted; if the map was already empty,
+	 * Deletes all contents from the maps.
+	 * @return true iff contents were deleted; if the maps was already empty,
 	 * this operation will return false.
 	 */
 	boolean clear();

@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class StandardSegmentTest {
 
-	private static final transient Logger LOGGER = LoggerFactory.getLogger(SequenceTest.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SequenceTest.class);
 
 	private static final SequenceFactory<Double> FACTORY = loadFactory();
 

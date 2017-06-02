@@ -217,5 +217,5 @@ public enum FormatterMode implements Segmenter, Formatter {
 		return (form == null) ? string : Normalizer.normalize(string, form);
 	}
 
-	private final transient Logger logger = LoggerFactory.getLogger(FormatterMode.class);
+	private final Logger logger = LoggerFactory.getLogger(FormatterMode.class);
 }

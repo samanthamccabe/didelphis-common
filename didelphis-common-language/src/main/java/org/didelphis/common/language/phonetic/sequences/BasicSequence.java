@@ -30,7 +30,7 @@ import java.util.List;
  */
 public final class BasicSequence<N extends Number> extends AbstractSequence<N> {
 
-	private static final transient Logger LOGGER = LoggerFactory.getLogger(
+	private static final Logger LOG = LoggerFactory.getLogger(
 		  BasicSequence.class);
 
 	public BasicSequence(Sequence<N> sequence) {
@@ -266,7 +266,7 @@ public final class BasicSequence<N extends Number> extends AbstractSequence<N> {
 
 	private void validateModelOrWarn(SpecificationBearer that) {
 		if (!featureModel.equals(that.getSpecification())) {
-			LOGGER.warn(
+			LOG.warn(
 				  "Attempting to check a {} with an incompatible model!" + "\n\t{}\t{}\n\t{}\t{}",
 				  that.getClass(), this, that, featureModel,
 				  that.getSpecification());

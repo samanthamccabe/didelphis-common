@@ -14,6 +14,10 @@
 
 package org.didelphis.common.structures.tables;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -21,15 +25,42 @@ import java.util.Map;
  * Samantha Fiona Morrigan McCabe
  * Created: 8/23/2015
  */
-public interface ColumnTable<E> extends Table<E>, Iterable<List<E>> {
+public interface ColumnTable<E> extends Table<E> {
 
-	boolean hasKey(String key);
-	
+	/**
+	 * Checks if the table has the provided key
+	 * @param key the column name to check for the presence of
+	 * @return true iff the table contains the key
+	 */
+	boolean hasKey(@Nullable String key);
+
+	/**
+	 * Returns the
+	 * @return
+	 */
+	@NotNull
 	List<String> getKeys();
-	
-	List<E> getColumn(String key);
-	
-	Map<String, E> getRowAsMap(int index);
 
-	List<E> getRow(int index);
+	/**
+	 *
+	 * @param key
+	 * @return
+	 */
+	@Nullable
+	List<E> getColumn(@Nullable String key);
+
+	/**
+	 *
+	 * @param column
+	 * @param name
+	 * @return
+	 */
+	String setColumnName(int column, String name);
+
+	/**
+	 *
+	 * @param column
+	 * @return
+	 */
+	String getColumnName(int column);
 }

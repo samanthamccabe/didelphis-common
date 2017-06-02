@@ -28,11 +28,7 @@
 
     <packaging>pom</packaging>
 
-    <name>Didelphis Common Modules</name>
-    
-    <properties>
-        <junit-jupiter.version>5.0.0-M3</junit-jupiter.version>
-    </properties>
+    <name>Didelphis Common Modules</name>   
     
     <modules>
         <module>didelphis-common-io</module>

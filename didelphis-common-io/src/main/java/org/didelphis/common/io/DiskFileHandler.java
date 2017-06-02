@@ -30,7 +30,7 @@ import java.util.Objects;
  */
 public final class DiskFileHandler implements FileHandler {
 
-	private static final transient Logger LOGGER = LoggerFactory.getLogger(DiskFileHandler.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DiskFileHandler.class);
 
 	private final String encoding;
 
@@ -50,7 +50,7 @@ public final class DiskFileHandler implements FileHandler {
 			writer.write(data.toString());
 			return true;
 		} catch (IOException e) {
-			LOGGER.error("Failed to write to path {}", path, e);
+			LOG.error("Failed to write to path {}", path, e);
 		}
 		return false;
 	}

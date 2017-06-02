@@ -3,6 +3,7 @@ package org.didelphis.common.structures.maps;
 import org.didelphis.common.structures.contracts.Delegating;
 import org.didelphis.common.structures.maps.interfaces.MultiMap;
 import org.didelphis.common.structures.tuples.Tuple;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,24 +16,32 @@ import java.util.stream.Collectors;
 /**
  * Created by samantha on 5/4/17.
  */
+@SuppressWarnings("rawtypes")
 public class GeneralMultiMap<K, V>
 		implements MultiMap<K, V>, Delegating<Map<K,Collection<V>>> {
 
 	private final Map<K,Collection<V>> delegate;
 	
+	private final Class<? extends Collection> type;
+			
 	public GeneralMultiMap() {
 		delegate = new HashMap<>();
+		//noinspection unchecked
+		type = HashSet.class;
 	}
 	
-	public GeneralMultiMap(Map<K,Collection<V>> delegate) {
+	public GeneralMultiMap(
+			@NotNull Map<K,Collection<V>> delegate,
+			@NotNull Class<? extends Collection> type) {
 		this.delegate = new HashMap<>(delegate);
+		this.type = type;
 	}
 
-	public GeneralMultiMap(MultiMap<K, V> map) {
-		this();
-		for (K key : map.keys()) {
-			delegate.put(key, map.get(key));
-		}
+	public GeneralMultiMap(
+			@NotNull Delegating<Map<K,Collection<V>>> delegating,
+			@NotNull Class<? extends Collection> type) {
+		delegate = MapUtils.copyMultiMap(delegating.getDelegate(), type);
+		this.type=type;
 	}
 
 	@Override
@@ -60,7 +69,7 @@ public class GeneralMultiMap<K, V>
 		if (delegate.containsKey(key)) {
 			delegate.get(key).add(value);
 		} else {
-			Collection<V> set = new HashSet<>();
+			Collection<V> set = MapUtils.newCollection(type);
 			set.add(value);
 			delegate.put(key, set);
 		}
@@ -97,11 +106,12 @@ public class GeneralMultiMap<K, V>
 		return hasContent;
 	}
 
+	@NotNull
 	@Override
 	public Iterator<Tuple<K, Collection<V>>> iterator() {
-		return delegate.entrySet().parallelStream()
+		return delegate.entrySet().stream()
 				.map(entry -> new Tuple<>(entry.getKey(), entry.getValue()))
-				.collect(Collectors.toSet()).iterator();
+				.collect(Collectors.toList()).iterator();
 	}
 
 	@Override

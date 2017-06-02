@@ -5,6 +5,7 @@ import org.didelphis.common.structures.tuples.Triple;
 import org.didelphis.common.structures.tuples.Tuple;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -72,11 +73,11 @@ class GeneralTwoKeyMapTest extends TwoKeyMapTestBase {
 		map.put("a2", "b2", "v2");
 		map.put("a3", "b3", "v3");
 
-		Collection<Tuple<String, String>> expected = new HashSet<>();
+		Collection<Tuple<String, String>> expected = new ArrayList<>();
 		expected.add(new Tuple<>("a1", "b1"));
 		expected.add(new Tuple<>("a2", "b2"));
 		expected.add(new Tuple<>("a3", "b3"));
-
+		
 		assertEquals(expected, map.keys(), "Unexpected Key Set");
 	}
 	

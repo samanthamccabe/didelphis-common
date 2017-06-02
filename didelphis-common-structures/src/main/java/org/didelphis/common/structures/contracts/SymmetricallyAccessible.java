@@ -2,12 +2,12 @@ package org.didelphis.common.structures.contracts;
 
 import org.didelphis.common.structures.tuples.Tuple;
 
-import java.util.Objects;
+import java.util.Objects; 
 
 /**
  * Designates a data structure with two keys or indices as obeying the contract 
  * that the output of a method {@code M(k1, k2, ...)} is always equal to 
- * {@code M(k2, k1, ...)} wher only the order of {@code k1} and {@code k2}
+ * {@code M(k2, k1, ...)} where only the order of {@code k1} and {@code k2}
  * differ.
  * 
  * This is used both in symmetrical two key maps where the order of the keys is

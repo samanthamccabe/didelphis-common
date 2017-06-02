@@ -14,9 +14,12 @@
 
 package org.didelphis.common.language.machines;
 
+import org.didelphis.common.structures.contracts.Delegating;
 import org.didelphis.common.structures.maps.GeneralTwoKeyMultiMap;
 
-import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal.Symbols.map;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
 
 /**
  * Samantha Fiona Morrigan McCabe
@@ -29,8 +32,8 @@ public class Graph<T> extends GeneralTwoKeyMultiMap<String, T, String> {
 	public Graph() {
 	}
 
-	public Graph(GeneralTwoKeyMultiMap<String, T, String> graph) {
-		super(graph);
+	public Graph(Delegating<Map<String, Map<T, Collection<String>>>> graph) {
+		super(graph, HashSet.class);
 	}
 
 	@Override
@@ -48,6 +51,6 @@ public class Graph<T> extends GeneralTwoKeyMultiMap<String, T, String> {
 
 	@Override
 	public String toString() {
-		return "Graph{" + "map=" + map + '}';
+		return "Graph{" + super.toString() + '}';
 	}
 }

@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
  */
 class DiskFileHandlerTest {
 
-	private static final transient Logger LOGGER = LoggerFactory.getLogger(DiskFileHandlerTest.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DiskFileHandlerTest.class);
 
 	private final DiskFileHandler handler = new DiskFileHandler("UTF-8");
 	
@@ -34,7 +34,7 @@ class DiskFileHandlerTest {
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))){
 			writer.write(payload);
 		} catch (IOException e) {
-			LOGGER.error("Failed to create file {}", filePath, e);
+			LOG.error("Failed to create file {}", filePath, e);
 		}
 
 		CharSequence sequence = handler.read(filePath);
@@ -59,9 +59,9 @@ class DiskFileHandlerTest {
 			String collect = reader.lines().collect(Collectors.joining("\n"));
 			assertEquals(payload, collect);
 		} catch (FileNotFoundException e) {
-			LOGGER.error("Failed to read from file {}, file not found", filePath, e);
+			LOG.error("Failed to read from file {}, file not found", filePath, e);
 		} catch (IOException e) {
-			LOGGER.error("Failed to read from file {}", e);
+			LOG.error("Failed to read from file {}", e);
 		}
 
 		// If deleting the file immediately fails, attempt to delete it on

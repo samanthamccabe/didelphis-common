@@ -18,6 +18,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -60,15 +61,6 @@ class DataTableTest {
 	}
 
 	@Test
-	void testGetRowAsMap() {
-		Map<String, String> rowAsMap = table.getRowAsMap(0);
-		
-		assertEquals("1", rowAsMap.get("X"));
-		assertEquals("a", rowAsMap.get("Y"));
-		assertEquals("L", rowAsMap.get("Z"));
-	}
-
-	@Test
 	void testGetRow() {
 		List<String> row = table.getRow(0);
 		List<String> keys2 = new ArrayList<>();
@@ -84,12 +76,12 @@ class DataTableTest {
 
 	@Test
 	void testGetNumberRows() {
-		assertEquals(3, table.getRows());
+		assertEquals(3, table.rows());
 	}
 
 	@Test
 	void testGetNumberColumns() {
-		assertEquals(3, table.getColumns());
+		assertEquals(3, table.columns());
 	}
 
 	@BeforeEach
@@ -99,35 +91,27 @@ class DataTableTest {
 
 	@Test
 	void testConstructor() {
-		Map<String, List<String>> map = new LinkedHashMap<>();
 
-		List<String> list1 = new ArrayList<>();
-		list1.add("a");
-		list1.add("b");
+		List<List<String>> rows = Arrays.asList(
+				Arrays.asList("a", "c"),
+				Arrays.asList("b", "d")
+		);
 
-		List<String> list2 = new ArrayList<>();
-		list2.add("c");
-		list2.add("d");
+		List<String> keys = Arrays.asList("X", "Y");
 
-		map.put("X", list1);
-		map.put("Y", list2);
-
-		DataTable<String> dataTable = new DataTable<>(map);
+		DataTable<String> dataTable = new DataTable<>(keys, rows);
 
 		// Testing Keys
 		List<String> receivedKeys = dataTable.getKeys();
-		List<String> expectedKeys = new ArrayList<>();
-		expectedKeys.add("X");
-		expectedKeys.add("Y");
 
-		assertEquals(expectedKeys, receivedKeys);
+		assertEquals(keys, receivedKeys);
 
 		// 
 		List<String> columnX = dataTable.getColumn("X");
 		List<String> columnY = dataTable.getColumn("Y");
 
-		assertEquals(list1, columnX);
-		assertEquals(list2, columnY);
+		assertEquals(Arrays.asList("a", "b"), columnX);
+		assertEquals(Arrays.asList("c", "d"), columnY);
 	}
 
 	@Test
@@ -199,7 +183,6 @@ class DataTableTest {
 		assertNotEquals(table.hashCode(), table2.hashCode());
 	}
 
-
 	@Test
 	void testToString() {
 		DataTable<String> table1 = new DataTable<>(table);
@@ -209,41 +192,14 @@ class DataTableTest {
 		assertEquals(table.toString(), table1.toString());
 		assertNotEquals(table.toString(), table2.toString());
 	}
-	
-	@Test
-	void testIterator() {
-		Set<List<String>> received = new HashSet<>();
-		table.iterator().forEachRemaining(received::add);
 
-		List<String> list1 = new ArrayList<>();
-		List<String> list2 = new ArrayList<>();
-		List<String> list3 = new ArrayList<>();
-
-		Collections.addAll(list1, "1", "a", "L");
-		Collections.addAll(list2, "2", "b", "M");
-		Collections.addAll(list3, "3", "c", "N");
-		
-		Set<List<String>>  expected = new HashSet<>();
-		Collections.addAll(expected, list1, list2, list3);
-		assertEquals(expected, received);
-	}
-	
 	private static DataTable<String> createTable() {
-		List<String> list1 = new ArrayList<>();
-		List<String> list2 = new ArrayList<>();
-		List<String> list3 = new ArrayList<>();
-
-		Collections.addAll(list1, "1", "2", "3");
-		Collections.addAll(list2, "a", "b", "c");
-		Collections.addAll(list3, "L", "M", "N");
-
-		// If this is NOT a LinkedHashMap the get(i,j) method will not work correctly
-		Map<String, List<String>> map = new LinkedHashMap<>();
-
-		map.put("X", list1);
-		map.put("Y", list2);
-		map.put("Z", list3);
-
-		return new DataTable<>(map);
+		List<List<String>> list = Arrays.asList(
+				Arrays.asList("1","a","L"),
+				Arrays.asList("2","b","M"),
+				Arrays.asList("3","c","N")
+		);
+		List<String> keys = Arrays.asList("X", "Y", "Z");
+		return new DataTable<>(keys, list);
 	}
 }
