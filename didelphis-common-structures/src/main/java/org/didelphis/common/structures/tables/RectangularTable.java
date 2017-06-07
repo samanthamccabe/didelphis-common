@@ -40,7 +40,7 @@ public class RectangularTable<E>
 		array = new ArrayList<>(row * col);
 	}
 
-	public RectangularTable(Iterable<List<E>> rowList, int row, int col) {
+	public RectangularTable(Iterable<? extends Iterable<E>> rowList, int row, int col) {
 		this(row, col);
 		for (Iterable<E> rowElements : rowList) {
 			for (E element : rowElements) {

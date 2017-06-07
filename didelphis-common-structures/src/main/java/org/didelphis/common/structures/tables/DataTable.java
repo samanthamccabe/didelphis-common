@@ -47,7 +47,7 @@ public class DataTable<E>
 		this.keys = keys;
 	}
 
-	public DataTable(List<String> keys, Collection<List<E>> rowList) {
+	public DataTable(List<String> keys, Collection<? extends Collection<E>> rowList) {
 		super(rowList, rowList.size(), keys.size());
 		this.keys = keys;
 	}

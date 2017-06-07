@@ -41,12 +41,11 @@ public final class BasicSequence<N extends Number> extends AbstractSequence<N> {
 		super(segment);
 	}
 
-	// Used to produce empty copies with the same model
 	public BasicSequence(FeatureModel<N> featureSpecification) {
 		super(featureSpecification);
 	}
 
-	private BasicSequence(Collection<Segment<N>> segments, FeatureModel<N> model) {
+	public BasicSequence(Collection<Segment<N>> segments, FeatureModel<N> model) {
 		super(segments, model);
 	}
 

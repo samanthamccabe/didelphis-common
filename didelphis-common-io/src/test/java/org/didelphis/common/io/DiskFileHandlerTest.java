@@ -14,7 +14,9 @@ import java.io.IOException;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Created by samantha on 3/16/17.
@@ -70,11 +72,37 @@ class DiskFileHandlerTest {
 			file.deleteOnExit();
 		}
 	}
-	
+
+
+	@Test
+	void writeString_Fail() {
+		String filePath = "./foo/testFileWrite.txt";
+		String payload = "Expected Failure";
+		assertFalse(handler.writeString(filePath, payload));
+	}
+
+
 	@Test
 	void testEquals() {
 		assertEquals(handler, new DiskFileHandler("UTF-8"));
 		assertNotEquals(handler, new DiskFileHandler("ISO-8869-1"));
 	}
 
+	@Test
+	void test_hashCode() {
+		assertEquals(handler.hashCode(), new DiskFileHandler("UTF-8").hashCode());
+		assertNotEquals(handler.hashCode(), new DiskFileHandler("UTF-16").hashCode());
+	}
+
+	@Test
+	void test_equals() {
+		assertEquals(handler, new DiskFileHandler("UTF-8"));
+		assertNotEquals(handler, new DiskFileHandler("UTF-16"));
+	}
+
+	@Test
+	void test_toString() {
+		assertEquals(handler.toString(), new DiskFileHandler("UTF-8").toString());
+		assertNotEquals(handler.toString(), new DiskFileHandler("UTF-16").toString());
+	}
 }

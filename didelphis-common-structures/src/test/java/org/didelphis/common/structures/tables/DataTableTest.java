@@ -35,12 +35,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Samantha Fiona Morrigan McCabe
- * Created: 8/27/2015
+ * Samantha Fiona Morrigan McCabe Created: 8/27/2015
  */
 class DataTableTest {
-	
+
 	private static DataTable<String> table;
+
+	@BeforeEach
+	void init() {
+		table = createTable();
+	}
 
 	@Test
 	void testHasKey() {
@@ -84,18 +88,11 @@ class DataTableTest {
 		assertEquals(3, table.columns());
 	}
 
-	@BeforeEach
-	void initTable() {
-		table = createTable();
-	}
-
 	@Test
 	void testConstructor() {
 
-		List<List<String>> rows = Arrays.asList(
-				Arrays.asList("a", "c"),
-				Arrays.asList("b", "d")
-		);
+		List<List<String>> rows = Arrays
+				.asList(Arrays.asList("a", "c"), Arrays.asList("b", "d"));
 
 		List<String> keys = Arrays.asList("X", "Y");
 
@@ -172,7 +169,7 @@ class DataTableTest {
 	void testIndexOutOfBounds() {
 		assertThrows(IndexOutOfBoundsException.class, () -> table.getRow(3));
 	}
-	
+
 	@Test
 	void testHashCode() {
 		DataTable<String> table1 = new DataTable<>(table);
@@ -193,12 +190,39 @@ class DataTableTest {
 		assertNotEquals(table.toString(), table2.toString());
 	}
 
+	@Test
+	void setColumnName() {
+		assertEquals("X", table.setColumnName(0, "P"));
+		assertEquals("Y", table.setColumnName(1, "Q"));
+		assertEquals("Z", table.setColumnName(2, "R"));
+
+		assertEquals("P", table.getColumnName(0));
+		assertEquals("Q", table.getColumnName(1));
+		assertEquals("R", table.getColumnName(2));
+	}
+
+	@Test
+	void getColumnName() {
+		assertEquals("X", table.getColumnName(0));
+		assertEquals("Y", table.getColumnName(1));
+		assertEquals("Z", table.getColumnName(2));
+	}
+
+	@Test
+	void setColumnName_IndexOutOfBounds() {
+		assertThrows(IndexOutOfBoundsException.class, ()-> table.setColumnName(3, ""));
+	}
+
+	@Test
+	void getColumnName_IndexOutOfBounds() {
+		assertThrows(IndexOutOfBoundsException.class, ()-> table.getColumnName(3));
+	}
+
 	private static DataTable<String> createTable() {
 		List<List<String>> list = Arrays.asList(
-				Arrays.asList("1","a","L"),
-				Arrays.asList("2","b","M"),
-				Arrays.asList("3","c","N")
-		);
+				Arrays.asList("1", "a", "L"),
+				Arrays.asList("2", "b", "M"),
+				Arrays.asList("3", "c", "N"));
 		List<String> keys = Arrays.asList("X", "Y", "Z");
 		return new DataTable<>(keys, list);
 	}
