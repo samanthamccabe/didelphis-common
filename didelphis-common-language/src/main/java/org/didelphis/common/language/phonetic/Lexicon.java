@@ -24,7 +24,7 @@ import java.util.List;
  * Samantha Fiona Morrigan McCabe
  * Created: 1/17/2015
  */
-public class Lexicon<N extends Number> implements Iterable<List<Sequence<N>>> {
+public class Lexicon<N> implements Iterable<List<Sequence<N>>> {
 
 	private final List<List<Sequence<N>>> lexicon;
 

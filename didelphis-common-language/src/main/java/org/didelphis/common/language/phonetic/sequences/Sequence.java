@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by samantha on 1/30/17.
  */
-public interface Sequence<N extends Number>
+public interface Sequence<N>
 	  extends ModelBearer<N>,
 	          Deque<Segment<N>>,
 	          List<Segment<N>>,

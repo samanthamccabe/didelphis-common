@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  * Samantha Fiona Morrigan McCabe
  * Created: 3/1/2016
  */
-public class Constraint<N extends Number> implements ModelBearer<N> {
+public class Constraint<N> implements ModelBearer<N> {
 
 	private static final Pattern COMPILE = Pattern.compile("\\s+");
 	

@@ -28,7 +28,7 @@ import java.util.Set;
  * Provides a mapping between symbols and feature values in the context o a
  * feature specification
  */
-public interface FeatureMapping<N extends Number> extends ModelBearer<N> {
+public interface FeatureMapping<N> extends ModelBearer<N> {
 
 	/**
 	 * Computes a canonical {@code String} representation from the provided

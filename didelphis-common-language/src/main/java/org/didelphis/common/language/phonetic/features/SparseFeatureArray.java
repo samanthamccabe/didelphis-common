@@ -29,7 +29,7 @@ import java.util.Objects;
 /**
  * Created by samantha on 3/27/16.
  */
-public final class SparseFeatureArray<N extends Number>
+public final class SparseFeatureArray<N>
 		implements FeatureArray<N> {
 	
 	private final FeatureModel<N> featureModel;

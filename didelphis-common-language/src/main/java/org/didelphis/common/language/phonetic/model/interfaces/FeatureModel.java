@@ -28,7 +28,7 @@ import java.util.List;
  * 
  * A feature featureModel which includes constraints feature co-occurrences
  */
-public interface FeatureModel<N extends Number>
+public interface FeatureModel<N>
 		extends FeatureSpecification {
 
 	/**

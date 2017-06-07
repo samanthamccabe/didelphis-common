@@ -43,7 +43,7 @@ public class SegmenterUtilTest {
 		Assertions.assertEquals(expected, sequence);
 	}
 	
-	private static <N extends Number> Sequence<N> getSequence(FeatureMapping<N> model, String...strings) {
+	private static <N> Sequence<N> getSequence(FeatureMapping<N> model, String...strings) {
 		Sequence<N> segments = new BasicSequence<>(model.getFeatureModel());
 		for (String string : strings) {
 			segments.add(SegmenterUtil.getSegment(string, model, FormatterMode.COMPOSITION));

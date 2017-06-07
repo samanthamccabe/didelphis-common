@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * Created by samantha on 2/20/17.
  */
-public final class EmptyFeatureModel<N extends Number> implements FeatureModel<N> {
+public final class EmptyFeatureModel<N> implements FeatureModel<N> {
 	
 	public static final FeatureModel<Double>  DOUBLE = new EmptyFeatureModel<>();
 	public static final FeatureModel<Integer> INT    = new EmptyFeatureModel<>();

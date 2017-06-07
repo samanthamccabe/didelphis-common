@@ -23,7 +23,7 @@ import java.util.Objects;
  * Samantha Fiona Morrigan McCabe
  * Created: 1/16/2015
  */
-public class LexiconMap<N extends Number> {
+public class LexiconMap<N> {
 
 	private final Map<String, String>  paths;
 	private final Map<String, Lexicon<N>> lexicons;

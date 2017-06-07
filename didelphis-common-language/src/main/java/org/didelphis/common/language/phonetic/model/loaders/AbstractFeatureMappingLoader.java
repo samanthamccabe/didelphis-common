@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 /**
  * Created by samantha on 4/27/15.
  */
-public abstract class AbstractFeatureMappingLoader<N extends Number> {
+public abstract class AbstractFeatureMappingLoader<N> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractFeatureMappingLoader.class);
 
