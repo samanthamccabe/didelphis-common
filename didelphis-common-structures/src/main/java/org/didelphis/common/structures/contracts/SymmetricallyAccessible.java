@@ -22,7 +22,7 @@ public interface SymmetricallyAccessible<K> {
 	 * Retrieves the canonical ordering for the provided key pair. An ordering
 	 * is canonical when only one ordering is stored in an underlying data
 	 * structure.
-	 * See {@link org.didelphis.common.structures.maps.SymmetricalTwoKeyMap}
+	 * See {@link  org.didelphis.common.structures.maps.SymmetricalTwoKeyMap}
 	 *
 	 * @param k1 a key
 	 * @param k2 another key
@@ -33,7 +33,7 @@ public interface SymmetricallyAccessible<K> {
 	 */
 	default Tuple<K, K> canonicalKeyPair(K k1, K k2) {
 		if (k1 instanceof Comparable && k2 instanceof Comparable) {
-			@SuppressWarnings("unchecked") 
+			@SuppressWarnings("unchecked")
 			Comparable<Object> c1 = (Comparable<Object>) k1;
 			int compare = c1.compareTo(k2);
 			return compare < 0 ? new Tuple<>(k1, k2) : new Tuple<>(k2, k1);

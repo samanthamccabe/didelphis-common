@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 /**
@@ -63,7 +64,7 @@ public abstract class AbstractFeatureMapping<N extends Number>
 		String bestSymbol = "";
 		double minimum = Double.MAX_VALUE;
 
-		for (Map.Entry<String, FeatureArray<N>> entry : featureMap.entrySet()) {
+		for (Entry<String, FeatureArray<N>> entry : featureMap.entrySet()) {
 			FeatureArray<N> features = entry.getValue();
 			double difference = totalDifference(featureArray, features);
 			if (difference < minimum) {
@@ -91,7 +92,7 @@ public abstract class AbstractFeatureMapping<N extends Number>
 
 		FeatureArray<N> features = input.getFeatures();
 
-		for (Map.Entry<String, FeatureArray<N>> entry : featureMap.entrySet()) {
+		for (Entry<String, FeatureArray<N>> entry : featureMap.entrySet()) {
 			// This implementation will work but wastes a lot of time on object
 			// allocation
 			FeatureArray<N> value = entry.getValue();
@@ -148,7 +149,7 @@ public abstract class AbstractFeatureMapping<N extends Number>
 		
 		if (featureMap.isEmpty()) {
 			FeatureArray<N> featureArray = new StandardFeatureArray<>(
-				  new ArrayList<N>(),
+					new ArrayList<>(),
 				  featureModel
 			);
 			return new StandardSegment<>(string, featureArray, featureModel);
@@ -194,7 +195,7 @@ public abstract class AbstractFeatureMapping<N extends Number>
 		double minimumDifference = lastMinimum;
 		FeatureArray<N> best = new SparseFeatureArray<>(featureModel);
 
-		for (Map.Entry<String, FeatureArray<N>> entry : modifiers.entrySet()) {
+		for (Entry<String, FeatureArray<N>> entry : modifiers.entrySet()) {
 			FeatureArray<N> diacriticFeatures = entry.getValue();
 
 			FeatureArray<N> compiled = new StandardFeatureArray<>(bestFeatures);

@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Created by samantha on 4/30/17.
@@ -34,7 +35,7 @@ public final class MapUtils {
 	) {
 		@SuppressWarnings("unchecked")
 		Map<K, Collection<V>> map1 = newMap(map.getClass());
-		for (Map.Entry<K, Collection<V>> e : map.entrySet()) {
+		for (Entry<K, Collection<V>> e : map.entrySet()) {
 			K key = e.getKey();
 			map1.put(key, copyCollection(collectionType, e.getValue()));
 		}
@@ -54,11 +55,11 @@ public final class MapUtils {
 			@NotNull Class<? extends Collection> type) {
 		@SuppressWarnings("unchecked")
 		Map<T, Map<U, Collection<V>>> map1 = newMap(map.getClass());
-		for (Map.Entry<T, Map<U, Collection<V>>> e1 : map.entrySet()) {
+		for (Entry<T, Map<U, Collection<V>>> e1 : map.entrySet()) {
 			T key = e1.getKey();
 			@SuppressWarnings("unchecked") 
 			Map<U, Collection<V>> map2 = newMap(map.getClass());
-			for (Map.Entry<U, Collection<V>> e2 : e1.getValue().entrySet()) {
+			for (Entry<U, Collection<V>> e2 : e1.getValue().entrySet()) {
 				map2.put(e2.getKey(), copyCollection(type, e2.getValue()));
 			}
 			map1.put(key, map2);
@@ -80,7 +81,7 @@ public final class MapUtils {
 	) {
 		@SuppressWarnings("unchecked")
 		Map<T, Map<U, V>> map1 = newMap(map.getClass());
-		for (Map.Entry<T, Map<U, V>> entry : map.entrySet()) {
+		for (Entry<T, Map<U, V>> entry : map.entrySet()) {
 			map1.put(entry.getKey(), copyMap(type, entry.getValue()));
 		}
 		return map1;

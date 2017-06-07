@@ -1,7 +1,5 @@
 package org.didelphis.common.language.machines.interfaces;
 
-import org.didelphis.common.structures.tuples.Tuple;
-
 /**
  * Created by samantha on 2/23/17.
  */

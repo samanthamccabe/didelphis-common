@@ -2,8 +2,6 @@ package org.didelphis.common.io;
 
 import org.junit.jupiter.api.Test;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import static org.junit.jupiter.api.Assertions.*;

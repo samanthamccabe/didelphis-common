@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -205,7 +206,7 @@ public abstract class AbstractFeatureMappingLoader<N extends Number> {
 	private void checkFeatureCollisions(String symbol,
 			FeatureArray<N> features) {
 		if (featureMap.containsValue(features)) {
-			for (Map.Entry<String, FeatureArray<N>> e : featureMap.entrySet()) {
+			for (Entry<String, FeatureArray<N>> e : featureMap.entrySet()) {
 				if (features.equals(e.getValue())) {
 					LOG.warn("Collision between features {} and {} --- both " 
 					         + "have value {}", symbol, e.getKey(), features);

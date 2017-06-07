@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 
 /**
@@ -74,7 +75,7 @@ public class GeneralTwoKeyMap<T, U, V>
 	@Override
 	public Collection<Tuple<T, U>> keys() {
 		Collection<Tuple<T, U>> keys = new ArrayList<>();
-		for (Map.Entry<T, Map<U, V>> entry : delegate.entrySet()) {
+		for (Entry<T, Map<U, V>> entry : delegate.entrySet()) {
 			T k1 = entry.getKey();
 			for (U k2 : entry.getValue().keySet()) {
 				keys.add(new Tuple<>(k1, k2));
@@ -115,9 +116,9 @@ public class GeneralTwoKeyMap<T, U, V>
 	@Override
 	public Iterator<Triple<T, U, V>> iterator() {
 		Collection<Triple<T, U, V>> triples = new ArrayList<>();
-		for (Map.Entry<T, Map<U, V>> e1 : delegate.entrySet()) {
+		for (Entry<T, Map<U, V>> e1 : delegate.entrySet()) {
 			T k1 = e1.getKey();
-			for (Map.Entry<U, V> e2 : e1.getValue().entrySet()) {
+			for (Entry<U, V> e2 : e1.getValue().entrySet()) {
 				triples.add(new Triple<>(k1, e2.getKey(), e2.getValue()));
 			}
 		}

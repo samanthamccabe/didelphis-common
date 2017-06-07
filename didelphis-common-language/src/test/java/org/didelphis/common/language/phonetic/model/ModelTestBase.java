@@ -20,8 +20,6 @@ import org.didelphis.common.language.enums.FormatterMode;
 import org.didelphis.common.language.phonetic.SequenceFactory;
 import org.didelphis.common.language.phonetic.model.doubles.DoubleFeatureMapping;
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureMapping;
-import org.didelphis.common.language.phonetic.model.interfaces.FeatureModel;
-import org.didelphis.common.language.phonetic.model.loaders.FeatureModelLoader;
 
 /**
  * Created by samantha on 10/10/15.

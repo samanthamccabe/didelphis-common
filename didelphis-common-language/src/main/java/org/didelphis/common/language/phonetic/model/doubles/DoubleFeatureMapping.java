@@ -10,6 +10,7 @@ import org.didelphis.common.language.phonetic.model.loaders.AbstractFeatureMappi
 import org.didelphis.common.language.phonetic.model.loaders.FeatureModelLoader;
 
 import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +74,7 @@ public final class DoubleFeatureMapping extends AbstractFeatureMapping<Double> {
 
 		@Override
 		protected Double getValue(String string, Double defaultValue) {
-			Normalizer.Form form = Normalizer.Form.NFKC;
+			Form form = Form.NFKC;
 			String normalized = Normalizer.normalize(string, form);
 
 			if (normalized.equals("+")) {

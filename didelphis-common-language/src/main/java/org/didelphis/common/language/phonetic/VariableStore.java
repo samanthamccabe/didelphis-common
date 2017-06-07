@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -78,7 +79,7 @@ public class VariableStore {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 
-		for (Map.Entry<String, List<String>> entry : variables.entrySet()) {
+		for (Entry<String, List<String>> entry : variables.entrySet()) {
 			sb.append(entry.getKey());
 			sb.append(" =");
 			for (String sequence : entry.getValue()) {

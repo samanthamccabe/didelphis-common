@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -436,8 +437,8 @@ public class SequenceTest {
 		Assertions.assertEquals(a, b);
 	}
 
-	private static void assertNotEqual(java.io.Serializable a,
-			java.io.Serializable b) {
+	private static void assertNotEqual(Serializable a,
+			Serializable b) {
 		Assertions.assertFalse(a.equals(b));
 	}
 

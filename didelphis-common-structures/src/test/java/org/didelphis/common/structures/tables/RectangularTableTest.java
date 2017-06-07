@@ -29,16 +29,22 @@ class RectangularTableTest {
 		data.add(Arrays.asList( "6", "7", "8"));
 		data.add(Arrays.asList( "9", "A", "B"));
 
-		table = new RectangularTable<String>(data, 4, 3);
+		table = new RectangularTable<>(data, 4, 3);
 	}
 	
 	@Test
 	void constructor1() {
-		RectangularTable<String> table1 = new RectangularTable<>("X", 2, 2);
+		Table<String> table1 = new RectangularTable<>("X", 2, 2);
 		assertEquals("X", table1.get(0, 0));
 		assertEquals("X", table1.get(0, 1));
 		assertEquals("X", table1.get(1, 0));
 		assertEquals("X", table1.get(1, 1));
+	}
+
+	@Test
+	void constructor1_IndexOutOfBounds() {
+		assertThrows(IndexOutOfBoundsException.class,
+				() -> new RectangularTable<>("", -1, -1));
 	}
 
 	@Test
@@ -50,7 +56,7 @@ class RectangularTableTest {
 		Collections.addAll(row2, "3", "4", "5");
 		Collections.addAll(data, row1, row2);
 
-		RectangularTable<String> table1 = new RectangularTable<>(data, 2, 3);
+		Table<String> table1 = new RectangularTable<>(data, 2, 3);
 		assertEquals("0", table1.get(0, 0));
 		assertEquals("1", table1.get(0, 1));
 		assertEquals("2", table1.get(0, 2));
@@ -320,6 +326,8 @@ class RectangularTableTest {
 				() -> table.insertRow(-1, new ArrayList<>()));
 		assertThrows(IndexOutOfBoundsException.class,
 				() -> table.insertRow(7, new ArrayList<>()));
+		assertThrows(IndexOutOfBoundsException.class,
+				() -> table.insertRow(5, new ArrayList<>()));
 	}
 
 	@Test
@@ -346,6 +354,16 @@ class RectangularTableTest {
 		assertEquals(Arrays.asList("0", "3", "6", "9"), table.getColumn(0));
 		assertEquals(data, table.getColumn(1));
 		assertEquals(Arrays.asList("1", "4", "7", "A"), table.getColumn(2));
+	}
+
+	@Test
+	void insertColumn_IndexOutOfBounds() {
+		assertThrows(IndexOutOfBoundsException.class,
+				() -> table.insertColumn(-1, new ArrayList<>()));
+		assertThrows(IndexOutOfBoundsException.class,
+				() -> table.insertColumn(7, new ArrayList<>()));
+		assertThrows(IndexOutOfBoundsException.class,
+				() -> table.insertColumn(5, new ArrayList<>()));
 	}
 
 	@Test

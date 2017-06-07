@@ -40,7 +40,7 @@ public class SequenceParser<N extends Number> implements MachineParser<Sequence<
 		for (String key : variableStore.getKeys()) {
 			Collection<Sequence<N>> values = variableStore.get(key)
 					.stream()
-					.map(word -> factory.getSequence(word))
+					.map(factory::getSequence)
 					.collect(Collectors.toList());
 			specials.put(key, values);
 		}

@@ -123,7 +123,7 @@ public class SequenceFactory<N extends Number> {
 	}
 
 	public Lexicon<N> getLexiconFromSingleColumn(String... list) {
-		Lexicon<N> lexicon = new Lexicon<N>();
+		Lexicon<N> lexicon = new Lexicon<>();
 		for (String entry : list) {
 			Sequence<N> sequence = getSequence(entry);
 			lexicon.add(sequence);
@@ -169,7 +169,7 @@ public class SequenceFactory<N extends Number> {
 
 	public List<Sequence<N>> getVariableValues(String label) {
 		return variableStore.get(label).stream()
-				.map(word -> getSequence(word))
+				.map(this::getSequence)
 				.collect(Collectors.toList());
 	}
 

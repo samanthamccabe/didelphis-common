@@ -21,11 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -44,6 +40,14 @@ class DataTableTest {
 	@BeforeEach
 	void init() {
 		table = createTable();
+	}
+
+	@Test
+	void testConstructor_keys() {
+		List<String> keys = Arrays.asList("W", "X", "Y", "Z");
+		Table<?> table = new DataTable<>(keys);
+		assertEquals(0, table.rows());
+		assertEquals(4, table.columns());
 	}
 
 	@Test
