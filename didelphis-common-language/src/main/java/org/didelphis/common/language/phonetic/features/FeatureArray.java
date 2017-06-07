@@ -20,7 +20,7 @@ import org.didelphis.common.language.phonetic.ModelBearer;
  * Samantha Fiona Morrigan McCabe
  * Created: 3/26/2016
  */
-public interface FeatureArray<N extends Number>
+public interface FeatureArray<N>
 		extends Comparable<FeatureArray<N>>, Iterable<N>, ModelBearer<N> {
 
 	/**

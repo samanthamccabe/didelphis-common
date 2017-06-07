@@ -16,7 +16,7 @@ import java.util.Set;
 /**
  * Created by samantha on 2/22/17.
  */
-public final class EmptyFeatureMapping<N extends Number> implements
+public final class EmptyFeatureMapping<N> implements
 		FeatureMapping<N> {
 	
 	public static final FeatureMapping<Double>  DOUBLE = new EmptyFeatureMapping<>(EmptyFeatureModel.DOUBLE);

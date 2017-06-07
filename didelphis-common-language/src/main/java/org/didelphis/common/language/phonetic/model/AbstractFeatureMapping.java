@@ -39,7 +39,7 @@ import java.util.Set;
 /**
  * @author Samantha Fiona Morrigan McCabe
  */
-public abstract class AbstractFeatureMapping<N extends Number>
+public abstract class AbstractFeatureMapping<N>
 		implements FeatureMapping<N> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractFeatureMapping.class);

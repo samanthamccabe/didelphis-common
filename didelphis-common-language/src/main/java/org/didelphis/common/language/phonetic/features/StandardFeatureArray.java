@@ -28,7 +28,7 @@ import java.util.List;
  * Samantha Fiona Morrigan McCabe
  * Created: 3/26/2016
  */
-public final class StandardFeatureArray<N extends Number>
+public final class StandardFeatureArray<N>
 		implements FeatureArray<N> {
 	
 	private final FeatureModel<N> featureModel;

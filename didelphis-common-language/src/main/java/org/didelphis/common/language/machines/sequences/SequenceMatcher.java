@@ -11,7 +11,7 @@ import java.util.Objects;
 /**
  * Created by samantha on 2/25/17.
  */
-public class SequenceMatcher<N extends Number>
+public class SequenceMatcher<N>
 		implements MachineMatcher<Sequence<N>> {
 
 	private final SequenceParser<N> parser;

@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 /**
  * Created by samantha on 2/4/17.
  */
-public abstract class AbstractSequence<N extends Number>
+public abstract class AbstractSequence<N>
 		implements Sequence<N>, Delegating<Deque<Segment<N>>> {
 	
 	protected AbstractSequence(Sequence<N> sequence) {

@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  * Author: Samantha Fiona Morrigan McCabe
  * Created: 11/23/2014
  */
-public class SequenceFactory<N extends Number> {
+public class SequenceFactory<N> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SequenceFactory.class);
 	

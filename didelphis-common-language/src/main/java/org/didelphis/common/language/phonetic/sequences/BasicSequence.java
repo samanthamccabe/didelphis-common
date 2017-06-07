@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * @author Samantha Fiona Morrigan McCabe
  */
-public final class BasicSequence<N extends Number> extends AbstractSequence<N> {
+public final class BasicSequence<N> extends AbstractSequence<N> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(
 		  BasicSequence.class);

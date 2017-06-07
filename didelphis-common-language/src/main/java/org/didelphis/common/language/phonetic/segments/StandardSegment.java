@@ -30,7 +30,7 @@ import java.util.Objects;
 /**
  * Samantha Fiona Morrigan McCabe
  */
-public class StandardSegment<N extends Number> implements  Segment<N> {
+public class StandardSegment<N> implements  Segment<N> {
 	
 	private final String symbol;
 	private final FeatureModel<N> featureModel;

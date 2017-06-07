@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 /**
  * Created by samantha on 2/25/17.
  */
-public class SequenceParser<N extends Number> implements MachineParser<Sequence<N>> {
+public class SequenceParser<N> implements MachineParser<Sequence<N>> {
 
 	private final SequenceFactory<N> factory;
 	

@@ -87,7 +87,7 @@ public final class SegmenterUtil {
 	}
 */
 	@Deprecated
-	public static <N extends Number> Segment<N> getSegment(
+	public static <N> Segment<N> getSegment(
 			String string, 
 			FeatureMapping<N> mapping,
 			Segmenter formatterMode) {
@@ -95,7 +95,7 @@ public final class SegmenterUtil {
 	}
 
 	@Deprecated
-	public static <N extends Number> Segment<N> getSegment(
+	public static <N> Segment<N> getSegment(
 			String string,
 			FeatureMapping<N> featureMapping,
 			Collection<String> reservedStrings,
@@ -108,7 +108,7 @@ public final class SegmenterUtil {
 		return formatterMode.split(word, keys);
 	}
 
-	public static <N extends Number> Sequence<N> getSequence(String word, FeatureMapping<N> featureMapping, Collection<String> reserved, Segmenter formatterMode) {
+	public static <N> Sequence<N> getSequence(String word, FeatureMapping<N> featureMapping, Collection<String> reserved, Segmenter formatterMode) {
 		Collection<String> keys = getKeys(featureMapping, reserved);
 		List<String> list = formatterMode.split(word, keys);
 		FeatureModel<N> featureModel = featureMapping.getFeatureModel();
@@ -127,7 +127,7 @@ public final class SegmenterUtil {
 		return sequence;
 	}
 
-	private static <N extends Number> Collection<String> getKeys(
+	private static <N> Collection<String> getKeys(
 			FeatureMapping<N> mapping,
 			Collection<String> reserved) {
 		Collection<String> keys = new ArrayList<>(mapping.getSymbols());
