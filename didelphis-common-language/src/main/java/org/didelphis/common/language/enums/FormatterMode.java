@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -54,7 +55,7 @@ public enum FormatterMode implements Segmenter, Formatter {
 	},
 
 	// Unicode Canonical Decomposition
-	DECOMPOSITION(Normalizer.Form.NFD) {
+	DECOMPOSITION(Form.NFD) {
 		@Override
 		public List<String> split(String string) {
 			return split(string, Collections.emptyList());
@@ -67,7 +68,7 @@ public enum FormatterMode implements Segmenter, Formatter {
 	},
 
 	// Unicode Canonical Decomposition followed by Canonical Composition
-	COMPOSITION(Normalizer.Form.NFC) {
+	COMPOSITION(Form.NFC) {
 		@Override
 		public List<String> split(String string) {
 			return split(string, Collections.emptyList());
@@ -80,7 +81,7 @@ public enum FormatterMode implements Segmenter, Formatter {
 	},
 
 	// Uses segmentation algorithm with Unicode Canonical Decomposition
-	INTELLIGENT(Normalizer.Form.NFD) {
+	INTELLIGENT(Form.NFD) {
 
 		private static final int BINDER_START       = 0x035C;
 		private static final int BINDER_END         = 0x0362;
@@ -206,9 +207,9 @@ public enum FormatterMode implements Segmenter, Formatter {
 		}
 	};
 
-	private final Normalizer.Form form;
+	private final Form form;
 
-	FormatterMode(Normalizer.Form param) {
+	FormatterMode(Form param) {
 		form = param;
 	}
 
@@ -217,5 +218,5 @@ public enum FormatterMode implements Segmenter, Formatter {
 		return (form == null) ? string : Normalizer.normalize(string, form);
 	}
 
-	private final transient Logger logger = LoggerFactory.getLogger(FormatterMode.class);
+	private final Logger logger = LoggerFactory.getLogger(FormatterMode.class);
 }

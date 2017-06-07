@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
  */
 public final class DoubleFeatureModel implements FeatureModel<Double> {
 
-	private static final transient Logger LOG = LoggerFactory.getLogger(DoubleFeatureModel.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DoubleFeatureModel.class);
 
 	private static final String VALUE = "(-?\\d|[A-Zα-ω]+)";
 	private static final String NAME = "(\\w+)";

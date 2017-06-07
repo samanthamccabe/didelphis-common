@@ -18,6 +18,7 @@ class GeneralTwoKeyMultiMapTest extends TwoKeyMapTestBase {
 	private GeneralTwoKeyMultiMap<String, String, String> map1;
 	private GeneralTwoKeyMultiMap<String, String, String> map2;
 	
+	@SuppressWarnings("unchecked")
 	@BeforeEach
 	void init() {
 		map = new GeneralTwoKeyMultiMap<>();
@@ -32,8 +33,8 @@ class GeneralTwoKeyMultiMapTest extends TwoKeyMapTestBase {
 		map.add("a", "c", "v1");
 		map.add("a", "c", "v2");
 
-		map1 = new GeneralTwoKeyMultiMap<>(map);
-		map2 = new GeneralTwoKeyMultiMap<>(map);
+		map1 = new GeneralTwoKeyMultiMap<>(map, HashSet.class);
+		map2 = new GeneralTwoKeyMultiMap<>(map, HashSet.class);
 		map2.add("x", "y", "z");
 	}
 	

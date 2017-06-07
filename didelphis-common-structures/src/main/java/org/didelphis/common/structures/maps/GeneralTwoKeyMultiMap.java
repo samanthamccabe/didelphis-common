@@ -19,6 +19,7 @@ package org.didelphis.common.structures.maps;
 
 import org.didelphis.common.structures.contracts.Delegating;
 import org.didelphis.common.structures.maps.interfaces.TwoKeyMultiMap;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -29,21 +30,34 @@ import java.util.Objects;
  * Samantha Fiona Morrigan McCabe
  * Created: 4/10/2016
  */
+@SuppressWarnings("rawtypes")
 public class GeneralTwoKeyMultiMap<T, U, V> 
 		extends GeneralTwoKeyMap<T, U, Collection<V>>
 		implements TwoKeyMultiMap<T, U, V> {
 
 	private static final int HASH_ID = 0x50de3d56;
 	
+	private final Class<? extends Collection> type;
+
 	public GeneralTwoKeyMultiMap() {
+		//noinspection unchecked
+		type = HashSet.class;
 	}
 
-	public GeneralTwoKeyMultiMap(Map<T, Map<U, Collection<V>>> delegateMap) {
+	public GeneralTwoKeyMultiMap(
+			@NotNull Map<T, Map<U, Collection<V>>> delegateMap,
+			@NotNull Class<? extends Collection> type
+	) {
 		super(delegateMap);
+		this.type = type;
 	}
 	
-	public GeneralTwoKeyMultiMap(GeneralTwoKeyMultiMap<T, U, V> map) {
-		this(MapUtils.copyMultiMap(map.getDelegate()));
+	public GeneralTwoKeyMultiMap(
+			@NotNull Delegating<Map<T, Map<U, Collection<V>>>> map,
+			@NotNull Class<? extends Collection> type
+	) {
+		super(MapUtils.copyTwoKeyMultiMap(map.getDelegate(), type));
+		this.type = type;
 	}
 
 	@Override
@@ -51,7 +65,7 @@ public class GeneralTwoKeyMultiMap<T, U, V>
 		if (contains(k1, k2)) {
 			get(k1, k2).add(value);
 		} else {
-			Collection<V> set = new HashSet<>();
+			Collection<V> set = MapUtils.newCollection(type);
 			set.add(value);
 			put(k1, k2, set);
 		}
@@ -72,6 +86,6 @@ public class GeneralTwoKeyMultiMap<T, U, V>
 	
 	@Override
 	public String toString() {
-		return getClass().getName() + "{"+getDelegate()+"}";
+		return getClass().getName() + '{' + getDelegate() + '}';
 	}
 }

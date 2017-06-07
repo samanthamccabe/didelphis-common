@@ -26,12 +26,12 @@ public abstract class TwoKeyMapTestBase {
 	}
 
 	static <T, U, V> void testContains(TwoKeyMap<T, U, V> map, T k1, U k2) {
-		String string = "key (" + k1 + ',' + k2 + ") should be found in map";
+		String string = "key (" + k1 + ',' + k2 + ") should be found in maps";
 		assertTrue(map.contains(k1, k2),string);
 	}
 
 	static <T, U, V> void testNotContains(TwoKeyMap<T, U, V> map, T k1, U k2) {
-		String string = "key (" + k1 + ',' + k2 + ") should *not* be found in map";
+		String string = "key (" + k1 + ',' + k2 + ") should *not* be found in maps";
 		assertFalse(map.contains(k1, k2),string);
 	}
 }

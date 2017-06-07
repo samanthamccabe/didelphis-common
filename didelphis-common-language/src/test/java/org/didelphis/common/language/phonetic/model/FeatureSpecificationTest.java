@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * Samantha Fiona Morrigan McCabe Created: 7/4/2016
  */
 public class FeatureSpecificationTest {
-	private static final transient Logger LOGGER = LoggerFactory.getLogger(
+	private static final Logger LOG = LoggerFactory.getLogger(
 			FeatureSpecificationTest.class);
 	
 	private static final FeatureSpecification MODEL = load();

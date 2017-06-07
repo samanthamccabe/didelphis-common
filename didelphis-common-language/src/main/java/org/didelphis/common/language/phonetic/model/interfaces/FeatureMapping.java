@@ -53,16 +53,16 @@ public interface FeatureMapping<N extends Number> extends ModelBearer<N> {
 	boolean containsKey(String key);
 
 	/**
-	 * Provides a contained map from symbols to features for base symbols
-	 * @return a map containing the relevant data; it is recommended that
+	 * Provides a contained maps from symbols to features for base symbols
+	 * @return a maps containing the relevant data; it is recommended that
 	 *      this not be modifiable
 	 */
 	Map<String, FeatureArray<N>> getFeatureMap();
 
 	/**
-	 * Provides a contained map from symbols to features for modifier and 
+	 * Provides a contained maps from symbols to features for modifier and 
 	 * diacritic characters
-	 * @return a map containing the relevant data; it is recommended that
+	 * @return a maps containing the relevant data; it is recommended that
 	 *      this not be modifiable
 	 */
 	Map<String, FeatureArray<N>> getModifiers();

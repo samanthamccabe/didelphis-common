@@ -1,5 +1,8 @@
 package org.didelphis.common.io;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,30 +19,39 @@ import java.io.Reader;
  */
 public final class IOUtil {
 
-	private static final transient Logger LOGGER = LoggerFactory.getLogger(IOUtil.class);
+	private static final Logger LOG = LoggerFactory.getLogger(IOUtil.class);
 
 	private IOUtil() {}
-	
-	public static String readPath(String path) {
+
+	@Nullable
+	@Contract("null -> null")
+	public static String readPath(@NotNull String path) {
 		File file = new File(path);
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("Reading from file {}", file);
+		}
 		try (InputStream stream = new FileInputStream(file)) {
 			return readStream(stream);
 		} catch (IOException e) {
-			LOGGER.error("Failed to read from path {}", path, e);
-		}
-		return null;
-	}
-	
-	public static String readStream(InputStream stream) {
-		try (Reader reader = new BufferedReader(new InputStreamReader(stream))) {
-			return readString(reader);
-		} catch (IOException e) {
-			LOGGER.error("Failed to read from stream", e);
+			LOG.error("Failed to read from path {}", path, e);
 		}
 		return null;
 	}
 
-	private static String readString(Reader reader) throws IOException {
+	@Nullable
+	@Contract("null -> null")
+	public static String readStream(@NotNull InputStream stream) {
+		try (Reader reader = new BufferedReader(new InputStreamReader(stream))) {
+			return readString(reader);
+		} catch (IOException e) {
+			LOG.error("Failed to read from stream", e);
+		}
+		return null;
+	}
+
+	@NotNull
+	@Contract("null -> fail")
+	private static String readString(@NotNull Reader reader) throws IOException {
 		StringBuilder sb = new StringBuilder(0x1000);
 		int r = reader.read();
 		while (r >= 0) {

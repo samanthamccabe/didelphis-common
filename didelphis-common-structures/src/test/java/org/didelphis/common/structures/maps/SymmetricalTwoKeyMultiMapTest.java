@@ -3,6 +3,8 @@ package org.didelphis.common.structures.maps;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashSet;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
@@ -15,6 +17,7 @@ class SymmetricalTwoKeyMultiMapTest {
 	private SymmetricalTwoKeyMultiMap<String, String> map1;
 	private SymmetricalTwoKeyMultiMap<String, String> map2;
 
+	@SuppressWarnings("unchecked")
 	@BeforeEach
 	void init() {
 		map = new SymmetricalTwoKeyMultiMap<>();
@@ -25,8 +28,8 @@ class SymmetricalTwoKeyMultiMapTest {
 		map.add("a", "c", "x2");
 		map.add("d", "e", "y");
 		
-		map1 = new SymmetricalTwoKeyMultiMap<>(map);
-		map2 = new SymmetricalTwoKeyMultiMap<>(map);
+		map1 = new SymmetricalTwoKeyMultiMap<>(map, HashSet.class);
+		map2 = new SymmetricalTwoKeyMultiMap<>(map, HashSet.class);
 		map2.remove("d", "e");
 	}
 	

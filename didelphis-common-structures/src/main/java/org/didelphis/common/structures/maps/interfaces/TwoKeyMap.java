@@ -46,12 +46,12 @@ public interface TwoKeyMap<T, U, V>
 	 * @param k1 the first key; may be null
 	 * @param k2 the second key; may be null
 	 *
-	 * @return true if the map contains a value under the two keys
+	 * @return true if the maps contains a value under the two keys
 	 */
 	boolean contains(T k1, U k2);
 
 	/**
-	 * @return a collection of tuples containing the map's key pairs
+	 * @return a collection of tuples containing the maps's key pairs
 	 */
 	Collection<Tuple<T, U>> keys();
 

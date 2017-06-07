@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 public class StandardFeatureModelTest extends ModelTestBase {
 
-	private static final transient Logger LOGGER = LoggerFactory.getLogger(StandardFeatureModelTest.class);
+	private static final Logger LOG = LoggerFactory.getLogger(StandardFeatureModelTest.class);
 
 	private static final Double NAN = Double.NaN;
 	private static final Double INF = Double.NEGATIVE_INFINITY;

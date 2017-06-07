@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -44,7 +45,7 @@ import static org.didelphis.common.utilities.Patterns.template;
  */
 public final class StandardStateMachine<T> implements StateMachine<T> {
 
-	private static final transient Logger LOGGER = LoggerFactory.getLogger(
+	private static final Logger LOG = LoggerFactory.getLogger(
 			StandardStateMachine.class);
 
 	private static final Pattern ILLEGAL = template("#$1|$1$1", "[*+?]");
@@ -165,7 +166,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 					for (Integer mIndex : indicesToCheck) {
 						// ----------------------------------------------------
 						Map<T, Collection<String>> map = graph.getDelegate().get(currentNode);
-						for (Map.Entry<T, Collection<String>> entry : map.entrySet()) {
+						for (Entry<T, Collection<String>> entry : map.entrySet()) {
 							T arc = entry.getKey();
 							for (String node : entry.getValue()) {
 								int match = matcher.match(target, arc, mIndex);

@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 
 /**
@@ -78,7 +79,7 @@ public final class SparseFeatureArray<N extends Number>
 					"Attempting to compare arrays of different lengths");
 		}
 
-		for (Map.Entry<Integer, N> entry : features.entrySet()) {
+		for (Entry<Integer, N> entry : features.entrySet()) {
 			N a = entry.getValue();
 			N b = array.get(entry.getKey());
 			if ((b != null) && !a.equals(b)) {

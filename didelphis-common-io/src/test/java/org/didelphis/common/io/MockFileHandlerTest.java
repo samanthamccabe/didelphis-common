@@ -48,8 +48,13 @@ class MockFileHandlerTest {
 	@Test
 	void writeString() {
 		handler.writeString("newFile","new payload");
-		
 		assertEquals("new payload", map.get("newFile"));
 	}
 
+	@Test
+	void testToString() {
+		assertEquals(handler, handler);
+		assertEquals(handler, new MockFileHandler(map));
+		assertNotEquals(handler, new MockFileHandler(new HashMap<>()));
+	}
 }

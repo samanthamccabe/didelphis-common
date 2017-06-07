@@ -2,10 +2,14 @@ package org.didelphis.common.language.phonetic.sequences;
 
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureModel;
 import org.didelphis.common.language.phonetic.segments.Segment;
+import org.didelphis.common.structures.contracts.Delegating;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,7 +25,7 @@ import java.util.stream.Stream;
  * Created by samantha on 2/4/17.
  */
 public abstract class AbstractSequence<N extends Number>
-		implements Sequence<N> {
+		implements Sequence<N>, Delegating<Deque<Segment<N>>> {
 	
 	protected AbstractSequence(Sequence<N> sequence) {
 		segmentList = new LinkedList<>(sequence);
@@ -45,6 +49,11 @@ public abstract class AbstractSequence<N extends Number>
 	
 	protected final LinkedList<Segment<N>> segmentList;
 	protected final FeatureModel<N> featureModel;
+
+	@Override
+	public Deque<Segment<N>> getDelegate() {
+		return segmentList;
+	}
 
 	@Override
 	public boolean remove(Object o) {
@@ -231,27 +240,17 @@ public abstract class AbstractSequence<N extends Number>
 		return segmentList.iterator();
 	}
 
+	@NotNull
 	@Override
 	public Object[] toArray() {
-		int size = segmentList.size();
-		return IntStream.range(0, size)
-				.mapToObj(index -> segmentList.get(index))
-				.toArray();
+		return segmentList.toArray();
 	}
 
+	@NotNull
 	@Override
-	public <T> T[] toArray(T[] a) {
-		int size = segmentList.size();
-		Object[] elementData = toArray();
-		if (a.length < size) {
-			//noinspection unchecked,SuspiciousArrayCast
-			return (T[]) Arrays.copyOf(elementData, size, a.getClass());
-		}
-		System.arraycopy(elementData, 0, a, 0, size);
-		if (a.length > size) {
-			a[size] = null;
-		}
-		return a;
+	@SuppressWarnings({"unchecked", "SuspiciousToArrayCall"})
+	public <T> T[] toArray(@NotNull T[] a) {
+		return segmentList.toArray(a);
 	}
 
 	@Override

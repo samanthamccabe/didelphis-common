@@ -6,8 +6,12 @@ import org.didelphis.common.structures.tuples.Tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -134,14 +138,28 @@ class SymmetricalTwoKeyMapTest {
 	
 	@Test
 	void keys() {
-		Collection<Tuple<String, String>> expected = new HashSet<>();
+		Collection<Tuple<String, String>> expected = new ArrayList<>();
 		expected.add(new Tuple<>("A", "B"));
 		expected.add(new Tuple<>("A", "C"));
-		expected.add(new Tuple<>("B", "C"));
 		expected.add(new Tuple<>("A", "D"));
+		expected.add(new Tuple<>("B", "C"));
 		expected.add(new Tuple<>("B", "D"));
 		expected.add(new Tuple<>("C", "D"));
-		
+
+		try {
+			HashMap<String, String> hashMap = new HashMap<>();
+			hashMap.put("X", "Y");
+			
+			@SuppressWarnings("unchecked")
+			Map<String, String> map = HashMap.class
+					.getConstructor(Map.class)
+					.newInstance(hashMap);
+			
+			assertEquals("Y", map.get("X"));
+		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+//			e.printStackTrace();
+		}
+
 		assertEquals(expected, map.keys());
 	}
 	

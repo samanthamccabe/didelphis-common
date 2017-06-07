@@ -3,6 +3,7 @@ package org.didelphis.common.language.machines;
 import org.didelphis.common.language.machines.interfaces.StateMachine;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Created by samantha on 3/14/17.
@@ -12,7 +13,7 @@ public final class MachineUtils {
 	private MachineUtils() {}
 
 	private <T> void generate(StateMachine<T> machine) {
-		for (Map.Entry<String, Graph<T>> e : machine.getGraphs().entrySet()) {
+		for (Entry<String, Graph<T>> e : machine.getGraphs().entrySet()) {
 			
 		}
 	}
@@ -58,9 +59,9 @@ public final class MachineUtils {
 		int arcId = 1;
 		Set<DisplayEdge> displayEdges = new HashSet<DisplayEdge>();
 		for (String nodeId : graph.getKeys()) {
-			Map<Sequence, Set<String>> map = graph.get(nodeId);
+			Map<Sequence, Set<String>> maps = graph.get(nodeId);
 
-			for (Map.Entry<Sequence, Set<String>> entry : map.entrySet()) {
+			for (Map.Entry<Sequence, Set<String>> entry : maps.entrySet()) {
 				Sequence key = entry.getKey();
 				Set<String> value = entry.getValue();
 

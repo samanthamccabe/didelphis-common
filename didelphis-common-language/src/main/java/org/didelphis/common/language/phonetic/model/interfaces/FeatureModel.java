@@ -26,7 +26,7 @@ import java.util.List;
  * Samantha Fiona Morrigan McCabe
  * Created: 7/31/2016
  * 
- * A feature featureModel which includes constraints feature co-occurances
+ * A feature featureModel which includes constraints feature co-occurrences
  */
 public interface FeatureModel<N extends Number>
 		extends FeatureSpecification {

@@ -18,8 +18,6 @@ import org.didelphis.common.language.machines.Graph;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
 
 /**
  * Samantha Fiona Morrigan McCabe
@@ -34,7 +32,7 @@ public interface StateMachine<T> {
 	String getId();
 
 	/**
-	 * Returns a map of {@code StateMachine} ids to its associated graph. This
+	 * Returns a maps of {@code StateMachine} ids to its associated graph. This
 	 * ensures accessibility for machines which contain multiple embedded state
 	 * machines.
 	 * @return {@code Map} from {@code StateMachine} id → {@code Graph}
