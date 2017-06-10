@@ -1,48 +1,56 @@
-/******************************************************************************
- * Copyright (c) 2016 Samantha Fiona McCabe                                   *
- *                                                                            *
- * This program is free software: you can redistribute it and/or modify       *
- * it under the terms of the GNU General Public License as published by       *
- * the Free Software Foundation, either version 3 of the License, or          *
- * (at your option) any later version.                                        *
- *                                                                            *
- * This program is distributed in the hope that it will be useful,            *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of             *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the              *
- * GNU General Public License for more details.                               *
- *                                                                            *
- * You should have received a copy of the GNU General Public License          *
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.      *
- ******************************************************************************/
+/*=============================================================================
+ = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
+ =
+ = Licensed under the Apache License, Version 2.0 (the "License");
+ = you may not use this file except in compliance with the License.
+ = You may obtain a copy of the License at
+ =     http://www.apache.org/licenses/LICENSE-2.0
+ = Unless required by applicable law or agreed to in writing, software
+ = distributed under the License is distributed on an "AS IS" BASIS,
+ = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ = See the License for the specific language governing permissions and
+ = limitations under the License.
+ =============================================================================*/
 
 package org.didelphis.common.language.phonetic.model.interfaces;
 
 import org.didelphis.common.language.phonetic.ModelBearer;
 import org.didelphis.common.language.phonetic.features.FeatureArray;
 import org.didelphis.common.language.phonetic.segments.Segment;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Set;
 
 /**
- * Provides a mapping between symbols and feature values in the context o a
- * feature specification
+ * The {@code FeatureMapping} provides a mapping between symbols and feature
+ * arrays. It is an extension of {@link ModelBearer} rather than
+ * {@link FeatureModel} in order to express the fact that multiple mappings can
+ * derive from the same model due to different notational standards.
+ *
+ * @author Samantha Fiona McCabe
+ * @since 0.1.0
+ *
+ * Date: 2017-02-16
  */
 public interface FeatureMapping<N> extends ModelBearer<N> {
 
 	/**
 	 * Computes a canonical {@code String} representation from the provided
 	 * features. Output should be deterministic and consistent with the
-	 * implementation of {@link #getSegment}
+	 * implementation of {@link #parseSegment}
 	 * @param featureArray the {@code FeatureArray} to decode
 	 * @return //TODO:
 	 */
-	String findBestSymbol(FeatureArray<N> featureArray);
+	@NotNull
+	String findBestSymbol(@NotNull FeatureArray<N> featureArray);
 
 	/**
-	 * 
-	 * @return
+	 * Returns all symbols defined in the mapping.
+	 * @return all symbols defined in the mapping.
 	 */
+	@NotNull
 	Set<String> getSymbols();
 
 	/**
@@ -50,13 +58,14 @@ public interface FeatureMapping<N> extends ModelBearer<N> {
 	 * @param key
 	 * @return
 	 */
-	boolean containsKey(String key);
+	boolean containsKey(@NotNull String key);
 
 	/**
 	 * Provides a contained maps from symbols to features for base symbols
 	 * @return a maps containing the relevant data; it is recommended that
 	 *      this not be modifiable
 	 */
+	@NotNull
 	Map<String, FeatureArray<N>> getFeatureMap();
 
 	/**
@@ -65,6 +74,7 @@ public interface FeatureMapping<N> extends ModelBearer<N> {
 	 * @return a maps containing the relevant data; it is recommended that
 	 *      this not be modifiable
 	 */
+	@NotNull
 	Map<String, FeatureArray<N>> getModifiers();
 
 	/**
@@ -73,15 +83,25 @@ public interface FeatureMapping<N> extends ModelBearer<N> {
 	 * @param key the symbol to look up in the mapping
 	 * @return an associated {@code FeatureArray}; may be null if not found
 	 */
+	@Nullable
 	FeatureArray<N> getFeatureArray(String key);
 
 	/**
-	 * Recodes a string as a {@code Segment}; output must be consistent with
-	 * the output of {@link #findBestSymbol}
-	 * @param string a well formed {@code String} within the context of the
-	 *      mapping. Cannot be {@code null}. 
-	 * @return a new {@code Segment} decoded from the provided {@code string}.
-	 *      Should not return {@code null}
+	 * Parses as string into a {@link Segment}
+	 *
+	 * If the output of this method is passed {@link #findBestSymbol}, the
+	 * output of that method should be equal to the input of this one. That is,
+	 *
+	 * {@code findBestSymbol(parseSegment(string)) == string}
+	 *
+	 *
+	 * @param string a well formed {@link String} whose constituent characters
+	 *      are present in this mapping. Cannot be {@code null}.
+	 * @return a new {@link Segment} parsed from the provided {@link String}.
+	 * @throws org.didelphis.common.language.exceptions.ParseException if the
+	 *      provided string is ill-formed or contains character not present in
+	 *      the mapping
 	 */
-	Segment<N> getSegment(String string);
+	@NotNull
+	Segment<N> parseSegment(@NotNull String string);
 }

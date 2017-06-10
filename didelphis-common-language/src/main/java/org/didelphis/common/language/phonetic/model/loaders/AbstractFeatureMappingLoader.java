@@ -1,16 +1,16 @@
-/******************************************************************************
- * Copyright (c) 2016. Samantha Fiona McCabe                                  *
- *                                                                            *
- * Licensed under the Apache License, Version 2.0 (the "License");            *
- * you may not use this file except in compliance with the License.           *
- * You may obtain a copy of the License at                                    *
- *     http://www.apache.org/licenses/LICENSE-2.0                             *
- * Unless required by applicable law or agreed to in writing, software        *
- * distributed under the License is distributed on an "AS IS" BASIS,          *
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
- * See the License for the specific language governing permissions and        *
- * limitations under the License.                                             *
- ******************************************************************************/
+/*=============================================================================
+ = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
+ =
+ = Licensed under the Apache License, Version 2.0 (the "License");
+ = you may not use this file except in compliance with the License.
+ = You may obtain a copy of the License at
+ =     http://www.apache.org/licenses/LICENSE-2.0
+ = Unless required by applicable law or agreed to in writing, software
+ = distributed under the License is distributed on an "AS IS" BASIS,
+ = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ = See the License for the specific language governing permissions and
+ = limitations under the License.
+ =============================================================================*/
 
 package org.didelphis.common.language.phonetic.model.loaders;
 
@@ -18,13 +18,11 @@ import org.didelphis.common.io.FileHandler;
 import org.didelphis.common.language.enums.FormatterMode;
 import org.didelphis.common.language.phonetic.features.FeatureArray;
 import org.didelphis.common.language.phonetic.features.SparseFeatureArray;
-import org.didelphis.common.language.phonetic.model.FeatureType;
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -138,14 +136,6 @@ public abstract class AbstractFeatureMappingLoader<N> {
 		populateModifiers(modifierZone);
 	}
 
-	/**
-	 * Specifies how a given symbol is to be interpreted (e.g. + as 1, - as 0)
-	 * @param string the value to be read
-	 * @param defaultValue the value used for missing data
-	 * @return the value for that feature symbol
-	 */
-	protected abstract N getValue(String string, N defaultValue);
-	
 	protected abstract FeatureModel<N> loadModel(String path);
 	
 	protected abstract FeatureModel<N> loadModel(List<String> lines);
@@ -160,7 +150,7 @@ public abstract class AbstractFeatureMappingLoader<N> {
 				int i = 0;
 				for (String value : values) {
 					if (!value.isEmpty()) {
-						array.set(i, getValue(value, null));
+						array.set(i, featureModel.parseValue(value));
 					}
 					i++;
 				}
@@ -179,21 +169,11 @@ public abstract class AbstractFeatureMappingLoader<N> {
 			if (matcher.matches()) {
 				String symbol = formatterMode.normalize(matcher.group(1));
 				String[] values = TAB_PATTERN.split(matcher.group(2), -1);
-
 				int size = featureModel.size();
-
-				List<FeatureType> featureTypes = featureModel.getFeatureTypes();
 				FeatureArray<N> features = new SparseFeatureArray<>(featureModel);
-
 				for (int i = 0; i < size; i++) {
-					FeatureType type = featureTypes.get(i);
 					String value = values[i];
-					if (!type.matches(value)) {
-						LOG.warn("Value '{}' at position {} is not valid for {}" 
-						         + " in array: {}", value, i, type, 
-								Arrays.toString(values));
-					}
-					features.set(i, getValue(value, null));
+					features.set(i, featureModel.parseValue(value));
 				}
 				checkFeatureCollisions(symbol, features);
 				featureMap.put(symbol, features);

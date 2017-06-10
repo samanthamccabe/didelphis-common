@@ -1,16 +1,16 @@
-/******************************************************************************
- * Copyright (c) 2016. Samantha Fiona McCabe                                  *
- *                                                                            *
- * Licensed under the Apache License, Version 2.0 (the "License");            *
- * you may not use this file except in compliance with the License.           *
- * You may obtain a copy of the License at                                    *
- *     http://www.apache.org/licenses/LICENSE-2.0                             *
- * Unless required by applicable law or agreed to in writing, software        *
- * distributed under the License is distributed on an "AS IS" BASIS,          *
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
- * See the License for the specific language governing permissions and        *
- * limitations under the License.                                             *
- ******************************************************************************/
+/*=============================================================================
+ = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
+ =
+ = Licensed under the Apache License, Version 2.0 (the "License");
+ = you may not use this file except in compliance with the License.
+ = You may obtain a copy of the License at
+ =     http://www.apache.org/licenses/LICENSE-2.0
+ = Unless required by applicable law or agreed to in writing, software
+ = distributed under the License is distributed on an "AS IS" BASIS,
+ = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ = See the License for the specific language governing permissions and
+ = limitations under the License.
+ =============================================================================*/
 
 package org.didelphis.common.language.phonetic.features;
 
@@ -35,11 +35,18 @@ public final class SparseFeatureArray<N>
 	private final FeatureModel<N> featureModel;
 	private final Map<Integer, N> features;
 
+	/**
+	 * @param featureModel
+	 */
 	public SparseFeatureArray(FeatureModel<N> featureModel) {
 		this.featureModel = featureModel;
 		features = new HashMap<>();
 	}
 
+	/**
+	 * @param list
+	 * @param featureModel
+	 */
 	public SparseFeatureArray(List<N> list, FeatureModel<N> featureModel) {
 		this(featureModel);
 		for (int i = 0; i < list.size(); i++) {
@@ -50,6 +57,9 @@ public final class SparseFeatureArray<N>
 		}
 	}
 
+	/**
+	 * @param array
+	 */
 	public SparseFeatureArray(SparseFeatureArray<N> array) {
 		featureModel = array.getFeatureModel();
 		features = new HashMap<>(array.features);
@@ -80,9 +90,9 @@ public final class SparseFeatureArray<N>
 		}
 
 		for (Entry<Integer, N> entry : features.entrySet()) {
-			N a = entry.getValue();
-			N b = array.get(entry.getKey());
-			if ((b != null) && !a.equals(b)) {
+			N x = entry.getValue();
+			N y = array.get(entry.getKey());
+			if ((featureModel.isDefined(y)) && !x.equals(y)) {
 				return false;
 			}
 		}
@@ -90,22 +100,21 @@ public final class SparseFeatureArray<N>
 	}
 
 	@Override
-	public void alter(FeatureArray<N> array) {
+	public boolean alter(FeatureArray<N> array) {
 		if (size() != array.size()) {
 			throw new IllegalArgumentException(
 					"Attempting to compare arrays of different lengths");
 		}
 
-		if (array instanceof SparseFeatureArray) {
-			features.putAll(((SparseFeatureArray<N>) array).features);
-		} else{
+		boolean changed = false;
 			for (int i = 0; i < size(); i++) {
-				N t = array.get(i);
-				if (t != null) {
-					features.put(i, t);
+				N v = array.get(i);
+				if (featureModel.isDefined(v)) {
+					changed |= true;
+					features.put(i, v);
 				}
 			}
-		}
+		return changed;
 	}
 
 	@Override
@@ -124,23 +133,7 @@ public final class SparseFeatureArray<N>
 		for (int i = 0; i < size(); i++) {
 			N x = get(i);
 			N y = o.get(i);
-			int comparison;
-
-			if (x == null && y == null) {
-				comparison = 0;
-			} else if (x == null) {
-				comparison = -1;
-			}else if (y == null) {
-				comparison = 1;
-			} else {
-				if (x instanceof Comparable && y instanceof Comparable) {
-					Comparable<Object> xC = (Comparable<Object>) x;
-					Comparable<Object> yC = (Comparable<Object>) y;
-					comparison = xC.compareTo(yC);
-				} else {
-					comparison = String.valueOf(x).compareTo(String.valueOf(y));
-				}
-			}
+			int comparison = featureModel.compare(x,y);
 			if (comparison != 0) {
 				return comparison;
 			}

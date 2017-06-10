@@ -1,21 +1,16 @@
-/*******************************************************************************
- * Copyright (c) 2015. Samantha Fiona McCabe
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- ******************************************************************************/
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+/*=============================================================================
+ = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
+ =
+ = Licensed under the Apache License, Version 2.0 (the "License");
+ = you may not use this file except in compliance with the License.
+ = You may obtain a copy of the License at
+ =     http://www.apache.org/licenses/LICENSE-2.0
+ = Unless required by applicable law or agreed to in writing, software
+ = distributed under the License is distributed on an "AS IS" BASIS,
+ = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ = See the License for the specific language governing permissions and
+ = limitations under the License.                                               
+ =============================================================================*/
 
 package org.didelphis.common.language.phonetic.model;
 
@@ -27,20 +22,22 @@ import org.didelphis.common.language.phonetic.model.interfaces.FeatureMapping;
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureModel;
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureSpecification;
 import org.didelphis.common.language.phonetic.segments.Segment;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 /**
- * @author Samantha Fiona Morrigan McCabe
+ * @author Samantha Fiona McCabe
  */
-public abstract class AbstractFeatureMapping<N>
-		implements FeatureMapping<N> {
+public abstract class AbstractFeatureMapping<N> implements FeatureMapping<N> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractFeatureMapping.class);
 
@@ -53,12 +50,13 @@ public abstract class AbstractFeatureMapping<N>
 			Map<String, FeatureArray<N>> featureMap,
 			Map<String, FeatureArray<N>> modifiers) {
 		this.featureModel = featureModel;
-		this.featureMap = featureMap;
-		this.modifiers = modifiers;
+		this.featureMap = Collections.unmodifiableMap(featureMap);
+		this.modifiers = Collections.unmodifiableMap(modifiers);
 	}
 
+	@NotNull
 	@Override
-	public String findBestSymbol(FeatureArray<N> featureArray) {
+	public String findBestSymbol(@NotNull FeatureArray<N> featureArray) {
 
 		FeatureArray<N> bestFeatures = null;
 		String bestSymbol = "";
@@ -86,63 +84,40 @@ public abstract class AbstractFeatureMapping<N>
 		return bestSymbol + sb;
 	}
 
-	// Return a list of all segments g such that matches.matches(input) is true
-	public Collection<Segment<N>> getMatchingSegments(Segment<N> input) {
-		Collection<Segment<N>> collection = new ArrayList<>();
-
-		FeatureArray<N> features = input.getFeatures();
-
-		for (Entry<String, FeatureArray<N>> entry : featureMap.entrySet()) {
-			// This implementation will work but wastes a lot of time on object
-			// allocation
-			FeatureArray<N> value = entry.getValue();
-			if (value.matches(features)) {
-				//TODO: was "specification" rather than "this"
-				Segment<N> segment = new StandardSegment<>(entry.getKey(), value, featureModel);
-				collection.add(segment);
-			}
-		}
-
-		return collection;
-	}
-
+	@NotNull
 	@Override
 	public Set<String> getSymbols() {
 		return featureMap.keySet();
 	}
-
-	@Override
-	public String toString() {
-		return "FeatureModel(number.symbols=" + featureMap.size() + ')';
-	}
 	
 	@Override
-	public boolean containsKey(String key) {
+	public boolean containsKey(@NotNull String key) {
 		return featureMap.containsKey(key);
 	}
 
+	@NotNull
 	@Override
 	public Map<String, FeatureArray<N>> getFeatureMap() {
-		//noinspection ReturnOfCollectionOrArrayField - already immutable
 		return featureMap;
 	}
 	
+	@NotNull
 	@Override
 	public Map<String, FeatureArray<N>> getModifiers() {
-		//noinspection ReturnOfCollectionOrArrayField - already immutable
 		return modifiers;
 	}
 
+	@NotNull
 	@Override
 	public FeatureArray<N> getFeatureArray(String key) {
 		return featureMap.containsKey(key) 
 				? new StandardFeatureArray<>(featureMap.get(key)) 
-				: null;
+				: new SparseFeatureArray<>(featureModel);
 	}
 	
+	@NotNull
 	@Override
-	public Segment<N> getSegment(String string) {
-
+	public Segment<N> parseSegment(@NotNull String string) {
 		if (string.startsWith("[")) {
 			return new StandardSegment<>(string, featureModel.parseFeatureString(string), featureModel);
 		}
@@ -182,8 +157,18 @@ public abstract class AbstractFeatureMapping<N>
 		return featureModel;
 	}
 
-	protected abstract double totalDifference(FeatureArray<N> left, FeatureArray<N> right);
-	
+	private  double totalDifference(FeatureArray<N> left,
+			FeatureArray<N> right) {
+		if (left.size() != right.size()) {
+			throw new IllegalArgumentException("Cannot compare feature arrays" +
+					" of different sizes! left: " + left.size() + " right: " +
+					right.size());
+		}
+		return IntStream.range(0, left.size())
+				.mapToDouble(i -> difference(left.get(i), right.get(i)))
+				.sum();
+	}
+
 	protected abstract double difference(N x, N y);
 
 	private Collection<String> getBestDiacritic(

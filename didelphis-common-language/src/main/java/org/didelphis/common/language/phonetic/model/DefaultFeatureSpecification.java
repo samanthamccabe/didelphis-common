@@ -1,6 +1,21 @@
+/*=============================================================================
+ = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
+ =
+ = Licensed under the Apache License, Version 2.0 (the "License");
+ = you may not use this file except in compliance with the License.
+ = You may obtain a copy of the License at
+ =     http://www.apache.org/licenses/LICENSE-2.0
+ = Unless required by applicable law or agreed to in writing, software
+ = distributed under the License is distributed on an "AS IS" BASIS,
+ = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ = See the License for the specific language governing permissions and
+ = limitations under the License.
+ =============================================================================*/
+
 package org.didelphis.common.language.phonetic.model;
 
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureSpecification;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,20 +35,20 @@ public final class DefaultFeatureSpecification implements FeatureSpecification {
 	private final int size;
 
 	private final List<String> featureNames;
-	private final List<FeatureType> featureTypes;
 	private final Map<String, Integer> featureIndices;
 
 	private DefaultFeatureSpecification() {
-		this(new ArrayList<>(), new ArrayList<>(), new HashMap<>());
+		this(new ArrayList<>(), new HashMap<>());
 	}
-	
-	public DefaultFeatureSpecification(
-			List<String> names, 
-			List<FeatureType> types,
-			Map<String, Integer> indices) {
+
+	/**
+	 * @param names
+	 * @param types
+	 * @param indices
+	 */
+	public DefaultFeatureSpecification(List<String> names, Map<String, Integer> indices) {
 		size = names.size();
 		featureNames = names;
-		featureTypes = types;
 		featureIndices = indices;
 	}
 	
@@ -48,7 +63,7 @@ public final class DefaultFeatureSpecification implements FeatureSpecification {
 	}
 
 	@Override
-	public int getIndex(String featureName) {
+	public int getIndex(@NotNull String featureName) {
 		Integer index = featureIndices.get(featureName);
 		return index == null ? -1 : index;
 	}
@@ -56,11 +71,6 @@ public final class DefaultFeatureSpecification implements FeatureSpecification {
 	@Override
 	public List<String> getFeatureNames() {
 		return Collections.unmodifiableList(featureNames);
-	}
-
-	@Override
-	public List<FeatureType> getFeatureTypes() {
-		return Collections.unmodifiableList(featureTypes);
 	}
 
 	@Override
@@ -88,7 +98,6 @@ public final class DefaultFeatureSpecification implements FeatureSpecification {
 		return "DefaultFeatureSpecification"
 		       + "{ size=" + size
 		       + ", featureNames=" + featureNames
-		       + ", featureTypes=" + featureTypes
 		       + ", featureIndices=" + featureIndices
 		       + " }";
 	}

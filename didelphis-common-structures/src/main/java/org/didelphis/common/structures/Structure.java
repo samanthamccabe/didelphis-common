@@ -1,3 +1,17 @@
+/*=============================================================================
+ = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
+ =
+ = Licensed under the Apache License, Version 2.0 (the "License");
+ = you may not use this file except in compliance with the License.
+ = You may obtain a copy of the License at
+ =     http://www.apache.org/licenses/LICENSE-2.0
+ = Unless required by applicable law or agreed to in writing, software
+ = distributed under the License is distributed on an "AS IS" BASIS,
+ = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ = See the License for the specific language governing permissions and
+ = limitations under the License.
+ =============================================================================*/
+
 package org.didelphis.common.structures;
 
 /**
@@ -15,22 +29,22 @@ package org.didelphis.common.structures;
 public interface Structure {
 	
 	/**
-	 * Returns the size of the maps, based on the totaly number of values or
+	 * Returns the size of the structure, based on the total number of values or
 	 * unique key pairs
-	 * @return the number of values in the maps; guaranteed to be greater than 0
+	 * @return the number of values in this structure
 	 */
 	int size();
 
 	/**
-	 * Tests if the maps is empty.
-	 * @return true iff there is at least one key pair.
+	 * Tests if the structure is empty.
+	 * @return true iff {@code size > 0}
 	 */
 	boolean isEmpty();
 
 	/**
-	 * Deletes all contents from the maps.
-	 * @return true iff contents were deleted; if the maps was already empty,
-	 * this operation will return false.
+	 * Deletes all contents from the structure.
+	 * @return true iff contents were deleted; if the structure was already
+	 * empty, this operation will return false.
 	 */
 	boolean clear();
 }

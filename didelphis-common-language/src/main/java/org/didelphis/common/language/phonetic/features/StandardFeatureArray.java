@@ -1,16 +1,16 @@
-/******************************************************************************
- * Copyright (c) 2016. Samantha Fiona McCabe                                  *
- *                                                                            *
- * Licensed under the Apache License, Version 2.0 (the "License");            *
- * you may not use this file except in compliance with the License.           *
- * You may obtain a copy of the License at                                    *
- *     http://www.apache.org/licenses/LICENSE-2.0                             *
- * Unless required by applicable law or agreed to in writing, software        *
- * distributed under the License is distributed on an "AS IS" BASIS,          *
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
- * See the License for the specific language governing permissions and        *
- * limitations under the License.                                             *
- ******************************************************************************/
+/*=============================================================================
+ = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
+ =
+ = Licensed under the Apache License, Version 2.0 (the "License");
+ = you may not use this file except in compliance with the License.
+ = You may obtain a copy of the License at
+ =     http://www.apache.org/licenses/LICENSE-2.0
+ = Unless required by applicable law or agreed to in writing, software
+ = distributed under the License is distributed on an "AS IS" BASIS,
+ = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ = See the License for the specific language governing permissions and
+ = limitations under the License.
+ =============================================================================*/
 
 package org.didelphis.common.language.phonetic.features;
 
@@ -34,6 +34,10 @@ public final class StandardFeatureArray<N>
 	private final FeatureModel<N> featureModel;
 	private final List<N> features;
 
+	/**
+	 * @param value
+	 * @param featureModel
+	 */
 	public StandardFeatureArray(N value, FeatureModel<N> featureModel) {
 		this.featureModel = featureModel;
 		int size = featureModel.size();
@@ -43,16 +47,27 @@ public final class StandardFeatureArray<N>
 		}
 	}
 
+	/**
+	 *
+	 * @param list
+	 * @param featureModel
+	 */
 	public StandardFeatureArray(List<N> list, FeatureModel<N> featureModel) {
 		this.featureModel = featureModel;
 		features = new ArrayList<>(list);
 	}
-	
+
+	/**
+	 * @param array
+	 */
 	public StandardFeatureArray(StandardFeatureArray<N> array) {
 		featureModel = array.getFeatureModel();
 		features = new ArrayList<>(array.features);
 	}
 
+	/**
+	 * @param array
+	 */
 	public StandardFeatureArray(FeatureArray<N> array) {
 		featureModel = array.getFeatureModel();
 		int size = featureModel.size();
@@ -101,11 +116,12 @@ public final class StandardFeatureArray<N>
 	}
 
 	private boolean matches(N x, N y) {
-		return (x == null || y == null || x.equals(y));
+		return !(featureModel.isDefined(x) && featureModel.isDefined(y)) ||
+				         x.equals(y);
 	}
 
 	@Override
-	public void alter(FeatureArray<N> array) {
+	public boolean alter(FeatureArray<N> array) {
 		if (size() != array.size()) {
 			throw new IllegalArgumentException(
 					"Attempting to compare arrays of different lengths");
@@ -113,15 +129,16 @@ public final class StandardFeatureArray<N>
 
 		final Collection<Integer> alteredIndices = new HashSet<>();
 		for (int i = 0; i < features.size(); i++) {
-			N n = array.get(i);
-			if (n != null) {
+			N v = array.get(i);
+			if (featureModel.isDefined(v)) {
 				alteredIndices.add(i);
-				features.set(i, n);
+				features.set(i, v);
 			}
 		}
 		for (int index : alteredIndices) {
 			applyConstraints(index);
 		}
+		return !alteredIndices.isEmpty();
 	}
 
 	private void applyConstraints(int index) {
@@ -149,23 +166,7 @@ public final class StandardFeatureArray<N>
 		for (int i = 0; i < size(); i++) {
 			N x = get(i);
 			N y = o.get(i);
-			int comparison;
-
-			if (x == null && y == null) {
-				comparison = 0;
-			} else if (x == null) {
-				comparison = -1;
-			}else if (y == null) {
-				comparison = 1;
-			} else {
-				if (x instanceof Comparable && y instanceof Comparable) {
-					Comparable<Object> xC = (Comparable<Object>) x;
-					Comparable<Object> yC = (Comparable<Object>) y;
-					comparison = xC.compareTo(yC);
-				} else {
-					comparison = String.valueOf(x).compareTo(String.valueOf(y));
-				}
-			}
+			int comparison = featureModel.compare(x,y);
 			if (comparison != 0) {
 				return comparison;
 			}
@@ -205,12 +206,4 @@ public final class StandardFeatureArray<N>
 		return featureModel;
 	}
 
-	private  void applyConstraint(int index, Constraint<N> constraint) {
-		FeatureArray<N> source = constraint.getSource();
-		if (source.get(index) != null) {
-			if (matches(source)) {
-				alter(constraint.getTarget());
-			}
-		}
-	}
 }

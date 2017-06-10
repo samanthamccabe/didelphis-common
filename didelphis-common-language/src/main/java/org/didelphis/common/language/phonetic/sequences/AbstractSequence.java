@@ -1,3 +1,17 @@
+/*=============================================================================
+ = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
+ =
+ = Licensed under the Apache License, Version 2.0 (the "License");
+ = you may not use this file except in compliance with the License.
+ = You may obtain a copy of the License at
+ =     http://www.apache.org/licenses/LICENSE-2.0
+ = Unless required by applicable law or agreed to in writing, software
+ = distributed under the License is distributed on an "AS IS" BASIS,
+ = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ = See the License for the specific language governing permissions and
+ = limitations under the License.
+ =============================================================================*/
+
 package org.didelphis.common.language.phonetic.sequences;
 
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureModel;
@@ -5,8 +19,6 @@ import org.didelphis.common.language.phonetic.segments.Segment;
 import org.didelphis.common.structures.contracts.Delegating;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.AbstractList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Deque;
@@ -18,7 +30,6 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -215,26 +226,31 @@ public abstract class AbstractSequence<N>
 		return segmentList.removeLastOccurrence(o);
 	}
 
+	@NotNull
 	@Override
 	public ListIterator<Segment<N>> listIterator() {
 		return segmentList.listIterator();
 	}
 
+	@NotNull
 	@Override
 	public ListIterator<Segment<N>> listIterator(int index) {
 		return segmentList.listIterator(index);
 	}
 
+	@NotNull
 	@Override
 	public Iterator<Segment<N>> descendingIterator() {
 		return segmentList.descendingIterator();
 	}
 	
+	@NotNull
 	@Override
 	public List<Segment<N>> subList(int fromIndex, int toIndex) {
 		return segmentList.subList(fromIndex, toIndex);
 	}
 
+	@NotNull
 	@Override
 	public Iterator<Segment<N>> iterator() {
 		return segmentList.iterator();

@@ -1,16 +1,16 @@
-/*******************************************************************************
- * Copyright (c) 2015. Samantha Fiona McCabe
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- ******************************************************************************/
+/*=============================================================================
+ = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
+ =
+ = Licensed under the Apache License, Version 2.0 (the "License");
+ = you may not use this file except in compliance with the License.
+ = You may obtain a copy of the License at
+ =     http://www.apache.org/licenses/LICENSE-2.0
+ = Unless required by applicable law or agreed to in writing, software
+ = distributed under the License is distributed on an "AS IS" BASIS,
+ = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ = See the License for the specific language governing permissions and
+ = limitations under the License.
+ =============================================================================*/
 
 package org.didelphis.common.language.phonetic.sequences;
 
@@ -18,6 +18,7 @@ import org.didelphis.common.language.phonetic.SpecificationBearer;
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureModel;
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureSpecification;
 import org.didelphis.common.language.phonetic.segments.Segment;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,8 +31,8 @@ import java.util.List;
  */
 public final class BasicSequence<N> extends AbstractSequence<N> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(
-		  BasicSequence.class);
+	private static final Logger LOG = LoggerFactory
+			.getLogger(BasicSequence.class);
 
 	public BasicSequence(Sequence<N> sequence) {
 		super(sequence);
@@ -50,88 +51,16 @@ public final class BasicSequence<N> extends AbstractSequence<N> {
 	}
 
 	@Override
-	public boolean add(Segment<N> segment) {
-		validateModelOrFail(segment);
-		return segmentList.add(segment);
-	}
-
-	@Override
 	public void add(Sequence<N> sequence) {
 		validateModelOrFail(sequence);
-		for (Segment<N> segment : sequence) {
-			segmentList.add(segment);
-		}
+		segmentList.addAll(sequence);
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) { return false; }
-		if (obj instanceof BasicSequence) { return super.equals(obj); }
-		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		return 31 * super.hashCode();
-	}
-
-	@Override
-	public void insert(Sequence sequence, int index) {
+	public void insert(Sequence<N> sequence, int index) {
 		validateModelOrFail(sequence);
 
 		segmentList.addAll(index, sequence);
-	}
-
-	@Override
-	public BasicSequence<N> remove(int start, int end) {
-		BasicSequence<N> q = new BasicSequence<>(featureModel);
-		for (int i = 0; i < end - start; i++) {
-			q.add(remove(start));
-		}
-		return q;
-	}
-
-	/**
-	 * Determines if a sequence is consistent with this sequence.
-	 * Sequences must be of the same length
-	 * <p>
-	 * Two sequences are consistent if each other if all corresponding segments
-	 * are consistent; i.e. if, for every segment in each sequence, all
-	 * corresponding features are equal OR one is undefined.
-	 *
-	 * @param sequence a segmentList to check against this one
-	 *
-	 * @return true if, for each segment in both sequences, all specified (non
-	 * NaN) features in either segment are equal
-	 */
-	@Override
-	public boolean matches(Sequence<N> sequence) {
-		validateModelOrFail(sequence);
-		if (getSpecification().size() == 0) {
-			return equals(sequence);
-		}
-		boolean matches = false;
-			int size = size();
-			if (size == sequence.size()) {
-				matches = true;
-				for (int i = 0; i < size && matches; i++) {
-					Segment<N> a = get(i);
-					Segment<N> b = sequence.get(i);
-					matches = a.matches(b);
-				}
-			}
-		
-		return matches;
-	}
-
-	@Override
-	public Sequence<N> subsequence(int from, int to) {
-		return new BasicSequence<>(subList(from, to), featureModel);
-	}
-
-	@Override
-	public Sequence<N> subsequence(int from) {
-		return new BasicSequence<>(subList(from, size()), featureModel);
 	}
 
 	@Override
@@ -139,7 +68,9 @@ public final class BasicSequence<N> extends AbstractSequence<N> {
 		validateModelOrWarn(target);
 
 		int size = target.size();
-		if (size > size() || size == 0) { return -1; }
+		if (size > size() || size == 0) {
+			return -1;
+		}
 
 		int index = indexOf(target.getFirst());
 		if (index >= 0 && index + size <= size()) {
@@ -174,10 +105,111 @@ public final class BasicSequence<N> extends AbstractSequence<N> {
 			int from = index + target.size();
 			Sequence<N> subsequence = result.subsequence(from);
 			index = subsequence.indexOf(source);
-			if (index < 0) { break; }
+			if (index < 0) {
+				break;
+			}
 			index += from;
 		}
 		return result;
+	}
+
+	@Override
+	public boolean contains(Sequence<N> sequence) {
+		return indexOf(sequence) >= 0;
+	}
+
+	@Override
+	public boolean startsWith(Segment<N> segment) {
+		validateModelOrWarn(segment);
+		return !isEmpty() && segmentList.get(0).matches(segment);
+	}
+
+	@Override
+	public boolean startsWith(Sequence<N> sequence) {
+		if (isEmpty() || sequence.size() > size()) {
+			return false;
+		}
+		for (int i = 0; i < sequence.size(); i++) {
+			if (!get(i).matches(sequence.get(i))) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public BasicSequence<N> remove(int start, int end) {
+		BasicSequence<N> q = new BasicSequence<>(featureModel);
+		for (int i = 0; i < end - start; i++) {
+			q.add(remove(start));
+		}
+		return q;
+	}
+
+	/**
+	 * Determines if a sequence is consistent with this sequence. Sequences must
+	 * be of the same length <p> Two sequences are consistent if each other if
+	 * all corresponding segments are consistent; i.e. if, for every segment in
+	 * each sequence, all corresponding features are equal OR one is undefined.
+	 *
+	 * @param sequence a segmentList to check against this one
+	 * @return true if, for each segment in both sequences, all defined features
+	 * 		in either segment are equal
+	 */
+	@Override
+	public boolean matches(Sequence<N> sequence) {
+		validateModelOrFail(sequence);
+		if (getSpecification().size() == 0) {
+			return equals(sequence);
+		}
+		boolean matches = false;
+		int size = size();
+		if (size == sequence.size()) {
+			matches = true;
+			for (int i = 0; i < size && matches; i++) {
+				Segment<N> a = get(i);
+				Segment<N> b = sequence.get(i);
+				matches = a.matches(b);
+			}
+		}
+		return matches;
+	}
+
+	@Override
+	public Sequence<N> subsequence(int from, int to) {
+		return new BasicSequence<>(subList(from, to), featureModel);
+	}
+
+	@Override
+	public Sequence<N> subsequence(int from) {
+		return new BasicSequence<>(subList(from, size()), featureModel);
+	}
+
+	@Override
+	public List<Integer> indicesOf(Sequence<N> sequence) {
+		List<Integer> indices = new ArrayList<>();
+		int index = indexOf(sequence);
+		while (index >= 0) {
+			indices.add(index);
+			index = indexOf(sequence, index + sequence.size());
+		}
+		return indices;
+	}
+
+	@Override
+	public int hashCode() {
+		return 31 * super.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (obj instanceof BasicSequence) {
+			return super.equals(obj);
+		}
+		return false;
 	}
 
 	@Override
@@ -210,29 +242,13 @@ public final class BasicSequence<N> extends AbstractSequence<N> {
 	}
 
 	@Override
-	public boolean contains(Sequence<N> sequence) {
-		return indexOf(sequence) >= 0;
+	public boolean add(Segment<N> segment) {
+		validateModelOrFail(segment);
+		return segmentList.add(segment);
 	}
 
 	@Override
-	public boolean startsWith(Segment<N> segment) {
-		validateModelOrWarn(segment);
-		return !isEmpty() && segmentList.get(0).matches(segment);
-	}
-
-	@Override
-	public boolean startsWith(Sequence<N> sequence) {
-		if (isEmpty() || sequence.size() > size()) { return false; }
-		for (int i = 0; i < sequence.size(); i++) {
-			if (!get(i).matches(sequence.get(i))) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	@Override
-	public int compareTo(Sequence<N> o) {
+	public int compareTo(@NotNull Sequence<N> o) {
 		for (int i = 0; i < size() && i < o.size(); i++) {
 			int value = get(i).compareTo(o.get(i));
 			if (value != 0) {
@@ -240,17 +256,6 @@ public final class BasicSequence<N> extends AbstractSequence<N> {
 			}
 		}
 		return size() > o.size() ? 1 : -1;
-	}
-
-	@Override
-	public List<Integer> indicesOf(Sequence<N> sequence) {
-		List<Integer> indices = new ArrayList<>();
-		int index = indexOf(sequence);
-		while (index >= 0) {
-			indices.add(index);
-			index = indexOf(sequence, index + sequence.size());
-		}
-		return indices;
 	}
 
 	@Override
@@ -265,19 +270,18 @@ public final class BasicSequence<N> extends AbstractSequence<N> {
 
 	private void validateModelOrWarn(SpecificationBearer that) {
 		if (!featureModel.equals(that.getSpecification())) {
-			LOG.warn(
-				  "Attempting to check a {} with an incompatible model!" + "\n\t{}\t{}\n\t{}\t{}",
-				  that.getClass(), this, that, featureModel,
-				  that.getSpecification());
+			LOG.warn("Attempting to check a {} with an incompatible model!" +
+							"" + "\n\t{}\t{}\n\t{}\t{}", that.getClass(), this, that,
+					featureModel, that.getSpecification());
 		}
 	}
 
 	private void validateModelOrFail(SpecificationBearer that) {
 		if (!featureModel.equals(that.getSpecification())) {
-			throw new RuntimeException(
-					"Attempting to add " + that.getClass() +
+			throw new RuntimeException("Attempting to add " + that.getClass() +
 					" with an incompatible model!\n" + '\t' + this + '\t' +
-					featureModel + '\n' + '\t' + that + '\t' + that.getSpecification());
+					featureModel + '\n' + '\t' + that + '\t' +
+					that.getSpecification());
 		}
 	}
 }

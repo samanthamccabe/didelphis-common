@@ -1,3 +1,17 @@
+/*=============================================================================
+ = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
+ =
+ = Licensed under the Apache License, Version 2.0 (the "License");
+ = you may not use this file except in compliance with the License.
+ = You may obtain a copy of the License at
+ =     http://www.apache.org/licenses/LICENSE-2.0
+ = Unless required by applicable law or agreed to in writing, software
+ = distributed under the License is distributed on an "AS IS" BASIS,
+ = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ = See the License for the specific language governing permissions and
+ = limitations under the License.
+ =============================================================================*/
+
 package org.didelphis.common.language.phonetic.model.loaders;
 
 import org.didelphis.common.io.FileHandler;
@@ -5,7 +19,6 @@ import org.didelphis.common.language.exceptions.ParseException;
 import org.didelphis.common.language.phonetic.features.FeatureArray;
 import org.didelphis.common.language.phonetic.model.Constraint;
 import org.didelphis.common.language.phonetic.model.DefaultFeatureSpecification;
-import org.didelphis.common.language.phonetic.model.FeatureType;
 import org.didelphis.common.language.phonetic.model.doubles.DoubleFeatureModel;
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureModel;
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureSpecification;
@@ -36,14 +49,12 @@ public final class FeatureModelLoader {
 	private static final Pattern EQUALS = Pattern.compile("\\s*=\\s*");
 
 	private final List<String> featureNames;
-	private final List<FeatureType> featureTypes;
 	private final Map<String, Integer> featureIndices;
 	private final Collection<String> rawConstraints;
 	private final Collection<String> rawAliases;
 
 	private FeatureModelLoader() {
 		featureNames = new ArrayList<>();
-		featureTypes = new ArrayList<>();
 		featureIndices = new HashMap<>();
 		
 		rawConstraints = new ArrayList<>();
@@ -93,7 +104,7 @@ public final class FeatureModelLoader {
 		populateFeatures(featureZone);
 		// Once the main feature definitions are parsed, it's possible to create
 		// the featureModel instance
-		return new DefaultFeatureSpecification(featureNames, featureTypes, featureIndices);
+		return new DefaultFeatureSpecification(featureNames, featureIndices);
 	}
 
 	public static FeatureModel<Double> loadDouble(Iterable<String> lines) {
@@ -134,7 +145,6 @@ public final class FeatureModelLoader {
 	public String toString() {
 		return "FeatureModelLoader"
 		       + "{ featureNames=" + featureNames
-		       + ", featureTypes=" + featureTypes
 		       + ", featureIndices=" + featureIndices
 		       + ", rawConstraints=" + rawConstraints
 		       + ", rawAliases=" + rawAliases
@@ -149,12 +159,6 @@ public final class FeatureModelLoader {
 				String name = matcher.group(1);
 				String alias = matcher.group(2);
 				// Ignore value range checks for now
-				String type = PARENS.matcher(matcher.group(3)).replaceAll("");
-				FeatureType featureType = FeatureType.find(type);
-				if (featureType == null) {
-					throw new ParseException("Illegal feature type in definition:", entry);
-				}
-				featureTypes.add(FeatureType.valueOf(type.toUpperCase()));
 				featureNames.add(name);
 				featureIndices.put(name, i);
 				if (!alias.isEmpty()) {
