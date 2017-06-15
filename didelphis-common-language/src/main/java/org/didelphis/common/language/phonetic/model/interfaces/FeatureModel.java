@@ -18,7 +18,6 @@ import org.didelphis.common.language.phonetic.features.FeatureArray;
 import org.didelphis.common.language.phonetic.features.FeatureType;
 import org.didelphis.common.language.phonetic.model.Constraint;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 

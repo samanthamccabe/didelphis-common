@@ -27,7 +27,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.didelphis.common.utilities.Split.*;
+import static org.didelphis.common.utilities.Split.parseParens;
+import static org.didelphis.common.utilities.Split.splitToList;
 
 /**
  * This type is to succeed the earlier SegmentationMode and Normalizer mode

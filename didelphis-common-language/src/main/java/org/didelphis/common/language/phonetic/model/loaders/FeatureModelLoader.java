@@ -45,7 +45,9 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.util.regex.Pattern.*;
+import static java.util.regex.Pattern.CASE_INSENSITIVE;
+import static java.util.regex.Pattern.LITERAL;
+import static java.util.regex.Pattern.compile;
 
 /**
  * Created by samantha on 2/18/17.

@@ -17,7 +17,8 @@ package org.didelphis.common.language.phonetic.features;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static java.text.Normalizer.*;
+import static java.text.Normalizer.Form;
+import static java.text.Normalizer.normalize;
 
 /**
  * Class {@code BinaryFeatureType}

@@ -265,7 +265,7 @@ public abstract class AbstractSequence<T>
 	@NotNull
 	@Override
 	@SuppressWarnings({"unchecked", "SuspiciousToArrayCall"})
-	public <T> T[] toArray(@NotNull T[] a) {
+	public <E> E[] toArray(@NotNull E[] a) {
 		return segmentList.toArray(a);
 	}
 

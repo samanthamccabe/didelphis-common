@@ -15,7 +15,6 @@
 package org.didelphis.common.language.phonetic.model;
 
 import org.didelphis.common.io.ClassPathFileHandler;
-import org.didelphis.common.io.FileHandler;
 import org.didelphis.common.language.phonetic.features.IntegerFeature;
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureSpecification;
 import org.didelphis.common.language.phonetic.model.loaders.FeatureModelLoader;

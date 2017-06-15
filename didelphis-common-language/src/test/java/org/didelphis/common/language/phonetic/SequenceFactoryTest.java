@@ -15,9 +15,7 @@
 package org.didelphis.common.language.phonetic;
 
 import org.didelphis.common.io.ClassPathFileHandler;
-import org.didelphis.common.io.FileHandler;
 import org.didelphis.common.language.enums.FormatterMode;
-import org.didelphis.common.language.phonetic.features.BinaryFeature;
 import org.didelphis.common.language.phonetic.features.IntegerFeature;
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureMapping;
 import org.didelphis.common.language.phonetic.model.loaders.FeatureModelLoader;
