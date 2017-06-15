@@ -33,6 +33,9 @@ public enum ClassPathFileHandler implements FileHandler {
 	public String read(String path) {
 		ClassLoader classLoader = ClassPathFileHandler.class.getClassLoader();
 		InputStream stream = classLoader.getResourceAsStream(path);
+		if (stream == null) {
+			throw new IllegalArgumentException("Unable to find classpath resource " + path);
+		}
 		return IOUtil.readStream(stream);
 	}
 

@@ -16,6 +16,7 @@ package org.didelphis.common.language.phonetic.model;
 
 import org.didelphis.common.language.exceptions.ParseException;
 import org.didelphis.common.language.phonetic.features.FeatureArray;
+import org.didelphis.common.language.phonetic.features.FeatureType;
 import org.didelphis.common.language.phonetic.features.SparseFeatureArray;
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureModel;
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureSpecification;
@@ -24,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import java.text.Normalizer.Form;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,14 +33,14 @@ import static java.text.Normalizer.normalize;
 import static org.didelphis.common.utilities.Patterns.compile;
 
 /**
- * Class {@code AbstractFeatureModel}
+ * Class {@code GeneralFeatureModel}
  *
  * @author Samantha Fiona McCabe
  * @since 0.1.0
  *
  * Date: 2017-06-09
  */
-public abstract class AbstractFeatureModel<N> implements FeatureModel<N> {
+public class GeneralFeatureModel<T> implements FeatureModel<T> {
 
 	private static final String VALUE = "(-?\\d|[A-Zα-ω]+)";
 	private static final String NAME = "(\\w+)";
@@ -49,17 +51,21 @@ public abstract class AbstractFeatureModel<N> implements FeatureModel<N> {
 	private static final Pattern FEATURE_PATTERN = compile("[,;]\\s*|\\s+");
 
 	private final FeatureSpecification specification;
-	private final List<Constraint<N>> constraints;
-	private final Map<String, FeatureArray<N>> aliases;
+	private final List<Constraint<T>> constraints;
+	private final Map<String, FeatureArray<T>> aliases;
+	private final FeatureType<T> featureType;
 
 	/**
+	 * @param featureType
 	 * @param specification
 	 * @param constraints
 	 * @param aliases
 	 */
-	public AbstractFeatureModel(FeatureSpecification specification,
-			List<Constraint<N>> constraints,
-			Map<String, FeatureArray<N>> aliases) {
+	public GeneralFeatureModel(FeatureType<T> featureType,
+			FeatureSpecification specification,
+			List<Constraint<T>> constraints,
+			Map<String, FeatureArray<T>> aliases) {
+		this.featureType = featureType;
 		this.specification = specification;
 		this.constraints = constraints;
 		this.aliases = aliases;
@@ -67,9 +73,16 @@ public abstract class AbstractFeatureModel<N> implements FeatureModel<N> {
 
 	@NotNull
 	@Override
-	public FeatureArray<N> parseFeatureString(@NotNull String string) {
-		String pattern = normalize(string, Form.NFKC);
-		FeatureArray<N> arr = new SparseFeatureArray<>(this);
+	public FeatureType<T> getFeatureType() {
+		return featureType;
+	}
+
+	@NotNull
+	@Override
+	public FeatureArray<T> parseFeatureString(@NotNull String string) {
+		String pattern = normalize(string, Form.NFKC)
+				.replaceAll("\\[([^]]+)]","$1");
+		FeatureArray<T> arr = new SparseFeatureArray<>(this);
 		for (String element : FEATURE_PATTERN.split(pattern)) {
 			Matcher valueMatcher = VALUE_PATTERN.matcher(element);
 			Matcher binaryMatcher = BINARY_PATTERN.matcher(element);
@@ -81,18 +94,38 @@ public abstract class AbstractFeatureModel<N> implements FeatureModel<N> {
 				String assignment = valueMatcher.group(2);
 				String featureValue = valueMatcher.group(1);
 				Integer value = retrieveIndex(featureName, string, specification.getFeatureIndices());
-				arr.set(value, parseValue(featureValue));
+				arr.set(value, featureType.parseValue(featureValue));
 			} else if (binaryMatcher.matches()) {
 				String featureName = binaryMatcher.group(2);
 				String featureValue = binaryMatcher.group(1);
 				Integer value = retrieveIndex(featureName, string, getFeatureIndices());
-				arr.set(value, parseValue(featureValue));
+				arr.set(value, featureType.parseValue(featureValue));
 			} else {
 				throw new ParseException("Unrecognized feature \"" + element +
 						"\" in definition.", string);
 			}
 		}
 		return arr;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(specification, constraints, aliases, featureType);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		final GeneralFeatureModel other = (GeneralFeatureModel) obj;
+		return Objects.equals(this.specification, other.specification) &&
+				Objects.equals(this.constraints, other.constraints) &&
+				Objects.equals(this.aliases, other.aliases) &&
+				Objects.equals(this.featureType, other.featureType);
 	}
 
 	private static Integer retrieveIndex(String label, String features,
@@ -105,10 +138,9 @@ public abstract class AbstractFeatureModel<N> implements FeatureModel<N> {
 
 	@NotNull
 	@Override
-	public List<Constraint<N>> getConstraints() {
+	public List<Constraint<T>> getConstraints() {
 		return constraints;
 	}
-
 
 	@Override
 	public int size() {

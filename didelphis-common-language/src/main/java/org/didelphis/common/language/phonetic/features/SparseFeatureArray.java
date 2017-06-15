@@ -29,16 +29,16 @@ import java.util.Objects;
 /**
  * Created by samantha on 3/27/16.
  */
-public final class SparseFeatureArray<N>
-		implements FeatureArray<N> {
+public final class SparseFeatureArray<T>
+		implements FeatureArray<T> {
 	
-	private final FeatureModel<N> featureModel;
-	private final Map<Integer, N> features;
+	private final FeatureModel<T> featureModel;
+	private final Map<Integer, T> features;
 
 	/**
 	 * @param featureModel
 	 */
-	public SparseFeatureArray(FeatureModel<N> featureModel) {
+	public SparseFeatureArray(FeatureModel<T> featureModel) {
 		this.featureModel = featureModel;
 		features = new HashMap<>();
 	}
@@ -47,10 +47,10 @@ public final class SparseFeatureArray<N>
 	 * @param list
 	 * @param featureModel
 	 */
-	public SparseFeatureArray(List<N> list, FeatureModel<N> featureModel) {
+	public SparseFeatureArray(List<T> list, FeatureModel<T> featureModel) {
 		this(featureModel);
 		for (int i = 0; i < list.size(); i++) {
-			N value = list.get(i);
+			T value = list.get(i);
 			if (value != null) {
 				features.put(i, value);
 			}
@@ -60,7 +60,7 @@ public final class SparseFeatureArray<N>
 	/**
 	 * @param array
 	 */
-	public SparseFeatureArray(SparseFeatureArray<N> array) {
+	public SparseFeatureArray(SparseFeatureArray<T> array) {
 		featureModel = array.getFeatureModel();
 		features = new HashMap<>(array.features);
 	}
@@ -71,28 +71,28 @@ public final class SparseFeatureArray<N>
 	}
 
 	@Override
-	public void set(int index, N value) {
+	public void set(int index, T value) {
 		indexCheck(index);
 		features.put(index, value);
 	}
 
 	@Override
-	public N get(int index) {
+	public T get(int index) {
 		indexCheck(index);
 		return features.get(index);
 	}
 
 	@Override
-	public boolean matches(FeatureArray<N> array) {
+	public boolean matches(FeatureArray<T> array) {
 		if (size() != array.size()) {
 			throw new IllegalArgumentException(
 					"Attempting to compare arrays of different lengths");
 		}
-
-		for (Entry<Integer, N> entry : features.entrySet()) {
-			N x = entry.getValue();
-			N y = array.get(entry.getKey());
-			if ((featureModel.isDefined(y)) && !x.equals(y)) {
+		FeatureType<T> featureType = featureModel.getFeatureType();
+		for (Entry<Integer, T> entry : features.entrySet()) {
+			T x = entry.getValue();
+			T y = array.get(entry.getKey());
+			if ((featureType.isDefined(y)) && !x.equals(y)) {
 				return false;
 			}
 		}
@@ -100,16 +100,17 @@ public final class SparseFeatureArray<N>
 	}
 
 	@Override
-	public boolean alter(FeatureArray<N> array) {
+	public boolean alter(FeatureArray<T> array) {
 		if (size() != array.size()) {
 			throw new IllegalArgumentException(
 					"Attempting to compare arrays of different lengths");
 		}
+		FeatureType<T> featureType = featureModel.getFeatureType();
 
 		boolean changed = false;
 			for (int i = 0; i < size(); i++) {
-				N v = array.get(i);
-				if (featureModel.isDefined(v)) {
+				T v = array.get(i);
+				if (featureType.isDefined(v)) {
 					changed |= true;
 					features.put(i, v);
 				}
@@ -118,22 +119,23 @@ public final class SparseFeatureArray<N>
 	}
 
 	@Override
-	public boolean contains(N value) {
+	public boolean contains(T value) {
 		return features.containsValue(value);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public int compareTo(FeatureArray<N> o) {
+	public int compareTo(FeatureArray<T> o) {
 		if (size() != o.size()) {
 			throw new IllegalArgumentException(
 					"Attempting to compare arrays of different lengths");
 		}
+		FeatureType<T> featureType = featureModel.getFeatureType();
 
 		for (int i = 0; i < size(); i++) {
-			N x = get(i);
-			N y = o.get(i);
-			int comparison = featureModel.compare(x,y);
+			T x = get(i);
+			T y = o.get(i);
+			int comparison = featureType.compare(x,y);
 			if (comparison != 0) {
 				return comparison;
 			}
@@ -144,8 +146,8 @@ public final class SparseFeatureArray<N>
 	}
 
 	@Override
-	public Iterator<N> iterator() {
-		final List<N> list = new ArrayList<>(size());
+	public Iterator<T> iterator() {
+		final List<T> list = new ArrayList<>(size());
 		Collections.fill(list, null);
 		features.forEach(list::set);
 		return list.iterator();
@@ -160,15 +162,18 @@ public final class SparseFeatureArray<N>
 	public boolean equals(Object obj) {
 		if (this == obj) { return true; }
 		if (!(obj instanceof SparseFeatureArray)) { return false; }
-
-		SparseFeatureArray<?> that = (SparseFeatureArray<?>) obj;
-
-		return featureModel.equals(that.featureModel) &&
-				features.equals(that.features);
+		FeatureArray<?> that = (FeatureArray<?>) obj;
+		if (!Objects.equals(featureModel, that.getFeatureModel())) return false;
+		for (int i = 0; i < featureModel.size(); i++) {
+			if (!Objects.equals(get(i), that.get(i))) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
-	public FeatureModel<N> getFeatureModel() {
+	public FeatureModel<T> getFeatureModel() {
 		return featureModel;
 	}
 

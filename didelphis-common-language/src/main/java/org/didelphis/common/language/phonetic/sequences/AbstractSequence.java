@@ -35,34 +35,34 @@ import java.util.stream.Stream;
 /**
  * Created by samantha on 2/4/17.
  */
-public abstract class AbstractSequence<N>
-		implements Sequence<N>, Delegating<Deque<Segment<N>>> {
+public abstract class AbstractSequence<T>
+		implements Sequence<T>, Delegating<Deque<Segment<T>>> {
 	
-	protected AbstractSequence(Sequence<N> sequence) {
+	protected AbstractSequence(Sequence<T> sequence) {
 		segmentList = new LinkedList<>(sequence);
 		featureModel = sequence.getFeatureModel();
 	}
 
-	protected AbstractSequence(Segment<N> segment) {
+	protected AbstractSequence(Segment<T> segment) {
 		this(segment.getFeatureModel());
 		add(segment);
 	}
 
-	protected AbstractSequence(FeatureModel<N> featureSpec) {
+	protected AbstractSequence(FeatureModel<T> featureSpec) {
 		segmentList = new LinkedList<>();
 		featureModel = featureSpec;
 	}
 
-	protected AbstractSequence(Collection<Segment<N>> segments, FeatureModel<N> featureSpec) {
+	protected AbstractSequence(Collection<Segment<T>> segments, FeatureModel<T> featureSpec) {
 		segmentList = new LinkedList<>(segments);
 		featureModel = featureSpec;
 	}
 	
-	protected final LinkedList<Segment<N>> segmentList;
-	protected final FeatureModel<N> featureModel;
+	protected final LinkedList<Segment<T>> segmentList;
+	protected final FeatureModel<T> featureModel;
 
 	@Override
-	public Deque<Segment<N>> getDelegate() {
+	public Deque<Segment<T>> getDelegate() {
 		return segmentList;
 	}
 
@@ -72,12 +72,12 @@ public abstract class AbstractSequence<N>
 	}
 
 	@Override
-	public boolean addAll(Collection<? extends Segment<N>> c) {
+	public boolean addAll(Collection<? extends Segment<T>> c) {
 		return segmentList.addAll(c);
 	}
 
 	@Override
-	public boolean addAll(int index, Collection<? extends Segment<N>> c) {
+	public boolean addAll(int index, Collection<? extends Segment<T>> c) {
 		return segmentList.addAll(index, c);
 	}
 
@@ -97,37 +97,37 @@ public abstract class AbstractSequence<N>
 	}
 
 	@Override
-	public Segment<N> get(int index) {
+	public Segment<T> get(int index) {
 		return segmentList.get(index);
 	}
 
 	@Override
-	public Segment<N> getFirst() {
+	public Segment<T> getFirst() {
 		return get(0);
 	}
 
 	@Override
-	public Segment<N> getLast() {
+	public Segment<T> getLast() {
 		return get(segmentList.size() - 1);
 	}
 
 	@Override
-	public Segment<N> removeFirst() {
+	public Segment<T> removeFirst() {
 		return segmentList.removeFirst();
 	}
 
 	@Override
-	public Segment<N> removeLast() {
+	public Segment<T> removeLast() {
 		return segmentList.removeLast();
 	}
 
 	@Override
-	public Segment<N> set(int i, Segment<N> s) {
+	public Segment<T> set(int i, Segment<T> s) {
 		return segmentList.set(i, s);
 	}
 
 	@Override
-	public void add(int index, Segment<N> element) {
+	public void add(int index, Segment<T> element) {
 		segmentList.add(index, element);
 	}
 
@@ -137,7 +137,7 @@ public abstract class AbstractSequence<N>
 	}
 
 	@Override
-	public Segment<N> remove(int index) {
+	public Segment<T> remove(int index) {
 		return segmentList.remove(index);
 	}
 
@@ -152,67 +152,67 @@ public abstract class AbstractSequence<N>
 	}
 
 	@Override
-	public Segment<N> peek() {
+	public Segment<T> peek() {
 		return segmentList.peek();
 	}
 
 	@Override
-	public Segment<N> element() {
+	public Segment<T> element() {
 		return segmentList.element();
 	}
 
 	@Override
-	public Segment<N> poll() {
+	public Segment<T> poll() {
 		return segmentList.poll();
 	}
 
 	@Override
-	public Segment<N> remove() {
+	public Segment<T> remove() {
 		return segmentList.remove();
 	}
 
 	@Override
-	public boolean offer(Segment<N> segment) {
+	public boolean offer(Segment<T> segment) {
 		return segmentList.offer(segment);
 	}
 
 	@Override
-	public boolean offerFirst(Segment<N> segment) {
+	public boolean offerFirst(Segment<T> segment) {
 		return segmentList.offerFirst(segment);
 	}
 
 	@Override
-	public boolean offerLast(Segment<N> segment) {
+	public boolean offerLast(Segment<T> segment) {
 		return segmentList.offerLast(segment);
 	}
 
 	@Override
-	public Segment<N> peekFirst() {
+	public Segment<T> peekFirst() {
 		return segmentList.peekFirst();
 	}
 
 	@Override
-	public Segment<N> peekLast() {
+	public Segment<T> peekLast() {
 		return segmentList.peekLast();
 	}
 
 	@Override
-	public Segment<N> pollFirst() {
+	public Segment<T> pollFirst() {
 		return segmentList.pollFirst();
 	}
 
 	@Override
-	public Segment<N> pollLast() {
+	public Segment<T> pollLast() {
 		return segmentList.pollLast();
 	}
 
 	@Override
-	public void push(Segment<N> segment) {
+	public void push(Segment<T> segment) {
 		segmentList.push(segment);
 	}
 
 	@Override
-	public Segment<N> pop() {
+	public Segment<T> pop() {
 		return segmentList.pop();
 	}
 
@@ -228,31 +228,31 @@ public abstract class AbstractSequence<N>
 
 	@NotNull
 	@Override
-	public ListIterator<Segment<N>> listIterator() {
+	public ListIterator<Segment<T>> listIterator() {
 		return segmentList.listIterator();
 	}
 
 	@NotNull
 	@Override
-	public ListIterator<Segment<N>> listIterator(int index) {
+	public ListIterator<Segment<T>> listIterator(int index) {
 		return segmentList.listIterator(index);
 	}
 
 	@NotNull
 	@Override
-	public Iterator<Segment<N>> descendingIterator() {
+	public Iterator<Segment<T>> descendingIterator() {
 		return segmentList.descendingIterator();
 	}
 	
 	@NotNull
 	@Override
-	public List<Segment<N>> subList(int fromIndex, int toIndex) {
+	public List<Segment<T>> subList(int fromIndex, int toIndex) {
 		return segmentList.subList(fromIndex, toIndex);
 	}
 
 	@NotNull
 	@Override
-	public Iterator<Segment<N>> iterator() {
+	public Iterator<Segment<T>> iterator() {
 		return segmentList.iterator();
 	}
 
@@ -270,7 +270,7 @@ public abstract class AbstractSequence<N>
 	}
 
 	@Override
-	public Spliterator<Segment<N>> spliterator() {
+	public Spliterator<Segment<T>> spliterator() {
 		return segmentList.spliterator();
 	}
 
@@ -293,32 +293,32 @@ public abstract class AbstractSequence<N>
 	}
 
 	@Override
-	public boolean removeIf(Predicate<? super Segment<N>> filter) {
+	public boolean removeIf(Predicate<? super Segment<T>> filter) {
 		return segmentList.removeIf(filter);
 	}
 
 	@Override
-	public Stream<Segment<N>> stream() {
+	public Stream<Segment<T>> stream() {
 		return segmentList.stream();
 	}
 
 	@Override
-	public Stream<Segment<N>> parallelStream() {
+	public Stream<Segment<T>> parallelStream() {
 		return segmentList.parallelStream();
 	}
 
 	@Override
-	public void forEach(Consumer<? super Segment<N>> action) {
+	public void forEach(Consumer<? super Segment<T>> action) {
 		segmentList.forEach(action);
 	}
 
 	@Override
-	public void replaceAll(UnaryOperator<Segment<N>> operator) {
+	public void replaceAll(UnaryOperator<Segment<T>> operator) {
 		segmentList.replaceAll(operator);
 	}
 
 	@Override
-	public void sort(Comparator<? super Segment<N>> c) {
+	public void sort(Comparator<? super Segment<T>> c) {
 		segmentList.sort(c);
 	}
 

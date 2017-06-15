@@ -14,6 +14,7 @@
 
 package org.didelphis.common.language.machines;
 
+import org.didelphis.common.io.ClassPathFileHandler;
 import org.didelphis.common.language.enums.FormatterMode;
 import org.didelphis.common.language.enums.ParseDirection;
 import org.didelphis.common.language.exceptions.ParseException;
@@ -21,7 +22,8 @@ import org.didelphis.common.language.machines.interfaces.StateMachine;
 import org.didelphis.common.language.machines.sequences.SequenceMatcher;
 import org.didelphis.common.language.machines.sequences.SequenceParser;
 import org.didelphis.common.language.phonetic.SequenceFactory;
-import org.didelphis.common.language.phonetic.model.doubles.DoubleFeatureMapping;
+import org.didelphis.common.language.phonetic.features.IntegerFeature;
+import org.didelphis.common.language.phonetic.model.loaders.FeatureModelLoader;
 import org.didelphis.common.language.phonetic.sequences.Sequence;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -32,6 +34,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -44,16 +47,20 @@ public class StandardStateMachineTest {
 	private static final Logger LOG = LoggerFactory.getLogger(
 			StandardStateMachineTest.class);
 
-	private static final SequenceFactory<Double> FACTORY = factory();
+	private static final SequenceFactory<Integer> FACTORY = factory();
 	private static final int TIMEOUT = 2;
 
-	private static SequenceFactory<Double> factory() {
+	private static SequenceFactory<Integer> factory() {
 		return new SequenceFactory<>(
-				DoubleFeatureMapping.getEmpty(),
+				new FeatureModelLoader<>(
+						IntegerFeature.INSTANCE,
+						ClassPathFileHandler.INSTANCE,
+						Collections.emptyList()
+				).getFeatureMapping(),
 				FormatterMode.NONE);
 	}
 
-	private static void test(StateMachine<Sequence<Double>> machine, String target) {
+	private static void test(StateMachine<Sequence<Integer>> machine, String target) {
 		
 		final Collection<Integer> matchIndices = new ArrayList<>();
 		Assertions.assertTimeoutPreemptively(Duration.ofSeconds(5),() -> {
@@ -111,7 +118,7 @@ public class StandardStateMachineTest {
 
 	@Test
 	void testBasic01() {
-		StateMachine<Sequence<Double>> machine = getMachine("a");
+		StateMachine<Sequence<Integer>> machine = getMachine("a");
 
 		test(machine, "a");
 		test(machine, "aa");
@@ -122,7 +129,7 @@ public class StandardStateMachineTest {
 
 	@Test
 	void testBasic02() {
-		StateMachine<Sequence<Double>> machine = getMachine("aaa");
+		StateMachine<Sequence<Integer>> machine = getMachine("aaa");
 
 		test(machine, "aaa");
 
@@ -134,7 +141,7 @@ public class StandardStateMachineTest {
 
 	@Test
 	void testBasic03() throws IOException {
-		StateMachine<Sequence<Double>> machine = getMachine("aaa?");
+		StateMachine<Sequence<Integer>> machine = getMachine("aaa?");
 
 		test(machine, "aa");
 		test(machine, "aaa");
@@ -146,7 +153,7 @@ public class StandardStateMachineTest {
 
 	@Test
 	void testBasic04() throws IOException {
-		StateMachine<Sequence<Double>> machine = getMachine("ab*cd?ab");
+		StateMachine<Sequence<Integer>> machine = getMachine("ab*cd?ab");
 
 		test(machine, "acab");
 		test(machine, "abcab");
@@ -166,7 +173,7 @@ public class StandardStateMachineTest {
 
 	@Test
 	void testStar() throws IOException {
-		StateMachine<Sequence<Double>> machine = getMachine("aa*");
+		StateMachine<Sequence<Integer>> machine = getMachine("aa*");
 
 		test(machine, "a");
 		test(machine, "aa");
@@ -178,7 +185,7 @@ public class StandardStateMachineTest {
 
 	@Test
 	void testStateMachinePlus() throws IOException {
-		StateMachine<Sequence<Double>> machine = getMachine("a+");
+		StateMachine<Sequence<Integer>> machine = getMachine("a+");
 
 		test(machine, "a");
 		test(machine, "aa");
@@ -192,7 +199,7 @@ public class StandardStateMachineTest {
 
 	@Test
 	void testGroups() {
-		StateMachine<Sequence<Double>> machine = getMachine("(ab)(cd)(ef)");
+		StateMachine<Sequence<Integer>> machine = getMachine("(ab)(cd)(ef)");
 
 		test(machine, "abcdef");
 		fail(machine, "abcd");
@@ -202,7 +209,7 @@ public class StandardStateMachineTest {
 
 	@Test
 	void testGroupStar01() {
-		StateMachine<Sequence<Double>> machine = getMachine("(ab)*(cd)(ef)");
+		StateMachine<Sequence<Integer>> machine = getMachine("(ab)*(cd)(ef)");
 
 		test(machine, "abababcdef");
 		test(machine, "ababcdef");
@@ -217,7 +224,7 @@ public class StandardStateMachineTest {
 
 	@Test
 	void testGroupStar02() throws IOException {
-		StateMachine<Sequence<Double>> machine = getMachine("d(eo*)*b");
+		StateMachine<Sequence<Integer>> machine = getMachine("d(eo*)*b");
 
 		test(machine, "db");
 		test(machine, "deb");
@@ -235,7 +242,7 @@ public class StandardStateMachineTest {
 
 	@Test
 	void testGroupOptional01() throws IOException {
-		StateMachine<Sequence<Double>> machine = getMachine("(ab)?(cd)(ef)");
+		StateMachine<Sequence<Integer>> machine = getMachine("(ab)?(cd)(ef)");
 
 		test(machine, "abcdef");
 		test(machine, "cdef");
@@ -244,7 +251,7 @@ public class StandardStateMachineTest {
 
 	@Test
 	void testSets01() throws IOException {
-		StateMachine<Sequence<Double>> machine = getMachine("{ x ɣ }");
+		StateMachine<Sequence<Integer>> machine = getMachine("{ x ɣ }");
 
 		test(machine, "x");
 		test(machine, "ɣ");
@@ -253,7 +260,7 @@ public class StandardStateMachineTest {
 
 	@Test
 	void testSets02() throws IOException {
-		StateMachine<Sequence<Double>> machine = getMachine("{ab {cd xy} ef}tr");
+		StateMachine<Sequence<Integer>> machine = getMachine("{ab {cd xy} ef}tr");
 
 		test(machine, "abtr");
 		test(machine, "cdtr");
@@ -264,7 +271,7 @@ public class StandardStateMachineTest {
 
 	@Test
 	void testSetsExtraSpace01() {
-		StateMachine<Sequence<Double>> machine = getMachine("{cʰ  c  ɟ}");
+		StateMachine<Sequence<Integer>> machine = getMachine("{cʰ  c  ɟ}");
 
 		test(machine, "cʰ");
 		test(machine, "c");
@@ -273,7 +280,7 @@ public class StandardStateMachineTest {
 
 	@Test
 	void testGroupPlus01() throws IOException {
-		StateMachine<Sequence<Double>> machine = getMachine("(ab)+");
+		StateMachine<Sequence<Integer>> machine = getMachine("(ab)+");
 
 		test(machine, "ab");
 		test(machine, "abab");
@@ -282,14 +289,14 @@ public class StandardStateMachineTest {
 
 	@Test
 	void testComplexGroups01() throws IOException {
-		StateMachine<Sequence<Double>> machine = getMachine("(a+l(ham+b)*ra)+");
+		StateMachine<Sequence<Integer>> machine = getMachine("(a+l(ham+b)*ra)+");
 
 		test(machine, "alhambra");
 	}
 
 	@Test
 	void testComplex06() {
-		StateMachine<Sequence<Double>> machine = getMachine("{r l}{i u}s");
+		StateMachine<Sequence<Integer>> machine = getMachine("{r l}{i u}s");
 
 		test(machine, "ris");
 		test(machine, "rus");
@@ -306,7 +313,7 @@ public class StandardStateMachineTest {
 
 	@Test
 	void testComplex07() {
-		StateMachine<Sequence<Double>> machine = getMachine("{r l}?{i u}?s");
+		StateMachine<Sequence<Integer>> machine = getMachine("{r l}?{i u}?s");
 
 		test(machine, "s");
 
@@ -325,7 +332,7 @@ public class StandardStateMachineTest {
 
 	@Test
 	void testComplex02() {
-		StateMachine<Sequence<Double>> machine = getMachine(
+		StateMachine<Sequence<Integer>> machine = getMachine(
 				"{r l}?{a e o ā ē ō}{i u}?{n m l r}?{pʰ tʰ kʰ cʰ}us");
 
 		test(machine, "ācʰus");
@@ -333,7 +340,7 @@ public class StandardStateMachineTest {
 
 	@Test
 	void testComplex03() {
-		StateMachine<Sequence<Double>> machine = getMachine("a?{pʰ tʰ kʰ cʰ}us");
+		StateMachine<Sequence<Integer>> machine = getMachine("a?{pʰ tʰ kʰ cʰ}us");
 
 		test(machine, "pʰus");
 		test(machine, "tʰus");
@@ -344,7 +351,7 @@ public class StandardStateMachineTest {
 
 	@Test
 	void testComplex04() {
-		StateMachine<Sequence<Double>> machine = getMachine(
+		StateMachine<Sequence<Integer>> machine = getMachine(
 				"{a e o ā ē ō}{pʰ tʰ kʰ cʰ}us");
 		
 		test(machine, "apʰus");
@@ -355,7 +362,7 @@ public class StandardStateMachineTest {
 
 	@Test
 	void testComplex01() throws IOException {
-		StateMachine<Sequence<Double>> machine = getMachine("a?(b?c?)d?b");
+		StateMachine<Sequence<Integer>> machine = getMachine("a?(b?c?)d?b");
 
 		test(machine, "b");
 		test(machine, "db");
@@ -368,7 +375,7 @@ public class StandardStateMachineTest {
 
 	@Test
 	void testComplex05() {
-		StateMachine<Sequence<Double>> machine = getMachine(
+		StateMachine<Sequence<Integer>> machine = getMachine(
 				"{ab* (cd?)+ ((ae)*f)+}tr");
 
 		test(machine, "abtr");
@@ -389,7 +396,7 @@ public class StandardStateMachineTest {
 
 	@Test
 	void testDot01() throws IOException {
-		StateMachine<Sequence<Double>> machine = getMachine("..");
+		StateMachine<Sequence<Integer>> machine = getMachine("..");
 
 		test(machine, "ab");
 		test(machine, "db");
@@ -409,7 +416,7 @@ public class StandardStateMachineTest {
 
 	@Test
 	void testDot02() throws IOException {
-		StateMachine<Sequence<Double>> machine = getMachine("a..");
+		StateMachine<Sequence<Integer>> machine = getMachine("a..");
 
 		test(machine, "abb");
 		test(machine, "acdb");
@@ -430,7 +437,7 @@ public class StandardStateMachineTest {
 
 	@Test
 	void testGroupsDot() {
-		StateMachine<Sequence<Double>> machine = getMachine(".*(cd)(ef)");
+		StateMachine<Sequence<Integer>> machine = getMachine(".*(cd)(ef)");
 
 		test(machine, "cdef");
 		test(machine, "bcdef");
@@ -444,7 +451,7 @@ public class StandardStateMachineTest {
 
 	@Test
 	void testGroupsDotPlus() {
-		StateMachine<Sequence<Double>> machine = getMachine(".+(cd)(ef)");
+		StateMachine<Sequence<Integer>> machine = getMachine(".+(cd)(ef)");
 
 		test(machine, "bcdef");
 		test(machine, "abcdef");
@@ -459,7 +466,7 @@ public class StandardStateMachineTest {
 
 	@Test
 	void testBoundary() {
-		StateMachine<Sequence<Double>> machine = getMachine("a#");
+		StateMachine<Sequence<Integer>> machine = getMachine("a#");
 
 		test(machine, "a");
 
@@ -469,7 +476,7 @@ public class StandardStateMachineTest {
 
 	@Test
 	void testGroupsDotStar() {
-		StateMachine<Sequence<Double>> machine = getMachine("(a.)*cd#");
+		StateMachine<Sequence<Integer>> machine = getMachine("(a.)*cd#");
 
 		test(machine, "cd");
 		test(machine, "aXcd");
@@ -485,9 +492,9 @@ public class StandardStateMachineTest {
 		assertThrows(ParseException.class, () -> getMachine(expression));
 	}
 
-	private static StateMachine<Sequence<Double>> getMachine(String expression) {
-		SequenceParser<Double> parser = new SequenceParser<>(FACTORY);
-		SequenceMatcher<Double> matcher = new SequenceMatcher<>(parser);
+	private static StateMachine<Sequence<Integer>> getMachine(String expression) {
+		SequenceParser<Integer> parser = new SequenceParser<>(FACTORY);
+		SequenceMatcher<Integer> matcher = new SequenceMatcher<>(parser);
 		return StandardStateMachine.create("M0",
 				expression,
 				parser,
@@ -495,7 +502,7 @@ public class StandardStateMachineTest {
 				ParseDirection.FORWARD);
 	}
 
-	private static void fail(StateMachine<Sequence<Double>> machine,
+	private static void fail(StateMachine<Sequence<Integer>> machine,
 			String target) {
 		final Collection<Integer> matchIndices = new ArrayList<>();
 		Assertions.assertTimeoutPreemptively(Duration.ofSeconds(TIMEOUT),() -> {
@@ -507,8 +514,8 @@ public class StandardStateMachineTest {
 	}
 
 	private static Collection<Integer> testMachine(
-			StateMachine<Sequence<Double>> machine, String target) {
-		Sequence<Double> sequence = FACTORY.getSequence(target);
+			StateMachine<Sequence<Integer>> machine, String target) {
+		Sequence<Integer> sequence = FACTORY.getSequence(target);
 		return machine.getMatchIndices(0, sequence);
 	}
 }

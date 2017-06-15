@@ -23,7 +23,8 @@ import org.didelphis.common.language.machines.interfaces.StateMachine;
 import org.didelphis.common.language.machines.sequences.SequenceMatcher;
 import org.didelphis.common.language.machines.sequences.SequenceParser;
 import org.didelphis.common.language.phonetic.SequenceFactory;
-import org.didelphis.common.language.phonetic.model.doubles.DoubleFeatureMapping;
+import org.didelphis.common.language.phonetic.features.IntegerFeature;
+import org.didelphis.common.language.phonetic.model.loaders.FeatureModelLoader;
 import org.didelphis.common.language.phonetic.sequences.Sequence;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -44,7 +46,7 @@ public class StandardStateMachineModelTest {
 
 	private static final Logger LOG = LoggerFactory.getLogger(StandardStateMachineModelTest.class);
 
-	private static SequenceFactory<Double> factory;
+	private static SequenceFactory<Integer> factory;
 
 	@BeforeAll
 	public static void loadModel() {
@@ -54,7 +56,11 @@ public class StandardStateMachineModelTest {
 
 		FileHandler handler = ClassPathFileHandler.INSTANCE;
 		
-		factory = new SequenceFactory<>(DoubleFeatureMapping.load(name, handler, mode), mode);
+		factory = new SequenceFactory<>(new FeatureModelLoader<>(
+				IntegerFeature.INSTANCE,
+				ClassPathFileHandler.INSTANCE,
+				name
+		).getFeatureMapping(), mode);
 	}
 	
 	@Test
@@ -64,7 +70,7 @@ public class StandardStateMachineModelTest {
 
 	@Test
 	public void testDot() {
-		StateMachine<Sequence<Double>> machine = getMachine(".");
+		StateMachine<Sequence<Integer>> machine = getMachine(".");
 
 		test(machine, "a");
 		test(machine, "b");
@@ -75,7 +81,7 @@ public class StandardStateMachineModelTest {
 
 	@Test
 	public void testBasicStateMachine01() {
-		StateMachine<Sequence<Double>> machine = getMachine("[-con, +son, -hgh, +frn, -atr, +voice]");
+		StateMachine<Sequence<Integer>> machine = getMachine("[-con, +son, -hgh, +frn, -atr, +voice]");
 
 		test(machine, "a");
 		test(machine, "aa");
@@ -86,7 +92,7 @@ public class StandardStateMachineModelTest {
 
 	@Test
 	public void testBasicStateMachine03() {
-		StateMachine<Sequence<Double>> machine = getMachine("a[-con, +son, -hgh, +frn]+");
+		StateMachine<Sequence<Integer>> machine = getMachine("a[-con, +son, -hgh, +frn]+");
 
 		fail(machine, "a");
 		test(machine, "aa");
@@ -100,7 +106,7 @@ public class StandardStateMachineModelTest {
 
 	@Test
 	public void testBasicStateMachine02() {
-		StateMachine<Sequence<Double>> machine = getMachine("aaa");
+		StateMachine<Sequence<Integer>> machine = getMachine("aaa");
 
 		test(machine, "aaa");
 
@@ -112,7 +118,7 @@ public class StandardStateMachineModelTest {
 
 	@Test
 	public void testStateMachineStar() {
-		StateMachine<Sequence<Double>> machine = getMachine("aa*");
+		StateMachine<Sequence<Integer>> machine = getMachine("aa*");
 
 		test(machine, "a");
 		test(machine, "aa");
@@ -124,7 +130,7 @@ public class StandardStateMachineModelTest {
 
 	@Test
 	public void testComplex01() {
-		StateMachine<Sequence<Double>> machine = getMachine("{a e o ā ē ō}{n m l r}?{pʰ tʰ kʰ cʰ}us");
+		StateMachine<Sequence<Integer>> machine = getMachine("{a e o ā ē ō}{n m l r}?{pʰ tʰ kʰ cʰ}us");
 
 		test(machine, "ācʰus");
 		test(machine, "āncʰus");
@@ -145,7 +151,7 @@ public class StandardStateMachineModelTest {
 	
 	@Test
 	public void testComplex02() {
-		StateMachine<Sequence<Double>> machine = getMachine("{r l}?{a e o ā ē ō}{i u}?{n m l r}?{pʰ tʰ kʰ cʰ}us");
+		StateMachine<Sequence<Integer>> machine = getMachine("{r l}?{a e o ā ē ō}{i u}?{n m l r}?{pʰ tʰ kʰ cʰ}us");
 
 		test(machine, "ācʰus");
 		test(machine, "rācʰus");
@@ -182,7 +188,7 @@ public class StandardStateMachineModelTest {
 
 	@Test
 	public void testComplex03() {
-		StateMachine<Sequence<Double>> machine = getMachine("a?{pʰ tʰ kʰ cʰ}us");
+		StateMachine<Sequence<Integer>> machine = getMachine("a?{pʰ tʰ kʰ cʰ}us");
 
 		test(machine, "pʰus");
 		test(machine, "tʰus");
@@ -193,7 +199,7 @@ public class StandardStateMachineModelTest {
 
 	@Test
 	public void testComplex04() {
-		StateMachine<Sequence<Double>> machine = getMachine("{a e o ā ē ō}{pʰ tʰ kʰ cʰ}us");
+		StateMachine<Sequence<Integer>> machine = getMachine("{a e o ā ē ō}{pʰ tʰ kʰ cʰ}us");
 
 		test(machine, "apʰus");
 		test(machine, "atʰus");
@@ -233,7 +239,7 @@ public class StandardStateMachineModelTest {
 
 	@Test
 	public void testComplex05() {
-		StateMachine<Sequence<Double>> machine = getMachine("[-con, +voice, -creaky][-son, -voice, +vot]us");
+		StateMachine<Sequence<Integer>> machine = getMachine("[-con, +voice, -creaky][-son, -voice, +vot]us");
 
 		test(machine, "apʰus");
 		test(machine, "atʰus");
@@ -282,20 +288,20 @@ public class StandardStateMachineModelTest {
 	}
 
 
-	private static StateMachine<Sequence<Double>> getMachine(String expression) {
-		SequenceParser<Double> parser = new SequenceParser<>(factory);
-		SequenceMatcher<Double> matcher = new SequenceMatcher<>(parser);
+	private static StateMachine<Sequence<Integer>> getMachine(String expression) {
+		SequenceParser<Integer> parser = new SequenceParser<>(factory);
+		SequenceMatcher<Integer> matcher = new SequenceMatcher<>(parser);
 		return StandardStateMachine.create("M0", expression, parser, matcher, ParseDirection.FORWARD);
 	}
 
-	private static void test(StateMachine<Sequence<Double>> stateMachine,
+	private static void test(StateMachine<Sequence<Integer>> stateMachine,
 			String target) {
 		Collection<Integer> matchIndices = testMachine(stateMachine, target);
 		String message = "Machine failed to accept input: " + target;
 		assertFalse(matchIndices.isEmpty(),message);
 	}
 
-	private static void fail(StateMachine<Sequence<Double>> stateMachine,
+	private static void fail(StateMachine<Sequence<Integer>> stateMachine,
 			String target) {
 		Collection<Integer> matchIndices = testMachine(stateMachine, target);
 		String message = "Machine accepted input it should not have: " + target;
@@ -303,8 +309,8 @@ public class StandardStateMachineModelTest {
 	}
 
 	private static Collection<Integer> testMachine(
-			StateMachine<Sequence<Double>> stateMachine, String target) {
-		Sequence<Double> sequence = factory.getSequence(target);
+			StateMachine<Sequence<Integer>> stateMachine, String target) {
+		Sequence<Integer> sequence = factory.getSequence(target);
 		return stateMachine.getMatchIndices(0, sequence);
 	}
 }

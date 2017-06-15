@@ -15,25 +15,27 @@
 package org.didelphis.common.language.phonetic.model;
 
 import org.didelphis.common.io.ClassPathFileHandler;
-import org.didelphis.common.io.FileHandler;
 import org.didelphis.common.language.enums.FormatterMode;
 import org.didelphis.common.language.phonetic.SequenceFactory;
-import org.didelphis.common.language.phonetic.model.doubles.DoubleFeatureMapping;
+import org.didelphis.common.language.phonetic.features.IntegerFeature;
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureMapping;
+import org.didelphis.common.language.phonetic.model.loaders.FeatureModelLoader;
 
 /**
  * Created by samantha on 10/10/15.
  */
+@SuppressWarnings("AbstractClassWithoutAbstractMethods")
 public abstract class ModelTestBase {
 
-	protected static SequenceFactory<Double> loadFactory(String resourceName, FormatterMode mode) {
+	protected static SequenceFactory<Integer> loadFactory(String resourceName, FormatterMode mode) {
 		return new SequenceFactory<>(loadMapping(resourceName, mode), mode);
 	}
 
-	protected static FeatureMapping<Double> loadMapping(String resourceName, FormatterMode mode) {
-//		InputStream stream = ModelTestBase.class.getClassLoader().getResourceAsStream(resourceName);
-//		return new DefaultFeatureMapping<>(stream, mode);
-		FileHandler handler = ClassPathFileHandler.INSTANCE;
-		return DoubleFeatureMapping.load(resourceName, handler, mode);
+	protected static FeatureMapping<Integer> loadMapping(String resourceName, FormatterMode mode) {
+		FeatureModelLoader<Integer> loader = new FeatureModelLoader<>(
+				IntegerFeature.INSTANCE,
+				ClassPathFileHandler.INSTANCE,
+				resourceName);
+		return loader.getFeatureMapping();
 	}
 }

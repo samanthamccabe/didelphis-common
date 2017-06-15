@@ -34,7 +34,7 @@ import java.util.Set;
  *
  * Date: 2017-02-16
  */
-public interface FeatureMapping<N> extends ModelBearer<N> {
+public interface FeatureMapping<T> extends ModelBearer<T> {
 
 	/**
 	 * Computes a canonical {@code String} representation from the provided
@@ -44,7 +44,7 @@ public interface FeatureMapping<N> extends ModelBearer<N> {
 	 * @return //TODO:
 	 */
 	@NotNull
-	String findBestSymbol(@NotNull FeatureArray<N> featureArray);
+	String findBestSymbol(@NotNull FeatureArray<T> featureArray);
 
 	/**
 	 * Returns all symbols defined in the mapping.
@@ -66,7 +66,7 @@ public interface FeatureMapping<N> extends ModelBearer<N> {
 	 *      this not be modifiable
 	 */
 	@NotNull
-	Map<String, FeatureArray<N>> getFeatureMap();
+	Map<String, FeatureArray<T>> getFeatureMap();
 
 	/**
 	 * Provides a contained maps from symbols to features for modifier and 
@@ -75,7 +75,7 @@ public interface FeatureMapping<N> extends ModelBearer<N> {
 	 *      this not be modifiable
 	 */
 	@NotNull
-	Map<String, FeatureArray<N>> getModifiers();
+	Map<String, FeatureArray<T>> getModifiers();
 
 	/**
 	 * Looks up the {@code FeatureArray} stored in the mapping under the
@@ -84,7 +84,7 @@ public interface FeatureMapping<N> extends ModelBearer<N> {
 	 * @return an associated {@code FeatureArray}; may be null if not found
 	 */
 	@Nullable
-	FeatureArray<N> getFeatureArray(String key);
+	FeatureArray<T> getFeatureArray(String key);
 
 	/**
 	 * Parses as string into a {@link Segment}
@@ -103,5 +103,5 @@ public interface FeatureMapping<N> extends ModelBearer<N> {
 	 *      the mapping
 	 */
 	@NotNull
-	Segment<N> parseSegment(@NotNull String string);
+	Segment<T> parseSegment(@NotNull String string);
 }

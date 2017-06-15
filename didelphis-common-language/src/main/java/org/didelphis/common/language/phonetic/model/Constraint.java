@@ -25,15 +25,15 @@ import java.util.regex.Pattern;
  * Samantha Fiona Morrigan McCabe
  * Created: 3/1/2016
  */
-public class Constraint<N> implements ModelBearer<N> {
+public class Constraint<T> implements ModelBearer<T> {
 
 	private static final Pattern COMPILE = Pattern.compile("\\s+");
 	
 	private final String label;
 	
-	private final FeatureModel<N> featureModel;
-	private final FeatureArray<N> source;
-	private final FeatureArray<N> target;
+	private final FeatureModel<T> featureModel;
+	private final FeatureArray<T> source;
+	private final FeatureArray<T> target;
 
 	/**
 	 * @param label
@@ -42,9 +42,9 @@ public class Constraint<N> implements ModelBearer<N> {
 	 * @param featureModel
 	 */
 	public Constraint(CharSequence label,
-	                  FeatureArray<N> source,
-	                  FeatureArray<N> target,
-	                  FeatureModel<N> featureModel) {
+	                  FeatureArray<T> source,
+	                  FeatureArray<T> target,
+	                  FeatureModel<T> featureModel) {
 
 		this.label = COMPILE.matcher(label).replaceAll(" ");
 		this.source = source;
@@ -52,11 +52,11 @@ public class Constraint<N> implements ModelBearer<N> {
 		this.featureModel = featureModel;
 	}
 
-	public FeatureArray<N> getTarget() {
+	public FeatureArray<T> getTarget() {
 		return target;
 	}
 
-	public FeatureArray<N> getSource() {
+	public FeatureArray<T> getSource() {
 		return source;
 	}
 
@@ -81,7 +81,7 @@ public class Constraint<N> implements ModelBearer<N> {
 	}
 
 	@Override
-	public FeatureModel<N> getFeatureModel() {
+	public FeatureModel<T> getFeatureModel() {
 		return featureModel;
 	}
 

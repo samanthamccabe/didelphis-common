@@ -21,11 +21,11 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author Samantha Fiona McCabe
  * @since 0.1.0
- * @param <N> the type of feature used by the segment
+ * @param <T> the type of feature used by the segment
  *
  * Date: 2017-02-15
  */
-public interface  Segment<N> extends ModelBearer<N>, Comparable<Segment<N>> {
+public interface  Segment<T> extends ModelBearer<T>, Comparable<Segment<T>> {
 
 	/**
 	 * Combines the two segments, applying all fully specified features from
@@ -37,18 +37,18 @@ public interface  Segment<N> extends ModelBearer<N>, Comparable<Segment<N>> {
 	 * an empty segment (with no defined features) will make no changes and will
 	 * return false
 	 */
-	boolean alter(@NotNull Segment<N> segment);
+	boolean alter(@NotNull Segment<T> segment);
 
 	/**
 	 * Determines if a segment is consistent with this segment. Two segments are
 	 * consistent with each other if all corresponding features are equal one is
 	 * undefined; usually this means null, but for numerical values of parameter
-	 * {@code <N>} this could mean {@code NaN}
+	 * {@code <T>} this could mean {@code NaN}
 	 *
 	 * @param segment another segment to compare to this one
 	 * @return true if all features in either segment are equal or undefined
 	 */
-	boolean matches(@NotNull Segment<N> segment);
+	boolean matches(@NotNull Segment<T> segment);
 
 	/**
 	 * @return the symbol associated with this segment
@@ -60,5 +60,5 @@ public interface  Segment<N> extends ModelBearer<N>, Comparable<Segment<N>> {
 	 * @return the feature object representing this segment
 	 */
 	@NotNull
-	FeatureArray<N> getFeatures();
+	FeatureArray<T> getFeatures();
 }

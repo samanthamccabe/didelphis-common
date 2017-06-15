@@ -12,55 +12,27 @@
  = limitations under the License.
  =============================================================================*/
 
-package org.didelphis.common.language.phonetic.model.doubles;
+package org.didelphis.common.language.phonetic.features;
 
-import org.didelphis.common.language.phonetic.features.FeatureArray;
-import org.didelphis.common.language.phonetic.model.AbstractFeatureModel;
-import org.didelphis.common.language.phonetic.model.Constraint;
-import org.didelphis.common.language.phonetic.model.interfaces.FeatureSpecification;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.text.Normalizer;
-import java.text.Normalizer.Form;
-import java.util.List;
-import java.util.Map;
+import static java.text.Normalizer.*;
 
 /**
- * Class {@code DoubleFeatureModel}
+ * Class {@code DoubleFeature}
  *
  * @author Samantha Fiona McCabe
- * @since 0.1.0
- *
- * Date: 2016-07-02
+ * @since 0.1.0 Date: 2017-06-12
  */
-public final class DoubleFeatureModel extends AbstractFeatureModel<Double> {
-
-	private static final Logger LOG = LoggerFactory.getLogger(DoubleFeatureModel.class);
-
-	/**
-	 * @param specification
-	 * @param constraints
-	 * @param aliases
-	 */
-	public  DoubleFeatureModel(FeatureSpecification specification,
-			List<Constraint<Double>> constraints,
-			Map<String, FeatureArray<Double>> aliases) {
-		super(specification, constraints, aliases);
-	}
-	
-	@Override
-	public String toString() {
-		return "DoubleFeatureSpecification{" + size() + '}';
-	}
+public enum DoubleFeature implements FeatureType<Double> {
+	INSTANCE;
 
 	@NotNull
 	@Override
 	public Double parseValue(@NotNull String string) {
 		Form form = Form.NFKC;
-		String normalized = Normalizer.normalize(string, form);
+		String normalized = normalize(string, form);
 		if (normalized.equals("+")) {
 			return 1.0;
 		} else if (normalized.equals("-")) {
@@ -82,4 +54,12 @@ public final class DoubleFeatureModel extends AbstractFeatureModel<Double> {
 		return Double.compare(v1, v2);
 	}
 
+	@Override
+	public double difference(Double v1, Double v2) {
+		return Math.abs(checkValue(v1) - (checkValue(v2)));
+	}
+
+	private double checkValue(Double value) {
+		return isDefined(value) ? value : 0.0;
+	}
 }

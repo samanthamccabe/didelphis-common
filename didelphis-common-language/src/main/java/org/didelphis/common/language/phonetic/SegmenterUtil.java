@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Segmenter provides functionality to split strings into an an array where
@@ -87,17 +88,17 @@ public final class SegmenterUtil {
 	}
 */
 	@Deprecated
-	public static <N> Segment<N> getSegment(
+	public static <T> Segment<T> getSegment(
 			String string, 
-			FeatureMapping<N> mapping,
+			FeatureMapping<T> mapping,
 			Segmenter formatterMode) {
 		return getSegment(string, mapping, null, formatterMode);
 	}
 
 	@Deprecated
-	public static <N> Segment<N> getSegment(
+	public static <T> Segment<T> getSegment(
 			String string,
-			FeatureMapping<N> featureMapping,
+			FeatureMapping<T> featureMapping,
 			Collection<String> reservedStrings,
 			Segmenter formatterMode) {
 			return featureMapping.parseSegment(string);
@@ -108,27 +109,27 @@ public final class SegmenterUtil {
 		return formatterMode.split(word, keys);
 	}
 
-	public static <N> Sequence<N> getSequence(String word, FeatureMapping<N> featureMapping, Collection<String> reserved, Segmenter formatterMode) {
+	public static <T> Sequence<T> getSequence(String word, FeatureMapping<T> featureMapping, Collection<String> reserved, Segmenter formatterMode) {
 		Collection<String> keys = getKeys(featureMapping, reserved);
 		List<String> list = formatterMode.split(word, keys);
-		FeatureModel<N> featureModel = featureMapping.getFeatureModel();
-		Sequence<N> sequence = new BasicSequence<>(featureModel);
-		for (String string : list) {
-			Segment<N> segment;
-			if (reserved != null && reserved.contains(string)) {
-				segment = new StandardSegment<>(string, new SparseFeatureArray<>(featureModel), featureModel);
-			} else if (string.startsWith("[") && featureMapping.getSpecification().size() > 0) {
-				segment = new StandardSegment<>(string, featureModel.parseFeatureString(string), featureModel);
+		FeatureModel<T> featureModel = featureMapping.getFeatureModel();
+		List<Segment<T>> segments = list.stream().map(string -> {
+			if (string.startsWith("[") &&
+					featureMapping.getSpecification().size() > 0) {
+				return new StandardSegment<>(string,
+						featureModel.parseFeatureString(string), featureModel);
+			} else if (reserved != null && reserved.contains(string)) {
+				return new StandardSegment<>(string,
+						new SparseFeatureArray<>(featureModel), featureModel);
 			} else {
-				segment = featureMapping.parseSegment(string);
+				return featureMapping.parseSegment(string);
 			}
-			sequence.add(segment);
-		}
-		return sequence;
+		}).collect(Collectors.toList());
+		return new BasicSequence<>(segments, featureModel);
 	}
 
-	private static <N> Collection<String> getKeys(
-			FeatureMapping<N> mapping,
+	private static <T> Collection<String> getKeys(
+			FeatureMapping<T> mapping,
 			Collection<String> reserved) {
 		Collection<String> keys = new ArrayList<>(mapping.getSymbols());
 		if (reserved != null) {

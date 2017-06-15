@@ -38,21 +38,21 @@ import java.util.stream.Collectors;
 /**
  * Created by samantha on 2/25/17.
  */
-public class SequenceParser<N> implements MachineParser<Sequence<N>> {
+public class SequenceParser<T> implements MachineParser<Sequence<T>> {
 
-	private final SequenceFactory<N> factory;
+	private final SequenceFactory<T> factory;
 	
-	private final Map<String, Collection<Sequence<N>>> specials;
+	private final Map<String, Collection<Sequence<T>>> specials;
 	
-	private final Sequence<N> epsilon;
+	private final Sequence<T> epsilon;
 	
-	public SequenceParser(SequenceFactory<N> factory) {
+	public SequenceParser(SequenceFactory<T> factory) {
 		this.factory = factory;
 		specials = new HashMap<>();
 		
 		VariableStore variableStore = factory.getVariableStore();
 		for (String key : variableStore.getKeys()) {
-			Collection<Sequence<N>> values = variableStore.get(key)
+			Collection<Sequence<T>> values = variableStore.get(key)
 					.stream()
 					.map(factory::getSequence)
 					.collect(Collectors.toList());
@@ -60,15 +60,15 @@ public class SequenceParser<N> implements MachineParser<Sequence<N>> {
 		}
 		
 		// Generate epsilon / lambda symbol
-		FeatureModel<N> model = factory.getFeatureMapping().getFeatureModel();
-		FeatureArray<N> array = new SparseFeatureArray<>(model);
-		Segment<N> segment = new StandardSegment<>("\uD835\uDF06", array, model);
+		FeatureModel<T> model = factory.getFeatureMapping().getFeatureModel();
+		FeatureArray<T> array = new SparseFeatureArray<>(model);
+		Segment<T> segment = new StandardSegment<>("\uD835\uDF06", array, model);
 		epsilon = new BasicSequence<>(segment);
 	}
 	
 	@Override
-	public Sequence<N> transform(String expression) {
-		Sequence<N> sequence = factory.getSequence(expression);
+	public Sequence<T> transform(String expression) {
+		Sequence<T> sequence = factory.getSequence(expression);
 		// Ensure canonical segments are used
 		for (int i = 0; i < sequence.size(); i++) {
 			String symbol = sequence.get(i).getSymbol();
@@ -110,26 +110,26 @@ public class SequenceParser<N> implements MachineParser<Sequence<N>> {
 	}
 
 	@Override
-	public Sequence<N> epsilon() {
+	public Sequence<T> epsilon() {
 		return epsilon;
 	}
 	
 	@Override
-	public Map<String, Collection<Sequence<N>>> getSpecials() {
+	public Map<String, Collection<Sequence<T>>> getSpecials() {
 		return Collections.unmodifiableMap(specials);
 	}
 
 	@Override
-	public Sequence<N> getDot() {
+	public Sequence<T> getDot() {
 		return factory.getDotSequence();
 	}
 
 	@Override
-	public int lengthOf(Sequence<N> segments) {
+	public int lengthOf(Sequence<T> segments) {
 		return segments.size();
 	}
 
-	public SequenceFactory<N> getSequenceFactory() {
+	public SequenceFactory<T> getSequenceFactory() {
 		return factory;
 	}
 

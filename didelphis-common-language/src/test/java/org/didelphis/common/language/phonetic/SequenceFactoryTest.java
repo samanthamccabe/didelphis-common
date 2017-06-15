@@ -17,13 +17,16 @@ package org.didelphis.common.language.phonetic;
 import org.didelphis.common.io.ClassPathFileHandler;
 import org.didelphis.common.io.FileHandler;
 import org.didelphis.common.language.enums.FormatterMode;
-import org.didelphis.common.language.phonetic.model.BinaryFeatureModel;
-import org.didelphis.common.language.phonetic.model.doubles.DoubleFeatureMapping;
+import org.didelphis.common.language.phonetic.features.BinaryFeature;
+import org.didelphis.common.language.phonetic.features.IntegerFeature;
+import org.didelphis.common.language.phonetic.model.interfaces.FeatureMapping;
+import org.didelphis.common.language.phonetic.model.loaders.FeatureModelLoader;
 import org.didelphis.common.language.phonetic.sequences.Sequence;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -38,18 +41,17 @@ public class SequenceFactoryTest {
 		String name = "AT_hybrid.model";
 		
 		FormatterMode formatterMode = FormatterMode.INTELLIGENT;
-		
-		FileHandler handler = ClassPathFileHandler.INSTANCE;
 
 		String word = "avaːm";
 
-		DoubleFeatureMapping mapping = DoubleFeatureMapping.load(name,
-				handler,
-				formatterMode);
+		FeatureMapping<Integer> mapping = new FeatureModelLoader<>(
+				IntegerFeature.INSTANCE,
+				ClassPathFileHandler.INSTANCE,
+				name).getFeatureMapping();
 
-		SequenceFactory<Double> factory = new SequenceFactory<>(mapping, formatterMode);
+		SequenceFactory<Integer> factory = new SequenceFactory<>(mapping, formatterMode);
 
-		Sequence<Double> sequence = factory.getSequence(word);
+		Sequence<Integer> sequence = factory.getSequence(word);
 		Assertions.assertTrue(!sequence.isEmpty());
 	}
 
@@ -60,13 +62,16 @@ public class SequenceFactoryTest {
 		reserved.add("th");
 		reserved.add("kh");
 
-		SequenceFactory<Boolean> factory = new SequenceFactory<Boolean>(
-				BinaryFeatureModel.getEmptyModel(),
+		SequenceFactory<Integer> factory = new SequenceFactory<>(
+				new FeatureModelLoader<>(
+						IntegerFeature.INSTANCE,
+						ClassPathFileHandler.INSTANCE,
+						Collections.emptyList()).getFeatureMapping(),
 				new VariableStore(FormatterMode.NONE),
 			reserved,
 			FormatterMode.NONE);
 
-		Sequence<Double> expected = factory.getSequence("");
+		Sequence<Integer> expected = factory.getSequence("");
 		expected.add(factory.getSegment("a"));
 		expected.add(factory.getSegment("ph"));
 		expected.add(factory.getSegment("a"));
@@ -75,7 +80,7 @@ public class SequenceFactoryTest {
 		expected.add(factory.getSegment("kh"));
 		expected.add(factory.getSegment("a"));
 
-		Sequence received = factory.getSequence("aphathakha");
+		Sequence<Integer> received = factory.getSequence("aphathakha");
 
 		Assertions.assertEquals(expected, received);
 	}

@@ -14,14 +14,15 @@
 
 package org.didelphis.common.language.phonetic.model;
 
-import org.didelphis.common.language.phonetic.segments.StandardSegment;
 import org.didelphis.common.language.phonetic.features.FeatureArray;
+import org.didelphis.common.language.phonetic.features.FeatureType;
 import org.didelphis.common.language.phonetic.features.SparseFeatureArray;
 import org.didelphis.common.language.phonetic.features.StandardFeatureArray;
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureMapping;
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureModel;
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureSpecification;
 import org.didelphis.common.language.phonetic.segments.Segment;
+import org.didelphis.common.language.phonetic.segments.StandardSegment;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,24 +32,25 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.IntStream;
 
 /**
  * @author Samantha Fiona McCabe
  */
-public abstract class AbstractFeatureMapping<N> implements FeatureMapping<N> {
+public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(AbstractFeatureMapping.class);
+	private static final Logger LOG = LoggerFactory.getLogger(GeneralFeatureMapping.class);
 
-	private final FeatureModel<N> featureModel;
+	private final FeatureModel<T> featureModel;
 	
-	private final Map<String, FeatureArray<N>> featureMap;
-	private final Map<String, FeatureArray<N>> modifiers;
+	private final Map<String, FeatureArray<T>> featureMap;
+	private final Map<String, FeatureArray<T>> modifiers;
 
-	protected AbstractFeatureMapping(FeatureModel<N> featureModel,
-			Map<String, FeatureArray<N>> featureMap,
-			Map<String, FeatureArray<N>> modifiers) {
+	public GeneralFeatureMapping(FeatureModel<T> featureModel,
+			Map<String, FeatureArray<T>> featureMap,
+			Map<String, FeatureArray<T>> modifiers) {
 		this.featureModel = featureModel;
 		this.featureMap = Collections.unmodifiableMap(featureMap);
 		this.modifiers = Collections.unmodifiableMap(modifiers);
@@ -56,14 +58,14 @@ public abstract class AbstractFeatureMapping<N> implements FeatureMapping<N> {
 
 	@NotNull
 	@Override
-	public String findBestSymbol(@NotNull FeatureArray<N> featureArray) {
+	public String findBestSymbol(@NotNull FeatureArray<T> featureArray) {
 
-		FeatureArray<N> bestFeatures = null;
+		FeatureArray<T> bestFeatures = null;
 		String bestSymbol = "";
 		double minimum = Double.MAX_VALUE;
 
-		for (Entry<String, FeatureArray<N>> entry : featureMap.entrySet()) {
-			FeatureArray<N> features = entry.getValue();
+		for (Entry<String, FeatureArray<T>> entry : featureMap.entrySet()) {
+			FeatureArray<T> features = entry.getValue();
 			double difference = totalDifference(featureArray, features);
 			if (difference < minimum) {
 				bestSymbol = entry.getKey();
@@ -97,19 +99,19 @@ public abstract class AbstractFeatureMapping<N> implements FeatureMapping<N> {
 
 	@NotNull
 	@Override
-	public Map<String, FeatureArray<N>> getFeatureMap() {
+	public Map<String, FeatureArray<T>> getFeatureMap() {
 		return featureMap;
 	}
 	
 	@NotNull
 	@Override
-	public Map<String, FeatureArray<N>> getModifiers() {
+	public Map<String, FeatureArray<T>> getModifiers() {
 		return modifiers;
 	}
 
 	@NotNull
 	@Override
-	public FeatureArray<N> getFeatureArray(String key) {
+	public FeatureArray<T> getFeatureArray(String key) {
 		return featureMap.containsKey(key) 
 				? new StandardFeatureArray<>(featureMap.get(key)) 
 				: new SparseFeatureArray<>(featureModel);
@@ -117,13 +119,13 @@ public abstract class AbstractFeatureMapping<N> implements FeatureMapping<N> {
 	
 	@NotNull
 	@Override
-	public Segment<N> parseSegment(@NotNull String string) {
+	public Segment<T> parseSegment(@NotNull String string) {
 		if (string.startsWith("[")) {
 			return new StandardSegment<>(string, featureModel.parseFeatureString(string), featureModel);
 		}
 		
 		if (featureMap.isEmpty()) {
-			FeatureArray<N> featureArray = new StandardFeatureArray<>(
+			FeatureArray<T> featureArray = new StandardFeatureArray<>(
 					new ArrayList<>(),
 				  featureModel
 			);
@@ -137,10 +139,10 @@ public abstract class AbstractFeatureMapping<N> implements FeatureMapping<N> {
 				}
 			}
 
-			FeatureArray<N> featureArray = getFeatureArray(best);
+			FeatureArray<T> featureArray = getFeatureArray(best);
 			for (String s : string.substring(best.length()).split("")) {
 				if (modifiers.containsKey(s)) {
-					FeatureArray<N> array = modifiers.get(s);
+					FeatureArray<T> array = modifiers.get(s);
 					featureArray.alter(array);
 				}
 			}
@@ -148,7 +150,7 @@ public abstract class AbstractFeatureMapping<N> implements FeatureMapping<N> {
 	}
 
 	@Override
-	public FeatureModel<N> getFeatureModel() {
+	public FeatureModel<T> getFeatureModel() {
 		return featureModel;
 	}
 	
@@ -157,33 +159,51 @@ public abstract class AbstractFeatureMapping<N> implements FeatureMapping<N> {
 		return featureModel;
 	}
 
-	private  double totalDifference(FeatureArray<N> left,
-			FeatureArray<N> right) {
+	@Override
+	public int hashCode() {
+		return Objects.hash(featureModel, featureMap, modifiers);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		final GeneralFeatureMapping other = (GeneralFeatureMapping) obj;
+		return Objects.equals(this.featureModel, other.featureModel) &&
+				Objects.equals(this.featureMap, other.featureMap) &&
+				Objects.equals(this.modifiers, other.modifiers);
+	}
+
+	private double totalDifference(FeatureArray<T> left,
+			FeatureArray<T> right) {
 		if (left.size() != right.size()) {
 			throw new IllegalArgumentException("Cannot compare feature arrays" +
 					" of different sizes! left: " + left.size() + " right: " +
 					right.size());
 		}
+		FeatureType<T> featureType = featureModel.getFeatureType();
 		return IntStream.range(0, left.size())
-				.mapToDouble(i -> difference(left.get(i), right.get(i)))
+				.mapToDouble(i -> featureType.difference(left.get(i), right.get(i)))
 				.sum();
 	}
 
-	protected abstract double difference(N x, N y);
-
 	private Collection<String> getBestDiacritic(
-			FeatureArray<N> featureArray,
-			FeatureArray<N> bestFeatures,
+			FeatureArray<T> featureArray,
+			FeatureArray<T> bestFeatures,
 			double lastMinimum) {
 		
 		String bestDiacritic = "";
 		double minimumDifference = lastMinimum;
-		FeatureArray<N> best = new SparseFeatureArray<>(featureModel);
+		FeatureArray<T> best = new SparseFeatureArray<>(featureModel);
 
-		for (Entry<String, FeatureArray<N>> entry : modifiers.entrySet()) {
-			FeatureArray<N> diacriticFeatures = entry.getValue();
+		for (Entry<String, FeatureArray<T>> entry : modifiers.entrySet()) {
+			FeatureArray<T> diacriticFeatures = entry.getValue();
 
-			FeatureArray<N> compiled = new StandardFeatureArray<>(bestFeatures);
+			FeatureArray<T> compiled = new StandardFeatureArray<>(bestFeatures);
 			compiled.alter(diacriticFeatures);
 
 			if (!compiled.equals(bestFeatures)) {

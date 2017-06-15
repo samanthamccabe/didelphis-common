@@ -25,23 +25,23 @@ import java.util.Objects;
 /**
  * Created by samantha on 2/25/17.
  */
-public class SequenceMatcher<N>
-		implements MachineMatcher<Sequence<N>> {
+public class SequenceMatcher<T>
+		implements MachineMatcher<Sequence<T>> {
 
-	private final SequenceParser<N> parser;
+	private final SequenceParser<T> parser;
 
-	public SequenceMatcher(SequenceParser<N> parser) {
+	public SequenceMatcher(SequenceParser<T> parser) {
 		this.parser = parser;
 	}
 
 	@Override
-	public int match(Sequence<N> target, Sequence<N> arc, int index) {
+	public int match(Sequence<T> target, Sequence<T> arc, int index) {
 
-		Map<String, Collection<Sequence<N>>> specials = parser.getSpecials();
+		Map<String, Collection<Sequence<T>>> specials = parser.getSpecials();
 
-		SequenceFactory<N> factory = parser.getSequenceFactory();
+		SequenceFactory<T> factory = parser.getSequenceFactory();
 		
-		Sequence<N> tail = target.subsequence(index);
+		Sequence<T> tail = target.subsequence(index);
 
 		if (Objects.equals(arc, factory.getBorderSequence())) {
 			return (tail.isEmpty() || index == 0) ? index + 1 : -1;
@@ -52,7 +52,7 @@ public class SequenceMatcher<N>
 		}
 		
 		if (specials.containsKey(arc.toString())) {
-			for (Sequence<N> special : specials.get(arc.toString())) {
+			for (Sequence<T> special : specials.get(arc.toString())) {
 				if (tail.startsWith(special)) {
 					return index + special.size();
 				}

@@ -23,27 +23,27 @@ import java.util.Objects;
  * Samantha Fiona Morrigan McCabe
  * Created: 1/16/2015
  */
-public class LexiconMap<N> {
+public class LexiconMap<T> {
 
 	private final Map<String, String>  paths;
-	private final Map<String, Lexicon<N>> lexicons;
+	private final Map<String, Lexicon<T>> lexicons;
 
 	public LexiconMap() {
 		paths = new LinkedHashMap<>();
 		lexicons = new LinkedHashMap<>();
 	}
 
-	public void addLexicon(String handle, String path, Lexicon<N> words) {
+	public void addLexicon(String handle, String path, Lexicon<T> words) {
 		paths.put(handle, path);
 		lexicons.put(handle, words);
 	}
 
-	public void addAll(LexiconMap<N> map) {
+	public void addAll(LexiconMap<T> map) {
 		paths.putAll(map.paths);
 		lexicons.putAll(map.lexicons);
 	}
 
-	public Lexicon<N> getLexicon(String handle) {
+	public Lexicon<T> getLexicon(String handle) {
 		return lexicons.get(handle);
 	}
 
@@ -59,11 +59,11 @@ public class LexiconMap<N> {
 		return lexicons.keySet();
 	}
 
-	public Collection<Lexicon<N>> values() {
+	public Collection<Lexicon<T>> values() {
 		return lexicons.values();
 	}
 
-	public Lexicon<N> remove(String handle) {
+	public Lexicon<T> remove(String handle) {
 		paths.remove(handle);
 		return lexicons.remove(handle);
 	}

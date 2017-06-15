@@ -20,20 +20,13 @@ import org.didelphis.common.language.phonetic.model.interfaces.FeatureMapping;
 import org.didelphis.common.language.phonetic.segments.Segment;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Samantha Fiona Morrigan McCabe
  */
 public class StandardFeatureModelTest extends ModelTestBase {
 
-	private static final Logger LOG = LoggerFactory.getLogger(StandardFeatureModelTest.class);
-
-	private static final Double NAN = Double.NaN;
-	private static final Double INF = Double.NEGATIVE_INFINITY;
-
-	private static final FeatureMapping<Double> MAPPING = loadMapping("AT_hybrid.model", FormatterMode.INTELLIGENT);
+	private static final FeatureMapping<Integer> MAPPING = loadMapping("AT_hybrid.model", FormatterMode.INTELLIGENT);
 
 	@Test
 	void testLoad01() {
@@ -43,14 +36,16 @@ public class StandardFeatureModelTest extends ModelTestBase {
 
 	@Test
 	void testLoad02() {
-		FeatureMapping<Double> model = loadMapping("AT_hybrid.mapping", FormatterMode.INTELLIGENT);
+		String resourceName = "AT_hybrid.mapping";
+		FeatureMapping<Integer> model = loadMapping(resourceName, FormatterMode.INTELLIGENT);
 		Assertions.assertNotNull(model.getSpecification());
 		Assertions.assertTrue(model.getSpecification().size() > 0);
 	}
 
 	@Test
 	void testLoad_AT_Hybrid() {
-		FeatureMapping<Double> model = loadMapping("AT_hybrid.model", FormatterMode.INTELLIGENT);
+		String resourceName = "AT_hybrid.model";
+		FeatureMapping<Integer> model = loadMapping(resourceName, FormatterMode.INTELLIGENT);
 		Assertions.assertFalse(model.getFeatureMap().isEmpty());
 		Assertions.assertFalse(model.getModifiers().isEmpty());
 	}
@@ -85,8 +80,8 @@ public class StandardFeatureModelTest extends ModelTestBase {
 	}
 	
 	private static void testBestSymbol(String string) {
-		Segment<Double> segment = MAPPING.parseSegment(string);
-		FeatureArray<Double> array = segment.getFeatures();
+		Segment<Integer> segment = MAPPING.parseSegment(string);
+		FeatureArray<Integer> array = segment.getFeatures();
 		String bestSymbol = MAPPING.findBestSymbol(array);
 		Assertions.assertEquals(string, bestSymbol);
 	}

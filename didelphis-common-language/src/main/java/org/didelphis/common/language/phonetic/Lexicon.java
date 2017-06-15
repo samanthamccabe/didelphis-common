@@ -24,33 +24,33 @@ import java.util.List;
  * Samantha Fiona Morrigan McCabe
  * Created: 1/17/2015
  */
-public class Lexicon<N> implements Iterable<List<Sequence<N>>> {
+public class Lexicon<T> implements Iterable<List<Sequence<T>>> {
 
-	private final List<List<Sequence<N>>> lexicon;
+	private final List<List<Sequence<T>>> lexicon;
 
 	public Lexicon() {
 		lexicon = new ArrayList<>();
 	}
 
-	public void add(Sequence<N> sequence) {
-		List<Sequence<N>> row = new ArrayList<>();
+	public void add(Sequence<T> sequence) {
+		List<Sequence<T>> row = new ArrayList<>();
 		row.add(sequence);
 		lexicon.add(row);
 	}
 
-	public void add(List<Sequence<N>> row ) {
+	public void add(List<Sequence<T>> row ) {
 		lexicon.add(row);
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		Iterator<List<Sequence<N>>> iterator = lexicon.iterator();
+		Iterator<List<Sequence<T>>> iterator = lexicon.iterator();
 		while (iterator.hasNext()) {
-			List<Sequence<N>> line = iterator.next();
-			Iterator<Sequence<N>> it = line.iterator();
+			List<Sequence<T>> line = iterator.next();
+			Iterator<Sequence<T>> it = line.iterator();
 			while (it.hasNext()) {
-				Sequence<N> sequence = it.next();
+				Sequence<T> sequence = it.next();
 				sb.append(sequence);
 				if (it.hasNext()) {
 					sb.append("\\t");
@@ -79,7 +79,7 @@ public class Lexicon<N> implements Iterable<List<Sequence<N>>> {
 	}
 
 	@Override
-	public Iterator<List<Sequence<N>>> iterator() {
+	public Iterator<List<Sequence<T>>> iterator() {
 		return lexicon.iterator();
 	}
 }

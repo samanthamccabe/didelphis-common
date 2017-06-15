@@ -2,7 +2,7 @@
 
 %	Feature	Model v0.7
 
-SPECIFICATION: "AT_hybrid.spec"
+import "AT_hybrid.spec"
 
 SYMBOLS
 %	con	son	cnt	eje	rel	lat	nas	lab	rnd	cor	dor	frn	hgt	atr	vce	crk	brt	dst	lng	upr

@@ -30,21 +30,21 @@ import java.util.Objects;
  * @author Samantha Fiona McCabe
  * @since 0.1.0 Date: 2017-03-16
  */
-public class StandardSegment<N> implements Segment<N> {
+public class StandardSegment<T> implements Segment<T> {
 
 	private final String symbol;
-	private final FeatureModel<N> featureModel;
-	private final FeatureArray<N> features;
+	private final FeatureModel<T> featureModel;
+	private final FeatureArray<T> features;
 
 	/**
 	 * Copy constructor -
 	 *
 	 * @param segment the {@code Segment} to be copied
 	 */
-	public StandardSegment(StandardSegment<N> segment) {
-		symbol = segment.symbol;
-		featureModel = segment.featureModel;
-		features = segment.features;
+	public StandardSegment(Segment<T> segment) {
+		symbol = segment.getSymbol();
+		featureModel = segment.getFeatureModel();
+		features = segment.getFeatures();
 	}
 
 	/**
@@ -55,8 +55,8 @@ public class StandardSegment<N> implements Segment<N> {
 	 * @param modelParam the model corresponding to the symbol and feature
 	 * 		array
 	 */
-	public StandardSegment(String symbol, FeatureArray<N> featureArray,
-			FeatureModel<N> modelParam) {
+	public StandardSegment(String symbol, FeatureArray<T> featureArray,
+			FeatureModel<T> modelParam) {
 		this.symbol = symbol;
 		featureModel = modelParam;
 		features = featureArray;
@@ -70,7 +70,7 @@ public class StandardSegment<N> implements Segment<N> {
 	 * @return a new segment based on this one with modifications from the other
 	 */
 	@Override
-	public boolean alter(@NotNull Segment<N> segment) {
+	public boolean alter(@NotNull Segment<T> segment) {
 		return features.alter(segment.getFeatures());
 	}
 
@@ -84,7 +84,7 @@ public class StandardSegment<N> implements Segment<N> {
 	 * 		equal
 	 */
 	@Override
-	public boolean matches(@NotNull Segment<N> segment) {
+	public boolean matches(@NotNull Segment<T> segment) {
 		if (features.size() == 0 && segment.getFeatures().size() == 0) {
 			return symbol.equals(segment.getSymbol());
 		}
@@ -99,12 +99,12 @@ public class StandardSegment<N> implements Segment<N> {
 
 	@NotNull
 	@Override
-	public FeatureArray<N> getFeatures() {
+	public FeatureArray<T> getFeatures() {
 		return features;
 	}
 
 	@Override
-	public FeatureModel<N> getFeatureModel() {
+	public FeatureModel<T> getFeatureModel() {
 		return featureModel;
 	}
 
@@ -133,7 +133,7 @@ public class StandardSegment<N> implements Segment<N> {
 	}
 
 	@Override
-	public int compareTo(Segment<N> o) {
+	public int compareTo(Segment<T> o) {
 		if (equals(o)) {
 			return 0;
 		} else {

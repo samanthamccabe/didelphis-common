@@ -23,35 +23,35 @@ import java.util.List;
 /**
  * Created by samantha on 1/30/17.
  */
-public interface Sequence<N>
-	  extends ModelBearer<N>,
-	          Deque<Segment<N>>,
-	          List<Segment<N>>,
-	          Comparable<Sequence<N>> {
+public interface Sequence<T>
+	  extends ModelBearer<T>,
+	          Deque<Segment<T>>,
+	          List<Segment<T>>,
+	          Comparable<Sequence<T>> {
 
-	void add(Sequence<N> sequence);
+	void add(Sequence<T> sequence);
 
-	void insert(Sequence<N> sequence, int index);
+	void insert(Sequence<T> sequence, int index);
 
-	int indexOf(Sequence<N> target);
+	int indexOf(Sequence<T> target);
 
-	int indexOf(Sequence<N> target, int start);
+	int indexOf(Sequence<T> target, int start);
 
-	Sequence<N> replaceAll(Sequence<N> source, Sequence<N> target);
+	Sequence<T> replaceAll(Sequence<T> source, Sequence<T> target);
 
-	boolean contains(Sequence<N> sequence);
+	boolean contains(Sequence<T> sequence);
 
-	boolean startsWith(Segment<N> segment);
+	boolean startsWith(Segment<T> segment);
 
-	boolean startsWith(Sequence<N> sequence);
+	boolean startsWith(Sequence<T> sequence);
 
-	Sequence<N> remove(int start, int end);
+	Sequence<T> remove(int start, int end);
 
-	boolean matches(Sequence<N> sequence);
+	boolean matches(Sequence<T> sequence);
 
-	Sequence<N> subsequence(int from, int to);
+	Sequence<T> subsequence(int from, int to);
 
-	Sequence<N> subsequence(int from);
+	Sequence<T> subsequence(int from);
 
-	List<Integer> indicesOf(Sequence<N> sequence);
+	List<Integer> indicesOf(Sequence<T> sequence);
 }

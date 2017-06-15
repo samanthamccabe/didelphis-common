@@ -21,8 +21,8 @@ import org.didelphis.common.language.phonetic.ModelBearer;
  * @version 0.1.0
  * @since 2016-03-26
  */
-public interface FeatureArray<N>
-		extends Comparable<FeatureArray<N>>, Iterable<N>, ModelBearer<N> {
+public interface FeatureArray<T>
+		extends Comparable<FeatureArray<T>>, Iterable<T>, ModelBearer<T> {
 
 	/**
 	 * Returns the number of elements in this array.
@@ -44,7 +44,7 @@ public interface FeatureArray<N>
 	 * @throws NullPointerException - if the specified element is null and
 	 * 		this array does not permit null elements
 	 */
-	void set(int index, N value);
+	void set(int index, T value);
 
 	/**
 	 * Returns the element at the specified position in this object.
@@ -56,7 +56,7 @@ public interface FeatureArray<N>
 	 * @throws IndexOutOfBoundsException - if the index is out of range (index
 	 * 		< 0 || index >= size())
 	 */
-	N get(int index);
+	T get(int index);
 
 	/**
 	 * Determines if another feature array is consistent with this one. Two
@@ -66,7 +66,7 @@ public interface FeatureArray<N>
 	 * @param array another feature array to compare to this one
 	 * @return true if all features in either segment are equal or undefined
 	 */
-	boolean matches(FeatureArray<N> array);
+	boolean matches(FeatureArray<T> array);
 
 	/**
 	 * Combines a feature array onto this one, applying all fully specified
@@ -79,7 +79,7 @@ public interface FeatureArray<N>
 	 * 		empty array (with no defined features) will make no changes and will
 	 * 		return false
 	 */
-	boolean alter(FeatureArray<N> array);
+	boolean alter(FeatureArray<T> array);
 
 	/**
 	 * Returns true if and only if this array contains the specified value.
@@ -87,5 +87,5 @@ public interface FeatureArray<N>
 	 * @param value the value to search for
 	 * @return true if this array contains {@code value}, false otherwise
 	 */
-	boolean contains(N value);
+	boolean contains(T value);
 }

@@ -15,7 +15,9 @@
 package org.didelphis.common.utilities;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Split (Utility) - a class for general string segmentation tools, bracket
@@ -23,15 +25,15 @@ import java.util.List;
  * Created by samantha on 3/3/17.
  */
 public final class Split {
-	
+
+	private static final Pattern NEWLINE = Pattern.compile("\r?\n|\r");
+
 	private Split(){}
 
-	/**
-	 * 
-	 * @param string
-	 * @param special
-	 * @return
-	 */
+	public static List<String> splitLines(CharSequence lines) {
+		return Arrays.asList(NEWLINE.split(lines));
+	}
+
 	public static List<String> splitToList(String string, Iterable<String> special) {
 		List<String> strings = new ArrayList<>();
 		for (int i = 0; i < string.length(); i++) {

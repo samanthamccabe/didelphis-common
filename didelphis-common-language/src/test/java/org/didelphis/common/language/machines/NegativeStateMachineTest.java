@@ -23,13 +23,15 @@ import org.didelphis.common.language.machines.sequences.SequenceMatcher;
 import org.didelphis.common.language.machines.sequences.SequenceParser;
 import org.didelphis.common.language.phonetic.SequenceFactory;
 import org.didelphis.common.language.phonetic.VariableStore;
-import org.didelphis.common.language.phonetic.model.doubles.DoubleFeatureMapping;
+import org.didelphis.common.language.phonetic.features.IntegerFeature;
 import org.didelphis.common.language.phonetic.model.interfaces.FeatureMapping;
+import org.didelphis.common.language.phonetic.model.loaders.FeatureModelLoader;
 import org.didelphis.common.language.phonetic.sequences.Sequence;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 
 import static org.didelphis.common.language.enums.ParseDirection.FORWARD;
@@ -40,21 +42,28 @@ import static org.didelphis.common.language.enums.ParseDirection.FORWARD;
  */
 public class NegativeStateMachineTest {
 
-	private static final DoubleFeatureMapping MAPPING = DoubleFeatureMapping.getEmpty();
+	private static final FeatureMapping<Integer> MAPPING = new FeatureModelLoader<>(
+			IntegerFeature.INSTANCE,
+			ClassPathFileHandler.INSTANCE, 
+			Collections.emptyList()
+	).getFeatureMapping();
 
-	private static final SequenceFactory<Double> FACTORY = loadModel();
+	private static final SequenceFactory<Integer> FACTORY = loadModel();
 
-	private static SequenceFactory<Double> loadModel() {
+	private static SequenceFactory<Integer> loadModel() {
 		String name = "AT_hybrid.model";
 		FormatterMode mode = FormatterMode.INTELLIGENT;
 		FileHandler handler = ClassPathFileHandler.INSTANCE;
-		FeatureMapping<Double> mapping = DoubleFeatureMapping.load(name, handler, mode);
-		return new SequenceFactory<>(mapping, mode);
+		return new SequenceFactory<>(new FeatureModelLoader<>(
+				IntegerFeature.INSTANCE,
+				ClassPathFileHandler.INSTANCE,
+				name
+		).getFeatureMapping(), mode);
 	}
 	
 	@Test
 	void testBasic01() {
-		StateMachine<Sequence<Double>> machine = getMachine("!a");
+		StateMachine<Sequence<Integer>> machine = getMachine("!a");
 		fail(machine, "a");
 		fail(machine, "aa");
 
@@ -64,7 +73,7 @@ public class NegativeStateMachineTest {
 
 	@Test
 	void testBasic02() {
-		StateMachine<Sequence<Double>> machine = getMachine("!a?b#");
+		StateMachine<Sequence<Integer>> machine = getMachine("!a?b#");
 		fail(machine, "ab");
 		fail(machine, "c");
 
@@ -74,7 +83,7 @@ public class NegativeStateMachineTest {
 
 	@Test
 	void testBasic03() {
-		StateMachine<Sequence<Double>> machine = getMachine("!a*b#");
+		StateMachine<Sequence<Integer>> machine = getMachine("!a*b#");
 		fail(machine, "ab");
 		fail(machine, "aab");
 		fail(machine, "aaab");
@@ -90,7 +99,7 @@ public class NegativeStateMachineTest {
 
 	@Test
 	void testGroup01() {
-		StateMachine<Sequence<Double>> machine = getMachine("!(ab)");
+		StateMachine<Sequence<Integer>> machine = getMachine("!(ab)");
 		fail(machine, "ab");
 
 		test(machine, "aa");
@@ -105,7 +114,7 @@ public class NegativeStateMachineTest {
 
 	@Test
 	void testGroup02() {
-		StateMachine<Sequence<Double>> machine = getMachine("!(ab)");
+		StateMachine<Sequence<Integer>> machine = getMachine("!(ab)");
 		fail(machine, "ab");
 
 		test(machine, "aa");
@@ -120,7 +129,7 @@ public class NegativeStateMachineTest {
 
 	@Test
 	void testGroup03() {
-		StateMachine<Sequence<Double>> machine = getMachine("!(ab)*xy#");
+		StateMachine<Sequence<Integer>> machine = getMachine("!(ab)*xy#");
 		fail(machine, "abxy");
 		fail(machine, "ababxy");
 
@@ -136,7 +145,7 @@ public class NegativeStateMachineTest {
 
 	@Test
 	void testeGroup04() {
-		StateMachine<Sequence<Double>> machine = getMachine("!(ab)+xy#");
+		StateMachine<Sequence<Integer>> machine = getMachine("!(ab)+xy#");
 		fail(machine, "abxy");
 		fail(machine, "ababxy");
 		fail(machine, "abababxy");
@@ -155,7 +164,7 @@ public class NegativeStateMachineTest {
 
 	@Test
 	void testSet01() {
-		StateMachine<Sequence<Double>> machine = getMachine("!{a b c}");
+		StateMachine<Sequence<Integer>> machine = getMachine("!{a b c}");
 		fail(machine, "a");
 		fail(machine, "b");
 		fail(machine, "c");
@@ -167,7 +176,7 @@ public class NegativeStateMachineTest {
 
 	@Test
 	void testSet02() {
-		StateMachine<Sequence<Double>> machine = getMachine("#!{a b c}#");
+		StateMachine<Sequence<Integer>> machine = getMachine("#!{a b c}#");
 		fail(machine, "#a");
 		fail(machine, "#b");
 		fail(machine, "#c");
@@ -179,7 +188,7 @@ public class NegativeStateMachineTest {
 
 	@Test
 	void testSet03() {
-		StateMachine<Sequence<Double>> machine = getMachine("!{a b c}+#");
+		StateMachine<Sequence<Integer>> machine = getMachine("!{a b c}+#");
 		fail(machine, "a");
 		fail(machine, "b");
 		fail(machine, "c");
@@ -220,7 +229,7 @@ public class NegativeStateMachineTest {
 
 	@Test
 	void testSet03Special() {
-		StateMachine<Sequence<Double>> machine = getMachine("!{a b c}+#");
+		StateMachine<Sequence<Integer>> machine = getMachine("!{a b c}+#");
 
 		// This is important as a distinction between:
 		//     A) !{a b c}+
@@ -244,7 +253,7 @@ public class NegativeStateMachineTest {
 
 		String expression = "!C";
 		
-		StateMachine<Sequence<Double>> machine = getMachine(store, expression);
+		StateMachine<Sequence<Integer>> machine = getMachine(store, expression);
 
 		test(machine, "a");
 		test(machine, "b");
@@ -263,7 +272,7 @@ public class NegativeStateMachineTest {
 
 		String expression = "!C";
 
-		StateMachine<Sequence<Double>> machine = getMachine(store, expression);
+		StateMachine<Sequence<Integer>> machine = getMachine(store, expression);
 
 		test(machine, "pp");
 		test(machine, "tt");
@@ -287,7 +296,7 @@ public class NegativeStateMachineTest {
 
 		String expression = "!C";
 
-		StateMachine<Sequence<Double>> machine = getMachine(store, expression);
+		StateMachine<Sequence<Integer>> machine = getMachine(store, expression);
 
 		test(machine, "pp");
 		test(machine, "tt");
@@ -307,33 +316,33 @@ public class NegativeStateMachineTest {
 		fail(machine, "kwh");
 	}
 
-	private static StateMachine<Sequence<Double>> getMachine(VariableStore store, String exp) {
-		SequenceFactory<Double> factory = new SequenceFactory<>(
+	private static StateMachine<Sequence<Integer>> getMachine(VariableStore store, String exp) {
+		SequenceFactory<Integer> factory = new SequenceFactory<>(
 			  MAPPING,
 			  store,
 			  new HashSet<>(),
 			  FormatterMode.NONE
 		);
 
-		SequenceParser<Double> parser = new SequenceParser<>(factory);
-		SequenceMatcher<Double> matcher = new SequenceMatcher<>(parser);
+		SequenceParser<Integer> parser = new SequenceParser<>(factory);
+		SequenceMatcher<Integer> matcher = new SequenceMatcher<>(parser);
 		return StandardStateMachine.create("M0", exp, parser, matcher, FORWARD);
 	}
 	
-	private static StateMachine<Sequence<Double>> getMachine(String exp) {
-		SequenceParser<Double> parser = new SequenceParser<>(FACTORY);
-		SequenceMatcher<Double> matcher = new SequenceMatcher<>(parser);
+	private static StateMachine<Sequence<Integer>> getMachine(String exp) {
+		SequenceParser<Integer> parser = new SequenceParser<>(FACTORY);
+		SequenceMatcher<Integer> matcher = new SequenceMatcher<>(parser);
 		return StandardStateMachine.create("M0", exp, parser, matcher, FORWARD);
 	}
 
-	private static void test(StateMachine<Sequence<Double>> stateMachine,
+	private static void test(StateMachine<Sequence<Integer>> stateMachine,
 			String target) {
 		Collection<Integer> matchIndices = testMachine(stateMachine, target);
 		Assertions.assertFalse(matchIndices.isEmpty(),
 				"Machine failed to accept input: " + target);
 	}
 
-	private static void fail(StateMachine<Sequence<Double>> stateMachine,
+	private static void fail(StateMachine<Sequence<Integer>> stateMachine,
 			String target) {
 		Collection<Integer> matchIndices = testMachine(stateMachine, target);
 		Assertions.assertTrue(matchIndices.isEmpty(),
@@ -341,9 +350,9 @@ public class NegativeStateMachineTest {
 	}
 
 	private static Collection<Integer> testMachine(
-			StateMachine<Sequence<Double>> stateMachine, String target) {
-		MachineParser<Sequence<Double>> parser = stateMachine.getParser();
-		Sequence<Double> sequence = parser.transform(target);
+			StateMachine<Sequence<Integer>> stateMachine, String target) {
+		MachineParser<Sequence<Integer>> parser = stateMachine.getParser();
+		Sequence<Integer> sequence = parser.transform(target);
 		return stateMachine.getMatchIndices(0, sequence);
 	}
 }

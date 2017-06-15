@@ -25,46 +25,47 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Samantha Fiona Morrigan McCabe
  */
-public final class BasicSequence<N> extends AbstractSequence<N> {
+public final class BasicSequence<T> extends AbstractSequence<T> {
 
 	private static final Logger LOG = LoggerFactory
 			.getLogger(BasicSequence.class);
 
-	public BasicSequence(Sequence<N> sequence) {
+	public BasicSequence(Sequence<T> sequence) {
 		super(sequence);
 	}
 
-	public BasicSequence(Segment<N> segment) {
+	public BasicSequence(Segment<T> segment) {
 		super(segment);
 	}
 
-	public BasicSequence(FeatureModel<N> featureSpecification) {
+	public BasicSequence(FeatureModel<T> featureSpecification) {
 		super(featureSpecification);
 	}
 
-	public BasicSequence(Collection<Segment<N>> segments, FeatureModel<N> model) {
+	public BasicSequence(Collection<Segment<T>> segments, FeatureModel<T> model) {
 		super(segments, model);
 	}
 
 	@Override
-	public void add(Sequence<N> sequence) {
+	public void add(Sequence<T> sequence) {
 		validateModelOrFail(sequence);
 		segmentList.addAll(sequence);
 	}
 
 	@Override
-	public void insert(Sequence<N> sequence, int index) {
+	public void insert(Sequence<T> sequence, int index) {
 		validateModelOrFail(sequence);
 
 		segmentList.addAll(index, sequence);
 	}
 
 	@Override
-	public int indexOf(Sequence<N> target) {
+	public int indexOf(Sequence<T> target) {
 		validateModelOrWarn(target);
 
 		int size = target.size();
@@ -75,7 +76,7 @@ public final class BasicSequence<N> extends AbstractSequence<N> {
 		int index = indexOf(target.getFirst());
 		if (index >= 0 && index + size <= size()) {
 			// originally was equals, but use matches instead
-			Sequence<N> subsequence = subsequence(index, index + size);
+			Sequence<T> subsequence = subsequence(index, index + size);
 			if (!target.matches(subsequence)) {
 				index = -1;
 			}
@@ -84,17 +85,17 @@ public final class BasicSequence<N> extends AbstractSequence<N> {
 	}
 
 	@Override
-	public int indexOf(Sequence<N> target, int start) {
+	public int indexOf(Sequence<T> target, int start) {
 		validateModelOrWarn(target);
 		int index = subsequence(start).indexOf(target);
 		return (index >= 0) ? index + start : index;
 	}
 
 	@Override
-	public Sequence<N> replaceAll(Sequence<N> source, Sequence<N> target) {
+	public Sequence<T> replaceAll(Sequence<T> source, Sequence<T> target) {
 		validateModelOrFail(source);
 		validateModelOrFail(target);
-		BasicSequence<N> result = new BasicSequence<>(this);
+		BasicSequence<T> result = new BasicSequence<>(this);
 
 		int index = result.indexOf(source);
 		while (index >= 0) {
@@ -103,7 +104,7 @@ public final class BasicSequence<N> extends AbstractSequence<N> {
 				result.insert(target, index);
 			}
 			int from = index + target.size();
-			Sequence<N> subsequence = result.subsequence(from);
+			Sequence<T> subsequence = result.subsequence(from);
 			index = subsequence.indexOf(source);
 			if (index < 0) {
 				break;
@@ -114,18 +115,18 @@ public final class BasicSequence<N> extends AbstractSequence<N> {
 	}
 
 	@Override
-	public boolean contains(Sequence<N> sequence) {
+	public boolean contains(Sequence<T> sequence) {
 		return indexOf(sequence) >= 0;
 	}
 
 	@Override
-	public boolean startsWith(Segment<N> segment) {
+	public boolean startsWith(Segment<T> segment) {
 		validateModelOrWarn(segment);
 		return !isEmpty() && segmentList.get(0).matches(segment);
 	}
 
 	@Override
-	public boolean startsWith(Sequence<N> sequence) {
+	public boolean startsWith(Sequence<T> sequence) {
 		if (isEmpty() || sequence.size() > size()) {
 			return false;
 		}
@@ -138,8 +139,8 @@ public final class BasicSequence<N> extends AbstractSequence<N> {
 	}
 
 	@Override
-	public BasicSequence<N> remove(int start, int end) {
-		BasicSequence<N> q = new BasicSequence<>(featureModel);
+	public BasicSequence<T> remove(int start, int end) {
+		BasicSequence<T> q = new BasicSequence<>(featureModel);
 		for (int i = 0; i < end - start; i++) {
 			q.add(remove(start));
 		}
@@ -157,7 +158,7 @@ public final class BasicSequence<N> extends AbstractSequence<N> {
 	 * 		in either segment are equal
 	 */
 	@Override
-	public boolean matches(Sequence<N> sequence) {
+	public boolean matches(Sequence<T> sequence) {
 		validateModelOrFail(sequence);
 		if (getSpecification().size() == 0) {
 			return equals(sequence);
@@ -167,8 +168,8 @@ public final class BasicSequence<N> extends AbstractSequence<N> {
 		if (size == sequence.size()) {
 			matches = true;
 			for (int i = 0; i < size && matches; i++) {
-				Segment<N> a = get(i);
-				Segment<N> b = sequence.get(i);
+				Segment<T> a = get(i);
+				Segment<T> b = sequence.get(i);
 				matches = a.matches(b);
 			}
 		}
@@ -176,17 +177,17 @@ public final class BasicSequence<N> extends AbstractSequence<N> {
 	}
 
 	@Override
-	public Sequence<N> subsequence(int from, int to) {
+	public Sequence<T> subsequence(int from, int to) {
 		return new BasicSequence<>(subList(from, to), featureModel);
 	}
 
 	@Override
-	public Sequence<N> subsequence(int from) {
+	public Sequence<T> subsequence(int from) {
 		return new BasicSequence<>(subList(from, size()), featureModel);
 	}
 
 	@Override
-	public List<Integer> indicesOf(Sequence<N> sequence) {
+	public List<Integer> indicesOf(Sequence<T> sequence) {
 		List<Integer> indices = new ArrayList<>();
 		int index = indexOf(sequence);
 		while (index >= 0) {
@@ -197,58 +198,42 @@ public final class BasicSequence<N> extends AbstractSequence<N> {
 	}
 
 	@Override
-	public int hashCode() {
-		return 31 * super.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-		if (obj instanceof BasicSequence) {
-			return super.equals(obj);
-		}
-		return false;
-	}
-
-	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(segmentList.size() * 2);
-		for (Segment<N> segment : segmentList) {
+		for (Segment<T> segment : segmentList) {
 			sb.append(segment.getSymbol());
 		}
 		return sb.toString();
 	}
 
 	@Deprecated
-	public BasicSequence<N> getReverseSequence() {
-		BasicSequence<N> reversed = new BasicSequence<>(featureModel);
-		for (Segment<N> g : segmentList) {
+	public BasicSequence<T> getReverseSequence() {
+		BasicSequence<T> reversed = new BasicSequence<>(featureModel);
+		for (Segment<T> g : segmentList) {
 			reversed.addFirst(g);
 		}
 		return reversed;
 	}
 
 	@Override
-	public void addFirst(Segment<N> g) {
+	public void addFirst(Segment<T> g) {
 		validateModelOrFail(g);
 		segmentList.add(0, g);
 	}
 
 	@Override
-	public void addLast(Segment<N> segment) {
+	public void addLast(Segment<T> segment) {
 		segmentList.addLast(segment);
 	}
 
 	@Override
-	public boolean add(Segment<N> segment) {
+	public boolean add(Segment<T> segment) {
 		validateModelOrFail(segment);
 		return segmentList.add(segment);
 	}
 
 	@Override
-	public int compareTo(@NotNull Sequence<N> o) {
+	public int compareTo(@NotNull Sequence<T> o) {
 		for (int i = 0; i < size() && i < o.size(); i++) {
 			int value = get(i).compareTo(o.get(i));
 			if (value != 0) {
@@ -259,13 +244,29 @@ public final class BasicSequence<N> extends AbstractSequence<N> {
 	}
 
 	@Override
-	public FeatureModel<N> getFeatureModel() {
+	public FeatureModel<T> getFeatureModel() {
 		return featureModel;
 	}
 
 	@Override
 	public FeatureSpecification getSpecification() {
 		return featureModel;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		BasicSequence that = (BasicSequence) o;
+
+		return Objects.equals(this.featureModel, that.featureModel) &&
+				Objects.equals(this.segmentList, that.segmentList);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(featureModel, segmentList);
 	}
 
 	private void validateModelOrWarn(SpecificationBearer that) {
