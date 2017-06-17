@@ -62,7 +62,7 @@ public class SequenceParser<T> implements MachineParser<Sequence<T>> {
 		// Generate epsilon / lambda symbol
 		FeatureModel<T> model = factory.getFeatureMapping().getFeatureModel();
 		FeatureArray<T> array = new SparseFeatureArray<>(model);
-		Segment<T> segment = new StandardSegment<>("\uD835\uDF06", array, model);
+		Segment<T> segment = new StandardSegment<>("\uD835\uDF06", array);
 		epsilon = new BasicSequence<>(segment);
 	}
 	

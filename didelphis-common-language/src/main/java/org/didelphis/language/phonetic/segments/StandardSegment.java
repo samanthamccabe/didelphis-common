@@ -55,10 +55,9 @@ public class StandardSegment<T> implements Segment<T> {
 	 * @param modelParam the model corresponding to the symbol and feature
 	 * 		array
 	 */
-	public StandardSegment(String symbol, FeatureArray<T> featureArray,
-			FeatureModel<T> modelParam) {
+	public StandardSegment(String symbol, FeatureArray<T> featureArray) {
 		this.symbol = symbol;
-		featureModel = modelParam;
+		featureModel = featureArray.getFeatureModel();
 		features = featureArray;
 	}
 
@@ -149,7 +148,7 @@ public class StandardSegment<T> implements Segment<T> {
 
 	@Override
 	public FeatureSpecification getSpecification() {
-		return featureModel;
+		return featureModel.getSpecification();
 	}
 
 }

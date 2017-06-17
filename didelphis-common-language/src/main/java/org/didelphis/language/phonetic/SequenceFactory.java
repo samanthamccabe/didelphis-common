@@ -23,6 +23,7 @@ import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.segments.StandardSegment;
 import org.didelphis.language.phonetic.sequences.BasicSequence;
 import org.didelphis.language.phonetic.sequences.Sequence;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,8 +71,8 @@ public class SequenceFactory<T> {
 		FeatureArray<T> sparseArray = new SparseFeatureArray<>(model);
 
 		//TODO: make these immutable
-		dotSegment = new StandardSegment<>(".", sparseArray, model);
-		borderSegment = new StandardSegment<>("#", sparseArray, model);
+		dotSegment = new StandardSegment<>(".", sparseArray);
+		borderSegment = new StandardSegment<>("#", sparseArray);
 
 		dotSequence    = new BasicSequence<>(dotSegment);
 		borderSequence = new BasicSequence<>(borderSegment);
@@ -153,26 +154,24 @@ public class SequenceFactory<T> {
 		} else if (word.equals(".")) {
 			return dotSequence;
 		} else {
-			Collection<String> keys = new ArrayList<>();
+			List<String> keys = new ArrayList<>();
 			keys.addAll(variableStore.getKeys());
 			keys.addAll(reservedStrings);
+			keys.addAll(featureMapping.getFeatureMap().keySet());
+			keys.sort((k1, k2) -> -1*Integer.compare(k1.length(), k2.length()));
 
 			List<String> list = formatterMode.split(word, keys);
 			FeatureModel<T> featureModel = featureMapping.getFeatureModel();
-			List<Segment<T>> segments = list.stream().map(string -> {
-				if (string.startsWith("[") &&
-						featureMapping.getSpecification().size() > 0) {
-					return new StandardSegment<>(string,
-							featureModel.parseFeatureString(string), featureModel);
-				} else if (reservedStrings.contains(string)) {
-					return new StandardSegment<>(string,
-							new SparseFeatureArray<>(featureModel), featureModel);
-				} else {
-					return featureMapping.parseSegment(string);
-				}
-			}).collect(Collectors.toList());
+			List<Segment<T>> segments = list.stream().map(string -> toSegment(string, featureModel)).collect(Collectors.toList());
 			return new BasicSequence<>(segments, featureModel);
 		}
+	}
+
+	@NotNull
+	private Segment<T> toSegment(String string, FeatureModel<T> featureModel) {
+		return string.startsWith("[") && featureMapping.getSpecification().size() > 0
+		       ? new StandardSegment<>(string, featureModel.parseFeatureString(string))
+		       : featureMapping.parseSegment(string);
 	}
 
 	public boolean hasVariable(String label) {

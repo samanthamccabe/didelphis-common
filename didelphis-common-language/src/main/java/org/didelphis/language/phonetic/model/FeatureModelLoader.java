@@ -123,15 +123,20 @@ public final class FeatureModelLoader<T> {
 		}
 
 		for (String entry : zoneData.get(ParseZone.CONSTRAINTS)) {
-			String[] split = TRANSFORM.split(entry, 2);
-			String source = split[0];
-			String target = split[1];
-			FeatureArray<T> sMap = featureModel.parseFeatureString(source);
-			FeatureArray<T> tMap = featureModel.parseFeatureString(target);
-			constraints.add(new Constraint<>(entry, sMap, tMap, featureModel));
+			constraints.add(parseConstraint(entry));
 		}
 
 		featureMapping = new GeneralFeatureMapping<>(featureModel, populateSymbols(), populateModifiers());
+	}
+
+	@NotNull
+	public Constraint<T> parseConstraint(String entry) {
+		String[] split = TRANSFORM.split(entry, 2);
+		String source = split[0];
+		String target = split[1];
+		FeatureArray<T> sMap = featureModel.parseFeatureString(source);
+		FeatureArray<T> tMap = featureModel.parseFeatureString(target);
+		return new Constraint<>(entry, sMap, tMap, featureModel);
 	}
 
 	@NotNull
@@ -244,7 +249,7 @@ public final class FeatureModelLoader<T> {
 			if (matcher.matches()) {
 				String symbol = matcher.group(1);
 				String[] values = TAB_PATTERN.split(matcher.group(2), -1);
-				int size = featureModel.size();
+				int size = featureModel.getSpecification().size();
 				FeatureArray<T> features = new SparseFeatureArray<>(featureModel);
 				for (int i = 0; i < size; i++) {
 					String value = values[i];

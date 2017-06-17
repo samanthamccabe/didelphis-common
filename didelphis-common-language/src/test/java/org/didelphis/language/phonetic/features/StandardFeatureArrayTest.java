@@ -42,12 +42,10 @@ class StandardFeatureArrayTest {
 	
 	@BeforeAll
 	static void initModel() {
-
 		model = new FeatureModelLoader<>(
 				IntegerFeature.INSTANCE,
 				ClassPathFileHandler.INSTANCE,
 				"AT_hybrid.model").getFeatureModel();
-
 		empty = new FeatureModelLoader<>(
 				IntegerFeature.INSTANCE,
 				ClassPathFileHandler.INSTANCE,

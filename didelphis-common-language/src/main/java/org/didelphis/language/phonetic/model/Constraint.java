@@ -43,11 +43,15 @@ public class Constraint<T> implements ModelBearer<T> {
 	                  FeatureArray<T> source,
 	                  FeatureArray<T> target,
 	                  FeatureModel<T> featureModel) {
-
 		this.label = COMPILE.matcher(label).replaceAll(" ");
 		this.source = source;
 		this.target = target;
 		this.featureModel = featureModel;
+	}
+
+	public Constraint(Constraint<T> constraint) {
+		this(constraint.label, constraint.source, constraint.target,
+				constraint.featureModel);
 	}
 
 	public FeatureArray<T> getTarget() {
@@ -70,7 +74,7 @@ public class Constraint<T> implements ModelBearer<T> {
 
 		Constraint<?> constraint = (Constraint<?>) obj;
 		return source.equals(constraint.source) &&
-		       target.equals(constraint.source);
+		       target.equals(constraint.target);
 	}
 
 	@Override
@@ -85,6 +89,6 @@ public class Constraint<T> implements ModelBearer<T> {
 
 	@Override
 	public FeatureSpecification getSpecification() {
-		return featureModel;
+		return featureModel.getSpecification();
 	}
 }

@@ -14,6 +14,7 @@
 
 package org.didelphis.language.phonetic.model;
 
+import org.didelphis.language.phonetic.SpecificationBearer;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.FeatureType;
 import org.jetbrains.annotations.NotNull;
@@ -31,7 +32,7 @@ import java.util.List;
  *
  * Date: 7/31/2016
  */
-public interface FeatureModel<T> extends FeatureSpecification {
+public interface FeatureModel<T> extends SpecificationBearer {
 
 	/**
 	 * Retrieve this model's value {@code Constraint}s

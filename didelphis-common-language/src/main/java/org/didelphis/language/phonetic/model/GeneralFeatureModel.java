@@ -18,6 +18,7 @@ import org.didelphis.language.exceptions.ParseException;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.FeatureType;
 import org.didelphis.language.phonetic.features.SparseFeatureArray;
+import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.Normalizer.Form;
@@ -60,51 +61,15 @@ public class GeneralFeatureModel<T> implements FeatureModel<T> {
 	 * @param constraints
 	 * @param aliases
 	 */
-	public GeneralFeatureModel(FeatureType<T> featureType,
-			FeatureSpecification specification,
-			List<Constraint<T>> constraints,
-			Map<String, FeatureArray<T>> aliases) {
+	public GeneralFeatureModel(
+			@NotNull FeatureType<T> featureType,
+			@NotNull FeatureSpecification specification,
+			@NotNull List<Constraint<T>> constraints,
+			@NotNull Map<String, FeatureArray<T>> aliases) {
 		this.featureType = featureType;
 		this.specification = specification;
 		this.constraints = constraints;
 		this.aliases = aliases;
-	}
-
-	@NotNull
-	@Override
-	public FeatureType<T> getFeatureType() {
-		return featureType;
-	}
-
-	@NotNull
-	@Override
-	public FeatureArray<T> parseFeatureString(@NotNull String string) {
-		String pattern = BRACKETS_PATTERN.matcher(normalize(string, Form.NFKC))
-				.replaceAll("$1");
-		FeatureArray<T> arr = new SparseFeatureArray<>(this);
-		for (String element : FEATURE_PATTERN.split(pattern)) {
-			Matcher valueMatcher = VALUE_PATTERN.matcher(element);
-			Matcher binaryMatcher = BINARY_PATTERN.matcher(element);
-
-			if (aliases.containsKey(element)) {
-				arr.alter(aliases.get(element));
-			} else if (valueMatcher.matches()) {
-				String featureName = valueMatcher.group(3);
-				String assignment = valueMatcher.group(2);
-				String featureValue = valueMatcher.group(1);
-				Integer value = retrieveIndex(featureName, string, specification.getFeatureIndices());
-				arr.set(value, featureType.parseValue(featureValue));
-			} else if (binaryMatcher.matches()) {
-				String featureName = binaryMatcher.group(2);
-				String featureValue = binaryMatcher.group(1);
-				Integer value = retrieveIndex(featureName, string, getFeatureIndices());
-				arr.set(value, featureType.parseValue(featureValue));
-			} else {
-				throw new ParseException("Unrecognized feature \"" + element +
-						"\" in definition.", string);
-			}
-		}
-		return arr;
 	}
 
 	@Override
@@ -122,17 +87,9 @@ public class GeneralFeatureModel<T> implements FeatureModel<T> {
 		}
 		final GeneralFeatureModel other = (GeneralFeatureModel) obj;
 		return Objects.equals(this.specification, other.specification) &&
+				Objects.equals(this.featureType, other.featureType) &&
 				Objects.equals(this.constraints, other.constraints) &&
-				Objects.equals(this.aliases, other.aliases) &&
-				Objects.equals(this.featureType, other.featureType);
-	}
-
-	private static Integer retrieveIndex(String label, String features,
-			Map<String, Integer> names) {
-		if (names.containsKey(label)) {
-			return names.get(label);
-		}
-		throw new ParseException("Invalid feature label", features);
+				Objects.equals(this.aliases, other.aliases);
 	}
 
 	@NotNull
@@ -141,25 +98,54 @@ public class GeneralFeatureModel<T> implements FeatureModel<T> {
 		return constraints;
 	}
 
+	@NotNull
 	@Override
-	public int size() {
-		return specification.size();
+	public FeatureArray<T> parseFeatureString(@NotNull String string) {
+		String normal = normalize(string, Form.NFKC);
+		String pattern = BRACKETS_PATTERN.matcher(normal).replaceAll("$1");
+		FeatureArray<T> arr = new SparseFeatureArray<>(this);
+		Map<String, Integer> indices = specification.getFeatureIndices();
+		for (String element : FEATURE_PATTERN.split(pattern)) {
+			Matcher valueMatcher = VALUE_PATTERN.matcher(element);
+			Matcher binaryMatcher = BINARY_PATTERN.matcher(element);
+			if (aliases.containsKey(element)) {
+				arr.alter(aliases.get(element));
+			} else {
+				if (valueMatcher.matches()) {
+					String featureName = valueMatcher.group(3);
+					String assignment = valueMatcher.group(2);
+					String featureValue = valueMatcher.group(1);
+					int value = retrieveIndex(featureName, string, indices);
+					arr.set(value, featureType.parseValue(featureValue));
+				} else if (binaryMatcher.matches()) {
+					String featureName = binaryMatcher.group(2);
+					String featureValue = binaryMatcher.group(1);
+					int value = retrieveIndex(featureName, string, indices);
+					arr.set(value, featureType.parseValue(featureValue));
+				} else {
+					throw new ParseException("Unrecognized feature \"" + 
+							element + "\" in definition.", string);
+				}
+			}
+		}
+		return arr;
 	}
 
 	@NotNull
 	@Override
-	public Map<String, Integer> getFeatureIndices() {
-		return specification.getFeatureIndices();
+	public FeatureType<T> getFeatureType() {
+		return featureType;
 	}
 
 	@Override
-	public int getIndex(@NotNull String featureName) {
-		return specification.getIndex(featureName);
+	public FeatureSpecification getSpecification() {
+		return specification;
 	}
 
-	@NotNull
-	@Override
-	public List<String> getFeatureNames() {
-		return specification.getFeatureNames();
+	private static int retrieveIndex(String label, String string, Map<String, Integer> names) {
+		if (names.containsKey(label)) {
+			return names.get(label);
+		}
+		throw new IllegalArgumentException("Invalid feature label " + label + " in " + string);
 	}
 }

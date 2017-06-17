@@ -14,8 +14,10 @@
 
 package org.didelphis.language.phonetic.model;
 
+import org.didelphis.io.ClassPathFileHandler;
 import org.didelphis.language.enums.FormatterMode;
 import org.didelphis.language.phonetic.features.FeatureArray;
+import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -23,7 +25,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Samantha Fiona Morrigan McCabe
  */
-public class StandardFeatureModelTest extends ModelTestBase {
+public class GeneralFeatureMappingTest {
 
 	private static final FeatureMapping<Integer> MAPPING = loadMapping("AT_hybrid.model", FormatterMode.INTELLIGENT);
 
@@ -73,15 +75,19 @@ public class StandardFeatureModelTest extends ModelTestBase {
 	void testGetStringFromFeatures05()  {
 		testBestSymbol("kːʷʰ");
 	}
-
-	static void testNaN(double v) {
-		Assertions.assertTrue(Double.isNaN(v), "Value was " + v + " not NaN");
-	}
 	
 	private static void testBestSymbol(String string) {
 		Segment<Integer> segment = MAPPING.parseSegment(string);
 		FeatureArray<Integer> array = segment.getFeatures();
 		String bestSymbol = MAPPING.findBestSymbol(array);
 		Assertions.assertEquals(string, bestSymbol);
+	}
+
+	private static FeatureMapping<Integer> loadMapping(String resourceName, FormatterMode mode) {
+		FeatureModelLoader<Integer> loader = new FeatureModelLoader<>(
+				IntegerFeature.INSTANCE,
+				ClassPathFileHandler.INSTANCE,
+				resourceName);
+		return loader.getFeatureMapping();
 	}
 }
