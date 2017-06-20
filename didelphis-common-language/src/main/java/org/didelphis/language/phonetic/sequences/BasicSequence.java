@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * @author Samantha Fiona Morrigan McCabe
+ * @author Samantha Fiona McCabe
  */
 public final class BasicSequence<T> extends AbstractSequence<T> {
 

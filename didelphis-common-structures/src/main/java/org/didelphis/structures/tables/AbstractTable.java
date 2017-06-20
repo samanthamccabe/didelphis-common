@@ -18,8 +18,8 @@ import java.text.DecimalFormat;
 import java.util.Collection;
 
 /**
- * Samantha Fiona Morrigan McCabe
- * Created: 4/17/2016
+ * @author Samantha Fiona McCabe
+ * Date: 4/17/2016
  */
 public abstract class AbstractTable<E> implements ResizeableTable<E> {
 

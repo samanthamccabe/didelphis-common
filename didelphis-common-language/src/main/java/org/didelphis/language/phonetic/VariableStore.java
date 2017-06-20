@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 
 /**
  * Created with IntelliJ IDEA.
- * User: Samantha Fiona Morrigan McCabe
+ * User: Samantha Fiona McCabe
  * Date: 9/23/13
  * Time: 11:18 PM
  * To change this template use File | Settings | File Templates.

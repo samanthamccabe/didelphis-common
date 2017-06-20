@@ -16,7 +16,7 @@ package org.didelphis.language.machines;
 
 /**
  * Created with IntelliJ IDEA.
- * User: Samantha Fiona Morrigan McCabe
+ * User: Samantha Fiona McCabe
  * Date: 9/1/13
  * Time: 9:34 PM
  * Expression creates and stores a compact representation of a regular 

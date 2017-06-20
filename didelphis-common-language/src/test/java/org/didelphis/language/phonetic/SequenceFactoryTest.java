@@ -31,8 +31,8 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Samantha Fiona Morrigan McCabe
- * Created: 2/5/2015
+ * @author Samantha Fiona McCabe
+ * Date: 2/5/2015
  */
 public class SequenceFactoryTest {
 

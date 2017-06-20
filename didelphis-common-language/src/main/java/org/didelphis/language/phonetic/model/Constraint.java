@@ -20,8 +20,8 @@ import org.didelphis.language.phonetic.features.FeatureArray;
 import java.util.regex.Pattern;
 
 /**
- * Samantha Fiona Morrigan McCabe
- * Created: 3/1/2016
+ * @author Samantha Fiona McCabe
+ * Date: 3/1/2016
  */
 public class Constraint<T> implements ModelBearer<T> {
 

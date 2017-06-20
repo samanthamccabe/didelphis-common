@@ -58,7 +58,6 @@ public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
 					"Attempting to compare arrays of different lengths");
 		}
 		FeatureType<T> featureType = featureModel.getFeatureType();
-
 		for (int i = 0; i < size(); i++) {
 			T x = get(i);
 			T y = o.get(i);

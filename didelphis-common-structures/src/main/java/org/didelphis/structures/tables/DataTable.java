@@ -23,8 +23,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Samantha Fiona Morrigan McCabe
- * Created: 8/23/2015
+ * @author Samantha Fiona McCabe
+ * Date: 8/23/2015
  */
 public class DataTable<E>
 		extends RectangularTable<E>

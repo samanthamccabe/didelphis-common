@@ -24,8 +24,8 @@ import java.util.Objects;
  * is, {@code Tuple} is used to provide an {@code Iterator} for two-key maps.
  *
  *
- * Samantha Fiona Morrigan McCabe
- * Created: 4/10/2016
+ * @author Samantha Fiona McCabe
+ * Date: 4/10/2016
  */
 public class Tuple<L, R> {
 

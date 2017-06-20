@@ -22,13 +22,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /**
- * Samantha Fiona Morrigan McCabe
- * Created: 3/26/2016
+ * @author Samantha Fiona McCabe Created: 3/26/2016
  */
 public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
-	
+
 	private final List<T> features;
 
 	/**
@@ -45,21 +45,20 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	}
 
 	/**
-	 *
 	 * @param list
 	 * @param featureModel
 	 */
 	public StandardFeatureArray(List<T> list, FeatureModel<T> featureModel) {
-super(featureModel);
-features = new ArrayList<>(list);
+		super(featureModel);
+		features = new ArrayList<>(list);
 	}
 
 	/**
 	 * @param array
 	 */
 	public StandardFeatureArray(StandardFeatureArray<T> array) {
-super(array.getFeatureModel());
-features = new ArrayList<>(array.features);
+		super(array.getFeatureModel());
+		features = new ArrayList<>(array.features);
 	}
 
 	/**
@@ -102,30 +101,16 @@ features = new ArrayList<>(array.features);
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		return super.equals(o);
-	}
-
-	private boolean matches(T x, T y) {
-		FeatureType<T> featureType = getFeatureModel().getFeatureType();
-		return !(featureType.isDefined(x) && featureType.isDefined(y)) ||
-				         x.equals(y);
-	}
-
-	@Override
 	public boolean alter(FeatureArray<T> array) {
 		if (size() != array.size()) {
 			throw new IllegalArgumentException(
-					"Attempting to compare arrays of different lengths");
+					"Attempting to compare arrays" + " of different lengths");
 		}
 		FeatureType<T> featureType = getFeatureModel().getFeatureType();
-
-		final Collection<Integer> alteredIndices = new HashSet<>();
+		Collection<Integer> alteredIndices = new HashSet<>();
 		for (int i = 0; i < features.size(); i++) {
 			T v = array.get(i);
-			if (featureType.isDefined(v)) {
+			if (featureType.isDefined(v) && !Objects.equals(get(i), v)) {
 				alteredIndices.add(i);
 				features.set(i, v);
 			}
@@ -136,18 +121,16 @@ features = new ArrayList<>(array.features);
 		return !alteredIndices.isEmpty();
 	}
 
-	private void applyConstraints(int index) {
-		for (Constraint<T> constraint : getFeatureModel().getConstraints()) {
-			if (constraint.getSource().get(index) != null
-			    && matches(constraint.getSource())) {
-				alter(constraint.getTarget());
-			}
-		}
-	}
-	
 	@Override
 	public boolean contains(T value) {
 		return features.contains(value);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		return super.equals(o);
 	}
 
 	@Override
@@ -163,5 +146,20 @@ features = new ArrayList<>(array.features);
 	@Override
 	public Iterator<T> iterator() {
 		return features.iterator();
+	}
+
+	private boolean matches(T x, T y) {
+		FeatureType<T> featureType = getFeatureModel().getFeatureType();
+		return !(featureType.isDefined(x) && featureType.isDefined(y)) ||
+				Objects.equals(x, y);
+	}
+
+	private void applyConstraints(int index) {
+		for (Constraint<T> constraint : getFeatureModel().getConstraints()) {
+			if (constraint.getSource().get(index) != null &&
+					matches(constraint.getSource())) {
+				alter(constraint.getTarget());
+			}
+		}
 	}
 }

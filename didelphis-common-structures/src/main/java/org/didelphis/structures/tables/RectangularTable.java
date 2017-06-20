@@ -27,7 +27,7 @@ import java.util.stream.IntStream;
 
 /**
  * @param <E>
- * @author Samantha Fiona Morrigan McCabe
+ * @author Samantha Fiona McCabe
  */
 public class RectangularTable<E>
 		extends AbstractTable<E>

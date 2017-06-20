@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Samantha Fiona Morrigan McCabe Created: 7/4/2016
+ * @author Samantha Fiona McCabe Created: 7/4/2016
  */
 public class FeatureSpecificationTest {
 	private static final Logger LOG = LoggerFactory.getLogger(

@@ -37,8 +37,8 @@ import java.util.HashSet;
 import static org.didelphis.language.enums.ParseDirection.FORWARD;
 
 /**
- * Samantha Fiona Morrigan McCabe
- * Created: 1/31/2016
+ * @author Samantha Fiona McCabe
+ * Date: 1/31/2016
  */
 public class NegativeStateMachineTest {
 

@@ -15,8 +15,8 @@
 package org.didelphis.io;
 
 /**
- * Author: Samantha Fiona Morrigan McCabe
- * Created: 10/11/2014
+ * @author Samantha Fiona McCabe
+ * Date: 10/11/2014
  * <p>
  * Modular file IO facade. Designed to provide read-write capabilities in a
  * general and modular fashion.

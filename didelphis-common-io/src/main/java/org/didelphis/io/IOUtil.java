@@ -38,12 +38,8 @@ public final class IOUtil {
 	private IOUtil() {}
 
 	@Nullable
-	@Contract("null -> null")
 	public static String readPath(@NotNull String path) {
 		File file = new File(path);
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("Reading from file {}", file);
-		}
 		try (InputStream stream = new FileInputStream(file)) {
 			return readStream(stream);
 		} catch (IOException e) {

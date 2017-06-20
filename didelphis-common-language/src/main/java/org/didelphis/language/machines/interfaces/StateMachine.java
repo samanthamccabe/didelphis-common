@@ -20,8 +20,8 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Samantha Fiona Morrigan McCabe
- * Created: 4/7/2015
+ * @author Samantha Fiona McCabe
+ * Date: 4/7/2015
  */
 public interface StateMachine<T> {
 

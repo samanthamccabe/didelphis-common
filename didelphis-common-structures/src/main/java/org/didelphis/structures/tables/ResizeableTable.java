@@ -19,8 +19,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 
 /**
- * Author: Samantha Fiona Morrigan McCabe
- * Created: 5/25/17
+ * @author Samantha Fiona McCabe
+ * Date: 5/25/17
  * <p>
  * A general interface for two-dimensional matrix data structures
  * @param <E> the type parameter

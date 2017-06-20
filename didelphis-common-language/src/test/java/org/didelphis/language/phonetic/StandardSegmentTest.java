@@ -34,8 +34,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Samantha Fiona Morrigan McCabe
- * Created: 2/14/2015
+ * @author Samantha Fiona McCabe
+ * Date: 2/14/2015
  */
 public class StandardSegmentTest {
 

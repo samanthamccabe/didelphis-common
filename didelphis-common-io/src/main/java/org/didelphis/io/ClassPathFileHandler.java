@@ -17,8 +17,8 @@ package org.didelphis.io;
 import java.io.InputStream;
 
 /**
- * Author: Samantha Fiona Morrigan McCabe
- * Created: 10/11/2014
+ * @author Samantha Fiona McCabe
+ * Date: 10/11/2014
  */
 public enum ClassPathFileHandler implements FileHandler {
 	INSTANCE;

@@ -17,8 +17,8 @@ package org.didelphis.language.phonetic;
 import org.didelphis.language.phonetic.model.FeatureSpecification;
 
 /**
- * Samantha Fiona Morrigan McCabe
- * Created: 1/21/2015
+ * @author Samantha Fiona McCabe
+ * Date: 1/21/2015
  */
 public interface SpecificationBearer {
 

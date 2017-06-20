@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * @author Samantha Fiona Morrigan McCabe
+ * @author Samantha Fiona McCabe
  * @since 10/13/2014
  * This mock handler simply uses maps to simulate a crude file-system
  * The maps is from 'path' to data, so a test can instantiate the class

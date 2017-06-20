@@ -85,7 +85,7 @@ features = new HashMap<>();
 		for (Entry<Integer, T> entry : features.entrySet()) {
 			T x = entry.getValue();
 			T y = array.get(entry.getKey());
-			if ((featureType.isDefined(y)) && !x.equals(y)) {
+			if ((featureType.isDefined(y)) && !Objects.equals(x, y)) {
 				return false;
 			}
 		}

@@ -37,8 +37,8 @@ import static org.didelphis.utilities.Split.splitToList;
  * most of where were of no value (compatibility modes, or segmentation with
  * composition e.g.)
  * <p>
- * Samantha Fiona Morrigan McCabe
- * Created: 1/14/2015
+ * @author Samantha Fiona McCabe
+ * Date: 1/14/2015
  */
 public enum FormatterMode implements Segmenter, Formatter {
 	

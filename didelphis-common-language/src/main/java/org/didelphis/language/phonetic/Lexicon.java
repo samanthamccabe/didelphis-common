@@ -21,8 +21,8 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Samantha Fiona Morrigan McCabe
- * Created: 1/17/2015
+ * @author Samantha Fiona McCabe
+ * Date: 1/17/2015
  */
 public class Lexicon<T> implements Iterable<List<Sequence<T>>> {
 

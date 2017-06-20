@@ -20,8 +20,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * Samantha Fiona Morrigan McCabe
- * Created: 8/23/2015
+ * @author Samantha Fiona McCabe
+ * Date: 8/23/2015
  */
 public interface ColumnTable<E> extends Table<E> {
 

@@ -37,8 +37,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * Author: Samantha Fiona Morrigan McCabe
- * Created: 11/23/2014
+ * @author Samantha Fiona McCabe
+ * Date: 11/23/2014
  */
 public class SequenceFactory<T> {
 
@@ -144,10 +144,6 @@ public class SequenceFactory<T> {
 		return lexicon;
 	}
 
-	public Sequence<T> getNewSequence() {
-		return getSequence("");
-	}
-
 	public Sequence<T> getSequence(String word) {
 		if (word.equals("#")) {
 			return borderSequence;
@@ -221,7 +217,7 @@ public class SequenceFactory<T> {
 	public Collection<String> getSpecialStrings() {
 		Collection<String> keys = new ArrayList<>();
 		keys.addAll(variableStore.getKeys());
-//		keys.addAll(featureMapping); // TODO: 
+		keys.addAll(featureMapping.getSymbols());
 		keys.addAll(reservedStrings);
 		return keys;
 	}

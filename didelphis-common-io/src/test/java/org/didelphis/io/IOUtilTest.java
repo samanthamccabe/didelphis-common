@@ -16,6 +16,8 @@ package org.didelphis.io;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -30,9 +32,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 class IOUtilTest {
 
 	@Test
-	void readPath() {
-		String data = IOUtil.readPath("didelphis-common-io/src/main/resources/testFile.txt");
-		assertNotNull(data);
+	void readPath() throws IOException {
+		String path = "pom.xml";
+		String data = IOUtil.readPath(path);
+		assertNotNull(data,"Failed to read "+new File(path).getCanonicalPath());
 		assertFalse(data.isEmpty());
 	}
 

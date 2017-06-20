@@ -20,8 +20,8 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Samantha Fiona Morrigan McCabe
- * Created: 1/16/2015
+ * @author Samantha Fiona McCabe
+ * Date: 1/16/2015
  */
 public class LexiconMap<T> {
 

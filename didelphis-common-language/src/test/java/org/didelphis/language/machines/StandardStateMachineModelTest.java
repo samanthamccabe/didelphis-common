@@ -38,8 +38,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Samantha Fiona Morrigan McCabe
- * Created: 2/28/2015
+ * @author Samantha Fiona McCabe
+ * Date: 2/28/2015
  */
 public class StandardStateMachineModelTest {
 

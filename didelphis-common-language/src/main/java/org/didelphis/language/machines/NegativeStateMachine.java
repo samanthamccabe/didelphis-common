@@ -30,8 +30,8 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
- * Samantha Fiona Morrigan McCabe
- * Created: 1/30/2016
+ * @author Samantha Fiona McCabe
+ * Date: 1/30/2016
  */
 public final class NegativeStateMachine<T> implements StateMachine<T> {
 

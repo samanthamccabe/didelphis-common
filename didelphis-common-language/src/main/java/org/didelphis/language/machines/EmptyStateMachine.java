@@ -14,43 +14,46 @@
 
 package org.didelphis.language.machines;
 
-import org.didelphis.structures.contracts.Delegating;
-import org.didelphis.structures.maps.GeneralTwoKeyMultiMap;
+import org.didelphis.language.machines.interfaces.MachineMatcher;
+import org.didelphis.language.machines.interfaces.MachineParser;
+import org.didelphis.language.machines.interfaces.StateMachine;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
+ * Class {@code EmptyStateMachine}
+ *
  * @author Samantha Fiona McCabe
- * Date: 1/28/2016
+ * @since 0.1.0 Date: 2017-06-17
  */
-public class Graph<T> extends GeneralTwoKeyMultiMap<String, T, String> {
-	
-	private static final int HASH_ID = 0xa857a183;
-	
-	public Graph() {
-	}
+public enum EmptyStateMachine implements StateMachine<Object>{
+	INSTANCE;
 
-	public Graph(Delegating<Map<String, Map<T, Collection<String>>>> graph) {
-		super(graph, HashSet.class);
+	@Override
+	public MachineParser<Object> getParser() {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof Graph)) return false;
-		Graph<?> graph = (Graph<?>) o;
-		return super.equals(graph);
+	public MachineMatcher<Object> getMatcher() {
+		return (t1, t2, i) -> i;
 	}
 
 	@Override
-	public int hashCode() {
-		return ~(HASH_ID * super.hashCode() >> 2);
+	public String getId() {
+		return "Empty State Machine";
 	}
 
 	@Override
-	public String toString() {
-		return "Graph{" + super.toString() + '}';
+	public Map<String, Graph<Object>> getGraphs() {
+		return Collections.emptyMap();
+	}
+
+	@Override
+	public Collection<Integer> getMatchIndices(int startIndex, Object target) {
+		return Collections.singleton(startIndex);
 	}
 }
