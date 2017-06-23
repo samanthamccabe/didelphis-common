@@ -14,8 +14,13 @@
 
 package org.didelphis.language.phonetic.features;
 
+import org.didelphis.io.NullFileHandler;
+import org.didelphis.language.phonetic.model.FeatureModelLoader;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 import static java.text.Normalizer.Form;
 import static java.text.Normalizer.normalize;
@@ -28,6 +33,13 @@ import static java.text.Normalizer.normalize;
  */
 public enum DoubleFeature implements FeatureType<Double> {
 	INSTANCE;
+
+	public static FeatureModelLoader<Double> emptyLoader() {
+		return new FeatureModelLoader<>(INSTANCE, NullFileHandler.INSTANCE, "");
+	}
+
+	private static final List<Double> LIST = Arrays.asList(null, Double.NaN,
+			Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
 	@NotNull
 	@Override
@@ -45,9 +57,10 @@ public enum DoubleFeature implements FeatureType<Double> {
 		}
 	}
 
+	@NotNull
 	@Override
-	public boolean isDefined(@Nullable Double value) {
-		return value != null && !Double.isNaN(value) && Double.isFinite(value);
+	public Collection<Double> listUndefined() {
+		return LIST;
 	}
 
 	@Override

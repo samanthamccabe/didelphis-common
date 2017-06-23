@@ -23,7 +23,7 @@ public enum NullFileHandler implements FileHandler {
 
 	@Override
 	public CharSequence read(String path) {
-		return null;
+		return "";
 	}
 
 	@Override

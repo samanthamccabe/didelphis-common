@@ -31,7 +31,7 @@ import java.util.Objects;
 /**
  * @author Samantha Fiona McCabe
  */
-public final class BasicSequence<T> extends AbstractSequence<T> {
+public class BasicSequence<T> extends AbstractSequence<T> {
 
 	private static final Logger LOG = LoggerFactory
 			.getLogger(BasicSequence.class);

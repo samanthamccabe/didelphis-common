@@ -18,7 +18,6 @@ import org.didelphis.language.enums.FormatterMode;
 import org.didelphis.language.machines.Expression;
 import org.didelphis.language.machines.interfaces.MachineParser;
 import org.didelphis.language.phonetic.SequenceFactory;
-import org.didelphis.language.phonetic.VariableStore;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.SparseFeatureArray;
 import org.didelphis.language.phonetic.model.FeatureModel;
@@ -30,10 +29,8 @@ import org.didelphis.language.phonetic.sequences.Sequence;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Created by samantha on 2/25/17.
@@ -45,20 +42,14 @@ public class SequenceParser<T> implements MachineParser<Sequence<T>> {
 	private final Map<String, Collection<Sequence<T>>> specials;
 	
 	private final Sequence<T> epsilon;
-	
+
 	public SequenceParser(SequenceFactory<T> factory) {
+		this(factory, Collections.emptyMap());
+	}
+
+	public SequenceParser(SequenceFactory<T> factory, Map<String, Collection<Sequence<T>>> specials) {
 		this.factory = factory;
-		specials = new HashMap<>();
-		
-		VariableStore variableStore = factory.getVariableStore();
-		for (String key : variableStore.getKeys()) {
-			Collection<Sequence<T>> values = variableStore.get(key)
-					.stream()
-					.map(factory::getSequence)
-					.collect(Collectors.toList());
-			specials.put(key, values);
-		}
-		
+		this.specials = specials;
 		// Generate epsilon / lambda symbol
 		FeatureModel<T> model = factory.getFeatureMapping().getFeatureModel();
 		FeatureArray<T> array = new SparseFeatureArray<>(model);
@@ -68,17 +59,7 @@ public class SequenceParser<T> implements MachineParser<Sequence<T>> {
 	
 	@Override
 	public Sequence<T> transform(String expression) {
-		Sequence<T> sequence = factory.getSequence(expression);
-		// Ensure canonical segments are used
-		for (int i = 0; i < sequence.size(); i++) {
-			String symbol = sequence.get(i).getSymbol();
-			if (symbol.equals("#")) {
-				sequence.set(i, factory.getBorderSegment());
-			} else if (symbol.equals(".")) {
-				sequence.set(i, factory.getDotSegment());
-			}
-		}
-		return sequence;
+		return factory.getSequence(expression);
 	}
 
 	@Override

@@ -14,8 +14,12 @@
 
 package org.didelphis.language.phonetic.features;
 
+import org.didelphis.io.NullFileHandler;
+import org.didelphis.language.phonetic.model.FeatureModelLoader;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
+import java.util.Collections;
 
 import static java.text.Normalizer.Form;
 import static java.text.Normalizer.normalize;
@@ -28,6 +32,10 @@ import static java.text.Normalizer.normalize;
  */
 public enum IntegerFeature implements FeatureType<Integer> {
 	INSTANCE;
+
+	public static FeatureModelLoader<Integer> emptyLoader() {
+		return new FeatureModelLoader<>(INSTANCE, NullFileHandler.INSTANCE, "");
+	}
 
 	@NotNull
 	@Override
@@ -44,9 +52,10 @@ public enum IntegerFeature implements FeatureType<Integer> {
 		}
 	}
 
+	@NotNull
 	@Override
-	public boolean isDefined(@Nullable Integer value) {
-		return value != null;
+	public Collection<Integer> listUndefined() {
+		return Collections.singleton(null);
 	}
 
 	@Override

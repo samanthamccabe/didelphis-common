@@ -14,8 +14,13 @@
 
 package org.didelphis.language.phonetic.features;
 
+import org.didelphis.io.NullFileHandler;
+import org.didelphis.language.phonetic.model.FeatureModelLoader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
+import java.util.Collections;
 
 import static java.text.Normalizer.Form;
 import static java.text.Normalizer.normalize;
@@ -28,6 +33,10 @@ import static java.text.Normalizer.normalize;
  */
 public enum ByteFeature implements FeatureType<Byte> {
 	INSTANCE;
+
+	public static FeatureModelLoader<Byte> emptyLoader() {
+		return new FeatureModelLoader<>(INSTANCE, NullFileHandler.INSTANCE, "");
+	}
 
 	@NotNull
 	@Override
@@ -44,9 +53,10 @@ public enum ByteFeature implements FeatureType<Byte> {
 		}
 	}
 
+	@NotNull
 	@Override
-	public boolean isDefined(@Nullable Byte value) {
-		return value != null;
+	public Collection<Byte> listUndefined() {
+		return Collections.singleton(null);
 	}
 
 	@Override

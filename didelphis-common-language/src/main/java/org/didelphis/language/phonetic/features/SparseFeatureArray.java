@@ -15,7 +15,6 @@
 package org.didelphis.language.phonetic.features;
 
 import org.didelphis.language.phonetic.model.FeatureModel;
-import org.didelphis.language.phonetic.model.FeatureSpecification;
 
 import java.util.ArrayList;
 import java.util.Collections;

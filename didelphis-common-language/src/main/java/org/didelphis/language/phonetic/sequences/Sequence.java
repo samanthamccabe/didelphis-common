@@ -18,7 +18,6 @@ import org.didelphis.language.phonetic.ModelBearer;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Deque;
 import java.util.List;
 
 /**

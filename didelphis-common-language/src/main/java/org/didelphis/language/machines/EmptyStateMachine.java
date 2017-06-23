@@ -20,7 +20,6 @@ import org.didelphis.language.machines.interfaces.StateMachine;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,16 +28,25 @@ import java.util.Map;
  * @author Samantha Fiona McCabe
  * @since 0.1.0 Date: 2017-06-17
  */
-public enum EmptyStateMachine implements StateMachine<Object>{
-	INSTANCE;
+@SuppressWarnings("unchecked")
+public final class EmptyStateMachine<T> implements StateMachine<T>{
+
+	private static final EmptyStateMachine<?> MACHINE = new EmptyStateMachine<>();
+	private static final Map<String, ? extends Graph<?>> EMPTY_MAP = Collections.emptyMap();
+
+	public static <T> EmptyStateMachine<T> getInstance() {
+		return (EmptyStateMachine<T>) MACHINE;
+	}
+
+	private EmptyStateMachine(){}
 
 	@Override
-	public MachineParser<Object> getParser() {
+	public MachineParser<T> getParser() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public MachineMatcher<Object> getMatcher() {
+	public MachineMatcher<T> getMatcher() {
 		return (t1, t2, i) -> i;
 	}
 
@@ -48,12 +56,12 @@ public enum EmptyStateMachine implements StateMachine<Object>{
 	}
 
 	@Override
-	public Map<String, Graph<Object>> getGraphs() {
-		return Collections.emptyMap();
+	public Map<String, Graph<T>> getGraphs() {
+		return (Map<String, Graph<T>>) EMPTY_MAP;
 	}
 
 	@Override
-	public Collection<Integer> getMatchIndices(int startIndex, Object target) {
+	public Collection<Integer> getMatchIndices(int startIndex, T target) {
 		return Collections.singleton(startIndex);
 	}
 }

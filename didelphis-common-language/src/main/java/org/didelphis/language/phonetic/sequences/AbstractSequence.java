@@ -48,7 +48,7 @@ public abstract class AbstractSequence<T>
 
 	protected AbstractSequence(Segment<T> segment) {
 		this(segment.getFeatureModel());
-		add(segment);
+		segmentList.add(segment);
 	}
 
 	protected AbstractSequence(FeatureModel<T> featureSpec) {

@@ -62,12 +62,11 @@ public class SequenceFactoryTest {
 		reserved.add("th");
 		reserved.add("kh");
 
+		FeatureModelLoader<Integer> loader = new FeatureModelLoader<>(
+				IntegerFeature.INSTANCE, ClassPathFileHandler.INSTANCE,
+				Collections.emptyList());
 		SequenceFactory<Integer> factory = new SequenceFactory<>(
-				new FeatureModelLoader<>(
-						IntegerFeature.INSTANCE,
-						ClassPathFileHandler.INSTANCE,
-						Collections.emptyList()).getFeatureMapping(),
-				new VariableStore(FormatterMode.NONE),
+				loader.getFeatureMapping(),
 			reserved,
 			FormatterMode.NONE);
 
