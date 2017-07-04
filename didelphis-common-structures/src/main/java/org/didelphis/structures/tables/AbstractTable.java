@@ -14,6 +14,8 @@
 
 package org.didelphis.structures.tables;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.text.DecimalFormat;
 import java.util.Collection;
 
@@ -90,7 +92,7 @@ public abstract class AbstractTable<E> implements ResizeableTable<E> {
 		checkCol(col);
 	}
 
-	protected void checkRowData(Collection<E> data) {
+	protected void checkRowData(@NotNull Collection<E> data) {
 		if (data.size() != columns()) {
 			throw new IllegalArgumentException("New row data is the wrong " +
 					"size: " + data.size() + " but there are " + columns() +
@@ -98,7 +100,7 @@ public abstract class AbstractTable<E> implements ResizeableTable<E> {
 		}
 	}
 
-	protected void checkColumnData(Collection<E> data) {
+	protected void checkColumnData(@NotNull Collection<E> data) {
 		if (data.size() != rows()) {
 			throw new IllegalArgumentException("New column data is the wrong " +
 					"size: " + data.size() + " but there are " + rows() +

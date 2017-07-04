@@ -20,10 +20,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * @param <E>
@@ -40,7 +43,7 @@ public class RectangularTable<E>
 		array = new ArrayList<>(row * col);
 	}
 
-	public RectangularTable(Iterable<? extends Iterable<E>> rowList, int row, int col) {
+	public RectangularTable(@NotNull Iterable<? extends Iterable<E>> rowList, int row, int col) {
 		this(row, col);
 		for (Iterable<E> rowElements : rowList) {
 			for (E element : rowElements) {
@@ -56,7 +59,12 @@ public class RectangularTable<E>
 		}
 	}
 
-	public RectangularTable(RectangularTable<E> table) {
+	public RectangularTable(int row, int column, Collection<E> delegate) {
+		super(row, column);
+		array = new ArrayList<>(delegate);
+	}
+
+	public RectangularTable(@NotNull RectangularTable<E> table) {
 		this(table.rows(), table.columns());
 		array.addAll(table.array);
 	}
@@ -67,6 +75,7 @@ public class RectangularTable<E>
 	 * @param col the index for column
 	 * @return the object stored at these coordinates
 	 */
+	@NotNull
 	@Override
 	public E get(int row, int col) {
 		checkRanges(row, col);
@@ -80,8 +89,9 @@ public class RectangularTable<E>
 	 * @param col the index for column
 	 * @param element the object to place at the specified coordinates
 	 */
+	@NotNull
 	@Override
-	public E set(int row, int col, E element) {
+	public E set(int row, int col, @NotNull E element) {
 		checkRanges(row, col);
 		int index = getIndex(row, col);
 		return array.set(index, element);
@@ -97,6 +107,7 @@ public class RectangularTable<E>
 		return array.subList(startIndex, endIndex);
 	}
 
+	@NotNull
 	@Override
 	public
 	List<E> getColumn(int col) {
@@ -109,7 +120,7 @@ public class RectangularTable<E>
 	@NotNull
 	@Override
 	public
-	List<E> setRow(int row, List<E> data) {
+	List<E> setRow(int row, @NotNull List<E> data) {
 		checkRow(row);
 		checkRowData(data);
 		List<E> oldEntries = new ArrayList<>(getRow(row));
@@ -121,9 +132,10 @@ public class RectangularTable<E>
 		return oldEntries;
 	}
 
+	@NotNull
 	@Override
 	public
-	List<E> setColumn(int col, List<E> data) {
+	List<E> setColumn(int col, @NotNull List<E> data) {
 		checkCol(col);
 		checkColumnData(data);
 		List<E> oldEntries = getColumn(col);
@@ -135,6 +147,25 @@ public class RectangularTable<E>
 		return oldEntries;
 	}
 
+	@NotNull
+	@Override
+	public Stream<E> stream() {
+		return array.stream();
+	}
+
+	@NotNull
+	@Override
+	public Iterator<Collection<E>> rowIterator() {
+		return new RowIterator<>(array, rows(), columns());
+	}
+
+	@NotNull
+	@Override
+	public Iterator<Collection<E>> columnIterator() {
+		return new ColumnIterator<>(array, rows(), columns());
+	}
+
+	@NotNull
 	@Deprecated
 	@Override
 	public String formattedTable() {
@@ -164,6 +195,7 @@ public class RectangularTable<E>
 				columns() == that.columns();
 	}
 
+	@NotNull
 	@Override
 	public String toString() {
 		return "RectangularTable{numberRows=" + rows() + ", numberColumns=" +
@@ -190,15 +222,15 @@ public class RectangularTable<E>
 	}
 
 	@Override
-	public void expand(int rows, int cols) {
+	public void expand(int rows, int cols, E fillerValue) {
 		negativeCheck(rows, cols);
 
-		List<E> newRow = Collections.nCopies(columns(), null);
+		List<E> newRow = Collections.nCopies(columns(), fillerValue);
 		for (int i = 0; i < rows; i++) {
 			insertRow(rows(), newRow);
 		}
 
-		List<E> newColumn = Collections.nCopies(rows(), null);
+		List<E> newColumn = Collections.nCopies(rows(), fillerValue);
 		for (int i = 0; i < cols; i++) {
 			insertColumn(columns(), newColumn);
 		}
@@ -270,6 +302,7 @@ public class RectangularTable<E>
 		return list;
 	}
 
+	@NotNull
 	@Override
 	public List<E> getDelegate() {
 		return Collections.unmodifiableList(array);
@@ -284,6 +317,72 @@ public class RectangularTable<E>
 	 * coordinates.
 	 */
 	private int getIndex(int row, int col) {
-		return col + row * columns();
+		return getIndex(row, col, columns());
+	}
+
+	private static int getIndex(int row, int col, int columns) {
+		return col + row * columns;
+	}
+
+	private static final class RowIterator<E> implements Iterator<Collection<E>> {
+
+		private final List<E> list;
+		private final int rows;
+		private final int columns;
+		private int i = 0;
+
+		private RowIterator(List<E> list, int rows, int columns) {
+			this.list = list;
+			this.rows = rows;
+			this.columns = columns;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return i < rows;
+		}
+
+		@Override
+		public Collection<E> next() {
+			if (i >= rows) {
+				throw new NoSuchElementException();
+			}
+			int index1 = getIndex(i, 0, columns);
+			int index2 = getIndex(i+1, 0, columns);
+			i++;
+			return list.subList(index1, index2);
+		}
+	}
+
+	private static final class ColumnIterator<E> implements Iterator<Collection<E>> {
+
+		private final List<E> array;
+		private final int rows;
+		private final int columns;
+		private int i = 0;
+
+		private ColumnIterator(List<E> list, int rows, int columns) {
+			this.array = list;
+			this.rows = rows;
+			this.columns = columns;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return i < columns;
+		}
+
+		@Override
+		public Collection<E> next() {
+			if (i >= columns) {
+				throw new NoSuchElementException();
+			}
+			Collection<E> list = new ArrayList<>();
+			for (int r = 0; r < rows; r++) {
+				list.add(array.get(getIndex(r, i, columns)));
+			}
+			i++;
+			return list;
+		}
 	}
 }

@@ -19,9 +19,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * @param <E>
@@ -37,7 +40,7 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 		array = new ArrayList<>(n + ((n * n) / 2));
 	}
 
-	public SymmetricTable(int n, List<E> array) {
+	public SymmetricTable(int n, @NotNull List<E> array) {
 		super(n, n);
 		int size = n + ((n * n - n) / 2);
 		if (array.size() == size) {
@@ -58,18 +61,20 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 		}
 	}
 
-	protected SymmetricTable(SymmetricTable<E> otherTable) {
+	protected SymmetricTable(@NotNull SymmetricTable<E> otherTable) {
 		this(otherTable.rows());
 		array.addAll(otherTable.array);
 	}
 
+	@NotNull
 	@Override
 	public E get(int row, int col) {
 		return array.get(getIndex(col, row));
 	}
 
+	@NotNull
 	@Override
-	public E set(int row, int col, E element) {
+	public E set(int row, int col, @NotNull E element) {
 		int index = getIndex(col, row);
 		return array.set(index, element);
 	}
@@ -87,6 +92,7 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 		return collection;
 	}
 
+	@NotNull
 	@Override
 	public
 	List<E> getColumn(int col) {
@@ -96,27 +102,45 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 	@NotNull
 	@Override
 	public
-	List<E> setRow(int row, List<E> data) {
+	List<E> setRow(int row, @NotNull List<E> data) {
 		checkRow(row);
 		checkRowData(data);
 		List<E> original = new ArrayList<>();
-
 		int col = 0;
 		for (E datum : data) {
 			original.add(get(row, col));
 			set(row, col, datum);
 			col++;
 		}
-
 		return original;
 	}
 
+	@NotNull
 	@Override
 	public
-	List<E> setColumn(int col, List<E> data) {
+	List<E> setColumn(int col, @NotNull List<E> data) {
 		return setRow(col, data);
 	}
 
+	@NotNull
+	@Override
+	public Stream<E> stream() {
+		return array.stream();
+	}
+
+	@NotNull
+	@Override
+	public Iterator<Collection<E>> rowIterator() {
+		return new ColumnIterator<>(array, columns());
+	}
+
+	@NotNull
+	@Override
+	public Iterator<Collection<E>> columnIterator() {
+		return new ColumnIterator<>(array, columns());
+	}
+
+	@NotNull
 	@Deprecated
 	@Override
 	public String formattedTable() {
@@ -148,6 +172,7 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 		return Objects.equals(array, that.array);
 	}
 
+	@NotNull
 	@Override
 	public String toString() {
 		return "SymmetricTable{"+ rows() + ": " + array + '}';
@@ -173,12 +198,12 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 	}
 
 	@Override
-	public void expand(int rows, int cols) {
+	public void expand(int rows, int cols, E fillerValue) {
 		negativeCheck(rows, cols);
 		int max = Math.max(rows, cols);
 		for (int i = 0; i < max; i++) {
 			int size = i + rows() + 1;
-			array.addAll(Collections.nCopies(size, null));
+			array.addAll(Collections.nCopies(size, fillerValue));
 		}
 		setRows(rows() + max);
 		setColumns(columns() + max);
@@ -273,5 +298,36 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 
 	private static int getRowStart(int row) {
 		return IntStream.rangeClosed(0, row).sum();
+	}
+
+	private static final class ColumnIterator<E>
+			implements Iterator<Collection<E>> {
+
+		private final List<E> array;
+		private final int columns;
+		private int i = 0;
+
+		private ColumnIterator(List<E> list, int columns) {
+			this.array = list;
+			this.columns = columns;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return i < columns;
+		}
+
+		@Override
+		public Collection<E> next() {
+			if (i >= columns) {
+				throw new NoSuchElementException();
+			}
+			Collection<E> list = new ArrayList<>();
+			for (int j = 0; j < columns; j++) {
+				list.add(array.get(getIndex(i, j)));
+			}
+			i++;
+			return list;
+		}
 	}
 }
