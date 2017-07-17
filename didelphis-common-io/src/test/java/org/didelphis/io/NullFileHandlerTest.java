@@ -16,8 +16,8 @@ package org.didelphis.io;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Class NullFileHandlerTest
@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 class NullFileHandlerTest {
 	@Test
 	void read() {
-		assertNull(NullFileHandler.INSTANCE.read(""));
+		assertEquals("",NullFileHandler.INSTANCE.read(""));
 	}
 
 	@Test

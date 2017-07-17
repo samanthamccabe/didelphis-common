@@ -16,13 +16,16 @@ package org.didelphis.structures.tables;
 
 import org.didelphis.structures.Structure;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
- * Author: Samantha Fiona Morrigan McCabe
- * Created: 11/30/2014
+ * @author Samantha Fiona McCabe
+ * Date: 11/30/2014
  * <p>
  * A general interface for two-dimensional matrix data structures
  * @param <E> the type parameter
@@ -35,7 +38,7 @@ public interface Table<E> extends Structure {
 	 * @param col index from where the value is to be read; must be >= 0
 	 * @return the value to be retrieved; returns null if no value is present
 	 */
-	@Nullable
+	@NotNull
 	E get(int row, int col);
 
 	/**
@@ -45,8 +48,8 @@ public interface Table<E> extends Structure {
 	 * @param element the value to be written
 	 * @return the previous value; null if no previous value was present
 	 */
-	@Nullable
-	E set(int row, int col, @Nullable E element);
+	@NotNull
+	E set(int row, int col, @NotNull E element);
 
 	/**
 	 * Returns the current number of rows
@@ -73,6 +76,7 @@ public interface Table<E> extends Structure {
 	 * @param col the column whose contents are read; must be >= 0
 	 * @return the contents of the specified column; cannot be null
 	 */
+	@NotNull
 	List<E> getColumn(int col);
 
 	/**
@@ -82,7 +86,7 @@ public interface Table<E> extends Structure {
 	 * @return the contents of the specified row; cannot be null
 	 */
 	@NotNull
-	List<E> setRow(int row, List<E> data);
+	List<E> setRow(int row, @NotNull List<E> data);
 
 	/**
 	 * Inserts data into the specified column and returns a collection of its
@@ -90,12 +94,45 @@ public interface Table<E> extends Structure {
 	 * @param col the column whose contents will be overwritten; must be >= 0
 	 * @return the contents of the specified column; cannot be null
 	 */
-	List<E> setColumn(int col, List<E> data);
-	
+	@NotNull
+	List<E> setColumn(int col, @NotNull List<E> data);
+
+	/**
+	 * Provides a {@link Stream} of all the elements in the table
+	 * @return a {@link Stream} of all the elements in the table
+	 */
+	@NotNull
+	Stream<E> stream();
+
+	/**
+	 * Applies a transformation to each element of the table; this is provided
+	 * for cases where {@link Table#stream} cannot be used because the type
+	 * {@code <E>} is immutable
+	 * @param function the function to be applied to each element of the table
+	 */
+	void apply(@NotNull Function<E,E> function);
+
+	/**
+	 * Provides an {@link Iterator} over the rows of the table, each row
+	 * represented by a {@link Collection} of elements
+	 * @return  an {@link Iterator} over the row of the table
+	 */
+	@NotNull
+	Iterator<Collection<E>> rowIterator();
+
+	/**
+	 * Provides an {@link Iterator} over the columns of the table, each column
+	 * represented by a {@link Collection} of elements
+	 * @return  an {@link Iterator} over the columns of the table
+	 */
+	@NotNull
+	Iterator<Collection<E>> columnIterator();
+
 	/**
 	 * Formatted table string.
 	 * @return the string
 	 */
 	@Deprecated
+	@NotNull
 	String formattedTable();
 }

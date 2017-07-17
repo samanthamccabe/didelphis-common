@@ -24,8 +24,8 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Samantha Fiona Morrigan McCabe
- * Created: 4/10/2016
+ * @author Samantha Fiona McCabe
+ * Date: 4/10/2016
  */
 @SuppressWarnings("rawtypes")
 public class GeneralTwoKeyMultiMap<T, U, V> 

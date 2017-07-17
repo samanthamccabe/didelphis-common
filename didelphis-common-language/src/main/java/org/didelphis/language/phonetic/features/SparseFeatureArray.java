@@ -15,7 +15,6 @@
 package org.didelphis.language.phonetic.features;
 
 import org.didelphis.language.phonetic.model.FeatureModel;
-import org.didelphis.language.phonetic.model.FeatureSpecification;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,18 +28,16 @@ import java.util.Objects;
 /**
  * Created by samantha on 3/27/16.
  */
-public final class SparseFeatureArray<T>
-		implements FeatureArray<T> {
+public final class SparseFeatureArray<T> extends AbstractFeatureArray<T> {
 	
-	private final FeatureModel<T> featureModel;
 	private final Map<Integer, T> features;
 
 	/**
 	 * @param featureModel
 	 */
 	public SparseFeatureArray(FeatureModel<T> featureModel) {
-		this.featureModel = featureModel;
-		features = new HashMap<>();
+super(featureModel);
+features = new HashMap<>();
 	}
 
 	/**
@@ -61,13 +58,8 @@ public final class SparseFeatureArray<T>
 	 * @param array
 	 */
 	public SparseFeatureArray(SparseFeatureArray<T> array) {
-		featureModel = array.getFeatureModel();
+		super(array.getFeatureModel());
 		features = new HashMap<>(array.features);
-	}
-
-	@Override
-	public int size() {
-		return featureModel.size();
 	}
 
 	@Override
@@ -88,11 +80,11 @@ public final class SparseFeatureArray<T>
 			throw new IllegalArgumentException(
 					"Attempting to compare arrays of different lengths");
 		}
-		FeatureType<T> featureType = featureModel.getFeatureType();
+		FeatureType<T> featureType = getFeatureModel().getFeatureType();
 		for (Entry<Integer, T> entry : features.entrySet()) {
 			T x = entry.getValue();
 			T y = array.get(entry.getKey());
-			if ((featureType.isDefined(y)) && !x.equals(y)) {
+			if ((featureType.isDefined(y)) && !Objects.equals(x, y)) {
 				return false;
 			}
 		}
@@ -105,7 +97,7 @@ public final class SparseFeatureArray<T>
 			throw new IllegalArgumentException(
 					"Attempting to compare arrays of different lengths");
 		}
-		FeatureType<T> featureType = featureModel.getFeatureType();
+		FeatureType<T> featureType = getFeatureModel().getFeatureType();
 
 		boolean changed = false;
 			for (int i = 0; i < size(); i++) {
@@ -123,27 +115,6 @@ public final class SparseFeatureArray<T>
 		return features.containsValue(value);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public int compareTo(FeatureArray<T> o) {
-		if (size() != o.size()) {
-			throw new IllegalArgumentException(
-					"Attempting to compare arrays of different lengths");
-		}
-		FeatureType<T> featureType = featureModel.getFeatureType();
-
-		for (int i = 0; i < size(); i++) {
-			T x = get(i);
-			T y = o.get(i);
-			int comparison = featureType.compare(x,y);
-			if (comparison != 0) {
-				return comparison;
-			}
-			// Else, do nothing; the loop will check the next value
-		}
-		// If we get to the end, then all values must be equal
-		return 0;
-	}
 
 	@Override
 	public Iterator<T> iterator() {
@@ -154,44 +125,28 @@ public final class SparseFeatureArray<T>
 	}
 
 	@Override
+	public int hashCode() {
+		return Objects.hash(features, features.size(), size());
+	}
+
+	@Override
 	public String toString() {
 		return "SparseFeatureArray{" + features + '}';
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) { return true; }
-		if (!(obj instanceof SparseFeatureArray)) { return false; }
-		FeatureArray<?> that = (FeatureArray<?>) obj;
-		if (!Objects.equals(featureModel, that.getFeatureModel())) return false;
-		for (int i = 0; i < featureModel.size(); i++) {
-			if (!Objects.equals(get(i), that.get(i))) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	@Override
-	public FeatureModel<T> getFeatureModel() {
-		return featureModel;
-	}
-
-	@Override
-	public FeatureSpecification getSpecification() {
-		return featureModel;
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(features, features.size(), size());
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		return super.equals(o);
 	}
 
 	private void indexCheck(int index) {
-		int size = featureModel.size();
+		int size = getSpecification().size();
 		if (index >= size) {
 			throw new IndexOutOfBoundsException("Provided index " + index +
-					" is larger than defined size "+ size + " for feature model " + featureModel);
+					" is larger than defined size "+ size +
+					" for feature model " + getFeatureModel());
 		}
 	}
 }

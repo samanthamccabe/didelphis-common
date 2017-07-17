@@ -33,7 +33,6 @@ import java.util.Objects;
 public class StandardSegment<T> implements Segment<T> {
 
 	private final String symbol;
-	private final FeatureModel<T> featureModel;
 	private final FeatureArray<T> features;
 
 	/**
@@ -43,7 +42,6 @@ public class StandardSegment<T> implements Segment<T> {
 	 */
 	public StandardSegment(Segment<T> segment) {
 		symbol = segment.getSymbol();
-		featureModel = segment.getFeatureModel();
 		features = segment.getFeatures();
 	}
 
@@ -55,10 +53,8 @@ public class StandardSegment<T> implements Segment<T> {
 	 * @param modelParam the model corresponding to the symbol and feature
 	 * 		array
 	 */
-	public StandardSegment(String symbol, FeatureArray<T> featureArray,
-			FeatureModel<T> modelParam) {
+	public StandardSegment(String symbol, FeatureArray<T> featureArray) {
 		this.symbol = symbol;
-		featureModel = modelParam;
 		features = featureArray;
 	}
 
@@ -105,12 +101,12 @@ public class StandardSegment<T> implements Segment<T> {
 
 	@Override
 	public FeatureModel<T> getFeatureModel() {
-		return featureModel;
+		return features.getFeatureModel();
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(featureModel, symbol, features);
+		return Objects.hash(symbol, features);
 	}
 
 	@Override
@@ -122,8 +118,7 @@ public class StandardSegment<T> implements Segment<T> {
 			return false;
 		}
 		StandardSegment<?> segment = (StandardSegment<?>) o;
-		return Objects.equals(featureModel, segment.featureModel) &&
-				Objects.equals(symbol, segment.symbol) &&
+		return Objects.equals(symbol, segment.symbol) &&
 				Objects.equals(features, segment.features);
 	}
 
@@ -149,7 +144,7 @@ public class StandardSegment<T> implements Segment<T> {
 
 	@Override
 	public FeatureSpecification getSpecification() {
-		return featureModel;
+		return features.getSpecification();
 	}
 
 }

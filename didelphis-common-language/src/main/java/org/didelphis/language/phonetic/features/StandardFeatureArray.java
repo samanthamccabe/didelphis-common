@@ -16,8 +16,6 @@ package org.didelphis.language.phonetic.features;
 
 import org.didelphis.language.phonetic.model.Constraint;
 import org.didelphis.language.phonetic.model.FeatureModel;
-import org.didelphis.language.phonetic.model.FeatureSpecification;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,13 +25,10 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Samantha Fiona Morrigan McCabe
- * Created: 3/26/2016
+ * @author Samantha Fiona McCabe Created: 3/26/2016
  */
-public final class StandardFeatureArray<T>
-		implements FeatureArray<T> {
-	
-	private final FeatureModel<T> featureModel;
+public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
+
 	private final List<T> features;
 
 	/**
@@ -41,8 +36,8 @@ public final class StandardFeatureArray<T>
 	 * @param featureModel
 	 */
 	public StandardFeatureArray(T value, FeatureModel<T> featureModel) {
-		this.featureModel = featureModel;
-		int size = featureModel.size();
+		super(featureModel);
+		int size = getSpecification().size();
 		features = new ArrayList<>(size);
 		for (int i = 0; i < size; i++) {
 			features.add(value);
@@ -50,12 +45,11 @@ public final class StandardFeatureArray<T>
 	}
 
 	/**
-	 *
 	 * @param list
 	 * @param featureModel
 	 */
 	public StandardFeatureArray(List<T> list, FeatureModel<T> featureModel) {
-		this.featureModel = featureModel;
+		super(featureModel);
 		features = new ArrayList<>(list);
 	}
 
@@ -63,7 +57,7 @@ public final class StandardFeatureArray<T>
 	 * @param array
 	 */
 	public StandardFeatureArray(StandardFeatureArray<T> array) {
-		featureModel = array.getFeatureModel();
+		super(array.getFeatureModel());
 		features = new ArrayList<>(array.features);
 	}
 
@@ -71,17 +65,11 @@ public final class StandardFeatureArray<T>
 	 * @param array
 	 */
 	public StandardFeatureArray(FeatureArray<T> array) {
-		featureModel = array.getFeatureModel();
-		int size = featureModel.size();
-		features = new ArrayList<>(size);
-		for (int i = 0; i < size; i++) {
+		super(array.getFeatureModel());
+		features = new ArrayList<>(size());
+		for (int i = 0; i < size(); i++) {
 			features.add(array.get(i));
 		}
-	}
-
-	@Override
-	public int size() {
-		return features.size();
 	}
 
 	@Override
@@ -113,28 +101,16 @@ public final class StandardFeatureArray<T>
 	}
 
 	@Override
-	public FeatureSpecification getSpecification() {
-		return featureModel;
-	}
-
-	private boolean matches(T x, T y) {
-		FeatureType<T> featureType = featureModel.getFeatureType();
-		return !(featureType.isDefined(x) && featureType.isDefined(y)) ||
-				         x.equals(y);
-	}
-
-	@Override
 	public boolean alter(FeatureArray<T> array) {
 		if (size() != array.size()) {
 			throw new IllegalArgumentException(
-					"Attempting to compare arrays of different lengths");
+					"Attempting to compare arrays" + " of different lengths");
 		}
-		FeatureType<T> featureType = featureModel.getFeatureType();
-
-		final Collection<Integer> alteredIndices = new HashSet<>();
+		FeatureType<T> featureType = getFeatureModel().getFeatureType();
+		Collection<Integer> alteredIndices = new HashSet<>();
 		for (int i = 0; i < features.size(); i++) {
 			T v = array.get(i);
-			if (featureType.isDefined(v)) {
+			if (featureType.isDefined(v) && !Objects.equals(get(i), v)) {
 				alteredIndices.add(i);
 				features.set(i, v);
 			}
@@ -145,53 +121,16 @@ public final class StandardFeatureArray<T>
 		return !alteredIndices.isEmpty();
 	}
 
-	private void applyConstraints(int index) {
-		for (Constraint<T> constraint : featureModel.getConstraints()) {
-			if (constraint.getSource().get(index) != null
-			    && matches(constraint.getSource())) {
-				alter(constraint.getTarget());
-			}
-		}
-	}
-	
 	@Override
 	public boolean contains(T value) {
 		return features.contains(value);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public int compareTo(@NotNull FeatureArray<T> o) {
-		if (size() != o.size()) {
-			throw new IllegalArgumentException(
-					"Attempting to compare arrays of different lengths");
-		}
-		FeatureType<T> featureType = featureModel.getFeatureType();
-		for (int i = 0; i < size(); i++) {
-			T x = get(i);
-			T y = o.get(i);
-			int comparison = featureType.compare(x,y);
-			if (comparison != 0) {
-				return comparison;
-			}
-			// Else, do nothing; the loop will check the next value
-		}
-		// If we get to the end, then all values must be equal
-		return 0;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) { return true; }
-		if (!(obj instanceof FeatureArray)) { return false; }
-		FeatureArray<?> that = (FeatureArray<?>) obj;
-		if (!Objects.equals(featureModel, that.getFeatureModel())) return false;
-		for (int i = 0; i < featureModel.size(); i++) {
-			if (!Objects.equals(get(i), that.get(i))) {
-				return false;
-			}
-		}
-		return true;
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		return super.equals(o);
 	}
 
 	@Override
@@ -209,9 +148,18 @@ public final class StandardFeatureArray<T>
 		return features.iterator();
 	}
 
-	@Override
-	public FeatureModel<T> getFeatureModel() {
-		return featureModel;
+	private boolean matches(T x, T y) {
+		FeatureType<T> featureType = getFeatureModel().getFeatureType();
+		return !(featureType.isDefined(x) && featureType.isDefined(y)) ||
+				Objects.equals(x, y);
 	}
 
+	private void applyConstraints(int index) {
+		for (Constraint<T> constraint : getFeatureModel().getConstraints()) {
+			if (constraint.getSource().get(index) != null &&
+					matches(constraint.getSource())) {
+				alter(constraint.getTarget());
+			}
+		}
+	}
 }

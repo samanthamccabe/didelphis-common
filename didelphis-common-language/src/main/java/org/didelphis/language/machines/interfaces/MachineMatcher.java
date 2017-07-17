@@ -17,6 +17,7 @@ package org.didelphis.language.machines.interfaces;
 /**
  * Created by samantha on 2/23/17.
  */
+@FunctionalInterface
 public interface MachineMatcher<T> {
 
 	/**

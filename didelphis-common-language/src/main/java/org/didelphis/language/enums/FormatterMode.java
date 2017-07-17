@@ -16,8 +16,6 @@ package org.didelphis.language.enums;
 
 import org.didelphis.language.phonetic.Formatter;
 import org.didelphis.language.phonetic.Segmenter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
@@ -37,8 +35,8 @@ import static org.didelphis.utilities.Split.splitToList;
  * most of where were of no value (compatibility modes, or segmentation with
  * composition e.g.)
  * <p>
- * Samantha Fiona Morrigan McCabe
- * Created: 1/14/2015
+ * @author Samantha Fiona McCabe
+ * Date: 1/14/2015
  */
 public enum FormatterMode implements Segmenter, Formatter {
 	
@@ -201,10 +199,10 @@ public enum FormatterMode implements Segmenter, Formatter {
 
 		private boolean isCombiningClass(char ch) {
 			int type = Character.getType(ch);
-			return type == Character.MODIFIER_LETTER ||
-				         type == Character.MODIFIER_SYMBOL ||
-				         type == Character.COMBINING_SPACING_MARK ||
-				         type == Character.NON_SPACING_MARK;
+			return type == Character.MODIFIER_LETTER || // 4
+				         type == Character.MODIFIER_SYMBOL || // 27
+				         type == Character.COMBINING_SPACING_MARK || // 8
+				         type == Character.NON_SPACING_MARK; // 6
 		}
 	};
 
@@ -218,6 +216,4 @@ public enum FormatterMode implements Segmenter, Formatter {
 	public String normalize(String string) {
 		return (form == null) ? string : Normalizer.normalize(string, form);
 	}
-
-	private final Logger logger = LoggerFactory.getLogger(FormatterMode.class);
 }

@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Samantha Fiona Morrigan McCabe Created: 8/27/2015
+ * @author Samantha Fiona McCabe Created: 8/27/2015
  */
 class DataTableTest {
 

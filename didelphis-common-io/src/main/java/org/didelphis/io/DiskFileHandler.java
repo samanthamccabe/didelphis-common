@@ -25,8 +25,8 @@ import java.io.Writer;
 import java.util.Objects;
 
 /**
- * Author: Samantha Fiona Morrigan McCabe
- * Created: 10/11/2014
+ * @author Samantha Fiona McCabe
+ * Date: 10/11/2014
  */
 public final class DiskFileHandler implements FileHandler {
 

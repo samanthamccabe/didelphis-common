@@ -23,8 +23,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Samantha Fiona Morrigan McCabe
- * Created: 8/23/2015
+ * @author Samantha Fiona McCabe
+ * Date: 8/23/2015
  */
 public class DataTable<E>
 		extends RectangularTable<E>
@@ -32,24 +32,25 @@ public class DataTable<E>
 
 	private final List<String> keys;
 
-	public DataTable(DataTable<E> table) {
+	public DataTable(@NotNull DataTable<E> table) {
 		super(table);
 		keys = table.keys;
 	}
 
-	public DataTable(List<String> keys) {
+	public DataTable(@NotNull List<String> keys) {
 		super((E) null, 0, keys.size());
 		this.keys = keys;
 	}
 
-	public DataTable(List<String> keys, Collection<? extends Collection<E>> rowList) {
+	public DataTable(@NotNull List<String> keys, @NotNull Collection<? extends Collection<E>> rowList) {
 		super(rowList, rowList.size(), keys.size());
 		this.keys = keys;
 	}
 
+	@NotNull
 	@Override
 	public String toString() {
-		return "DataTable{"+super.toString()+"}";
+		return "DataTable{"+super.toString()+ '}';
 	}
 
 	@Override

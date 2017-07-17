@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -40,17 +41,23 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GeneralFeatureMapping.class);
 
+	private final FeatureSpecification specification;
 	private final FeatureModel<T> featureModel;
 	
 	private final Map<String, FeatureArray<T>> featureMap;
 	private final Map<String, FeatureArray<T>> modifiers;
+	private final List<String> orderedKeys;
 
 	public GeneralFeatureMapping(FeatureModel<T> featureModel,
 			Map<String, FeatureArray<T>> featureMap,
 			Map<String, FeatureArray<T>> modifiers) {
+		specification = featureModel.getSpecification();
 		this.featureModel = featureModel;
 		this.featureMap = Collections.unmodifiableMap(featureMap);
 		this.modifiers = Collections.unmodifiableMap(modifiers);
+
+		orderedKeys = new ArrayList<>(featureMap.keySet());
+		orderedKeys.sort((k1, k2) -> -1*Integer.compare(k1.length(), k2.length()));
 	}
 
 	@NotNull
@@ -61,11 +68,12 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 		String bestSymbol = "";
 		double minimum = Double.MAX_VALUE;
 
-		for (Entry<String, FeatureArray<T>> entry : featureMap.entrySet()) {
-			FeatureArray<T> features = entry.getValue();
+//		for (Entry<String, FeatureArray<T>> entry : featureMap.entrySet()) {
+		for (String key : orderedKeys) {
+			FeatureArray<T> features = featureMap.get(key);
 			double difference = totalDifference(featureArray, features);
 			if (difference < minimum) {
-				bestSymbol = entry.getKey();
+				bestSymbol = key;
 				minimum = difference;
 				bestFeatures = features;
 			}
@@ -117,25 +125,22 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 	@NotNull
 	@Override
 	public Segment<T> parseSegment(@NotNull String string) {
-		if (string.startsWith("[")) {
-			return new StandardSegment<>(string, featureModel.parseFeatureString(string), featureModel);
-		}
-		
 		if (featureMap.isEmpty()) {
 			FeatureArray<T> featureArray = new StandardFeatureArray<>(
 					new ArrayList<>(),
-				  featureModel
+					featureModel
 			);
-			return new StandardSegment<>(string, featureArray, featureModel);
+			return new StandardSegment<>(string, featureArray);
 		}
-		
+		if (string.startsWith("[")) {
+			return new StandardSegment<>(string, featureModel.parseFeatureString(string));
+		}
 		String best = "";
-		for (String key : featureMap.keySet()) {
+		for (String key : orderedKeys) {
 				if (string.startsWith(key) && key.length() > best.length()) {
 					best = key;
 				}
 			}
-
 			FeatureArray<T> featureArray = getFeatureArray(best);
 			for (String s : string.substring(best.length()).split("")) {
 				if (modifiers.containsKey(s)) {
@@ -143,7 +148,7 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 					featureArray.alter(array);
 				}
 			}
-			return new StandardSegment<>(string, featureArray, featureModel);
+			return new StandardSegment<>(string, featureArray);
 	}
 
 	@Override
@@ -153,7 +158,7 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 	
 	@Override
 	public FeatureSpecification getSpecification() {
-		return featureModel;
+		return specification;
 	}
 
 	@Override
@@ -175,8 +180,7 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 				Objects.equals(this.modifiers, other.modifiers);
 	}
 
-	private double totalDifference(FeatureArray<T> left,
-			FeatureArray<T> right) {
+	private double totalDifference(FeatureArray<T> left, FeatureArray<T> right) {
 		if (left.size() != right.size()) {
 			throw new IllegalArgumentException("Cannot compare feature arrays" +
 					" of different sizes! left: " + left.size() + " right: " +

@@ -19,10 +19,13 @@ import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.SparseFeatureArray;
 import org.didelphis.language.phonetic.model.FeatureMapping;
 import org.didelphis.language.phonetic.model.FeatureModel;
+import org.didelphis.language.phonetic.segments.ImmutableSegment;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.segments.StandardSegment;
 import org.didelphis.language.phonetic.sequences.BasicSequence;
+import org.didelphis.language.phonetic.sequences.ImmutableSequence;
 import org.didelphis.language.phonetic.sequences.Sequence;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,50 +34,48 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * Author: Samantha Fiona Morrigan McCabe
- * Created: 11/23/2014
+ * @author Samantha Fiona McCabe Date: 11/23/2014
  */
 public class SequenceFactory<T> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(SequenceFactory.class);
-	
-	private static final Pattern BACKREFERENCE_PATTERN = Pattern.compile("(\\$[^$]*\\d+)");
+	private static final Logger LOG = LoggerFactory
+			.getLogger(SequenceFactory.class);
 
-	private final FeatureMapping<T> featureMapping;
-	private final VariableStore variableStore;
+	private static final Pattern BACKREFERENCE_PATTERN = Pattern
+			.compile("\\$[^$]*\\d+");
+
+	private final FeatureMapping<T> mapping;
 	private final FormatterMode formatterMode;
-	private final Set<String>   reservedStrings;
+	private final Set<String> reservedStrings;
 
 	private final Segment<T> dotSegment;
 	private final Segment<T> borderSegment;
 
 	private final Sequence<T> dotSequence;
 	private final Sequence<T> borderSequence;
-	
+
 	public SequenceFactory(FeatureMapping<T> mapping, FormatterMode mode) {
-		this(mapping, new VariableStore(mode), new HashSet<>(), mode);
+		this(mapping, new HashSet<>(), mode);
 	}
 
-	public SequenceFactory(FeatureMapping<T> mapping, VariableStore store, Set<String> reserved, FormatterMode mode) {
-		featureMapping = mapping;
-		variableStore   = store;
+	public SequenceFactory(FeatureMapping<T> mapping, Set<String> reserved,
+			FormatterMode mode) {
+		this.mapping = mapping;
 		reservedStrings = reserved;
-		formatterMode   = mode;
+		formatterMode = mode;
 
-		FeatureModel<T> model = featureMapping.getFeatureModel();
+		FeatureModel<T> model = this.mapping.getFeatureModel();
 		FeatureArray<T> sparseArray = new SparseFeatureArray<>(model);
 
-		//TODO: make these immutable
-		dotSegment = new StandardSegment<>(".", sparseArray, model);
-		borderSegment = new StandardSegment<>("#", sparseArray, model);
+		dotSegment = new ImmutableSegment<>(".", sparseArray);
+		borderSegment = new ImmutableSegment<>("#", sparseArray);
 
-		dotSequence    = new BasicSequence<>(dotSegment);
-		borderSequence = new BasicSequence<>(borderSegment);
+		dotSequence = new ImmutableSequence<>(dotSegment);
+		borderSequence = new ImmutableSequence<>(borderSegment);
 	}
 
 	public FormatterMode getFormatterMode() {
@@ -102,49 +103,13 @@ public class SequenceFactory<T> {
 	}
 
 	public Segment<T> getSegment(String string) {
-		if (!featureMapping.containsKey("#") && string.equals("#")) {
+		if (!mapping.containsKey("#") && string.equals("#")) {
 			return borderSegment;
 		} else if (string.equals(".")) {
 			return dotSegment;
 		} else {
-			return featureMapping.parseSegment(string);
+			return mapping.parseSegment(string);
 		}
-	}
-
-	public Lexicon<T> getLexiconFromSingleColumn(Iterable<String> list) {
-		Lexicon<T> lexicon = new Lexicon<>();
-		for (String entry : list) {
-			Sequence<T> sequence = getSequence(entry);
-			lexicon.add(sequence);
-		}
-		return lexicon;
-	}
-
-	public Lexicon<T> getLexiconFromSingleColumn(String... list) {
-		Lexicon<T> lexicon = new Lexicon<>();
-		for (String entry : list) {
-			Sequence<T> sequence = getSequence(entry);
-			lexicon.add(sequence);
-		}
-		return lexicon;
-	}
-
-	public Lexicon<T> getLexicon(Iterable<List<String>> lists) {
-		Lexicon<T> lexicon = new Lexicon<>();
-
-		for (Iterable<String> row : lists) {
-			List<Sequence<T>> lexRow = new ArrayList<>();
-			for (String entry : row) {
-				Sequence<T> sequence = getSequence(entry);
-				lexRow.add(sequence);
-			}
-			lexicon.add(lexRow);
-		}
-		return lexicon;
-	}
-
-	public Sequence<T> getNewSequence() {
-		return getSequence("");
 	}
 
 	public Sequence<T> getSequence(String word) {
@@ -153,76 +118,45 @@ public class SequenceFactory<T> {
 		} else if (word.equals(".")) {
 			return dotSequence;
 		} else {
-			Collection<String> keys = new ArrayList<>();
-			keys.addAll(variableStore.getKeys());
+			List<String> keys = new ArrayList<>();
 			keys.addAll(reservedStrings);
-
+			keys.addAll(mapping.getFeatureMap().keySet());
+			keys.sort(SequenceFactory::compare);
 			List<String> list = formatterMode.split(word, keys);
-			FeatureModel<T> featureModel = featureMapping.getFeatureModel();
-			List<Segment<T>> segments = list.stream().map(string -> {
-				if (string.startsWith("[") &&
-						featureMapping.getSpecification().size() > 0) {
-					return new StandardSegment<>(string,
-							featureModel.parseFeatureString(string), featureModel);
-				} else if (reservedStrings.contains(string)) {
-					return new StandardSegment<>(string,
-							new SparseFeatureArray<>(featureModel), featureModel);
-				} else {
-					return featureMapping.parseSegment(string);
-				}
-			}).collect(Collectors.toList());
+			FeatureModel<T> featureModel = mapping.getFeatureModel();
+			List<Segment<T>> segments = list.stream()
+					.map(this::toSegment)
+					.collect(Collectors.toList());
 			return new BasicSequence<>(segments, featureModel);
 		}
 	}
 
-	public boolean hasVariable(String label) {
-		return variableStore.contains(label);
+	private static int compare(CharSequence k1, CharSequence k2) {
+		return Integer.compare(k2.length(), k1.length());
 	}
 
-	public List<Sequence<T>> getVariableValues(String label) {
-		return variableStore.get(label).stream()
-				.map(this::getSequence)
-				.collect(Collectors.toList());
+	@NotNull
+	private Segment<T> toSegment(String string) {
+		FeatureModel<T> model = mapping.getFeatureModel();
+		return string.startsWith("[") && mapping.getSpecification().size() > 0
+		       ? new StandardSegment<>(string, model.parseFeatureString(string))
+		       : mapping.parseSegment(string);
 	}
 
 	public FeatureMapping<T> getFeatureMapping() {
-		return featureMapping;
-	}
-
-	public VariableStore getVariableStore() {
-		return variableStore;
-	}
-
-	public String getBestMatch(String tail) {
-
-		Iterable<String> keys = getSpecialStrings();
-		String bestMatch = "";
-		for (String key : keys) {
-			if (tail.startsWith(key) && bestMatch.length() < key.length()) {
-				bestMatch = key;
-			}
-		}
-		Matcher backReferenceMatcher = BACKREFERENCE_PATTERN.matcher(tail);
-		if (backReferenceMatcher.lookingAt()) {
-			bestMatch = backReferenceMatcher.group();
-		}
-		return bestMatch;
+		return mapping;
 	}
 
 	@Override
 	public String toString() {
-		return "SequenceFactory{" +
-		       ", featureMapping=" + featureMapping +
-		       ", variableStore=" + variableStore +
-		       ", formatterMode=" + formatterMode +
-		       ", reservedStrings=" + reservedStrings +
-		       '}';
+		return "SequenceFactory{mapping=" + mapping +
+				", formatterMode=" + formatterMode +
+				", reservedStrings=" + reservedStrings + '}';
 	}
 
 	public Collection<String> getSpecialStrings() {
 		Collection<String> keys = new ArrayList<>();
-		keys.addAll(variableStore.getKeys());
-//		keys.addAll(featureMapping); // TODO: 
+		keys.addAll(mapping.getSymbols());
 		keys.addAll(reservedStrings);
 		return keys;
 	}

@@ -229,7 +229,7 @@ class SparseFeatureArrayTest {
 
 	@Test
 	void getSpecification() {
-		assertEquals(model,array.getSpecification());
+		assertEquals(model.getSpecification(),array.getSpecification());
 	}
 	
 	@Test

@@ -19,8 +19,11 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -259,20 +262,20 @@ class RectangularTableTest {
 
 	@Test
 	void expand_2_1() {
-		table.expand(2, 1);
+		table.expand(2, 1, "");
 		assertEquals(6, table.rows());
 		assertEquals(4, table.columns());
 
-		assertEquals(Arrays.asList("0", "1", "2", null), table.getRow(0));
-		assertEquals(Arrays.asList("3", "4", "5", null), table.getRow(1));
-		assertEquals(Arrays.asList(null, null, null, null), table.getRow(5));
+		assertEquals(Arrays.asList("0", "1", "2", ""), table.getRow(0));
+		assertEquals(Arrays.asList("3", "4", "5", ""), table.getRow(1));
+		assertEquals(Arrays.asList("", "", "", ""), table.getRow(5));
 
-		assertEquals(Arrays.asList("0", "3", "6", "9", null, null), table.getColumn(0));
+		assertEquals(Arrays.asList("0", "3", "6", "9", "", ""), table.getColumn(0));
 	}
 
 	@Test
 	void expand_0_0() {
-		table.expand(0, 0);
+		table.expand(0, 0,"");
 		assertEquals(4, table.rows());
 		assertEquals(3, table.columns());
 	}
@@ -280,9 +283,9 @@ class RectangularTableTest {
 	@Test
 	void expand_IllegalArgument() {
 		assertThrows(IllegalArgumentException.class,
-				() -> table.expand(-1, 0));
+				() -> table.expand(-1, 0, ""));
 		assertThrows(IllegalArgumentException.class,
-				() -> table.expand(0, -1));
+				() -> table.expand(0, -1, ""));
 	}
 
 	@Test
@@ -416,5 +419,39 @@ class RectangularTableTest {
 		);
 	}
 
+	@Test
+	void testColumnIterator() {
+		Iterator<Collection<String>> iterator = table.columnIterator();
+		List<Collection<String>> received = new ArrayList<>();
+		while (iterator.hasNext()) {
+			received.add(iterator.next());
+		}
+		assertEquals(Arrays.asList("0", "3", "6", "9"), received.get(0));
+		assertEquals(Arrays.asList("1", "4", "7", "A"), received.get(1));
+		assertEquals(Arrays.asList("2", "5", "8", "B"), received.get(2));
+	}
 
+	@Test
+	void testRowIterator() {
+		Iterator<Collection<String>> iterator = table.rowIterator();
+		List<Collection<String>> received = new ArrayList<>();
+		while (iterator.hasNext()) {
+			received.add(iterator.next());
+		}
+		assertEquals(Arrays.asList("0", "1", "2"), received.get(0));
+		assertEquals(Arrays.asList("3", "4", "5"), received.get(1));
+		assertEquals(Arrays.asList("6", "7", "8"), received.get(2));
+		assertEquals(Arrays.asList("9", "A", "B"), received.get(3));
+	}
+
+	@Test
+	void testStream() {
+		List<String> list = table.stream().collect(Collectors.toList());
+		assertEquals(Arrays.asList(
+				"0", "1", "2",
+				"3", "4", "5",
+				"6", "7", "8",
+				"9", "A", "B"
+		), list);
+	}
 }

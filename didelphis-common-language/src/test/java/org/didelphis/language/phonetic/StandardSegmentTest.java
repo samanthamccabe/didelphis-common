@@ -22,7 +22,7 @@ import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.segments.StandardSegment;
-import org.didelphis.language.phonetic.sequences.SequenceTest;
+import org.didelphis.language.phonetic.sequences.BasicSequenceTest;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,12 +34,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Samantha Fiona Morrigan McCabe
- * Created: 2/14/2015
+ * @author Samantha Fiona McCabe
+ * Date: 2/14/2015
  */
 public class StandardSegmentTest {
 
-	private static final Logger LOG = LoggerFactory.getLogger(SequenceTest.class);
+	private static final Logger LOG = LoggerFactory.getLogger(BasicSequenceTest.class);
 
 	private static final SequenceFactory<Integer> FACTORY = loadFactory();
 

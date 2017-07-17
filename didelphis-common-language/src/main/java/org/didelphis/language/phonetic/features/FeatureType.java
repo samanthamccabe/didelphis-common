@@ -17,6 +17,8 @@ package org.didelphis.language.phonetic.features;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
+
 /**
  * Class {@code FeatureType}
  *
@@ -53,13 +55,18 @@ public interface FeatureType<T> {
 	@NotNull
 	T parseValue(@NotNull String string);
 
+	@NotNull
+	Collection<T> listUndefined();
+
 	/**
 	 * Checks if the given value is defined or undefined according to the this
 	 * feature model.
 	 * @param value the value to be checked
 	 * @return true iff the value is defined
 	 */
-	boolean isDefined(@Nullable T value);
+	default boolean isDefined(@Nullable T value) {
+		return !listUndefined().contains(value);
+	}
 
 	/**
 	 * Compares one object with the another object for order.  Returns a

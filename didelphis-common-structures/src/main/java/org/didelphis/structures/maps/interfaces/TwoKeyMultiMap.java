@@ -17,8 +17,8 @@ package org.didelphis.structures.maps.interfaces;
 import java.util.Collection;
 
 /**
- * Samantha Fiona Morrigan McCabe
- * Created: 4/10/2016
+ * @author Samantha Fiona McCabe
+ * Date: 4/10/2016
  */
 public interface TwoKeyMultiMap<T, U, V> extends TwoKeyMap<T, U, Collection<V>> {
 

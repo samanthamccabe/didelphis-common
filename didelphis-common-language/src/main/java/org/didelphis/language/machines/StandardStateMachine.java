@@ -38,8 +38,8 @@ import java.util.regex.Pattern;
 import static org.didelphis.utilities.Patterns.template;
 
 /**
- * Samantha Fiona Morrigan McCabe
- * Created: 3/7/2015
+ * @author Samantha Fiona McCabe
+ * Date: 3/7/2015
  */
 public final class StandardStateMachine<T> implements StateMachine<T> {
 

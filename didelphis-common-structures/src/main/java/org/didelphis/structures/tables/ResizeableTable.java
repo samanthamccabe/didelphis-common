@@ -19,8 +19,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 
 /**
- * Author: Samantha Fiona Morrigan McCabe
- * Created: 5/25/17
+ * @author Samantha Fiona McCabe
+ * Date: 5/25/17
  * <p>
  * A general interface for two-dimensional matrix data structures
  * @param <E> the type parameter
@@ -31,8 +31,9 @@ public interface ResizeableTable<E> extends Table<E> {
 	 * Expands the dimensions of the table by the amounts provided.
 	 * @param rows number of rows by which to expand the table; must be >= 0
 	 * @param cols number of columns by which to expand the table; must be >= 0
+	 * @param fillerValue
 	 */
-	void expand(int rows, int cols);
+	void expand(int rows, int cols, E fillerValue);
 
 	/**
 	 * Reduces the dimensions of the table by the amounts provided. Any values

@@ -14,17 +14,21 @@
 
 package org.didelphis.language.enums;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Created by samantha on 4/15/17.
  */
-@Disabled // TODO: 
+@SuppressWarnings("UnnecessaryUnicodeEscape")
 class FormatterModeTest {
+
 	@Test
 	void normalizeNone() {
 		String string = "string";
@@ -34,41 +38,62 @@ class FormatterModeTest {
 	@Test
 	void splitNone() {
 		String string = "string";
-		assertTrue(false);
+		assertEquals(
+				Arrays.asList("s","t","r","i","n","g"),
+				FormatterMode.NONE.split(string));
 	}
 
 	@Test
 	void normalizeDecomposition() {
-		assertTrue(false);
+		String string = "răs";
+		assertEquals("ra\u0306s", FormatterMode.DECOMPOSITION.normalize(string));
 	}
 
 	@Test
 	void splitDecomposition() {
-		assertTrue(false);
+		String string = "răs";
+		assertEquals(
+				Arrays.asList("r","a","\u0306","s"),
+				FormatterMode.DECOMPOSITION.split(string));
 	}
 
 	@Test
 	void normalizeComposition() {
-		assertTrue(false);
+		String string = "ra\u0306s";
+		assertEquals("răs", FormatterMode.COMPOSITION.normalize(string));
 	}
 
 	@Test
 	void splitComposition() {
-		assertTrue(false);
+		String string = "ra\u0306s";
+		assertEquals(
+				Arrays.asList("r","ă","s"),
+				FormatterMode.COMPOSITION.split(string));
 	}
 
 	@Test
 	void normalizeIntelligent() {
-		assertTrue(false);
+		String string = "răs";
+		assertEquals("ra\u0306s", FormatterMode.INTELLIGENT.normalize(string));
 	}
 
 	@Test
 	void splitIntelligent() {
-		assertTrue(false);
+		assertEquals(Arrays.asList("r","a\u0306","s"),
+				FormatterMode.INTELLIGENT.split("răs"));
+
+		assertEquals(Arrays.asList("tˀ","a\u0306","s"),
+				FormatterMode.INTELLIGENT.split("tˀăs"));
 	}
 	
 	@Test
 	void valueOf() {
+		assertSame(FormatterMode.INTELLIGENT, FormatterMode.valueOf("INTELLIGENT"));
+		assertSame(FormatterMode.DECOMPOSITION, FormatterMode.valueOf("DECOMPOSITION"));
+		assertSame(FormatterMode.COMPOSITION, FormatterMode.valueOf("COMPOSITION"));
+		assertSame(FormatterMode.NONE, FormatterMode.valueOf("NONE"));
+
+		assertThrows(IllegalArgumentException.class,()->FormatterMode.valueOf("foo"));
 	}
 
 }

@@ -29,9 +29,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * @author Samantha Fiona Morrigan McCabe
+ * @author Samantha Fiona McCabe
  */
-public final class BasicSequence<T> extends AbstractSequence<T> {
+public class BasicSequence<T> extends AbstractSequence<T> {
 
 	private static final Logger LOG = LoggerFactory
 			.getLogger(BasicSequence.class);
@@ -166,7 +166,7 @@ public final class BasicSequence<T> extends AbstractSequence<T> {
 		}
 		boolean matches = false;
 		int size = size();
-		if (size == sequence.size()) {
+		if (size >= sequence.size()) {
 			matches = true;
 			for (int i = 0; i < size && matches; i++) {
 				Segment<T> x = get(i);
@@ -240,7 +240,7 @@ public final class BasicSequence<T> extends AbstractSequence<T> {
 
 	@Override
 	public FeatureSpecification getSpecification() {
-		return featureModel;
+		return featureModel.getSpecification();
 	}
 
 	@Override
@@ -258,7 +258,7 @@ public final class BasicSequence<T> extends AbstractSequence<T> {
 	}
 
 	private void validateModelOrWarn(SpecificationBearer that) {
-		if (!featureModel.equals(that.getSpecification())) {
+		if (!getSpecification().equals(that.getSpecification())) {
 			LOG.warn("Attempting to check a {} with an incompatible model!" +
 							"" + "\n\t{}\t{}\n\t{}\t{}", that.getClass(), this, that,
 					featureModel, that.getSpecification());
@@ -266,7 +266,7 @@ public final class BasicSequence<T> extends AbstractSequence<T> {
 	}
 
 	private void validateModelOrFail(SpecificationBearer that) {
-		if (!featureModel.equals(that.getSpecification())) {
+		if (!getSpecification().equals(that.getSpecification())) {
 			throw new RuntimeException("Attempting to add " + that.getClass() +
 					" with an incompatible model!\n" + '\t' + this + '\t' +
 					featureModel + '\n' + '\t' + that + '\t' +

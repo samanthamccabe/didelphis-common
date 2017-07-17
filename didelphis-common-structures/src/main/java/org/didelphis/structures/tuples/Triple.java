@@ -23,8 +23,8 @@ import java.util.Objects;
  * In many contexts, use of a class like this might indicate poor design. As it
  * is, {@code Triple} is used to provide an {@code Iterator} for two-key maps.
  * 
- * Samantha Fiona Morrigan McCabe
- * Created: 4/10/2016
+ * @author Samantha Fiona McCabe
+ * Date: 4/10/2016
  */
 public class Triple<T, U, V> {
 

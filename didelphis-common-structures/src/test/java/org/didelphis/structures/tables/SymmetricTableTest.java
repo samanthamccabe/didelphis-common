@@ -19,8 +19,11 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -218,23 +221,23 @@ class SymmetricTableTest {
 
 	@Test
 	void expand_1_0() {
-		table.expand(1, 0);
-		assertEquals(Arrays.asList("A", "B", "D", "G", null), table.getRow(0));
-		assertEquals(Arrays.asList("B", "C", "E", "H", null), table.getRow(1));
-		assertEquals(Arrays.asList("D", "E", "F", "J", null), table.getRow(2));
-		assertEquals(Arrays.asList("G", "H", "J", "K", null), table.getRow(3));
-		assertEquals(Collections.nCopies(5, null), table.getRow(4));
+		table.expand(1, 0, "");
+		assertEquals(Arrays.asList("A", "B", "D", "G", ""), table.getRow(0));
+		assertEquals(Arrays.asList("B", "C", "E", "H", ""), table.getRow(1));
+		assertEquals(Arrays.asList("D", "E", "F", "J", ""), table.getRow(2));
+		assertEquals(Arrays.asList("G", "H", "J", "K", ""), table.getRow(3));
+		assertEquals(Collections.nCopies(5, ""), table.getRow(4));
 	}
 
 	@Test
 	void expand_1_1() {
-		table.expand(1, 1);
-		assertEquals(Arrays.asList("A", "B", "D", "G", null), table.getRow(0));
+		table.expand(1, 1, "");
+		assertEquals(Arrays.asList("A", "B", "D", "G", ""), table.getRow(0));
 	}
 
 	@Test
 	void expand_0_0() {
-		table.expand(0, 0); // NO OP
+		table.expand(0, 0,"" ); // NO OP
 		assertEquals(Arrays.asList("A", "B", "D", "G"), table.getRow(0));
 		assertEquals(Arrays.asList("B", "C", "E", "H"), table.getRow(1));
 		assertEquals(Arrays.asList("D", "E", "F", "J"), table.getRow(2));
@@ -243,8 +246,8 @@ class SymmetricTableTest {
 
 	@Test
 	void expand_2_0() {
-		table.expand(2, 0);
-		assertEquals(Arrays.asList("A", "B", "D", "G", null, null), table.getRow(0));
+		table.expand(2, 0, "");
+		assertEquals(Arrays.asList("A", "B", "D", "G", "", ""), table.getRow(0));
 	}
 
 	@Test
@@ -334,5 +337,39 @@ class SymmetricTableTest {
 	void removeColumn() {
 		assertEquals(Arrays.asList("D", "E", "F", "J"), table.removeColumn(2));
 		assertEquals(Arrays.asList("G", "H", "K"), table.getColumn(2));
+	}
+
+	@Test
+	void testColumnIterator() {
+		Iterator<Collection<String>> iterator = table.columnIterator();
+		List<Collection<String>> received = new ArrayList<>();
+		while (iterator.hasNext()) {
+			received.add(iterator.next());
+		}
+		assertEquals(Arrays.asList("A", "B", "D", "G"), received.get(0));
+		assertEquals(Arrays.asList("B", "C", "E", "H"), received.get(1));
+		assertEquals(Arrays.asList("D", "E", "F", "J"), received.get(2));
+		assertEquals(Arrays.asList("G", "H", "J", "K"), received.get(3));
+	}
+
+	@Test
+	void testRowIterator() {
+		Iterator<Collection<String>> iterator = table.rowIterator();
+		List<Collection<String>> received = new ArrayList<>();
+		while (iterator.hasNext()) {
+			received.add(iterator.next());
+		}
+		assertEquals(Arrays.asList("A", "B", "D", "G"), received.get(0));
+		assertEquals(Arrays.asList("B", "C", "E", "H"), received.get(1));
+		assertEquals(Arrays.asList("D", "E", "F", "J"), received.get(2));
+		assertEquals(Arrays.asList("G", "H", "J", "K"), received.get(3));
+	}
+
+	@Test
+	void testStream() {
+		List<String> list = table.stream().collect(Collectors.toList());
+		assertEquals(Arrays.asList(
+				"A", "B", "C", "D", "E", "F", "G", "H", "J", "K"
+		), list);
 	}
 }

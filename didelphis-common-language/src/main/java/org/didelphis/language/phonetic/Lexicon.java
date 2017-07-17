@@ -15,21 +15,52 @@
 package org.didelphis.language.phonetic;
 
 import org.didelphis.language.phonetic.sequences.Sequence;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 /**
- * Samantha Fiona Morrigan McCabe
- * Created: 1/17/2015
+ * @author Samantha Fiona McCabe
+ * Date: 1/17/2015
  */
 public class Lexicon<T> implements Iterable<List<Sequence<T>>> {
 
 	private final List<List<Sequence<T>>> lexicon;
 
+	public static <T> Lexicon<T> fromSingleColumn(SequenceFactory<T> factory,Iterable<String> list) {
+		Lexicon<T> lexicon = new Lexicon<>();
+		for (String entry : list) {
+			Sequence<T> sequence = factory.getSequence(entry);
+			lexicon.add(sequence);
+		}
+		return lexicon;
+	}
+
+	public static <T> Lexicon<T> fromRows(SequenceFactory<T> factory, Iterable<List<String>> lists) {
+		Lexicon<T> lexicon = new Lexicon<>();
+
+		for (Iterable<String> row : lists) {
+			List<Sequence<T>> lexRow = new ArrayList<>();
+			for (String entry : row) {
+				Sequence<T> sequence = factory.getSequence(entry);
+				lexRow.add(sequence);
+			}
+			lexicon.add(lexRow);
+		}
+		return lexicon;
+	}
+
 	public Lexicon() {
 		lexicon = new ArrayList<>();
+	}
+
+	public Lexicon(Iterable<List<Sequence<T>>> iterable) {
+		lexicon = new ArrayList<>();
+		for (List<Sequence<T>> sequences : iterable) {
+			lexicon.add(new ArrayList<>(sequences));
+		}
 	}
 
 	public void add(Sequence<T> sequence) {
@@ -67,7 +98,7 @@ public class Lexicon<T> implements Iterable<List<Sequence<T>>> {
 	public boolean equals(Object o) {
 		if (this == o) { return true;  }
 		if (o == null) { return false; }
-		if (getClass() != o.getClass()) { return false; }
+		if (!(o instanceof Lexicon)) { return false; }
 
 		Lexicon<?> lexicon1 = (Lexicon<?>) o;
 		return lexicon.equals(lexicon1.lexicon);
@@ -78,6 +109,7 @@ public class Lexicon<T> implements Iterable<List<Sequence<T>>> {
 		return 11 * lexicon.hashCode();
 	}
 
+	@NotNull
 	@Override
 	public Iterator<List<Sequence<T>>> iterator() {
 		return lexicon.iterator();

@@ -12,45 +12,58 @@
  = limitations under the License.
  =============================================================================*/
 
-package org.didelphis.language.machines;
+package org.didelphis.language.phonetic.segments;
 
-import org.didelphis.structures.contracts.Delegating;
-import org.didelphis.structures.maps.GeneralTwoKeyMultiMap;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
+import org.didelphis.language.phonetic.features.FeatureArray;
+import org.jetbrains.annotations.NotNull;
 
 /**
+ * Class {@code ImmutableSegment}
+ *
  * @author Samantha Fiona McCabe
- * Date: 1/28/2016
+ * @since 0.1.0 Date: 2017-06-21
  */
-public class Graph<T> extends GeneralTwoKeyMultiMap<String, T, String> {
-	
-	private static final int HASH_ID = 0xa857a183;
-	
-	public Graph() {
+public class ImmutableSegment<T> extends StandardSegment<T> {
+
+	/**
+	 * Copy constructor -
+	 *
+	 * @param segment the {@link Segment} to be copied
+	 */
+	public ImmutableSegment(Segment<T> segment) {
+		super(segment);
 	}
 
-	public Graph(Delegating<Map<String, Map<T, Collection<String>>>> graph) {
-		super(graph, HashSet.class);
+	/**
+	 * Standard constructor -
+	 *
+	 * @param symbol the phonetic symbol representing this segment
+	 * @param featureArray the feature array representing this segment
+	 */
+	public ImmutableSegment(String symbol, FeatureArray<T> featureArray) {
+		super(symbol, featureArray);
+	}
+
+	@Override
+	public boolean alter(@NotNull Segment<T> segment) {
+		return false;
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (!(o instanceof Graph)) return false;
-		Graph<?> graph = (Graph<?>) o;
-		return super.equals(graph);
+		if (!(o instanceof ImmutableSegment)) return false;
+		return super.equals(o);
 	}
 
 	@Override
 	public int hashCode() {
-		return ~(HASH_ID * super.hashCode() >> 2);
+		return 31 * 0x3f0ab04 * super.hashCode();
 	}
+
 
 	@Override
 	public String toString() {
-		return "Graph{" + super.toString() + '}';
+		return super.toString() + "(immutable)";
 	}
 }

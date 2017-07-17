@@ -39,8 +39,8 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * Samantha Fiona Morrigan McCabe
- * Created: 3/14/2015
+ * @author Samantha Fiona McCabe
+ * Date: 3/14/2015
  */
 public class StandardStateMachineTest {
 

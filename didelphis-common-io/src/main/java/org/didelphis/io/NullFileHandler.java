@@ -15,15 +15,15 @@
 package org.didelphis.io;
 
 /**
- * Author: Samantha Fiona Morrigan McCabe
- * Created: 10/13/2014
+ * @author Samantha Fiona McCabe
+ * Date: 10/13/2014
  */
 public enum NullFileHandler implements FileHandler {
 	INSTANCE;
 
 	@Override
 	public CharSequence read(String path) {
-		return null;
+		return "";
 	}
 
 	@Override
