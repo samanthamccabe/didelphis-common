@@ -14,7 +14,7 @@
 
 package org.didelphis.language.phonetic;
 
-import org.didelphis.language.enums.FormatterMode;
+import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.SparseFeatureArray;
 import org.didelphis.language.phonetic.model.FeatureMapping;
@@ -86,23 +86,28 @@ public class SequenceFactory<T> {
 		reservedStrings.add(string);
 	}
 
+	@NotNull
 	public Segment<T> getDotSegment() {
 		return dotSegment;
 	}
 
+	@NotNull
 	public Segment<T> getBorderSegment() {
 		return borderSegment;
 	}
 
+	@NotNull
 	public Sequence<T> getDotSequence() {
 		return dotSequence;
 	}
 
+	@NotNull
 	public Sequence<T> getBorderSequence() {
 		return borderSequence;
 	}
 
-	public Segment<T> getSegment(String string) {
+	@NotNull
+	public Segment<T> getSegment(@NotNull String string) {
 		if (!mapping.containsKey("#") && string.equals("#")) {
 			return borderSegment;
 		} else if (string.equals(".")) {
@@ -112,7 +117,8 @@ public class SequenceFactory<T> {
 		}
 	}
 
-	public Sequence<T> getSequence(String word) {
+	@NotNull
+	public Sequence<T> getSequence(@NotNull String word) {
 		if (word.equals("#")) {
 			return borderSequence;
 		} else if (word.equals(".")) {
@@ -131,12 +137,12 @@ public class SequenceFactory<T> {
 		}
 	}
 
-	private static int compare(CharSequence k1, CharSequence k2) {
+	private static int compare(@NotNull CharSequence k1, @NotNull CharSequence k2) {
 		return Integer.compare(k2.length(), k1.length());
 	}
 
 	@NotNull
-	private Segment<T> toSegment(String string) {
+	private Segment<T> toSegment(@NotNull String string) {
 		FeatureModel<T> model = mapping.getFeatureModel();
 		return string.startsWith("[") && mapping.getSpecification().size() > 0
 		       ? new StandardSegment<>(string, model.parseFeatureString(string))
@@ -147,6 +153,7 @@ public class SequenceFactory<T> {
 		return mapping;
 	}
 
+	@NotNull
 	@Override
 	public String toString() {
 		return "SequenceFactory{mapping=" + mapping +
@@ -154,6 +161,7 @@ public class SequenceFactory<T> {
 				", reservedStrings=" + reservedStrings + '}';
 	}
 
+	@NotNull
 	public Collection<String> getSpecialStrings() {
 		Collection<String> keys = new ArrayList<>();
 		keys.addAll(mapping.getSymbols());

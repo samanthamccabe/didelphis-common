@@ -16,6 +16,8 @@ package org.didelphis.language.phonetic.features;
 
 import org.didelphis.language.phonetic.model.Constraint;
 import org.didelphis.language.phonetic.model.FeatureModel;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,7 +37,7 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	 * @param value
 	 * @param featureModel
 	 */
-	public StandardFeatureArray(T value, FeatureModel<T> featureModel) {
+	public StandardFeatureArray(T value, @NotNull FeatureModel<T> featureModel) {
 		super(featureModel);
 		int size = getSpecification().size();
 		features = new ArrayList<>(size);
@@ -48,7 +50,7 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	 * @param list
 	 * @param featureModel
 	 */
-	public StandardFeatureArray(List<T> list, FeatureModel<T> featureModel) {
+	public StandardFeatureArray(@NotNull List<T> list, @NotNull FeatureModel<T> featureModel) {
 		super(featureModel);
 		features = new ArrayList<>(list);
 	}
@@ -56,7 +58,7 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	/**
 	 * @param array
 	 */
-	public StandardFeatureArray(StandardFeatureArray<T> array) {
+	public StandardFeatureArray(@NotNull StandardFeatureArray<T> array) {
 		super(array.getFeatureModel());
 		features = new ArrayList<>(array.features);
 	}
@@ -64,7 +66,7 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	/**
 	 * @param array
 	 */
-	public StandardFeatureArray(FeatureArray<T> array) {
+	public StandardFeatureArray(@NotNull FeatureArray<T> array) {
 		super(array.getFeatureModel());
 		features = new ArrayList<>(size());
 		for (int i = 0; i < size(); i++) {
@@ -84,7 +86,7 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	}
 
 	@Override
-	public boolean matches(FeatureArray<T> array) {
+	public boolean matches(@NotNull FeatureArray<T> array) {
 		if (size() != array.size()) {
 			throw new IllegalArgumentException(
 					"Attempting to compare arrays of different lengths");
@@ -101,7 +103,7 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	}
 
 	@Override
-	public boolean alter(FeatureArray<T> array) {
+	public boolean alter(@NotNull FeatureArray<T> array) {
 		if (size() != array.size()) {
 			throw new IllegalArgumentException(
 					"Attempting to compare arrays" + " of different lengths");
@@ -127,7 +129,7 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(@Nullable Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		return super.equals(o);

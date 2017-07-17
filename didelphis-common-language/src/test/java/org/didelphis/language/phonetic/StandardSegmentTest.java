@@ -16,7 +16,7 @@ package org.didelphis.language.phonetic;
 
 import org.didelphis.io.ClassPathFileHandler;
 import org.didelphis.io.FileHandler;
-import org.didelphis.language.enums.FormatterMode;
+import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
@@ -37,11 +37,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author Samantha Fiona McCabe
  * Date: 2/14/2015
  */
-public class StandardSegmentTest {
+public class StandardSegmentTest extends PhoneticTestBase {
 
 	private static final Logger LOG = LoggerFactory.getLogger(BasicSequenceTest.class);
-
-	private static final SequenceFactory<Integer> FACTORY = loadFactory();
 
 	private static final Pattern INFINITY_PATTERN = Pattern.compile("([-+])?Infinity");
 	private static final Pattern DECIMAL_PATTERN = Pattern.compile("([^\\-])(\\d\\.\\d)");
@@ -49,60 +47,60 @@ public class StandardSegmentTest {
 	@Test
 	void testUnderspecifiedSegment01() {
 		String string = "[-continuant, +release]";
-		Segment<Integer> received = FACTORY.getSegment(string);
-		Segment<Integer> expected = FACTORY.getSegment("[-continuant, +release]");
+		Segment<Integer> received = factory.getSegment(string);
+		Segment<Integer> expected = factory.getSegment("[-continuant, +release]");
 		assertEquals(expected, received);
 	}
 
 	@Test
 	void testSelectorAliasHigh() {
-		Segment<Integer> alias = FACTORY.getSegment("[high]");
-		Segment<Integer> segment = FACTORY.getSegment("[+high]");
+		Segment<Integer> alias = factory.getSegment("[high]");
+		Segment<Integer> segment = factory.getSegment("[+high]");
 
 		assertTrue(alias.matches(segment));
 	}
 
 	@Test
 	void testSelectorAliasMid() {
-		Segment<Integer> alias = FACTORY.getSegment("[mid]");
-		Segment<Integer> segment = FACTORY.getSegment("[0:high]");
+		Segment<Integer> alias = factory.getSegment("[mid]");
+		Segment<Integer> segment = factory.getSegment("[0:high]");
 
 		assertTrue(alias.matches(segment));
 	}
 
 	@Test
 	void testSelectorAliasLow() {
-		Segment<Integer> alias = FACTORY.getSegment("[low]");
-		Segment<Integer> segment = FACTORY.getSegment("[-high]");
+		Segment<Integer> alias = factory.getSegment("[low]");
+		Segment<Integer> segment = factory.getSegment("[-high]");
 
 		assertTrue(alias.matches(segment));
 	}
 
 	@Test
 	void testSelectorAliasRetroflex() {
-		Segment<Integer> alias = FACTORY.getSegment("[retroflex]");
-		Segment<Integer> segment = FACTORY.getSegment("[4:coronal, -distributed]");
+		Segment<Integer> alias = factory.getSegment("[retroflex]");
+		Segment<Integer> segment = factory.getSegment("[4:coronal, -distributed]");
 
 		assertTrue(alias.matches(segment));
 	}
 
 	@Test
 	void testSelectorAliasPalatal() {
-		Segment<Integer> alias = FACTORY.getSegment("[palatal]");
-		Segment<Integer> segment = FACTORY.getSegment("[4:coronal, +distributed]");
+		Segment<Integer> alias = factory.getSegment("[palatal]");
+		Segment<Integer> segment = factory.getSegment("[4:coronal, +distributed]");
 
 		assertTrue(alias.matches(segment));
 	}
 
 	@Test
 	void testMatch01() {
-		Segment<Integer> segmentA = FACTORY.getSegment("a");
+		Segment<Integer> segmentA = factory.getSegment("a");
 
-		Segment<Integer> segmentP = FACTORY.getSegment("p");
-		Segment<Integer> segmentT = FACTORY.getSegment("t");
-		Segment<Integer> segmentK = FACTORY.getSegment("k");
+		Segment<Integer> segmentP = factory.getSegment("p");
+		Segment<Integer> segmentT = factory.getSegment("t");
+		Segment<Integer> segmentK = factory.getSegment("k");
 
-		Segment<Integer> received = FACTORY.getSegment("[-continuant, -son]");
+		Segment<Integer> received = factory.getSegment("[-continuant, -son]");
 
 		assertTrue(segmentP.matches(received));
 		assertTrue(segmentT.matches(received));
@@ -118,8 +116,8 @@ public class StandardSegmentTest {
 
 	@Test
 	void testMatch02() {
-		Segment<Integer> a = FACTORY.getSegment("a");
-		Segment<Integer> n = FACTORY.getSegment("n");
+		Segment<Integer> a = factory.getSegment("a");
+		Segment<Integer> n = factory.getSegment("n");
 
 		assertFalse(a.matches(n), "a matches n");
 		assertFalse(n.matches(a), "n matches a");
@@ -127,10 +125,10 @@ public class StandardSegmentTest {
 
 	@Test
 	void testMatch03() {
-		Segment<Integer> segment = FACTORY.getSegment(
+		Segment<Integer> segment = factory.getSegment(
 				"[-con, -hgh, +frn, -atr, +voice]");
 
-		Segment<Integer> a = FACTORY.getSegment("a");
+		Segment<Integer> a = factory.getSegment("a");
 
 		assertTrue(a.matches(segment));
 		assertTrue(segment.matches(a));
@@ -138,8 +136,8 @@ public class StandardSegmentTest {
 
 	@Test
 	void testMatch04() {
-		Segment<Integer> x = FACTORY.getSegment("x");
-		Segment<Integer> e = FACTORY.getSegment("e");
+		Segment<Integer> x = factory.getSegment("x");
+		Segment<Integer> e = factory.getSegment("e");
 
 		assertFalse(e.matches(x));
 		assertFalse(x.matches(e));
@@ -147,23 +145,23 @@ public class StandardSegmentTest {
 
 	@Test
 	void testOrdering01() {
-		Segment<Integer> p = FACTORY.getSegment("p");
-		Segment<Integer> b = FACTORY.getSegment("b");
+		Segment<Integer> p = factory.getSegment("p");
+		Segment<Integer> b = factory.getSegment("b");
 
 		assertEquals(-1, p.compareTo(b));
 	}
 
 	@Test
 	void testOrdering02() {
-		Segment<Integer> p = FACTORY.getSegment("p");
-		Segment<Integer> t = FACTORY.getSegment("t");
+		Segment<Integer> p = factory.getSegment("p");
+		Segment<Integer> t = factory.getSegment("t");
 
 		assertEquals(1, p.compareTo(t));
 	}
 
 	@Test
 	void testConstraintLateralToNasal01() {
-		Segment<Integer> segment = FACTORY.getSegment("l");
+		Segment<Integer> segment = factory.getSegment("l");
 
 		FeatureArray<Integer> features = segment.getFeatures();
 		features.set(6, 1);
@@ -176,17 +174,17 @@ public class StandardSegmentTest {
 
 	@Test
 	void testConstraintLateralToNasal02() {
-		Segment<Integer> segment = FACTORY.getSegment("l");
+		Segment<Integer> segment = factory.getSegment("l");
 
-		Segment<Integer> pNas = FACTORY.getSegment("[+nas]");
-		Segment<Integer> nLat = FACTORY.getSegment("[-lat]");
+		Segment<Integer> pNas = factory.getSegment("[+nas]");
+		Segment<Integer> nLat = factory.getSegment("[-lat]");
 
 		assertMatch(segment, pNas, nLat);
 	}
 
 	@Test
 	void testConstraintNasalToLateral01() {
-		Segment<Integer> segment = FACTORY.getSegment("n");
+		Segment<Integer> segment = factory.getSegment("n");
 
 		FeatureArray<Integer> features = segment.getFeatures();
 		features.set(5, 1);
@@ -199,70 +197,70 @@ public class StandardSegmentTest {
 
 	@Test
 	void testConstraintNasalToLateral02() {
-		Segment<Integer> segment = FACTORY.getSegment("n");
+		Segment<Integer> segment = factory.getSegment("n");
 
-		Segment<Integer> pLat = FACTORY.getSegment("[+lat]"); // i = 5
-		Segment<Integer> nNas = FACTORY.getSegment("[-nas]"); // i = 6
+		Segment<Integer> pLat = factory.getSegment("[+lat]"); // i = 5
+		Segment<Integer> nNas = factory.getSegment("[-nas]"); // i = 6
 
 		assertMatch(segment, pLat, nNas);
 	}
 
 	@Test
 	void testConstaintSonorant() {
-		Segment<Integer> segment = FACTORY.getSegment("i");
+		Segment<Integer> segment = factory.getSegment("i");
 
-		Segment<Integer> nSon = FACTORY.getSegment("[-son]"); // i = 1
-		Segment<Integer> pCon = FACTORY.getSegment("[+con]"); // i = 0
+		Segment<Integer> nSon = factory.getSegment("[-son]"); // i = 1
+		Segment<Integer> pCon = factory.getSegment("[+con]"); // i = 0
 
 		assertMatch(segment, nSon, pCon);
 	}
 
 	@Test
 	void testConstraintConsonant() {
-		Segment<Integer> segment = FACTORY.getSegment("s");
+		Segment<Integer> segment = factory.getSegment("s");
 
-		Segment<Integer> nCon = FACTORY.getSegment("[-con]"); // i = 0
-		Segment<Integer> pSon = FACTORY.getSegment("[+son]"); // i = 1
+		Segment<Integer> nCon = factory.getSegment("[-con]"); // i = 0
+		Segment<Integer> pSon = factory.getSegment("[+son]"); // i = 1
 
 		assertMatch(segment, nCon, pSon);
 	}
 
 	@Test
 	void testConstraintConsonantalRelease() {
-		Segment<Integer> segment = FACTORY.getSegment("kx");
+		Segment<Integer> segment = factory.getSegment("kx");
 
-		Segment<Integer> nCon = FACTORY.getSegment("[-con]"); // i = 0
-		Segment<Integer> nRel = FACTORY.getSegment("[-rel]"); // i = 1
+		Segment<Integer> nCon = factory.getSegment("[-con]"); // i = 0
+		Segment<Integer> nRel = factory.getSegment("[-rel]"); // i = 1
 
 		assertMatch(segment, nCon, nRel);
 	}
 
 	@Test
 	void testConstraintContinuantRelease() {
-		Segment<Integer> segment = FACTORY.getSegment("kx");
+		Segment<Integer> segment = factory.getSegment("kx");
 
-		Segment<Integer> nCnt = FACTORY.getSegment("[+cnt]"); // i = 0
-		Segment<Integer> nRel = FACTORY.getSegment("[-rel]"); // i = 1
+		Segment<Integer> nCnt = factory.getSegment("[+cnt]"); // i = 0
+		Segment<Integer> nRel = factory.getSegment("[-rel]"); // i = 1
 
 		assertMatch(segment, nCnt, nRel);
 	}
 
 	@Test
 	void testConstraintSonorantRelease() {
-		Segment<Integer> segment = FACTORY.getSegment("ts");
+		Segment<Integer> segment = factory.getSegment("ts");
 
-		Segment<Integer> nCnt = FACTORY.getSegment("[+son]"); // i = 0
-		Segment<Integer> nRel = FACTORY.getSegment("[-rel]"); // i = 1
+		Segment<Integer> nCnt = factory.getSegment("[+son]"); // i = 0
+		Segment<Integer> nRel = factory.getSegment("[-rel]"); // i = 1
 
 		assertMatch(segment, nCnt, nRel);
 	}
 
 	@Test
 	void testConstraintReleaseConsonantal() {
-		Segment<Integer> segment = FACTORY.getSegment("r");
+		Segment<Integer> segment = factory.getSegment("r");
 
-		Segment<Integer> pRel = FACTORY.getSegment("[+rel]"); // i = 0
-		Segment<Integer> pCon = FACTORY.getSegment("[+con]"); // i = 1
+		Segment<Integer> pRel = factory.getSegment("[+rel]"); // i = 0
+		Segment<Integer> pCon = factory.getSegment("[+con]"); // i = 1
 
 		assertMatch(segment, pRel, pCon);
 	}

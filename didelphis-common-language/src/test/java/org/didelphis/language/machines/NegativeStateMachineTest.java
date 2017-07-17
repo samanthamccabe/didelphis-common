@@ -15,8 +15,7 @@
 package org.didelphis.language.machines;
 
 import org.didelphis.io.ClassPathFileHandler;
-import org.didelphis.io.FileHandler;
-import org.didelphis.language.enums.FormatterMode;
+import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.machines.interfaces.MachineParser;
 import org.didelphis.language.machines.interfaces.StateMachine;
 import org.didelphis.language.machines.sequences.SequenceMatcher;
@@ -39,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.didelphis.language.enums.ParseDirection.FORWARD;
+import static org.didelphis.language.parsing.ParseDirection.FORWARD;
 
 /**
  * @author Samantha Fiona McCabe

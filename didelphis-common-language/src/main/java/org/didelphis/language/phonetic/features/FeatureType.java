@@ -90,4 +90,6 @@ public interface FeatureType<T> {
 	 * @return the absolute value of the difference as a {@code double}
 	 */
 	double difference(@Nullable T v1,@Nullable T v2);
+
+
 }

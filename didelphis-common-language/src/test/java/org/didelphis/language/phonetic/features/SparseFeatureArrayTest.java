@@ -15,6 +15,7 @@
 package org.didelphis.language.phonetic.features;
 
 import org.didelphis.io.ClassPathFileHandler;
+import org.didelphis.language.phonetic.PhoneticTestBase;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
 import org.junit.jupiter.api.BeforeAll;
@@ -37,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Created by samantha on 4/15/17.
  */
-class SparseFeatureArrayTest {
+class SparseFeatureArrayTest extends PhoneticTestBase {
 	
 	private static FeatureModel<Integer> empty;
 	private static FeatureModel<Integer> model;
@@ -45,12 +46,7 @@ class SparseFeatureArrayTest {
 
 	@BeforeAll
 	static void initModel() {
-
-		model = new FeatureModelLoader<>(
-				IntegerFeature.INSTANCE,
-				ClassPathFileHandler.INSTANCE,
-				"AT_hybrid.model").getFeatureModel();
-		
+		model = loader.getFeatureModel();
 		empty = new FeatureModelLoader<>(
 				IntegerFeature.INSTANCE,
 				ClassPathFileHandler.INSTANCE,
@@ -64,9 +60,9 @@ class SparseFeatureArrayTest {
 
 	@Test
 	void testListConstructorEmpty() {
-		SparseFeatureArray<Integer> empty = new SparseFeatureArray<>(new ArrayList<>(), model);
-		
-		assertEquals(array, empty);
+		List<Integer> array = new ArrayList<>();
+		FeatureArray<Integer> empty = new SparseFeatureArray<>(array, model);
+		assertEquals(this.array, empty);
 	}
 
 	@Test
@@ -97,16 +93,12 @@ class SparseFeatureArrayTest {
 
 	@Test
 	void getOutOfBounds() {
-		assertThrows(
-				IndexOutOfBoundsException.class,
-				() -> array.get(21));
+		assertThrows(IndexOutOfBoundsException.class, () -> array.get(21));
 	}
 
 	@Test
 	void setOutOfBounds() {
-		assertThrows(
-				IndexOutOfBoundsException.class, 
-				() -> array.set(21, 0));
+		assertThrows(IndexOutOfBoundsException.class, () -> array.set(21, 0));
 	}
 	
 	@Test
@@ -132,23 +124,19 @@ class SparseFeatureArrayTest {
 
 	@Test
 	void alterIllegalArgument() {
-		assertThrows(
-				IllegalArgumentException.class, 
+		assertThrows(IllegalArgumentException.class,
 				() -> array.alter(new SparseFeatureArray<>(empty)));
 	}
 
 	@Test
 	void matchesIllegalArgument() {
-		assertThrows(
-				IllegalArgumentException.class,
+		assertThrows(IllegalArgumentException.class,
 				() -> array.matches(new SparseFeatureArray<>(empty)));
 	}
 
-
 	@Test
 	void compareIllegalArgument() {
-		assertThrows(
-				IllegalArgumentException.class,
+		assertThrows(IllegalArgumentException.class,
 				() -> array.compareTo(new SparseFeatureArray<>(empty)));
 	}
 
@@ -169,9 +157,9 @@ class SparseFeatureArrayTest {
 
 	@Test
 	void compareTo() {
-		SparseFeatureArray<Integer> array1 = new SparseFeatureArray<>(array);
-		SparseFeatureArray<Integer> array2 = new SparseFeatureArray<>(array);
-		SparseFeatureArray<Integer> array3 = new SparseFeatureArray<>(array);
+		FeatureArray<Integer> array1 = new SparseFeatureArray<>(array);
+		FeatureArray<Integer> array2 = new SparseFeatureArray<>(array);
+		FeatureArray<Integer> array3 = new SparseFeatureArray<>(array);
 		
 		array1.set(0, 0);
 		array2.set(0, 0);
@@ -197,7 +185,7 @@ class SparseFeatureArrayTest {
 		assertEquals(1, array3.compareTo(array2));
 		assertEquals(1, array3.compareTo(array1));
 
-		SparseFeatureArray<Integer> array4 = new SparseFeatureArray<>(array3);
+		FeatureArray<Integer> array4 = new SparseFeatureArray<>(array3);
 		assertEquals(0, array3.compareTo(array4));
 		assertEquals(0, array4.compareTo(array3));
 	}
@@ -213,8 +201,8 @@ class SparseFeatureArrayTest {
 
 	@Test
 	void equals() {
-		SparseFeatureArray<Integer> array1 = new SparseFeatureArray<>(array);
-		SparseFeatureArray<Integer> array2 = new SparseFeatureArray<>(array);
+		FeatureArray<Integer> array1 = new SparseFeatureArray<>(array);
+		FeatureArray<Integer> array2 = new SparseFeatureArray<>(array);
 	
 		array2.set(4, 1);
 		
@@ -235,7 +223,7 @@ class SparseFeatureArrayTest {
 	@Test
 	void testHashCode() {
 		assertEquals(array.hashCode(), new SparseFeatureArray<>(array).hashCode());
-		SparseFeatureArray<Integer> array1 = new SparseFeatureArray<>(array);
+		FeatureArray<Integer> array1 = new SparseFeatureArray<>(array);
 		array1.set(0, 0);
 		assertNotEquals(array.hashCode(), array1.hashCode());
 		assertNotEquals(array.hashCode(), new SparseFeatureArray<>(empty));

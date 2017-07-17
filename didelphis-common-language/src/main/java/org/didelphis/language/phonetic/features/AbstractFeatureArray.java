@@ -30,7 +30,7 @@ public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
 	private final FeatureSpecification specification;
 	private final FeatureModel<T> featureModel;
 
-	protected AbstractFeatureArray(FeatureModel<T> featureModel) {
+	protected AbstractFeatureArray(@NotNull FeatureModel<T> featureModel) {
 		this.featureModel = featureModel;
 		this.specification = featureModel.getSpecification();
 	}
@@ -76,6 +76,7 @@ public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
 		return specification.size();
 	}
 
+	@NotNull
 	@Override
 	public FeatureModel<T> getFeatureModel() {
 		return featureModel;

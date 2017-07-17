@@ -15,6 +15,7 @@
 package org.didelphis.language.phonetic.features;
 
 import org.didelphis.io.ClassPathFileHandler;
+import org.didelphis.language.phonetic.PhoneticTestBase;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
 import org.junit.jupiter.api.BeforeAll;
@@ -32,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Created by samantha on 4/16/17.
  */
-class StandardFeatureArrayTest {
+class StandardFeatureArrayTest extends PhoneticTestBase {
 
 	private static final Integer NULL = null;
 	private static FeatureModel<Integer> empty;
@@ -42,10 +43,7 @@ class StandardFeatureArrayTest {
 	
 	@BeforeAll
 	static void initModel() {
-		model = new FeatureModelLoader<>(
-				IntegerFeature.INSTANCE,
-				ClassPathFileHandler.INSTANCE,
-				"AT_hybrid.model").getFeatureModel();
+		model = loader.getFeatureModel();
 		empty = new FeatureModelLoader<>(
 				IntegerFeature.INSTANCE,
 				ClassPathFileHandler.INSTANCE,

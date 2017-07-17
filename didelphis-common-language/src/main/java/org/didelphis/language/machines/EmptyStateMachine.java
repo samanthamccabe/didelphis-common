@@ -17,6 +17,7 @@ package org.didelphis.language.machines;
 import org.didelphis.language.machines.interfaces.MachineMatcher;
 import org.didelphis.language.machines.interfaces.MachineParser;
 import org.didelphis.language.machines.interfaces.StateMachine;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -34,12 +35,14 @@ public final class EmptyStateMachine<T> implements StateMachine<T>{
 	private static final EmptyStateMachine<?> MACHINE = new EmptyStateMachine<>();
 	private static final Map<String, ? extends Graph<?>> EMPTY_MAP = Collections.emptyMap();
 
+	@NotNull
 	public static <T> EmptyStateMachine<T> getInstance() {
 		return (EmptyStateMachine<T>) MACHINE;
 	}
 
 	private EmptyStateMachine(){}
 
+	@NotNull
 	@Override
 	public MachineParser<T> getParser() {
 		throw new UnsupportedOperationException();
@@ -55,6 +58,7 @@ public final class EmptyStateMachine<T> implements StateMachine<T>{
 		return "Empty State Machine";
 	}
 
+	@NotNull
 	@Override
 	public Map<String, Graph<T>> getGraphs() {
 		return (Map<String, Graph<T>>) EMPTY_MAP;

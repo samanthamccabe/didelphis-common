@@ -12,32 +12,14 @@
  = limitations under the License.
  =============================================================================*/
 
-package org.didelphis.language.exceptions;
+package org.didelphis.language.parsing;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
- *  @author Samantha Fiona McCabe
- * Date: 8/25/2014
+ * Created by samantha on 2/6/17.
  */
-public class ParseException extends RuntimeException {
-
-	private final String data;
-
-	public ParseException(String message, String data) {
-		super(message);
-		this.data = data;
-	}
-	
-	public ParseException(String message, String data, Throwable cause) {
-		super(message, cause);
-		this.data = data;
-	}
-	
-	@Override
-	public String toString() {
-		return super.toString() + ' ' + data;
-	}
-	
-	public String getData() {
-		return data;
-	}
+public interface Formatter {
+	@NotNull
+	String normalize(String string);
 }

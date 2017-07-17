@@ -12,21 +12,35 @@
  = limitations under the License.
  =============================================================================*/
 
-package org.didelphis.structures.contracts;
+package org.didelphis.language.parsing;
 
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Indicates that a data structure delegates some functionality to an inner
- * collection object and guarantees the structure is available through the API.
- * @param <T> the type of the delegate object.
+ *  @author Samantha Fiona McCabe
+ * Date: 8/25/2014
  */
-public interface Delegating<T> {
+public class ParseException extends RuntimeException {
 
-	/**
-	 * Provides access to the delegate used by the implementing class
-	 * @return the delegate object; this must not return null.
-	 */
+	private final String data;
+
+	public ParseException(String message, String data) {
+		super(message);
+		this.data = data;
+	}
+	
+	public ParseException(String message, String data, Throwable cause) {
+		super(message, cause);
+		this.data = data;
+	}
+	
 	@NotNull
-	T getDelegate();
+	@Override
+	public String toString() {
+		return super.toString() + ' ' + data;
+	}
+	
+	public String getData() {
+		return data;
+	}
 }

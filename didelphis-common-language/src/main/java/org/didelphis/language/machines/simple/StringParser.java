@@ -17,6 +17,7 @@ package org.didelphis.language.machines.simple;
 import org.didelphis.language.machines.Expression;
 import org.didelphis.language.machines.interfaces.MachineParser;
 import org.didelphis.utilities.Split;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,6 +38,7 @@ public final class StringParser implements MachineParser<String> {
 
 	private static final StringParser INSTANCE = new StringParser();
 	
+	@NotNull
 	public static StringParser getInstance() {
 		return INSTANCE;
 	}
@@ -48,8 +50,9 @@ public final class StringParser implements MachineParser<String> {
 		return null;
 	}
 
+	@NotNull
 	@Override
-	public List<Expression> parseExpression(String expression) {
+	public List<Expression> parseExpression(@NotNull String expression) {
 		List<Expression> list = new ArrayList<>();
 		if (!expression.isEmpty()) {
 			List<String> symbols = Split.splitToList(expression, SPECIALS.keySet());
@@ -93,11 +96,12 @@ public final class StringParser implements MachineParser<String> {
 	}
 
 	@Override
-	public int lengthOf(String s) {
+	public int lengthOf(@NotNull String s) {
 		return s.length();
 	}
 
-	private static Expression updateExpressionBuffer(Collection<Expression> list, Expression buffer) {
+	@NotNull
+	private static Expression updateExpressionBuffer(@NotNull Collection<Expression> list, @NotNull Expression buffer) {
 		// Add the contents of buffer if not empty
 		if (buffer.isEmpty()) {
 			return buffer;

@@ -14,6 +14,9 @@
 
 package org.didelphis.utilities;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +37,9 @@ public final class Split {
 		return Arrays.asList(NEWLINE.split(lines));
 	}
 
-	public static List<String> splitToList(String string, Iterable<String> special) {
+	@NotNull
+	public static List<String> splitToList(
+			@NotNull String string, @Nullable Iterable<String> special) {
 		List<String> strings = new ArrayList<>();
 		for (int i = 0; i < string.length(); i++) {
 
@@ -54,11 +59,11 @@ public final class Split {
 					}
 				}
 
-				if (!matchedSpecial.isEmpty()) {
+				if (matchedSpecial.isEmpty()) {
+					strings.add(string.substring(i, i + 1));
+				} else {
 					strings.add(matchedSpecial);
 					i += matchedSpecial.length() - 1;
-				} else {
-					strings.add(string.substring(i, i+1));
 				}
 			}
 		}
@@ -71,7 +76,7 @@ public final class Split {
 	 * @param index
 	 * @return
 	 */
-	public static int parseParens(CharSequence string, int index) {
+	public static int parseParens(@NotNull CharSequence string, int index) {
 		switch (string.charAt(index)) {
 			case '[':
 				return findClosingBracket(string, '[', ']', index);
@@ -92,7 +97,7 @@ public final class Split {
 	 * @param startIndex
 	 * @return
 	 */
-	public static int findClosingBracket(CharSequence string, char left,
+	public static int findClosingBracket(@NotNull CharSequence string, char left,
 			char right, int startIndex) {
 		int count = 1;
 		int endIndex = startIndex;

@@ -14,6 +14,8 @@
 
 package org.didelphis.io;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,13 +40,14 @@ public final class DiskFileHandler implements FileHandler {
 		encoding = encodingParam;
 	}
 	
+	@Nullable
 	@Override
-	public CharSequence read(String path) {
+	public CharSequence read(@NotNull String path) {
 		return IOUtil.readPath(path);
 	}
 
 	@Override
-	public boolean writeString(String path, CharSequence data) {
+	public boolean writeString(@NotNull String path, @NotNull CharSequence data) {
 		File file = new File(path);
 		try (Writer writer = new BufferedWriter(new FileWriter(file))) {
 			writer.write(data.toString());

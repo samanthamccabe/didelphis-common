@@ -14,6 +14,7 @@
 
 package org.didelphis.language.phonetic.model;
 
+import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.SpecificationBearer;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.FeatureType;
@@ -46,7 +47,7 @@ public interface FeatureModel<T> extends SpecificationBearer {
 	 * @param string the bracketed feature string definition to parse
 	 * @return a parsed {@code FeatureArray}
 	 *
-	 * @throws org.didelphis.language.exceptions.ParseException if the
+	 * @throws ParseException if the
 	 *
 	 */
 	@NotNull

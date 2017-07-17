@@ -21,6 +21,7 @@ import org.didelphis.language.phonetic.features.StandardFeatureArray;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.segments.StandardSegment;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,9 +49,9 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 	private final Map<String, FeatureArray<T>> modifiers;
 	private final List<String> orderedKeys;
 
-	public GeneralFeatureMapping(FeatureModel<T> featureModel,
-			Map<String, FeatureArray<T>> featureMap,
-			Map<String, FeatureArray<T>> modifiers) {
+	public GeneralFeatureMapping(@NotNull FeatureModel<T> featureModel,
+			@NotNull Map<String, FeatureArray<T>> featureMap,
+			@NotNull Map<String, FeatureArray<T>> modifiers) {
 		specification = featureModel.getSpecification();
 		this.featureModel = featureModel;
 		this.featureMap = Collections.unmodifiableMap(featureMap);
@@ -151,6 +152,7 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 			return new StandardSegment<>(string, featureArray);
 	}
 
+	@NotNull
 	@Override
 	public FeatureModel<T> getFeatureModel() {
 		return featureModel;
@@ -167,7 +169,7 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -180,7 +182,8 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 				Objects.equals(this.modifiers, other.modifiers);
 	}
 
-	private double totalDifference(FeatureArray<T> left, FeatureArray<T> right) {
+	private double totalDifference(
+			@NotNull FeatureArray<T> left, @NotNull FeatureArray<T> right) {
 		if (left.size() != right.size()) {
 			throw new IllegalArgumentException("Cannot compare feature arrays" +
 					" of different sizes! left: " + left.size() + " right: " +
@@ -192,8 +195,9 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 				.sum();
 	}
 
+	@NotNull
 	private Collection<String> getBestDiacritic(
-			FeatureArray<T> featureArray,
+			@NotNull FeatureArray<T> featureArray,
 			FeatureArray<T> bestFeatures,
 			double lastMinimum) {
 		

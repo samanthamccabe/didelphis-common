@@ -12,21 +12,16 @@
  = limitations under the License.
  =============================================================================*/
 
-package org.didelphis.structures.contracts;
-
-import org.jetbrains.annotations.NotNull;
+package org.didelphis.language.parsing;
 
 /**
- * Indicates that a data structure delegates some functionality to an inner
- * collection object and guarantees the structure is available through the API.
- * @param <T> the type of the delegate object.
+ * Created by samantha on 12/24/14.
  */
-public interface Delegating<T> {
+public enum ParseDirection {
+	FORWARD  ("Forward"),
+	BACKWARD ("Backward");
 
-	/**
-	 * Provides access to the delegate used by the implementing class
-	 * @return the delegate object; this must not return null.
-	 */
-	@NotNull
-	T getDelegate();
+	ParseDirection(String param) {
+		String value = param;
+	}
 }

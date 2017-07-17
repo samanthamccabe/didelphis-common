@@ -14,6 +14,8 @@
 
 package org.didelphis.structures.tuples;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 /**
@@ -37,7 +39,7 @@ public class Tuple<L, R> {
 		this.right = right;
 	}
 
-	public Tuple(Tuple<L, R> tuple) {
+	public Tuple(@NotNull Tuple<L, R> tuple) {
 		left = tuple.left;
 		right = tuple.right;
 	}
@@ -68,6 +70,7 @@ public class Tuple<L, R> {
 				Objects.equals(right, tuple.right);
 	}
 
+	@NotNull
 	@Override
 	public String toString() {
 		return "<" + left + ", " + right + '>';

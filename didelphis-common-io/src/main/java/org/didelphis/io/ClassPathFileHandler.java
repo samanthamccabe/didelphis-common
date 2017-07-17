@@ -14,6 +14,8 @@
 
 package org.didelphis.io;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.io.InputStream;
 
 /**
@@ -29,6 +31,7 @@ public enum ClassPathFileHandler implements FileHandler {
 		encoding = "UTF-8";
 	}
 
+	@Nullable
 	@Override
 	public String read(String path) {
 		ClassLoader classLoader = ClassPathFileHandler.class.getClassLoader();

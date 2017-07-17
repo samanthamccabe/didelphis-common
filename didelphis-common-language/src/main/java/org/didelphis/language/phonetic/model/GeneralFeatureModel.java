@@ -14,11 +14,12 @@
 
 package org.didelphis.language.phonetic.model;
 
-import org.didelphis.language.exceptions.ParseException;
+import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.FeatureType;
 import org.didelphis.language.phonetic.features.SparseFeatureArray;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.text.Normalizer.Form;
 import java.util.List;
@@ -77,7 +78,7 @@ public class GeneralFeatureModel<T> implements FeatureModel<T> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -136,12 +137,13 @@ public class GeneralFeatureModel<T> implements FeatureModel<T> {
 		return featureType;
 	}
 
+	@NotNull
 	@Override
 	public FeatureSpecification getSpecification() {
 		return specification;
 	}
 
-	private static int retrieveIndex(String label, String string, Map<String, Integer> names) {
+	private static int retrieveIndex(String label, String string, @NotNull Map<String, Integer> names) {
 		if (names.containsKey(label)) {
 			return names.get(label);
 		}

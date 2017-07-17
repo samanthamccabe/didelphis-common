@@ -40,7 +40,7 @@ public class StandardSegment<T> implements Segment<T> {
 	 *
 	 * @param segment the {@code Segment} to be copied
 	 */
-	public StandardSegment(Segment<T> segment) {
+	public StandardSegment(@NotNull Segment<T> segment) {
 		symbol = segment.getSymbol();
 		features = segment.getFeatures();
 	}

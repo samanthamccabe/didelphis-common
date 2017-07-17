@@ -14,7 +14,6 @@
 
 package org.didelphis.language.phonetic.sequences;
 
-import org.didelphis.language.phonetic.segments.ImmutableSegment;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.jetbrains.annotations.NotNull;
 
@@ -54,6 +53,7 @@ public class ImmutableSequence<T> extends BasicSequence<T>  {
 		throw new UnsupportedOperationException("Sequence is immutable.");
 	}
 
+	@NotNull
 	@Override
 	public Segment<T> set(int i, Segment<T> s) {
 		throw new UnsupportedOperationException("Sequence is immutable.");
@@ -64,6 +64,7 @@ public class ImmutableSequence<T> extends BasicSequence<T>  {
 		throw new UnsupportedOperationException("Sequence is immutable.");
 	}
 
+	@NotNull
 	@Override
 	public Segment<T> remove(int index) {
 		throw new UnsupportedOperationException("Sequence is immutable.");
@@ -100,7 +101,7 @@ public class ImmutableSequence<T> extends BasicSequence<T>  {
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (!(o instanceof ImmutableSegment)) return false;
+		if (!(o instanceof ImmutableSequence)) return false;
 		return super.equals(o);
 	}
 
@@ -134,6 +135,7 @@ public class ImmutableSequence<T> extends BasicSequence<T>  {
 		return 31 * super.hashCode();
 	}
 
+	@NotNull
 	@Override
 	public String toString() {
 		return super.toString() + "(immutable)";

@@ -12,10 +12,9 @@
  = limitations under the License.
  =============================================================================*/
 
-package org.didelphis.language.enums;
+package org.didelphis.language.parsing;
 
-import org.didelphis.language.phonetic.Formatter;
-import org.didelphis.language.phonetic.Segmenter;
+import org.jetbrains.annotations.NotNull;
 
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
@@ -56,12 +55,12 @@ public enum FormatterMode implements Segmenter, Formatter {
 	// Unicode Canonical Decomposition
 	DECOMPOSITION(Form.NFD) {
 		@Override
-		public List<String> split(String string) {
+		public List<String> split(@NotNull String string) {
 			return split(string, Collections.emptyList());
 		}
 
 		@Override
-		public List<String> split(String string, Iterable<String> special) {
+		public List<String> split(@NotNull String string, Iterable<String> special) {
 			return splitToList(normalize(string), special);
 		}
 	},
@@ -69,12 +68,12 @@ public enum FormatterMode implements Segmenter, Formatter {
 	// Unicode Canonical Decomposition followed by Canonical Composition
 	COMPOSITION(Form.NFC) {
 		@Override
-		public List<String> split(String string) {
+		public List<String> split(@NotNull String string) {
 			return split(string, Collections.emptyList());
 		}
 
 		@Override
-		public List<String> split(String string, Iterable<String> special) {
+		public List<String> split(@NotNull String string, Iterable<String> special) {
 			return splitToList(normalize(string), special);
 		}
 	},
@@ -92,8 +91,9 @@ public enum FormatterMode implements Segmenter, Formatter {
 
 		private final Pattern pattern = Pattern.compile("(\\$[^$]*\\d+)");
 
+		@NotNull
 		@Override
-		public List<String> split(String string, Iterable<String> special) {
+		public List<String> split(@NotNull String string, @NotNull Iterable<String> special) {
 			String word = normalize(string);
 
 			List<String> strings = new ArrayList<>();
@@ -154,14 +154,15 @@ public enum FormatterMode implements Segmenter, Formatter {
 			return strings;
 		}
 
+		@NotNull
 		@Override
-		public List<String> split(String string) {
+		public List<String> split(@NotNull String string) {
 			return split(string, Collections.emptyList());
 		}
 
 		// Finds longest item in keys which the provided string starts with
 		// Also can be used to grab index symbols
-		private String getBestMatch(String word, Iterable<String> keys) {
+		private String getBestMatch(@NotNull String word, @NotNull Iterable<String> keys) {
 
 			String bestMatch = "";
 			for (String key : keys) {
@@ -212,8 +213,9 @@ public enum FormatterMode implements Segmenter, Formatter {
 		form = param;
 	}
 
+	@NotNull
 	@Override
-	public String normalize(String string) {
+	public String normalize(@NotNull String string) {
 		return (form == null) ? string : Normalizer.normalize(string, form);
 	}
 }

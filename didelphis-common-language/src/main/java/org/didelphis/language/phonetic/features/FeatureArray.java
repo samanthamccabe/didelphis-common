@@ -22,7 +22,8 @@ import org.didelphis.language.phonetic.ModelBearer;
  * @since 2016-03-26
  */
 public interface FeatureArray<T>
-		extends Comparable<FeatureArray<T>>, Iterable<T>, ModelBearer<T> {
+		extends Comparable<FeatureArray<T>>,
+		Iterable<T>, ModelBearer<T> {
 
 	/**
 	 * Returns the number of elements in this array.

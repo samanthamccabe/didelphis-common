@@ -15,6 +15,8 @@
 package org.didelphis.language.machines.interfaces;
 
 import org.didelphis.language.machines.Expression;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
@@ -30,6 +32,7 @@ public interface MachineParser<T> {
 	 * @param expression
 	 * @return
 	 */
+	@Nullable
 	T transform(String expression);
 
 	/**
@@ -37,12 +40,14 @@ public interface MachineParser<T> {
 	 * @param expression
 	 * @return
 	 */
+	@NotNull
 	List<Expression> parseExpression(String expression);
 
 	/**
 	 * Provides a uniform value for epsilon transitions 
 	 * @return a uniform value for epsilon transitions 
 	 */
+	@Nullable
 	T epsilon();
 
 	/**
@@ -51,6 +56,7 @@ public interface MachineParser<T> {
 	 * @return a {@code collection} of supported special symbols and their
 	 * corresponding literal values
 	 */
+	@Nullable
 	Map<String, Collection<T>> getSpecials();
 
 	/**

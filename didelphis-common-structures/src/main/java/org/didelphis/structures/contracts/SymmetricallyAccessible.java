@@ -15,6 +15,7 @@
 package org.didelphis.structures.contracts;
 
 import org.didelphis.structures.tuples.Tuple;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects; 
 
@@ -45,6 +46,7 @@ public interface SymmetricallyAccessible<K> {
 	 * structure. Null iff no ordering of {@code k1} and {@code k2} has an
 	 * associated value.
 	 */
+	@NotNull
 	default Tuple<K, K> canonicalKeyPair(K k1, K k2) {
 		if (k1 instanceof Comparable && k2 instanceof Comparable) {
 			@SuppressWarnings("unchecked")
@@ -70,7 +72,8 @@ public interface SymmetricallyAccessible<K> {
 	 * structure. Null iff no ordering of {@code k1} and {@code k2} has an
 	 * associated value.
 	 */
-	default Tuple<K, K> canonicalKeyPair(Tuple<K, K> tuple) {
+	@NotNull
+	default Tuple<K, K> canonicalKeyPair(@NotNull Tuple<K, K> tuple) {
 		return canonicalKeyPair(tuple.getLeft(), tuple.getRight());
 	}
 }

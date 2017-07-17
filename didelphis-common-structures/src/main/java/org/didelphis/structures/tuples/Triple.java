@@ -14,6 +14,8 @@
 
 package org.didelphis.structures.tuples;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 /**
@@ -65,6 +67,7 @@ public class Triple<T, U, V> {
 				Objects.equals(element3, triple.element3);
 	}
 
+	@NotNull
 	@Override
 	public String toString() {
 		return "<" + element1 +

@@ -14,13 +14,14 @@
 
 package org.didelphis.language.machines;
 
-import org.didelphis.language.enums.ParseDirection;
-import org.didelphis.language.exceptions.ParseException;
+import org.didelphis.language.parsing.ParseDirection;
+import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.machines.interfaces.MachineMatcher;
 import org.didelphis.language.machines.interfaces.MachineParser;
 import org.didelphis.language.machines.interfaces.StateMachine;
 import org.didelphis.structures.tuples.Tuple;
 import org.didelphis.utilities.Split;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,8 +80,9 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		nodes.add(startStateId);
 	}
 
-	public static <T> StateMachine<T> create(String id, String expression,
-			MachineParser<T> parser, MachineMatcher<T> matcher,
+	@NotNull
+	public static <T> StateMachine<T> create(String id, @NotNull String expression,
+			@NotNull MachineParser<T> parser, MachineMatcher<T> matcher,
 			ParseDirection direction) {
 		checkBadQuantification(expression);
 		StandardStateMachine<T> stateMachine = new StandardStateMachine<>(id,
@@ -117,6 +119,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		return id;
 	}
 
+	@NotNull
 	@Override
 	public Map<String, Graph<T>> getGraphs() {
 		Map<String, Graph<T>> map = new HashMap<>();
@@ -124,6 +127,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		return map;
 	}
 
+	@NotNull
 	@Override
 	public Collection<Integer> getMatchIndices(int startIndex, T target) {
 		Collection<Integer> indices = new HashSet<>();
@@ -188,6 +192,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 	}
 
 	// package only access
+	@NotNull
 	@SuppressWarnings("ReturnOfCollectionOrArrayField")
 	Map<String, StateMachine<T>> getMachinesMap() {
 		// this needs to mutable:
@@ -195,7 +200,8 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		return machinesMap;
 	}
 
-	private String createParallel(String start, int index, String expression) {
+	@NotNull
+	private String createParallel(String start, int index, @NotNull String expression) {
 		int i = A_ASCII; // A
 		String output = start + "-Out";
 		for (String subExp : parseSubExpressions(expression)) {
@@ -214,7 +220,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 	}
 
 	private String parseExpression(String start, int startingIndex,
-			String prefix, Iterable<Expression> expressions) {
+			String prefix, @NotNull Iterable<Expression> expressions) {
 
 		int nodeId = startingIndex;
 		String previous = start;
@@ -271,7 +277,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 	}
 
 	private String constructNegativeNode(String end, String start,
-			String machine, String meta) {
+			String machine, @NotNull String meta) {
 		T e = parser.epsilon();
 		// All machines contain this arc
 		graph.add(start, e, machine);
@@ -295,8 +301,9 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		return end;
 	}
 
+	@NotNull
 	private String constructRecursiveNode(String machineNode, String startNode,
-			String meta) {
+			@NotNull String meta) {
 		T e = parser.epsilon();
 
 		String endNode = startNode + 'X';
@@ -323,7 +330,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 	}
 
 	private String constructTerminalNode(String previousNode,
-			String currentNode, String exp, String meta) {
+			String currentNode, String exp, @NotNull String meta) {
 		T t = parser.transform(exp);
 		T e = parser.epsilon();
 		String referenceNode;
@@ -351,7 +358,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		return referenceNode;
 	}
 
-	private static void checkBadQuantification(String expression) {
+	private static void checkBadQuantification(@NotNull String expression) {
 		if (ILLEGAL.matcher(expression).find()) {
 			throw new ParseException(
 					"Illegal modification of boundary characters.",
@@ -359,13 +366,14 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		}
 	}
 
-	private static void check(String expr, CharSequence closingBracket) {
+	private static void check(@NotNull String expr, @NotNull CharSequence closingBracket) {
 		if (!expr.contains(closingBracket)) {
 			throw new ParseException("Unmatched parenthesis", expr);
 		}
 	}
 
-	private static Iterable<String> parseSubExpressions(String expression) {
+	@NotNull
+	private static Iterable<String> parseSubExpressions(@NotNull String expression) {
 		Collection<String> subExpressions = new ArrayList<>();
 		StringBuilder buffer = new StringBuilder();
 		for (int i = 0; i < expression.length(); i++) {

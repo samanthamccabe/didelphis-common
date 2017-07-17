@@ -19,6 +19,7 @@ import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureSpecification;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -177,11 +178,13 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 		return matches;
 	}
 
+	@NotNull
 	@Override
 	public Sequence<T> subsequence(int from, int to) {
 		return new BasicSequence<>(subList(from, to), featureModel);
 	}
 
+	@NotNull
 	@Override
 	public Sequence<T> subsequence(int from) {
 		return new BasicSequence<>(subList(from, size()), featureModel);
@@ -217,7 +220,7 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 	}
 
 	@Override
-	public boolean add(Segment<T> segment) {
+	public boolean add(@NotNull Segment<T> segment) {
 		validateModelOrFail(segment);
 		return segmentList.add(segment);
 	}
@@ -244,9 +247,9 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(@Nullable Object o) {
 		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (!(o instanceof BasicSequence)) return false;
 		BasicSequence that = (BasicSequence) o;
 		return Objects.equals(this.featureModel, that.featureModel) &&
 				Objects.equals(this.segmentList, that.segmentList);
@@ -257,7 +260,7 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 		return Objects.hash(featureModel, segmentList);
 	}
 
-	private void validateModelOrWarn(SpecificationBearer that) {
+	private void validateModelOrWarn(@NotNull SpecificationBearer that) {
 		if (!getSpecification().equals(that.getSpecification())) {
 			LOG.warn("Attempting to check a {} with an incompatible model!" +
 							"" + "\n\t{}\t{}\n\t{}\t{}", that.getClass(), this, that,
@@ -265,7 +268,7 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 		}
 	}
 
-	private void validateModelOrFail(SpecificationBearer that) {
+	private void validateModelOrFail(@NotNull SpecificationBearer that) {
 		if (!getSpecification().equals(that.getSpecification())) {
 			throw new RuntimeException("Attempting to add " + that.getClass() +
 					" with an incompatible model!\n" + '\t' + this + '\t' +

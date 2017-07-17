@@ -12,16 +12,40 @@
  = limitations under the License.
  =============================================================================*/
 
-package org.didelphis.language.enums;
+package org.didelphis.language.phonetic.segments;
+
+import org.didelphis.language.phonetic.PhoneticTestBase;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 
 /**
- * Created by samantha on 12/24/14.
+ * Class {@code ImmutableSegmentTest}
+ *
+ * @author Samantha Fiona McCabe
+ * @since 0.1.0 Date: 2017-06-24
  */
-public enum ParseDirection {
-	FORWARD  ("Forward"),
-	BACKWARD ("Backward");
+class ImmutableSegmentTest extends PhoneticTestBase {
 
-	private final String value;
+	@BeforeAll
+	static void init() {
+		
+	}
 
-	ParseDirection(String param) { value = param; }
+	@Test
+	void alter() {
+	}
+
+	@Test
+	void equals() {
+	}
+
+	@Test
+	void testHashCode() {
+	}
+
+	@Test
+	void testToString() {
+	}
+
 }

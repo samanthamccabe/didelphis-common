@@ -68,6 +68,7 @@ public class GeneralMultiMap<K, V>
 		return delegate.containsKey(key);
 	}
 
+	@NotNull
 	@Override
 	public Collection<K> keys() {
 		return delegate.keySet();
@@ -90,7 +91,7 @@ public class GeneralMultiMap<K, V>
 	}
 
 	@Override
-	public void addAll(K key, Collection<V> values) {
+	public void addAll(K key, @NotNull Collection<V> values) {
 		if (delegate.containsKey(key)) {
 			delegate.get(key).addAll(values);
 		} else {
@@ -98,6 +99,7 @@ public class GeneralMultiMap<K, V>
 		}
 	}
 
+	@NotNull
 	@Override
 	public Map<K, Collection<V>> getDelegate() {
 		return delegate;
@@ -141,6 +143,7 @@ public class GeneralMultiMap<K, V>
 		return Objects.hash(delegate);
 	}
 
+	@NotNull
 	@Override
 	public String toString() {
 		return "GeneralMultiMap{" + "delegate=" + delegate + '}';
