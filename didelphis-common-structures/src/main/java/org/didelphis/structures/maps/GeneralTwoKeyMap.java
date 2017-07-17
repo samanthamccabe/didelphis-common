@@ -19,6 +19,7 @@ import org.didelphis.structures.maps.interfaces.TwoKeyMap;
 import org.didelphis.structures.tuples.Triple;
 import org.didelphis.structures.tuples.Tuple;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,12 +62,14 @@ public class GeneralTwoKeyMap<T, U, V>
 		delegate = MapUtils.copyTwoKeyMap(map, type);
 	}
 
+	@Nullable
 	@Override
 	public V get(T k1, U k2) {
 		Map<U, V> map = delegate.get(k1);
 		return (map == null) ? null : map.get(k2);
 	}
 
+	@Nullable
 	@Override
 	public Collection<U> getAssociatedKeys(T k1) {
 		return delegate.containsKey(k1) ? delegate.get(k1).keySet() : null;
@@ -86,6 +89,7 @@ public class GeneralTwoKeyMap<T, U, V>
 		return delegate.containsKey(k1) && delegate.get(k1).containsKey(k2);
 	}
 
+	@NotNull
 	@Override
 	public Collection<Tuple<T, U>> keys() {
 		Collection<Tuple<T, U>> keys = new ArrayList<>();
@@ -98,6 +102,7 @@ public class GeneralTwoKeyMap<T, U, V>
 		return keys;
 	}
 
+	@Nullable
 	@Override
 	public V remove(T k1, U k2) {
 		if (contains(k1, k2)) {
@@ -145,7 +150,7 @@ public class GeneralTwoKeyMap<T, U, V>
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(@Nullable Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		GeneralTwoKeyMap<?, ?, ?> that = (GeneralTwoKeyMap<?, ?, ?>) o;
@@ -157,6 +162,7 @@ public class GeneralTwoKeyMap<T, U, V>
 		return "GeneralTwoKeyMap{" + super.toString() + '}';
 	}
 
+	@NotNull
 	@SuppressWarnings("ReturnOfCollectionOrArrayField")
 	@Override
 	public Map<T, Map<U, V>> getDelegate() {

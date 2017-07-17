@@ -16,9 +16,9 @@ package org.didelphis.language.machines;
 
 import org.didelphis.io.ClassPathFileHandler;
 import org.didelphis.io.FileHandler;
-import org.didelphis.language.enums.FormatterMode;
-import org.didelphis.language.enums.ParseDirection;
-import org.didelphis.language.exceptions.ParseException;
+import org.didelphis.language.parsing.FormatterMode;
+import org.didelphis.language.parsing.ParseDirection;
+import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.machines.interfaces.StateMachine;
 import org.didelphis.language.machines.sequences.SequenceMatcher;
 import org.didelphis.language.machines.sequences.SequenceParser;

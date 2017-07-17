@@ -18,6 +18,7 @@ import org.didelphis.structures.contracts.Delegating;
 import org.didelphis.structures.contracts.SymmetricallyAccessible;
 import org.didelphis.structures.tuples.Tuple;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Map;
@@ -43,6 +44,7 @@ public class SymmetricalTwoKeyMap<K, V>
 		super(delegating);
 	}
 	
+	@Nullable
 	@Override
 	public V get(K k1, K k2) {
 		Tuple<K, K> tuple = canonicalKeyPair(k1, k2);

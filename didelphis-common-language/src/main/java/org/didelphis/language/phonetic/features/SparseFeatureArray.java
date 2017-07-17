@@ -15,6 +15,8 @@
 package org.didelphis.language.phonetic.features;
 
 import org.didelphis.language.phonetic.model.FeatureModel;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +46,7 @@ features = new HashMap<>();
 	 * @param list
 	 * @param featureModel
 	 */
-	public SparseFeatureArray(List<T> list, FeatureModel<T> featureModel) {
+	public SparseFeatureArray(@NotNull List<T> list, FeatureModel<T> featureModel) {
 		this(featureModel);
 		for (int i = 0; i < list.size(); i++) {
 			T value = list.get(i);
@@ -57,7 +59,22 @@ features = new HashMap<>();
 	/**
 	 * @param array
 	 */
-	public SparseFeatureArray(SparseFeatureArray<T> array) {
+	public SparseFeatureArray(@NotNull FeatureArray<T> array) {
+		super(array.getFeatureModel());
+		features = new HashMap<>();
+		FeatureType<T> type = array.getFeatureModel().getFeatureType();
+		for (int i = 0; i < array.size(); i++) {
+			T t = array.get(i);
+			if (type.isDefined(t)) {
+				features.put(i, t);
+			}
+		}
+	}
+
+	/**
+	 * @param array
+	 */
+	public SparseFeatureArray(@NotNull SparseFeatureArray<T> array) {
 		super(array.getFeatureModel());
 		features = new HashMap<>(array.features);
 	}
@@ -75,7 +92,7 @@ features = new HashMap<>();
 	}
 
 	@Override
-	public boolean matches(FeatureArray<T> array) {
+	public boolean matches(@NotNull FeatureArray<T> array) {
 		if (size() != array.size()) {
 			throw new IllegalArgumentException(
 					"Attempting to compare arrays of different lengths");
@@ -92,7 +109,7 @@ features = new HashMap<>();
 	}
 
 	@Override
-	public boolean alter(FeatureArray<T> array) {
+	public boolean alter(@NotNull FeatureArray<T> array) {
 		if (size() != array.size()) {
 			throw new IllegalArgumentException(
 					"Attempting to compare arrays of different lengths");
@@ -135,7 +152,7 @@ features = new HashMap<>();
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(@Nullable Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		return super.equals(o);

@@ -14,7 +14,7 @@
 
 package org.didelphis.language.machines.sequences;
 
-import org.didelphis.language.enums.FormatterMode;
+import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.machines.Expression;
 import org.didelphis.language.machines.interfaces.MachineParser;
 import org.didelphis.language.phonetic.SequenceFactory;
@@ -25,6 +25,7 @@ import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.segments.StandardSegment;
 import org.didelphis.language.phonetic.sequences.BasicSequence;
 import org.didelphis.language.phonetic.sequences.Sequence;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,11 +44,11 @@ public class SequenceParser<T> implements MachineParser<Sequence<T>> {
 	
 	private final Sequence<T> epsilon;
 
-	public SequenceParser(SequenceFactory<T> factory) {
+	public SequenceParser(@NotNull SequenceFactory<T> factory) {
 		this(factory, Collections.emptyMap());
 	}
 
-	public SequenceParser(SequenceFactory<T> factory, Map<String, Collection<Sequence<T>>> specials) {
+	public SequenceParser(@NotNull SequenceFactory<T> factory, Map<String, Collection<Sequence<T>>> specials) {
 		this.factory = factory;
 		this.specials = specials;
 		// Generate epsilon / lambda symbol
@@ -62,6 +63,7 @@ public class SequenceParser<T> implements MachineParser<Sequence<T>> {
 		return factory.getSequence(expression);
 	}
 
+	@NotNull
 	@Override
 	public List<Expression> parseExpression(String expression) {
 		FormatterMode formatterMode = factory.getFormatterMode();
@@ -90,11 +92,13 @@ public class SequenceParser<T> implements MachineParser<Sequence<T>> {
 		return list;
 	}
 
+	@NotNull
 	@Override
 	public Sequence<T> epsilon() {
 		return epsilon;
 	}
 	
+	@NotNull
 	@Override
 	public Map<String, Collection<Sequence<T>>> getSpecials() {
 		return Collections.unmodifiableMap(specials);
@@ -106,24 +110,27 @@ public class SequenceParser<T> implements MachineParser<Sequence<T>> {
 	}
 
 	@Override
-	public int lengthOf(Sequence<T> segments) {
+	public int lengthOf(@NotNull Sequence<T> segments) {
 		return segments.size();
 	}
 
+	@NotNull
 	public SequenceFactory<T> getSequenceFactory() {
 		return factory;
 	}
 
-	private static Expression updateBuffer(Collection<Expression> list, Expression buffer) {
+	@NotNull
+	private static Expression updateBuffer(@NotNull Collection<Expression> list, @NotNull Expression buffer) {
 		// Add the contents of buffer if not empty
-		if (!buffer.isEmpty()) {
+		if (buffer.isEmpty()) {
+			return buffer;
+		} else {
 			list.add(buffer);
 			return new Expression();
-		} else {
-			return buffer;
 		}
 	}
 
+	@NotNull
 	@Override
 	public String toString() {
 		return "SequenceParser{"

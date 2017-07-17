@@ -16,6 +16,7 @@ package org.didelphis.language.phonetic.model;
 
 import org.didelphis.language.phonetic.ModelBearer;
 import org.didelphis.language.phonetic.features.FeatureArray;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.regex.Pattern;
 
@@ -39,7 +40,7 @@ public class Constraint<T> implements ModelBearer<T> {
 	 * @param target
 	 * @param featureModel
 	 */
-	public Constraint(CharSequence label,
+	public Constraint(@NotNull CharSequence label,
 	                  FeatureArray<T> source,
 	                  FeatureArray<T> target,
 	                  FeatureModel<T> featureModel) {
@@ -49,7 +50,7 @@ public class Constraint<T> implements ModelBearer<T> {
 		this.featureModel = featureModel;
 	}
 
-	public Constraint(Constraint<T> constraint) {
+	public Constraint(@NotNull Constraint<T> constraint) {
 		this(constraint.label, constraint.source, constraint.target,
 				constraint.featureModel);
 	}
@@ -62,6 +63,7 @@ public class Constraint<T> implements ModelBearer<T> {
 		return source;
 	}
 
+	@NotNull
 	@Override
 	public String toString() {
 		return "Constraint: " + label;

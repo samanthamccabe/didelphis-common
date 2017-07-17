@@ -17,6 +17,7 @@ package org.didelphis.language.machines.sequences;
 import org.didelphis.language.machines.interfaces.MachineMatcher;
 import org.didelphis.language.phonetic.SequenceFactory;
 import org.didelphis.language.phonetic.sequences.Sequence;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Map;
@@ -35,7 +36,7 @@ public class SequenceMatcher<T>
 	}
 
 	@Override
-	public int match(Sequence<T> target, Sequence<T> arc, int index) {
+	public int match(@NotNull Sequence<T> target, @NotNull Sequence<T> arc, int index) {
 
 		Map<String, Collection<Sequence<T>>> specials = parser.getSpecials();
 
@@ -75,6 +76,7 @@ public class SequenceMatcher<T>
 		return -1;
 	}
 
+	@NotNull
 	@Override
 	public String toString() {
 		return "SequenceMatcher{" + "parser=" + parser + '}';

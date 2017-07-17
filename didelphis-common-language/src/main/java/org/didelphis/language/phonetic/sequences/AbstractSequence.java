@@ -41,12 +41,12 @@ public abstract class AbstractSequence<T>
 	protected final List<Segment<T>> segmentList;
 	protected final FeatureModel<T> featureModel;
 
-	protected AbstractSequence(Sequence<T> sequence) {
+	protected AbstractSequence(@NotNull Sequence<T> sequence) {
 		segmentList = new ArrayList<>(sequence);
 		featureModel = sequence.getFeatureModel();
 	}
 
-	protected AbstractSequence(Segment<T> segment) {
+	protected AbstractSequence(@NotNull Segment<T> segment) {
 		this(segment.getFeatureModel());
 		segmentList.add(segment);
 	}
@@ -56,12 +56,13 @@ public abstract class AbstractSequence<T>
 		featureModel = featureSpec;
 	}
 
-	protected AbstractSequence(Collection<Segment<T>> segments,
+	protected AbstractSequence(@NotNull Collection<Segment<T>> segments,
 			FeatureModel<T> featureSpec) {
 		segmentList = new LinkedList<>(segments);
 		featureModel = featureSpec;
 	}
 
+	@NotNull
 	@Override
 	public List<Segment<T>> getDelegate() {
 		return segmentList;

@@ -14,9 +14,8 @@
 
 package org.didelphis.language.phonetic.model;
 
-import org.didelphis.io.ClassPathFileHandler;
+import org.didelphis.language.phonetic.PhoneticTestBase;
 import org.didelphis.language.phonetic.features.FeatureArray;
-import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.features.SparseFeatureArray;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -28,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 /**
  * Created by samantha on 4/16/17.
  */
-class ConstraintTest {
+class ConstraintTest extends PhoneticTestBase {
 
 	private static FeatureModel<Integer> model;
 	private static Constraint<Integer> constraint1;
@@ -36,9 +35,6 @@ class ConstraintTest {
 
 	@BeforeAll
 	static void init() {
-		FeatureModelLoader<Integer> loader = new FeatureModelLoader<>(
-				IntegerFeature.INSTANCE, ClassPathFileHandler.INSTANCE,
-				"AT_hybrid.model");
 		model = loader.getFeatureModel();
 
 		constraint1 = loader.parseConstraint("[+eje]>[+con,-son,-cnt,-vce]");

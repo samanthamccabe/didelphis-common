@@ -15,6 +15,7 @@
 package org.didelphis.language.machines;
 
 import org.didelphis.language.machines.interfaces.StateMachine;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map.Entry;
 
@@ -25,7 +26,7 @@ public final class MachineUtils {
 	
 	private MachineUtils() {}
 
-	private <T> void generate(StateMachine<T> machine) {
+	private <T> void generate(@NotNull StateMachine<T> machine) {
 		for (Entry<String, Graph<T>> e : machine.getGraphs().entrySet()) {
 			
 		}

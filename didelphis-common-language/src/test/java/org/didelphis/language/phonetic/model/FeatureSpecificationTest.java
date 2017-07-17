@@ -15,6 +15,7 @@
 package org.didelphis.language.phonetic.model;
 
 import org.didelphis.io.ClassPathFileHandler;
+import org.didelphis.language.phonetic.PhoneticTestBase;
 import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -26,18 +27,15 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * @author Samantha Fiona McCabe Created: 7/4/2016
  */
-public class FeatureSpecificationTest {
+public class FeatureSpecificationTest extends PhoneticTestBase {
 	private static final Logger LOG = LoggerFactory.getLogger(
 			FeatureSpecificationTest.class);
 	
-	private static FeatureSpecification model;
+	private static FeatureSpecification specification;
 
 	@BeforeAll
 	private static void load() {
-		String path = "AT_hybrid.spec";
-		FeatureModelLoader<Integer> loader = new FeatureModelLoader<>(
-				IntegerFeature.INSTANCE, ClassPathFileHandler.INSTANCE, path);
-		model =  loader.getSpecification();
+		specification =  loader.getSpecification();
 	}
 
 	@Test
@@ -45,30 +43,30 @@ public class FeatureSpecificationTest {
 		FeatureSpecification other = new FeatureModelLoader<>(
 				IntegerFeature.INSTANCE, ClassPathFileHandler.INSTANCE,
 				"AT_hybrid.mapping").getSpecification();
-		assertEquals(model, other);
+		assertEquals(specification, other);
 	}
 
 	@Test
 	void testSize() {
-		int size = model.size();
+		int size = specification.size();
 		assertEquals(20, size);
 	}
 
 	@Test
 	void testGetIndexSonorant() {
-		int index = model.getIndex("sonorant");
+		int index = specification.getIndex("sonorant");
 		assertEquals(1, index);
 	}
 
 	@Test
 	void testGetIndexLong() {
-		int index = model.getIndex("long");
+		int index = specification.getIndex("long");
 		assertEquals(18, index);
 	}
 
 	@Test
 	void testGetIndexBadFeature() {
-		int index = model.getIndex("x");
+		int index = specification.getIndex("x");
 		assertEquals(-1, index);
 	}
 }

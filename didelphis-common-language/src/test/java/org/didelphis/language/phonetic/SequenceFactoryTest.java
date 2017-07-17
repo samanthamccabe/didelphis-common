@@ -14,17 +14,12 @@
 
 package org.didelphis.language.phonetic;
 
-import org.didelphis.io.ClassPathFileHandler;
-import org.didelphis.language.enums.FormatterMode;
-import org.didelphis.language.phonetic.features.IntegerFeature;
-import org.didelphis.language.phonetic.model.FeatureMapping;
-import org.didelphis.language.phonetic.model.FeatureModelLoader;
+import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,23 +29,11 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Samantha Fiona McCabe
  * Date: 2/5/2015
  */
-public class SequenceFactoryTest {
+public class SequenceFactoryTest extends PhoneticTestBase{
 
 	@Test
 	void testGetSequence01() throws IOException {
-		String name = "AT_hybrid.model";
-		
-		FormatterMode formatterMode = FormatterMode.INTELLIGENT;
-
 		String word = "avaːm";
-
-		FeatureMapping<Integer> mapping = new FeatureModelLoader<>(
-				IntegerFeature.INSTANCE,
-				ClassPathFileHandler.INSTANCE,
-				name).getFeatureMapping();
-
-		SequenceFactory<Integer> factory = new SequenceFactory<>(mapping, formatterMode);
-
 		Sequence<Integer> sequence = factory.getSequence(word);
 		assertTrue(!sequence.isEmpty());
 	}
@@ -62,9 +45,6 @@ public class SequenceFactoryTest {
 		reserved.add("th");
 		reserved.add("kh");
 
-		FeatureModelLoader<Integer> loader = new FeatureModelLoader<>(
-				IntegerFeature.INSTANCE, ClassPathFileHandler.INSTANCE,
-				Collections.emptyList());
 		SequenceFactory<Integer> factory = new SequenceFactory<>(
 				loader.getFeatureMapping(),
 			reserved,

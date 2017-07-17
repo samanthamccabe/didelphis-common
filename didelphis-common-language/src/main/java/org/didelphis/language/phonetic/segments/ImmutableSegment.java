@@ -30,7 +30,7 @@ public class ImmutableSegment<T> extends StandardSegment<T> {
 	 *
 	 * @param segment the {@link Segment} to be copied
 	 */
-	public ImmutableSegment(Segment<T> segment) {
+	public ImmutableSegment(@NotNull Segment<T> segment) {
 		super(segment);
 	}
 
@@ -62,6 +62,7 @@ public class ImmutableSegment<T> extends StandardSegment<T> {
 	}
 
 
+	@NotNull
 	@Override
 	public String toString() {
 		return super.toString() + "(immutable)";

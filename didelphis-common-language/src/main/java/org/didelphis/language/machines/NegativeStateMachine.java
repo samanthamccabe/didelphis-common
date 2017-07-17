@@ -14,11 +14,12 @@
 
 package org.didelphis.language.machines;
 
-import org.didelphis.language.enums.ParseDirection;
+import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.language.machines.interfaces.MachineMatcher;
 import org.didelphis.language.machines.interfaces.MachineParser;
 import org.didelphis.language.machines.interfaces.StateMachine;
 import org.didelphis.structures.tuples.Triple;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -40,7 +41,7 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 	private final String id;
 
 
-	public static <T> StateMachine<T> create(String id, String expression, MachineParser<T> parser, MachineMatcher<T> matcher, ParseDirection direction) {
+	public static <T> StateMachine<T> create(String id, String expression, @NotNull MachineParser<T> parser, MachineMatcher<T> matcher, ParseDirection direction) {
 		// Create the actual branch, the one we don't want to match
 		StateMachine<T> negative = StandardStateMachine.create(id + 'N',
 				expression, parser, matcher, direction);
@@ -56,7 +57,7 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 		return new NegativeStateMachine<>(id, negative, positive);
 	}
 
-	private static <T> void buildPositiveBranch(MachineParser<T> parser, StateMachine<T> positive) {
+	private static <T> void buildPositiveBranch(@NotNull MachineParser<T> parser, @NotNull StateMachine<T> positive) {
 		
 		Graph<T> graph = positive.getGraphs().values().iterator().next();
 		Graph<T> copy  = new Graph<>(graph);
@@ -96,7 +97,7 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 		}
 	}
 
-	private static <T> Set<Integer> collectLengths(MachineParser<T> parser, T arc) {
+	private static <T> Set<Integer> collectLengths(@NotNull MachineParser<T> parser, @NotNull T arc) {
 		return parser.getSpecials()
 				.get(arc.toString())
 				.stream()
@@ -125,6 +126,7 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 		return id;
 	}
 
+	@NotNull
 	@Override
 	public Map<String, Graph<T>> getGraphs() {
 		Map<String, Graph<T>> map = new HashMap<>();
@@ -168,7 +170,7 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 				'}';
 	}
 
-	private static <T> void buildDotChain(Graph<T> graph, String key, Collection<String> endValues, int length, T dot) {
+	private static <T> void buildDotChain(@NotNull Graph<T> graph, String key, Collection<String> endValues, int length, T dot) {
 		String thisState = key;
 		for (int i = 0; i < length - 1; i++) {
 			String nextState = key + '-' + i;

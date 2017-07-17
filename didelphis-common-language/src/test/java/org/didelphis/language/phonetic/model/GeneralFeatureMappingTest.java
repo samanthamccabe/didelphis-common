@@ -15,24 +15,31 @@
 package org.didelphis.language.phonetic.model;
 
 import org.didelphis.io.ClassPathFileHandler;
-import org.didelphis.language.enums.FormatterMode;
+import org.didelphis.language.parsing.FormatterMode;
+import org.didelphis.language.phonetic.PhoneticTestBase;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 /**
  * @author Samantha Fiona McCabe
  */
-public class GeneralFeatureMappingTest {
+public class GeneralFeatureMappingTest extends PhoneticTestBase {
 
-	private static final FeatureMapping<Integer> MAPPING = loadMapping("AT_hybrid.model", FormatterMode.INTELLIGENT);
+	private static FeatureMapping<Integer> mapping;
+
+	@BeforeAll
+	static void init() {
+		mapping = loader.getFeatureMapping();
+	}
 
 	@Test
 	void testLoad01() {
-		Assertions.assertFalse(MAPPING.getFeatureMap().isEmpty());
-		Assertions.assertFalse(MAPPING.getModifiers().isEmpty());
+		Assertions.assertFalse(mapping.getFeatureMap().isEmpty());
+		Assertions.assertFalse(mapping.getModifiers().isEmpty());
 	}
 
 	@Test
@@ -77,9 +84,9 @@ public class GeneralFeatureMappingTest {
 	}
 	
 	private static void testBestSymbol(String string) {
-		Segment<Integer> segment = MAPPING.parseSegment(string);
+		Segment<Integer> segment = mapping.parseSegment(string);
 		FeatureArray<Integer> array = segment.getFeatures();
-		String bestSymbol = MAPPING.findBestSymbol(array);
+		String bestSymbol = mapping.findBestSymbol(array);
 		Assertions.assertEquals(string, bestSymbol);
 	}
 

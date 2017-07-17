@@ -17,6 +17,7 @@ package org.didelphis.language.phonetic.features;
 import org.didelphis.io.NullFileHandler;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -59,18 +60,19 @@ public enum IntegerFeature implements FeatureType<Integer> {
 	}
 
 	@Override
-	public int compare(Integer v1, Integer v2) {
+	public int compare(@Nullable Integer v1, @Nullable Integer v2) {
 		int x = v1 == null ? Integer.MIN_VALUE:v1;
 		int y = v2 == null ? Integer.MIN_VALUE:v2;
 		return Integer.compare(x, y);
 	}
 
 	@Override
-	public double difference(Integer v1, Integer v2) {
+	public double difference(@NotNull Integer v1, @NotNull Integer v2) {
 		return Math.abs(checkValue(v1) - checkValue(v2));
 	}
 
-	private Integer checkValue(Integer value) {
+	@NotNull
+	private Integer checkValue(@NotNull Integer value) {
 		return isDefined(value) ? value : 0;
 	}
 }

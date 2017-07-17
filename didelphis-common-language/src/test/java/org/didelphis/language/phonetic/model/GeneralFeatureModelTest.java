@@ -15,7 +15,8 @@
 package org.didelphis.language.phonetic.model;
 
 import org.didelphis.io.ClassPathFileHandler;
-import org.didelphis.language.exceptions.ParseException;
+import org.didelphis.language.parsing.ParseException;
+import org.didelphis.language.phonetic.PhoneticTestBase;
 import org.didelphis.language.phonetic.features.ByteFeature;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.IntegerFeature;
@@ -33,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @since 0.1.0 Date: 2017-06-15
  */
 @SuppressWarnings("ObjectEqualsNull")
-class GeneralFeatureModelTest {
+class GeneralFeatureModelTest extends PhoneticTestBase {
 
 	private static FeatureModel<Integer> model;
 	private static FeatureModel<Integer> other;
@@ -41,9 +42,7 @@ class GeneralFeatureModelTest {
 
 	@BeforeAll
 	static void init() {
-		model = new FeatureModelLoader<>(IntegerFeature.INSTANCE,
-				ClassPathFileHandler.INSTANCE, "AT_hybrid.model")
-				.getFeatureModel();
+		model = loader.getFeatureModel();
 		other = new FeatureModelLoader<>(IntegerFeature.INSTANCE,
 				ClassPathFileHandler.INSTANCE, "AT_hybrid.model")
 				.getFeatureModel();

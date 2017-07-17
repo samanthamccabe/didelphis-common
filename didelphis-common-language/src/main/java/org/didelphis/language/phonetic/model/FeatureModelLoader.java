@@ -15,7 +15,8 @@
 package org.didelphis.language.phonetic.model;
 
 import org.didelphis.io.FileHandler;
-import org.didelphis.language.exceptions.ParseException;
+import org.didelphis.io.NullFileHandler;
+import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.FeatureType;
 import org.didelphis.language.phonetic.features.SparseFeatureArray;
@@ -29,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -75,11 +77,32 @@ public final class FeatureModelLoader<T> {
 	private FeatureModel<T> featureModel;
 	private FeatureMapping<T> featureMapping;
 
-	public FeatureModelLoader(FeatureType<T> featureType, FileHandler fileHandler, String path) {
+	public FeatureModelLoader(FeatureType<T> featureType) {
+		this.featureType = featureType;
+		this.fileHandler = NullFileHandler.INSTANCE;
+		featureNames = new ArrayList<>();
+		featureIndices = new HashMap<>();
+		zoneData = new GeneralMultiMap<>();
+
+		specification = new DefaultFeatureSpecification();
+		featureModel = new GeneralFeatureModel<>(
+				featureType,
+				specification,
+				Collections.emptyList(),
+				Collections.emptyMap()
+		);
+		featureMapping = new GeneralFeatureMapping<>(
+				featureModel,
+				Collections.emptyMap(),
+				Collections.emptyMap()
+		);
+	}
+
+	public FeatureModelLoader(@NotNull FeatureType<T> featureType, @NotNull FileHandler fileHandler, @NotNull String path) {
 		this(featureType, fileHandler, Split.splitLines(fileHandler.read(path)));
 	}
 
-	public FeatureModelLoader(FeatureType<T> featureType, FileHandler fileHandler, Iterable<String> lines) {
+	public FeatureModelLoader(@NotNull FeatureType<T> featureType, @NotNull FileHandler fileHandler, @NotNull Iterable<String> lines) {
 
 		this.featureType = featureType;
 		this.fileHandler = fileHandler;
@@ -101,7 +124,7 @@ public final class FeatureModelLoader<T> {
 	 * @param string
 	 * @return
 	 */
-	private static ParseZone determineZone(String string) {
+	private static ParseZone determineZone(@NotNull String string) {
 		return Arrays.stream(ParseZone.values())
 				.filter(zone -> zone.matches(string))
 				.findFirst().orElse(null);
@@ -130,7 +153,7 @@ public final class FeatureModelLoader<T> {
 	}
 
 	@NotNull
-	public Constraint<T> parseConstraint(String entry) {
+	public Constraint<T> parseConstraint(@NotNull String entry) {
 		String[] split = TRANSFORM.split(entry, 2);
 		String source = split[0];
 		String target = split[1];
@@ -169,14 +192,13 @@ public final class FeatureModelLoader<T> {
 	/**
 	 * Traverses the provided data and sorts commands into the appropriate bins
 	 */
-	private void parse(Iterable<String> lines) {
+	private void parse(@NotNull Iterable<String> lines) {
 		ParseZone currentZone = ParseZone.NONE;
 		for (String string : lines) {
 			String line = COMMENT_PATTERN.matcher(string).replaceAll("").trim();
 			if (line.isEmpty()) {
 				continue;
 			}
-
 			if (line.toLowerCase().startsWith("import")) {
 				Matcher matcher = IMPORT_PATTERN.matcher(line);
 				if (matcher.find()) {
@@ -216,6 +238,7 @@ public final class FeatureModelLoader<T> {
 		}
 	}
 
+	@NotNull
 	private Map<String, FeatureArray<T>> populateModifiers() {
 		Map<String, FeatureArray<T>> diacritics = new LinkedHashMap<>();
 		Collection<String> lines = zoneData.get(ParseZone.MODIFIERS);
@@ -241,6 +264,7 @@ public final class FeatureModelLoader<T> {
 		return diacritics;
 	}
 
+	@NotNull
 	private Map<String, FeatureArray<T>> populateSymbols() {
 		Map<String, FeatureArray<T>> featureMap = new LinkedHashMap<>();
 		Collection<String> lines = zoneData.get(ParseZone.SYMBOLS);
@@ -265,8 +289,8 @@ public final class FeatureModelLoader<T> {
 	}
 
 	private static <T> void checkFeatureCollisions(
-			Map<String, FeatureArray<T>> featureMap,
-			String symbol, FeatureArray<T> features) {
+			@NotNull Map<String, FeatureArray<T>> featureMap,
+			String symbol, @NotNull FeatureArray<T> features) {
 		if (featureMap.containsValue(features)) {
 			for (Entry<String, FeatureArray<T>> e : featureMap.entrySet()) {
 				if (features.equals(e.getValue())) {
@@ -283,7 +307,7 @@ public final class FeatureModelLoader<T> {
 	private enum ParseZone {
 		FEATURES, ALIASES, CONSTRAINTS, SYMBOLS, MODIFIERS, NONE;
 
-		boolean matches(String string) {
+		boolean matches(@NotNull String string) {
 			return name().equals(string.toUpperCase());
 		}
 	}

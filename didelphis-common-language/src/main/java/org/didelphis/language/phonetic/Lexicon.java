@@ -16,6 +16,7 @@ package org.didelphis.language.phonetic;
 
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -29,7 +30,9 @@ public class Lexicon<T> implements Iterable<List<Sequence<T>>> {
 
 	private final List<List<Sequence<T>>> lexicon;
 
-	public static <T> Lexicon<T> fromSingleColumn(SequenceFactory<T> factory,Iterable<String> list) {
+	@NotNull
+	public static <T> Lexicon<T> fromSingleColumn(@NotNull SequenceFactory<T> factory,
+			@NotNull Iterable<String> list) {
 		Lexicon<T> lexicon = new Lexicon<>();
 		for (String entry : list) {
 			Sequence<T> sequence = factory.getSequence(entry);
@@ -38,7 +41,9 @@ public class Lexicon<T> implements Iterable<List<Sequence<T>>> {
 		return lexicon;
 	}
 
-	public static <T> Lexicon<T> fromRows(SequenceFactory<T> factory, Iterable<List<String>> lists) {
+	@NotNull
+	public static <T> Lexicon<T> fromRows(
+			@NotNull SequenceFactory<T> factory, @NotNull Iterable<List<String>> lists) {
 		Lexicon<T> lexicon = new Lexicon<>();
 
 		for (Iterable<String> row : lists) {
@@ -56,7 +61,7 @@ public class Lexicon<T> implements Iterable<List<Sequence<T>>> {
 		lexicon = new ArrayList<>();
 	}
 
-	public Lexicon(Iterable<List<Sequence<T>>> iterable) {
+	public Lexicon(@NotNull Iterable<List<Sequence<T>>> iterable) {
 		lexicon = new ArrayList<>();
 		for (List<Sequence<T>> sequences : iterable) {
 			lexicon.add(new ArrayList<>(sequences));
@@ -73,6 +78,7 @@ public class Lexicon<T> implements Iterable<List<Sequence<T>>> {
 		lexicon.add(row);
 	}
 
+	@NotNull
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -95,11 +101,10 @@ public class Lexicon<T> implements Iterable<List<Sequence<T>>> {
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(@Nullable Object o) {
 		if (this == o) { return true;  }
 		if (o == null) { return false; }
 		if (!(o instanceof Lexicon)) { return false; }
-
 		Lexicon<?> lexicon1 = (Lexicon<?>) o;
 		return lexicon.equals(lexicon1.lexicon);
 	}

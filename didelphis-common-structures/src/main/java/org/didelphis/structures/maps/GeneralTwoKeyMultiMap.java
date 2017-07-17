@@ -81,6 +81,7 @@ public class GeneralTwoKeyMultiMap<T, U, V>
 		return getDelegate().equals(map.getDelegate());
 	}
 	
+	@NotNull
 	@Override
 	public String toString() {
 		return getClass().getName() + '{' + getDelegate() + '}';

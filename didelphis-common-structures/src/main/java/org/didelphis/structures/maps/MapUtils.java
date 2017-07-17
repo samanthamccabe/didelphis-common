@@ -106,7 +106,7 @@ public final class MapUtils {
 		try {
 			//noinspection unchecked
 			return (Map<K, V>) type.getConstructor().newInstance();
-		} catch (InstantiationException | IllegalAccessException
+		} catch (@NotNull InstantiationException | IllegalAccessException
 				| NoSuchMethodException | InvocationTargetException e) {
 			LOG.warn("Unable to create instance of {}. Defaulting to {}", type,
 					HashMap.class, e);
@@ -120,7 +120,7 @@ public final class MapUtils {
 		try {
 			//noinspection unchecked
 			return (Map<K, V>) type.getConstructor(map.getClass()).newInstance(map);
-		} catch (InstantiationException | IllegalAccessException
+		} catch (@NotNull InstantiationException | IllegalAccessException
 				| NoSuchMethodException | InvocationTargetException e) {
 			LOG.warn("Unable to create instance of {}. Defaulting to {}", type,
 					HashMap.class, e);
@@ -134,7 +134,7 @@ public final class MapUtils {
 		try {
 			//noinspection unchecked
 			return (Collection<E>) type.getConstructor().newInstance();
-		} catch (InstantiationException | IllegalAccessException
+		} catch (@NotNull InstantiationException | IllegalAccessException
 				| NoSuchMethodException | InvocationTargetException e) {
 			LOG.warn("Unable to create instance of {}. Defaulting to {}", type,
 					HashSet.class, e);
@@ -150,7 +150,7 @@ public final class MapUtils {
 			//noinspection unchecked
 			return (Collection<E>) type.getConstructor(collection.getClass())
 					.newInstance(collection);
-		} catch (InstantiationException | IllegalAccessException
+		} catch (@NotNull InstantiationException | IllegalAccessException
 				| NoSuchMethodException | InvocationTargetException e) {
 			LOG.warn("Unable to create instance of {}. Defaulting to {}", type,
 					HashSet.class, e);

@@ -14,6 +14,8 @@
 
 package org.didelphis.language.machines;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Samantha Fiona McCabe
@@ -28,6 +30,7 @@ public class Expression {
 	private String  metacharacter = "";
 	private boolean negative;
 	
+	@NotNull
 	@Override
 	public String toString() {
 		return (negative ? "!" : "") + expression + metacharacter;

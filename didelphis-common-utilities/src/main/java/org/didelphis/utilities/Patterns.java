@@ -14,6 +14,8 @@
 
 package org.didelphis.utilities;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.regex.Pattern;
 
 /**
@@ -23,7 +25,7 @@ public final class Patterns {
 	
 	private Patterns() {}
 	
-	public static Pattern template(String head, String... vars) {
+	public static Pattern template(String head, @NotNull String... vars) {
 		String regex = head;
 		for (int i = 0; i < vars.length;i++) {
 			regex = regex.replace("$"+(i+1), vars[i]);
@@ -36,7 +38,7 @@ public final class Patterns {
 		return Pattern.compile(regex, Pattern.UNICODE_CHARACTER_CLASS);
 	}
 
-	private static String concat(String head, String... tail) {
+	private static String concat(String head, @NotNull String... tail) {
 		StringBuilder sb = new StringBuilder(0x100);
 		sb.append(head);
 		for (String string : tail) {

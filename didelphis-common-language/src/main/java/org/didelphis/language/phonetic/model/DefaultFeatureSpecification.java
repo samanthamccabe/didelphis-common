@@ -36,7 +36,7 @@ public final class DefaultFeatureSpecification implements FeatureSpecification {
 	private final List<String> featureNames;
 	private final Map<String, Integer> featureIndices;
 
-	private DefaultFeatureSpecification() {
+	public DefaultFeatureSpecification() {
 		this(new ArrayList<>(), new HashMap<>());
 	}
 
@@ -45,7 +45,7 @@ public final class DefaultFeatureSpecification implements FeatureSpecification {
 	 * @param types
 	 * @param indices
 	 */
-	public DefaultFeatureSpecification(List<String> names, Map<String, Integer> indices) {
+	public DefaultFeatureSpecification(@NotNull List<String> names, Map<String, Integer> indices) {
 		size = names.size();
 		featureNames = names;
 		featureIndices = indices;

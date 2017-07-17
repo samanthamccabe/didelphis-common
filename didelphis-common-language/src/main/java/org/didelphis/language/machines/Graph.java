@@ -16,6 +16,7 @@ package org.didelphis.language.machines;
 
 import org.didelphis.structures.contracts.Delegating;
 import org.didelphis.structures.maps.GeneralTwoKeyMultiMap;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -32,7 +33,7 @@ public class Graph<T> extends GeneralTwoKeyMultiMap<String, T, String> {
 	public Graph() {
 	}
 
-	public Graph(Delegating<Map<String, Map<T, Collection<String>>>> graph) {
+	public Graph(@NotNull Delegating<Map<String, Map<T, Collection<String>>>> graph) {
 		super(graph, HashSet.class);
 	}
 
@@ -49,6 +50,7 @@ public class Graph<T> extends GeneralTwoKeyMultiMap<String, T, String> {
 		return ~(HASH_ID * super.hashCode() >> 2);
 	}
 
+	@NotNull
 	@Override
 	public String toString() {
 		return "Graph{" + super.toString() + '}';

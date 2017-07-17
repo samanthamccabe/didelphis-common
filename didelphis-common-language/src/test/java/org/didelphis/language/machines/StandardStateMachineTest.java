@@ -15,17 +15,17 @@
 package org.didelphis.language.machines;
 
 import org.didelphis.io.ClassPathFileHandler;
-import org.didelphis.language.enums.FormatterMode;
-import org.didelphis.language.enums.ParseDirection;
-import org.didelphis.language.exceptions.ParseException;
+import org.didelphis.language.parsing.FormatterMode;
+import org.didelphis.language.parsing.ParseDirection;
+import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.machines.interfaces.StateMachine;
 import org.didelphis.language.machines.sequences.SequenceMatcher;
 import org.didelphis.language.machines.sequences.SequenceParser;
 import org.didelphis.language.phonetic.SequenceFactory;
 import org.didelphis.language.phonetic.features.IntegerFeature;
+import org.didelphis.language.phonetic.model.FeatureMapping;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
 import org.didelphis.language.phonetic.sequences.Sequence;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Samantha Fiona McCabe
@@ -51,201 +51,192 @@ public class StandardStateMachineTest {
 	private static final int TIMEOUT = 2;
 
 	private static SequenceFactory<Integer> factory() {
-		return new SequenceFactory<>(
-				new FeatureModelLoader<>(
-						IntegerFeature.INSTANCE,
-						ClassPathFileHandler.INSTANCE,
-						Collections.emptyList()
-				).getFeatureMapping(),
-				FormatterMode.NONE);
+		FeatureModelLoader<Integer> loader = new FeatureModelLoader<>(
+				IntegerFeature.INSTANCE,
+				ClassPathFileHandler.INSTANCE,
+				Collections.emptyList());
+		FeatureMapping<Integer> mapping = loader.getFeatureMapping();
+		return new SequenceFactory<>(mapping, FormatterMode.NONE);
 	}
 
-	private static void test(StateMachine<Sequence<Integer>> machine, String target) {
-		
+	private static void assertMatches(StateMachine<Sequence<Integer>> machine, String target) {
 		final Collection<Integer> matchIndices = new ArrayList<>();
-		Assertions.assertTimeoutPreemptively(Duration.ofSeconds(5),() -> {
+		assertTimeoutPreemptively(Duration.ofSeconds(5),() -> {
 			Collection<Integer> collection = testMachine(machine, target);
 			matchIndices.addAll(collection);
 		});
-		Assertions.assertFalse(matchIndices.isEmpty(), "Machine failed to accept input: " + target);
+		assertFalse(matchIndices.isEmpty(), "Machine failed to accept input: " + target);
 	}
 
 	@Test
 	void testIllegalBoundary01() {
-		testIllegal("a#?");
+		assertThrowsParse("a#?");
 	}
 
 	@Test
 	void testIllegalBoundary02() {
-		testIllegal("a#+");
+		assertThrowsParse("a#+");
 	}
 
 	@Test
 	void testIllegalBoundary03() {
-		testIllegal("a#*");
+		assertThrowsParse("a#*");
 	}
 
 	@Test
 	void testIllegalBoundary04() {
-		testIllegal("#*a");
+		assertThrowsParse("#*a");
 	}
 
 	@Test
 	void testStarQuestionMark() {
-		testIllegal("a*?");
+		assertThrowsParse("a*?");
 	}
 
 	@Test
 	void testPlusQuestionMark() {
-		testIllegal("a+?");
+		assertThrowsParse("a+?");
 	}
 
 	@Test
 	void testPlusStarMark() {
-		testIllegal("a+*");
+		assertThrowsParse("a+*");
 	}
 
 	@Test
 	void testUnmatchedCurly() {
-		testIllegal("{a");
+		assertThrowsParse("{a");
 	}
 
 	@Test
 	void testUnmatchedParen() {
-		testIllegal("(a");
+		assertThrowsParse("(a");
 	}
-
 
 	@Test
 	void testBasic01() {
 		StateMachine<Sequence<Integer>> machine = getMachine("a");
-
-		test(machine, "a");
-		test(machine, "aa");
-
-		fail(machine, "b");
-		fail(machine, "c");
+		assertMatches(machine, "a");
+		assertMatches(machine, "aa");
+		assertNotMatches(machine, "b");
+		assertNotMatches(machine, "c");
 	}
 
 	@Test
 	void testBasic02() {
 		StateMachine<Sequence<Integer>> machine = getMachine("aaa");
-
-		test(machine, "aaa");
-
-		fail(machine, "a");
-		fail(machine, "aa");
-		fail(machine, "b");
-		fail(machine, "c");
+		assertMatches(machine, "aaa");
+		assertNotMatches(machine, "a");
+		assertNotMatches(machine, "aa");
+		assertNotMatches(machine, "b");
+		assertNotMatches(machine, "c");
 	}
 
 	@Test
 	void testBasic03() throws IOException {
 		StateMachine<Sequence<Integer>> machine = getMachine("aaa?");
-
-		test(machine, "aa");
-		test(machine, "aaa");
-
-		fail(machine, "a");
-		fail(machine, "b");
-		fail(machine, "c");
+		assertMatches(machine, "aa");
+		assertMatches(machine, "aaa");
+		assertNotMatches(machine, "a");
+		assertNotMatches(machine, "b");
+		assertNotMatches(machine, "c");
 	}
 
 	@Test
 	void testBasic04() throws IOException {
 		StateMachine<Sequence<Integer>> machine = getMachine("ab*cd?ab");
 
-		test(machine, "acab");
-		test(machine, "abcab");
-		test(machine, "abbcab");
-		test(machine, "abbbcab");
+		assertMatches(machine, "acab");
+		assertMatches(machine, "abcab");
+		assertMatches(machine, "abbcab");
+		assertMatches(machine, "abbbcab");
 
-		test(machine, "acdab");
-		test(machine, "abcdab");
-		test(machine, "abbcdab");
-		test(machine, "abbbcdab");
+		assertMatches(machine, "acdab");
+		assertMatches(machine, "abcdab");
+		assertMatches(machine, "abbcdab");
+		assertMatches(machine, "abbbcdab");
 
-		fail(machine, "acddab");
-		fail(machine, "abcddab");
-		fail(machine, "abbcddab");
-		fail(machine, "abbbcddab");
+		assertNotMatches(machine, "acddab");
+		assertNotMatches(machine, "abcddab");
+		assertNotMatches(machine, "abbcddab");
+		assertNotMatches(machine, "abbbcddab");
 	}
 
 	@Test
 	void testStar() throws IOException {
 		StateMachine<Sequence<Integer>> machine = getMachine("aa*");
 
-		test(machine, "a");
-		test(machine, "aa");
-		test(machine, "aaa");
-		test(machine, "aaaa");
-		test(machine, "aaaaa");
-		test(machine, "aaaaaa");
+		assertMatches(machine, "a");
+		assertMatches(machine, "aa");
+		assertMatches(machine, "aaa");
+		assertMatches(machine, "aaaa");
+		assertMatches(machine, "aaaaa");
+		assertMatches(machine, "aaaaaa");
 	}
 
 	@Test
 	void testStateMachinePlus() throws IOException {
 		StateMachine<Sequence<Integer>> machine = getMachine("a+");
 
-		test(machine, "a");
-		test(machine, "aa");
-		test(machine, "aaa");
-		test(machine, "aaaa");
-		test(machine, "aaaaa");
-		test(machine, "aaaaaa");
+		assertMatches(machine, "a");
+		assertMatches(machine, "aa");
+		assertMatches(machine, "aaa");
+		assertMatches(machine, "aaaa");
+		assertMatches(machine, "aaaaa");
+		assertMatches(machine, "aaaaaa");
 
-		test(machine, "ab");
+		assertMatches(machine, "ab");
 	}
 
 	@Test
 	void testGroups() {
 		StateMachine<Sequence<Integer>> machine = getMachine("(ab)(cd)(ef)");
 
-		test(machine, "abcdef");
-		fail(machine, "abcd");
-		fail(machine, "ab");
-		fail(machine, "bcdef");
+		assertMatches(machine, "abcdef");
+		assertNotMatches(machine, "abcd");
+		assertNotMatches(machine, "ab");
+		assertNotMatches(machine, "bcdef");
 	}
 
 	@Test
 	void testGroupStar01() {
 		StateMachine<Sequence<Integer>> machine = getMachine("(ab)*(cd)(ef)");
 
-		test(machine, "abababcdef");
-		test(machine, "ababcdef");
-		test(machine, "abcdef");
-		test(machine, "cdef");
+		assertMatches(machine, "abababcdef");
+		assertMatches(machine, "ababcdef");
+		assertMatches(machine, "abcdef");
+		assertMatches(machine, "cdef");
 
-		fail(machine, "abcd");
-		fail(machine, "ab");
-		fail(machine, "bcdef");
-		fail(machine, "abbcdef");
+		assertNotMatches(machine, "abcd");
+		assertNotMatches(machine, "ab");
+		assertNotMatches(machine, "bcdef");
+		assertNotMatches(machine, "abbcdef");
 	}
 
 	@Test
 	void testGroupStar02() throws IOException {
 		StateMachine<Sequence<Integer>> machine = getMachine("d(eo*)*b");
 
-		test(machine, "db");
-		test(machine, "deb");
-		test(machine, "deeb");
-		test(machine, "deob");
-		test(machine, "deoob");
-		test(machine, "deoeob");
-		test(machine, "deoeoob");
+		assertMatches(machine, "db");
+		assertMatches(machine, "deb");
+		assertMatches(machine, "deeb");
+		assertMatches(machine, "deob");
+		assertMatches(machine, "deoob");
+		assertMatches(machine, "deoeob");
+		assertMatches(machine, "deoeoob");
 
-		fail(machine, "abcd");
-		fail(machine, "ab");
-		fail(machine, "bcdef");
-		fail(machine, "abbcdef");
+		assertNotMatches(machine, "abcd");
+		assertNotMatches(machine, "ab");
+		assertNotMatches(machine, "bcdef");
+		assertNotMatches(machine, "abbcdef");
 	}
 
 	@Test
 	void testGroupOptional01() throws IOException {
 		StateMachine<Sequence<Integer>> machine = getMachine("(ab)?(cd)(ef)");
 
-		test(machine, "abcdef");
-		test(machine, "cdef");
+		assertMatches(machine, "abcdef");
+		assertMatches(machine, "cdef");
 	}
 
 
@@ -253,81 +244,81 @@ public class StandardStateMachineTest {
 	void testSets01() throws IOException {
 		StateMachine<Sequence<Integer>> machine = getMachine("{ x ɣ }");
 
-		test(machine, "x");
-		test(machine, "ɣ");
-		fail(machine, " ");
+		assertMatches(machine, "x");
+		assertMatches(machine, "ɣ");
+		assertNotMatches(machine, " ");
 	}
 
 	@Test
 	void testSets02() throws IOException {
 		StateMachine<Sequence<Integer>> machine = getMachine("{ab {cd xy} ef}tr");
 
-		test(machine, "abtr");
-		test(machine, "cdtr");
-		test(machine, "xytr");
-		test(machine, "eftr");
-		fail(machine, " ");
+		assertMatches(machine, "abtr");
+		assertMatches(machine, "cdtr");
+		assertMatches(machine, "xytr");
+		assertMatches(machine, "eftr");
+		assertNotMatches(machine, " ");
 	}
 
 	@Test
 	void testSetsExtraSpace01() {
 		StateMachine<Sequence<Integer>> machine = getMachine("{cʰ  c  ɟ}");
 
-		test(machine, "cʰ");
-		test(machine, "c");
-		test(machine, "ɟ");
+		assertMatches(machine, "cʰ");
+		assertMatches(machine, "c");
+		assertMatches(machine, "ɟ");
 	}
 
 	@Test
 	void testGroupPlus01() throws IOException {
 		StateMachine<Sequence<Integer>> machine = getMachine("(ab)+");
 
-		test(machine, "ab");
-		test(machine, "abab");
-		test(machine, "ababab");
+		assertMatches(machine, "ab");
+		assertMatches(machine, "abab");
+		assertMatches(machine, "ababab");
 	}
 
 	@Test
 	void testComplexGroups01() throws IOException {
 		StateMachine<Sequence<Integer>> machine = getMachine("(a+l(ham+b)*ra)+");
 
-		test(machine, "alhambra");
+		assertMatches(machine, "alhambra");
 	}
 
 	@Test
 	void testComplex06() {
 		StateMachine<Sequence<Integer>> machine = getMachine("{r l}{i u}s");
 
-		test(machine, "ris");
-		test(machine, "rus");
+		assertMatches(machine, "ris");
+		assertMatches(machine, "rus");
 
-		test(machine, "lis");
-		test(machine, "lus");
+		assertMatches(machine, "lis");
+		assertMatches(machine, "lus");
 
-		fail(machine, "is");
-		fail(machine, "us");
+		assertNotMatches(machine, "is");
+		assertNotMatches(machine, "us");
 
-		fail(machine, "rs");
-		fail(machine, "ls");
+		assertNotMatches(machine, "rs");
+		assertNotMatches(machine, "ls");
 	}
 
 	@Test
 	void testComplex07() {
 		StateMachine<Sequence<Integer>> machine = getMachine("{r l}?{i u}?s");
 
-		test(machine, "s");
+		assertMatches(machine, "s");
 
-		test(machine, "is");
-		test(machine, "us");
+		assertMatches(machine, "is");
+		assertMatches(machine, "us");
 		
-		test(machine, "rs");
-		test(machine, "ls");
+		assertMatches(machine, "rs");
+		assertMatches(machine, "ls");
 
-		test(machine, "ris");
-		test(machine, "rus");
+		assertMatches(machine, "ris");
+		assertMatches(machine, "rus");
 
-		test(machine, "lis");
-		test(machine, "lus");
+		assertMatches(machine, "lis");
+		assertMatches(machine, "lus");
 	}
 
 	@Test
@@ -335,18 +326,18 @@ public class StandardStateMachineTest {
 		StateMachine<Sequence<Integer>> machine = getMachine(
 				"{r l}?{a e o ā ē ō}{i u}?{n m l r}?{pʰ tʰ kʰ cʰ}us");
 
-		test(machine, "ācʰus");
+		assertMatches(machine, "ācʰus");
 	}
 
 	@Test
 	void testComplex03() {
 		StateMachine<Sequence<Integer>> machine = getMachine("a?{pʰ tʰ kʰ cʰ}us");
 
-		test(machine, "pʰus");
-		test(machine, "tʰus");
-		test(machine, "kʰus");
-		test(machine, "cʰus");
-		test(machine, "acʰus");
+		assertMatches(machine, "pʰus");
+		assertMatches(machine, "tʰus");
+		assertMatches(machine, "kʰus");
+		assertMatches(machine, "cʰus");
+		assertMatches(machine, "acʰus");
 	}
 
 	@Test
@@ -354,23 +345,23 @@ public class StandardStateMachineTest {
 		StateMachine<Sequence<Integer>> machine = getMachine(
 				"{a e o ā ē ō}{pʰ tʰ kʰ cʰ}us");
 		
-		test(machine, "apʰus");
-		test(machine, "atʰus");
-		test(machine, "akʰus");
-		test(machine, "acʰus");
+		assertMatches(machine, "apʰus");
+		assertMatches(machine, "atʰus");
+		assertMatches(machine, "akʰus");
+		assertMatches(machine, "acʰus");
 	}
 
 	@Test
 	void testComplex01() throws IOException {
 		StateMachine<Sequence<Integer>> machine = getMachine("a?(b?c?)d?b");
 
-		test(machine, "b");
-		test(machine, "db");
-		test(machine, "bcdb");
-		test(machine, "acdb");
-		test(machine, "abdb");
-		test(machine, "abcb");
-		test(machine, "abcdb");
+		assertMatches(machine, "b");
+		assertMatches(machine, "db");
+		assertMatches(machine, "bcdb");
+		assertMatches(machine, "acdb");
+		assertMatches(machine, "abdb");
+		assertMatches(machine, "abcb");
+		assertMatches(machine, "abcdb");
 	}
 
 	@Test
@@ -378,99 +369,97 @@ public class StandardStateMachineTest {
 		StateMachine<Sequence<Integer>> machine = getMachine(
 				"{ab* (cd?)+ ((ae)*f)+}tr");
 
-		test(machine, "abtr");
-		test(machine, "cdtr");
-		test(machine, "ftr");
-		test(machine, "aeftr");
-		test(machine, "aeaeftr");
+		assertMatches(machine, "abtr");
+		assertMatches(machine, "cdtr");
+		assertMatches(machine, "ftr");
+		assertMatches(machine, "aeftr");
+		assertMatches(machine, "aeaeftr");
 
-		test(machine, "cctr");
-		test(machine, "ccctr");
-		test(machine, "fftr");
-		test(machine, "aefaeftr");
-		test(machine, "aefffffaeftr");
+		assertMatches(machine, "cctr");
+		assertMatches(machine, "ccctr");
+		assertMatches(machine, "fftr");
+		assertMatches(machine, "aefaeftr");
+		assertMatches(machine, "aefffffaeftr");
 
-		fail(machine, "abcd");
-		fail(machine, "tr");
+		assertNotMatches(machine, "abcd");
+		assertNotMatches(machine, "tr");
 	}
 
 	@Test
 	void testDot01() throws IOException {
 		StateMachine<Sequence<Integer>> machine = getMachine("..");
 
-		test(machine, "ab");
-		test(machine, "db");
-		test(machine, "bcdb");
-		test(machine, "acdb");
-		test(machine, "abdb");
-		test(machine, "abcb");
-		test(machine, "abcdb");
+		assertMatches(machine, "ab");
+		assertMatches(machine, "db");
+		assertMatches(machine, "bcdb");
+		assertMatches(machine, "acdb");
+		assertMatches(machine, "abdb");
+		assertMatches(machine, "abcb");
+		assertMatches(machine, "abcdb");
 
-		fail(machine, "a");
-		fail(machine, "b");
-		fail(machine, "c");
-		fail(machine, "d");
-		fail(machine, "e");
-		fail(machine, "");
+		assertNotMatches(machine, "a");
+		assertNotMatches(machine, "b");
+		assertNotMatches(machine, "c");
+		assertNotMatches(machine, "d");
+		assertNotMatches(machine, "e");
+		assertNotMatches(machine, "");
 	}
 
 	@Test
 	void testDot02() throws IOException {
 		StateMachine<Sequence<Integer>> machine = getMachine("a..");
 
-		test(machine, "abb");
-		test(machine, "acdb");
-		test(machine, "abdb");
-		test(machine, "abcb");
-		test(machine, "abcdb");
+		assertMatches(machine, "abb");
+		assertMatches(machine, "acdb");
+		assertMatches(machine, "abdb");
+		assertMatches(machine, "abcb");
+		assertMatches(machine, "abcdb");
 
-		fail(machine, "");
-		fail(machine, "a");
-		fail(machine, "b");
-		fail(machine, "c");
-		fail(machine, "d");
-		fail(machine, "e");
-		fail(machine, "aa");
-		fail(machine, "db");
-		fail(machine, "bcdb");
+		assertNotMatches(machine, "");
+		assertNotMatches(machine, "a");
+		assertNotMatches(machine, "b");
+		assertNotMatches(machine, "c");
+		assertNotMatches(machine, "d");
+		assertNotMatches(machine, "e");
+		assertNotMatches(machine, "aa");
+		assertNotMatches(machine, "db");
+		assertNotMatches(machine, "bcdb");
 	}
 
 	@Test
 	void testGroupsDot() {
 		StateMachine<Sequence<Integer>> machine = getMachine(".*(cd)(ef)");
 
-		test(machine, "cdef");
-		test(machine, "bcdef");
-		test(machine, "abcdef");
-		test(machine, "xabcdef");
-		test(machine, "xyabcdef");
+		assertMatches(machine, "cdef");
+		assertMatches(machine, "bcdef");
+		assertMatches(machine, "abcdef");
+		assertMatches(machine, "xabcdef");
+		assertMatches(machine, "xyabcdef");
 
-		fail(machine, "abcd");
-		fail(machine, "ab");
+		assertNotMatches(machine, "abcd");
+		assertNotMatches(machine, "ab");
 	}
 
 	@Test
 	void testGroupsDotPlus() {
 		StateMachine<Sequence<Integer>> machine = getMachine(".+(cd)(ef)");
 
-		test(machine, "bcdef");
-		test(machine, "abcdef");
-		test(machine, "xabcdef");
-		test(machine, "xyabcdef");
+		assertMatches(machine, "bcdef");
+		assertMatches(machine, "abcdef");
+		assertMatches(machine, "xabcdef");
+		assertMatches(machine, "xyabcdef");
 
-		fail(machine, "cdef");
-		fail(machine, "abcd");
-		fail(machine, "ab");
+		assertNotMatches(machine, "cdef");
+		assertNotMatches(machine, "abcd");
+		assertNotMatches(machine, "ab");
 	}
 
 
 	@Test
 	void testBoundary() {
 		StateMachine<Sequence<Integer>> machine = getMachine("a#");
-
-		test(machine, "a");
-
-		fail(machine, "ab");
+		assertMatches(machine, "a");
+		assertNotMatches(machine, "ab");
 	}
 
 
@@ -478,17 +467,17 @@ public class StandardStateMachineTest {
 	void testGroupsDotStar() {
 		StateMachine<Sequence<Integer>> machine = getMachine("(a.)*cd#");
 
-		test(machine, "cd");
-		test(machine, "aXcd");
-		test(machine, "aXaYcd");
-		test(machine, "aXaYaZcd");
+		assertMatches(machine, "cd");
+		assertMatches(machine, "aXcd");
+		assertMatches(machine, "aXaYcd");
+		assertMatches(machine, "aXaYaZcd");
 
-		fail(machine, "cdef");
-		fail(machine, "bcd");
-		fail(machine, "acd");
+		assertNotMatches(machine, "cdef");
+		assertNotMatches(machine, "bcd");
+		assertNotMatches(machine, "acd");
 	}
 
-	private static void testIllegal(String expression) {
+	private static void assertThrowsParse(String expression) {
 		assertThrows(ParseException.class, () -> getMachine(expression));
 	}
 
@@ -502,14 +491,14 @@ public class StandardStateMachineTest {
 				ParseDirection.FORWARD);
 	}
 
-	private static void fail(StateMachine<Sequence<Integer>> machine,
+	private static void assertNotMatches(StateMachine<Sequence<Integer>> machine,
 			String target) {
 		final Collection<Integer> matchIndices = new ArrayList<>();
-		Assertions.assertTimeoutPreemptively(Duration.ofSeconds(TIMEOUT),() -> {
+		assertTimeoutPreemptively(Duration.ofSeconds(TIMEOUT),() -> {
 			Collection<Integer> collection = testMachine(machine, target);
 			matchIndices.addAll(collection);
 		});
-		Assertions.assertTrue(matchIndices.isEmpty(),
+		assertTrue(matchIndices.isEmpty(),
 				"Machine accepted input it should not have: " + target);
 	}
 

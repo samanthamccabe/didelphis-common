@@ -14,25 +14,32 @@
 
 package org.didelphis.language.phonetic;
 
-import java.util.List;
+import org.didelphis.io.ClassPathFileHandler;
+import org.didelphis.language.parsing.FormatterMode;
+import org.didelphis.language.phonetic.features.IntegerFeature;
+import org.didelphis.language.phonetic.model.FeatureModelLoader;
+import org.junit.jupiter.api.BeforeAll;
 
 /**
- * Created by samantha on 1/22/17.
+ * Class {@code PhoneticTestBase}
+ *
+ * @author Samantha Fiona McCabe
+ * @since 0.1.0 Date: 2017-06-24
  */
-public interface Segmenter {
+public class PhoneticTestBase {
 
-	/**
-	 * Splits a string into components using reserved symbols
-	 * @param string string to be segmented
-	 * @return a list of strings
-	 */
-	List<String> split(String string);
+	protected static FeatureModelLoader<Integer> loader;
+	protected static SequenceFactory<Integer> factory;
 
-	/**
-	 * Splits a string into components using reserved symbols
-	 * @param string string to be segmented
-	 * @param special reserved characters to be treated as unitary
-	 * @return a list of strings
-	 */
-	List<String> split(String string, Iterable<String> special);
+	@BeforeAll
+	private static void load() {
+		String path = "AT_hybrid.model";
+		loader = new FeatureModelLoader<>(
+				IntegerFeature.INSTANCE,
+				ClassPathFileHandler.INSTANCE,
+				path);
+		factory = new SequenceFactory<>(
+				loader.getFeatureMapping(),
+				FormatterMode.INTELLIGENT);
+	}
 }

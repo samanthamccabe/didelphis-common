@@ -17,6 +17,7 @@ package org.didelphis.structures.maps;
 import org.didelphis.structures.contracts.Delegating;
 import org.didelphis.structures.maps.interfaces.TwoKeyMultiMap;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -67,7 +68,7 @@ public class SymmetricalTwoKeyMultiMap<K, V>
 	}
 	
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(@Nullable Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		SymmetricalTwoKeyMultiMap<?,?> that = (SymmetricalTwoKeyMultiMap<?,?>) o;
@@ -79,6 +80,7 @@ public class SymmetricalTwoKeyMultiMap<K, V>
 		return ~(HASH_ID ^ super.hashCode() << 1);
 	}
 
+	@NotNull
 	@Override
 	public String toString() {
 		return getClass().getName() + "-> {" + getDelegate() + '}';
