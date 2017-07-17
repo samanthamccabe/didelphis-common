@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -126,6 +127,13 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 	@Override
 	public Stream<E> stream() {
 		return array.stream();
+	}
+
+	@Override
+	public void apply(@NotNull Function<E, E> function) {
+		for (int i = 0; i < array.size(); i++) {
+			array.set(i, function.apply(array.get(i)));
+		}
 	}
 
 	@NotNull

@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
@@ -102,6 +103,14 @@ public interface Table<E> extends Structure {
 	 */
 	@NotNull
 	Stream<E> stream();
+
+	/**
+	 * Applies a transformation to each element of the table; this is provided
+	 * for cases where {@link Table#stream} cannot be used because the type
+	 * {@code <E>} is immutable
+	 * @param function the function to be applied to each element of the table
+	 */
+	void apply(@NotNull Function<E,E> function);
 
 	/**
 	 * Provides an {@link Iterator} over the rows of the table, each row
