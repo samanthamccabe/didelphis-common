@@ -72,4 +72,14 @@ public enum ByteFeature implements FeatureType<Byte> {
 	private byte validate(Byte t) {
 		return isDefined(t) ? t : 0;
 	}
+
+	@Override
+	public int intValue(Byte value) {
+		return (value == null) ? 0 : value.intValue();
+	}
+
+	@Override
+	public double doubleValue(Byte value) {
+		return (value == null) ? Double.NaN : value.doubleValue();
+	}
 }

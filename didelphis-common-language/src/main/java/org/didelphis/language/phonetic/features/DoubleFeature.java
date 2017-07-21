@@ -41,6 +41,16 @@ public enum DoubleFeature implements FeatureType<Double> {
 	private static final List<Double> LIST = Arrays.asList(null, Double.NaN,
 			Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
+	@Override
+	public int intValue(Double value) {
+		return (value == null) ? 0 : value.intValue();
+	}
+
+	@Override
+	public double doubleValue(Double value) {
+		return (value == null) ? Double.NaN : value;
+	}
+
 	@NotNull
 	@Override
 	public Double parseValue(@NotNull String string) {
