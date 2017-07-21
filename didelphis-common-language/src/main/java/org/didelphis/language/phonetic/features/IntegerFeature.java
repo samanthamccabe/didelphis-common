@@ -67,12 +67,22 @@ public enum IntegerFeature implements FeatureType<Integer> {
 	}
 
 	@Override
-	public double difference(@NotNull Integer v1, @NotNull Integer v2) {
+	public double difference(@Nullable Integer v1, @Nullable Integer v2) {
 		return Math.abs(checkValue(v1) - checkValue(v2));
 	}
 
 	@NotNull
-	private Integer checkValue(@NotNull Integer value) {
+	private Integer checkValue(@Nullable Integer value) {
 		return isDefined(value) ? value : 0;
+	}
+
+	@Override
+	public int intValue(Integer value) {
+		return (value == null) ? 0 : value;
+	}
+
+	@Override
+	public double doubleValue(Integer value) {
+		return (value == null) ? Double.NaN : value.doubleValue();
 	}
 }

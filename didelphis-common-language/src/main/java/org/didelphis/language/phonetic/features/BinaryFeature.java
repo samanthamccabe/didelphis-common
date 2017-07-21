@@ -69,4 +69,14 @@ public enum BinaryFeature implements FeatureType<Boolean> {
 	private boolean validate(Boolean v) {
 		return isDefined(v) ? v : false;
 	}
+
+	@Override
+	public int intValue(Boolean value) {
+		return (value == null) ? 0 : (value ? 1 : 0);
+	}
+
+	@Override
+	public double doubleValue(Boolean value) {
+		return intValue(value);
+	}
 }

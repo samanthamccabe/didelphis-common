@@ -65,7 +65,7 @@ public interface FeatureType<T> {
 	 * @return true iff the value is defined
 	 */
 	default boolean isDefined(@Nullable T value) {
-		return !listUndefined().contains(value);
+		return value != null && !listUndefined().contains(value);
 	}
 
 	/**
@@ -91,5 +91,18 @@ public interface FeatureType<T> {
 	 */
 	double difference(@Nullable T v1,@Nullable T v2);
 
+	/**
+	 * Returns the {@code int} value of this given value;
+	 * @param value the value to be converted
+	 * @return  the {@code int} represented by a given value
+	 */
+	int intValue(@Nullable T value);
+
+	/**
+	 * Returns the {@code double} value of this given value;
+	 * @param value the value to be converted
+	 * @return the {@code double} represented by a given value
+	 */
+	double doubleValue(@Nullable T value);
 
 }
