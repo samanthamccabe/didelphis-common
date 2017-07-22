@@ -23,7 +23,7 @@ import java.util.Collection;
  * Created by samantha on 5/4/17.
  */
 public interface MultiMap<K, V> 
-		extends Iterable<Tuple<K, Collection<V>>>, Structure {
+		extends Iterable<Tuple<K,Collection<V>>>, Structure {
 
 	Collection<V> get(K key);
 	

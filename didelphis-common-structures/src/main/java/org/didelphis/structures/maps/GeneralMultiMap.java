@@ -16,6 +16,7 @@ package org.didelphis.structures.maps;
 
 import org.didelphis.structures.contracts.Delegating;
 import org.didelphis.structures.maps.interfaces.MultiMap;
+import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Tuple;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,10 +32,10 @@ import java.util.stream.Collectors;
  * Created by samantha on 5/4/17.
  */
 @SuppressWarnings("rawtypes")
-public class GeneralMultiMap<K, V>
-		implements MultiMap<K, V>, Delegating<Map<K,Collection<V>>> {
+public class GeneralMultiMap<K, V> implements MultiMap<K, V>,
+		Delegating<Map<K,Collection<V>>> {
 
-	private final Map<K,Collection<V>> delegate;
+	private final Map<K, Collection<V>> delegate;
 	
 	private final Class<? extends Collection> type;
 			
@@ -126,7 +127,8 @@ public class GeneralMultiMap<K, V>
 	@Override
 	public Iterator<Tuple<K, Collection<V>>> iterator() {
 		return delegate.entrySet().stream()
-				.map(entry -> new Tuple<>(entry.getKey(), entry.getValue()))
+				.map(entry -> (Tuple<K,Collection<V>>) new Couple<>(
+						entry.getKey(), entry.getValue()))
 				.collect(Collectors.toList()).iterator();
 	}
 

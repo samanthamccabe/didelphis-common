@@ -23,13 +23,13 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 /**
  * Created by samantha on 4/22/17.
  */
-class TupleTest {
+class CoupleTest {
 
-	private static Tuple<String, String> tuple;
+	private static Couple<String, String> tuple;
 
 	@BeforeAll
 	static void init() {
-		tuple = new Tuple<>("x", "Y");
+		tuple = new Couple<>("x", "Y");
 	}
 
 	@Test
@@ -44,8 +44,8 @@ class TupleTest {
 
 	@Test
 	void testHashCode() {
-		Tuple<String, String> tuple1 = new Tuple<>(tuple);
-		Tuple<String, String> tuple2 = new Tuple<>("y", "Y");
+		Tuple<String,String> tuple1 = new Couple<>(tuple);
+		Tuple<String,String> tuple2 = new Couple<>("y", "Y");
 
 		assertEquals(tuple.hashCode(), tuple1.hashCode());
 		assertNotEquals(tuple2.hashCode(), tuple.hashCode());
@@ -53,8 +53,8 @@ class TupleTest {
 
 	@Test
 	void testEquals() {
-		Tuple<String, String> tuple1 = new Tuple<>(tuple);
-		Tuple<String, String> tuple2 = new Tuple<>("y", "Y");
+		Tuple<String,String> tuple1 = new Couple<>(tuple);
+		Tuple<String,String> tuple2 = new Couple<>("y", "Y");
 
 		assertEquals(tuple, tuple1);
 		assertNotEquals(tuple2, tuple);
@@ -62,8 +62,8 @@ class TupleTest {
 
 	@Test
 	void testToString() {
-		Tuple<String, String> tuple1 = new Tuple<>(tuple);
-		Tuple<String, String> tuple2 = new Tuple<>("y", "Y");
+		Tuple<String,String> tuple1 = new Couple<>(tuple);
+		Tuple<String,String> tuple2 = new Couple<>("y", "Y");
 
 		assertEquals(tuple.toString(), tuple1.toString());
 		assertNotEquals(tuple2.toString(), tuple.toString());

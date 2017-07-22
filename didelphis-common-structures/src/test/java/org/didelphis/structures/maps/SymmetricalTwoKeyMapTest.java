@@ -16,6 +16,7 @@ package org.didelphis.structures.maps;
 
 import org.didelphis.structures.maps.interfaces.TwoKeyMap;
 import org.didelphis.structures.tuples.Triple;
+import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -152,13 +153,13 @@ class SymmetricalTwoKeyMapTest {
 	
 	@Test
 	void keys() {
-		Collection<Tuple<String, String>> expected = new ArrayList<>();
-		expected.add(new Tuple<>("A", "B"));
-		expected.add(new Tuple<>("A", "C"));
-		expected.add(new Tuple<>("A", "D"));
-		expected.add(new Tuple<>("B", "C"));
-		expected.add(new Tuple<>("B", "D"));
-		expected.add(new Tuple<>("C", "D"));
+		Collection<Tuple<String,String>> expected = new ArrayList<>();
+		expected.add(new Couple<>("A", "B"));
+		expected.add(new Couple<>("A", "C"));
+		expected.add(new Couple<>("A", "D"));
+		expected.add(new Couple<>("B", "C"));
+		expected.add(new Couple<>("B", "D"));
+		expected.add(new Couple<>("C", "D"));
 
 		try {
 			HashMap<String, String> hashMap = new HashMap<>();

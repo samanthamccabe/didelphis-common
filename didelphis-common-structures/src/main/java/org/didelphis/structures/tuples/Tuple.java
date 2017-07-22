@@ -14,65 +14,16 @@
 
 package org.didelphis.structures.tuples;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
-
 /**
- * {@code Tuple} is a class which should be used judiciously. It's main purpose 
- * is to help provide views of key sets in two-key maps.
- *
- * In many contexts, use of a class like this might indicate poor design. As it
- * is, {@code Tuple} is used to provide an {@code Iterator} for two-key maps.
- *
+ * Class {@code Tuple}
  *
  * @author Samantha Fiona McCabe
- * Date: 4/10/2016
+ * @since 0.1.0 Date: 2017-07-22
  */
-public class Tuple<L, R> {
+public interface Tuple<L, R> {
+	L getLeft();
 
-	private final L left;
-	private final R right;
+	R getRight();
 
-	public Tuple(L left, R right) {
-		this.left = left;
-		this.right = right;
-	}
-
-	public Tuple(@NotNull Tuple<L, R> tuple) {
-		left = tuple.left;
-		right = tuple.right;
-	}
-
-	public L getLeft() {
-		return left;
-	}
-
-	public R getRight() {
-		return right;
-	}
-	
-	public boolean contains(Object entry) {
-		return Objects.equals(entry, left) || Objects.equals(entry, right);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(left, right);
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof Tuple)) return false;
-		Tuple<?, ?> tuple = (Tuple<?, ?>) o;
-		return Objects.equals(left, tuple.left) &&
-				Objects.equals(right, tuple.right);
-	}
-
-	@NotNull
-	@Override
-	public String toString() {
-		return "<" + left + ", " + right + '>';
-	}
+	boolean contains(Object entry);
 }

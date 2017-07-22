@@ -47,13 +47,13 @@ public class SymmetricalTwoKeyMap<K, V>
 	@Nullable
 	@Override
 	public V get(K k1, K k2) {
-		Tuple<K, K> tuple = canonicalKeyPair(k1, k2);
+		Tuple<K,K> tuple = canonicalKeyPair(k1, k2);
 		return super.get(tuple.getLeft(), tuple.getRight());
 	}
 
 	@Override
 	public void put(K k1, K k2, V value) {
-		Tuple<K, K> tuple = canonicalKeyPair(k1, k2);
+		Tuple<K,K> tuple = canonicalKeyPair(k1, k2);
 		super.put(tuple.getLeft(), tuple.getRight(), value);
 	}
 
@@ -69,7 +69,7 @@ public class SymmetricalTwoKeyMap<K, V>
 
 	@Override
 	public boolean contains(K k1, K k2) {
-		Tuple<K, K> tuple = canonicalKeyPair(k1, k2);
+		Tuple<K,K> tuple = canonicalKeyPair(k1, k2);
 		return super.contains(tuple.getLeft(), tuple.getRight());
 	}
 

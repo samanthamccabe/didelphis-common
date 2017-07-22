@@ -17,6 +17,7 @@ package org.didelphis.structures.maps;
 import org.didelphis.structures.contracts.Delegating;
 import org.didelphis.structures.maps.interfaces.TwoKeyMap;
 import org.didelphis.structures.tuples.Triple;
+import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Tuple;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -91,12 +92,12 @@ public class GeneralTwoKeyMap<T, U, V>
 
 	@NotNull
 	@Override
-	public Collection<Tuple<T, U>> keys() {
-		Collection<Tuple<T, U>> keys = new ArrayList<>();
+	public Collection<Tuple<T,U>> keys() {
+		Collection<Tuple<T,U>> keys = new ArrayList<>();
 		for (Entry<T, Map<U, V>> entry : delegate.entrySet()) {
 			T k1 = entry.getKey();
 			for (U k2 : entry.getValue().keySet()) {
-				keys.add(new Tuple<>(k1, k2));
+				keys.add(new Couple<>(k1, k2));
 			}
 		}
 		return keys;
