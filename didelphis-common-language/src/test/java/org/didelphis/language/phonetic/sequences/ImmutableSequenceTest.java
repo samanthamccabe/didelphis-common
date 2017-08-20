@@ -1,15 +1,15 @@
 /*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
+ = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
+ =                                                                              
+ = Licensed under the Apache License, Version 2.0 (the "License");              
+ = you may not use this file except in compliance with the License.             
+ = You may obtain a copy of the License at                                      
+ =     http://www.apache.org/licenses/LICENSE-2.0                               
+ = Unless required by applicable law or agreed to in writing, software          
+ = distributed under the License is distributed on an "AS IS" BASIS,            
+ = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
+ = See the License for the specific language governing permissions and          
+ = limitations under the License.                                               
  =============================================================================*/
 
 package org.didelphis.language.phonetic.sequences;
@@ -43,23 +43,23 @@ class ImmutableSequenceTest {
 		FeatureModelLoader<Integer> loader = new FeatureModelLoader<>(
 				IntegerFeature.INSTANCE);
 		factory = new SequenceFactory<>(loader.getFeatureMapping(), FormatterMode.NONE);
-		sequence = new ImmutableSequence<>(factory.getSequence("foob"));
+		sequence = new ImmutableSequence<>(factory.toSequence("foob"));
 	}
 
 	@Test
 	void addAll() {
 		assertThrows(UnsupportedOperationException.class,
 				()->sequence.addAll(Arrays.asList(
-						factory.getSegment("f"),
-						factory.getSegment("x"))));
+						factory.toSegment("f"),
+						factory.toSegment("x"))));
 	}
 
 	@Test
 	void replaceAll() {
 		assertThrows(UnsupportedOperationException.class,
 				()->sequence.replaceAll(
-						factory.getSequence("oo"),
-						factory.getSequence("y")));
+						factory.toSequence("oo"),
+						factory.toSequence("y")));
 	}
 
 	@Test
@@ -71,13 +71,13 @@ class ImmutableSequenceTest {
 	@Test
 	void set() {
 		assertThrows(UnsupportedOperationException.class,
-				()->sequence.set(1, factory.getSegment("y")));
+				()->sequence.set(1, factory.toSegment("y")));
 	}
 
 	@Test
 	void add() {
 		assertThrows(UnsupportedOperationException.class,
-				()->sequence.add(factory.getSegment("y")));
+				()->sequence.add(factory.toSegment("y")));
 	}
 
 	@Test
@@ -89,19 +89,19 @@ class ImmutableSequenceTest {
 	@Test
 	void remove_object() {
 		assertThrows(UnsupportedOperationException.class,
-				()->sequence.remove(factory.getSegment("b")));
+				()->sequence.remove(factory.toSegment("b")));
 	}
 
 	@Test
 	void add_index() {
 		assertThrows(UnsupportedOperationException.class,
-				()->sequence.add(1, factory.getSegment("y")));
+				()->sequence.add(1, factory.toSegment("y")));
 	}
 
 	@Test
 	void insert() {
 		assertThrows(UnsupportedOperationException.class,
-				()->sequence.insert(factory.getSequence("y"), 1));
+				()->sequence.insert(factory.toSequence("y"), 1));
 	}
 
 	@Test
@@ -118,25 +118,25 @@ class ImmutableSequenceTest {
 
 	@Test
 	void equals() {
-		Sequence<Integer> foob = new ImmutableSequence<>(factory.getSequence("foob"));
+		Sequence<Integer> foob = new ImmutableSequence<>(factory.toSequence("foob"));
 		assertEquals(sequence, foob);
-		assertNotEquals(sequence, factory.getSequence("foob"));
+		assertNotEquals(sequence, factory.toSequence("foob"));
 	}
 
 	@Test
 	void addAll1() {
 		assertThrows(UnsupportedOperationException.class,
 				()->sequence.addAll(2,Arrays.asList(
-						factory.getSegment("f"),
-						factory.getSegment("x"))));
+						factory.toSegment("f"),
+						factory.toSegment("x"))));
 	}
 
 	@Test
 	void removeAll() {
 		assertThrows(UnsupportedOperationException.class,
 				()->sequence.removeAll(Arrays.asList(
-						factory.getSegment("f"),
-						factory.getSegment("b"))));
+						factory.toSegment("f"),
+						factory.toSegment("b"))));
 	}
 
 	@Test
@@ -149,8 +149,8 @@ class ImmutableSequenceTest {
 	void retainAll() {
 		assertThrows(UnsupportedOperationException.class,
 				()->sequence.retainAll(Arrays.asList(
-						factory.getSegment("f"),
-						factory.getSegment("b"))));
+						factory.toSegment("f"),
+						factory.toSegment("b"))));
 	}
 
 	@Test
@@ -161,22 +161,22 @@ class ImmutableSequenceTest {
 
 	@Test
 	void testHashCode() {
-		Sequence<Integer> foob = new ImmutableSequence<>(factory.getSequence("foob"));
+		Sequence<Integer> foob = new ImmutableSequence<>(factory.toSequence("foob"));
 		assertEquals(sequence.hashCode(), foob.hashCode());
-		assertNotEquals(sequence.hashCode(), factory.getSequence("foob").hashCode());
+		assertNotEquals(sequence.hashCode(), factory.toSequence("foob").hashCode());
 	}
 
 	@Test
 	void testToString() {
-		Sequence<Integer> foob = new ImmutableSequence<>(factory.getSequence("foob"));
+		Sequence<Integer> foob = new ImmutableSequence<>(factory.toSequence("foob"));
 		assertEquals(sequence.toString(), foob.toString());
-		assertNotEquals(sequence.toString(), factory.getSequence("foob").toString());
+		assertNotEquals(sequence.toString(), factory.toSequence("foob").toString());
 	}
 
 	@Test
 	void add2() {
 		assertThrows(UnsupportedOperationException.class,
-				()-> sequence.add(factory.getSequence("x")));
+				()-> sequence.add(factory.toSequence("x")));
 	}
 
 }
