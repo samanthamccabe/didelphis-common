@@ -14,6 +14,7 @@
 
 package org.didelphis.structures.contracts;
 
+import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Tuple;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,17 +48,17 @@ public interface SymmetricallyAccessible<K> {
 	 * associated value.
 	 */
 	@NotNull
-	default Tuple<K, K> canonicalKeyPair(K k1, K k2) {
+	default Tuple<K,K> canonicalKeyPair(K k1, K k2) {
 		if (k1 instanceof Comparable && k2 instanceof Comparable) {
 			@SuppressWarnings("unchecked")
 			Comparable<Object> c1 = (Comparable<Object>) k1;
 			int compare = c1.compareTo(k2);
-			return compare < 0 ? new Tuple<>(k1, k2) : new Tuple<>(k2, k1);
+			return compare < 0 ? new Couple<>(k1, k2) : new Couple<>(k2, k1);
 		} else if (Objects.equals(k1, k2)) {
-			return new Tuple<>(k1, k2);
+			return new Couple<>(k1, k2);
 		} else {
 			int compare = Integer.compare(k1.hashCode(), k2.hashCode());
-			return compare < 0 ? new Tuple<>(k1, k2) : new Tuple<>(k2, k1);
+			return compare < 0 ? new Couple<>(k1, k2) : new Couple<>(k2, k1);
 		}
 	}
 
@@ -73,7 +74,7 @@ public interface SymmetricallyAccessible<K> {
 	 * associated value.
 	 */
 	@NotNull
-	default Tuple<K, K> canonicalKeyPair(@NotNull Tuple<K, K> tuple) {
+	default Tuple<K,K> canonicalKeyPair(@NotNull Tuple<K,K> tuple) {
 		return canonicalKeyPair(tuple.getLeft(), tuple.getRight());
 	}
 }

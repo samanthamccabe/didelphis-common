@@ -67,7 +67,7 @@ public interface TwoKeyMap<T, U, V>
 	/**
 	 * @return a collection of tuples containing the maps's key pairs
 	 */
-	Collection<Tuple<T, U>> keys();
+	Collection<Tuple<T,U>> keys();
 
 	/**
 	 * Removes the value associated with the provided keys.

@@ -19,6 +19,7 @@ import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.machines.interfaces.MachineMatcher;
 import org.didelphis.language.machines.interfaces.MachineParser;
 import org.didelphis.language.machines.interfaces.StateMachine;
+import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Tuple;
 import org.didelphis.utilities.Split;
 import org.jetbrains.annotations.NotNull;
@@ -137,16 +138,16 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 			return indices;
 		}
 
-		Collection<Tuple<Integer, String>> states = new ArrayList<>();
+		Collection<Tuple<Integer,String>> states = new ArrayList<>();
 
 		// At the beginning of the process, we are in the start-state, so
 		// add an initial state at the beginning of the sequence
-		states.add(new Tuple<>(startIndex, startStateId));
+		states.add(new Couple<>(startIndex, startStateId));
 
 		// if the condition is empty, it will always match
-		Collection<Tuple<Integer, String>> swap = new ArrayList<>();
+		Collection<Tuple<Integer,String>> swap = new ArrayList<>();
 		while (!states.isEmpty()) {
-			for (Tuple<Integer, String> state : states) {
+			for (Tuple<Integer,String> state : states) {
 				String currentNode = state.getRight();
 				int index = state.getLeft();
 
@@ -173,7 +174,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 							for (String node : entry.getValue()) {
 								int match = matcher.match(target, arc, mIndex);
 								if (match >= 0) {
-									swap.add(new Tuple<>(match, node));
+									swap.add(new Couple<>(match, node));
 								}
 							}
 						}

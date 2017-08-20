@@ -16,6 +16,7 @@ package org.didelphis.structures.maps;
 
 import org.didelphis.structures.maps.interfaces.TwoKeyMap;
 import org.didelphis.structures.tuples.Triple;
+import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Tuple;
 import org.junit.jupiter.api.Test;
 
@@ -87,10 +88,10 @@ class GeneralTwoKeyMapTest extends TwoKeyMapTestBase {
 		map.put("a2", "b2", "v2");
 		map.put("a3", "b3", "v3");
 
-		Collection<Tuple<String, String>> expected = new ArrayList<>();
-		expected.add(new Tuple<>("a1", "b1"));
-		expected.add(new Tuple<>("a2", "b2"));
-		expected.add(new Tuple<>("a3", "b3"));
+		Collection<Tuple<String,String>> expected = new ArrayList<>();
+		expected.add(new Couple<>("a1", "b1"));
+		expected.add(new Couple<>("a2", "b2"));
+		expected.add(new Couple<>("a3", "b3"));
 		
 		assertEquals(expected, map.keys(), "Unexpected Key Set");
 	}
