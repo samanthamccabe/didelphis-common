@@ -1,20 +1,21 @@
 /*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
+ = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
+ =                                                                              
+ = Licensed under the Apache License, Version 2.0 (the "License");              
+ = you may not use this file except in compliance with the License.             
+ = You may obtain a copy of the License at                                      
+ =     http://www.apache.org/licenses/LICENSE-2.0                               
+ = Unless required by applicable law or agreed to in writing, software          
+ = distributed under the License is distributed on an "AS IS" BASIS,            
+ = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
+ = See the License for the specific language governing permissions and          
+ = limitations under the License.                                               
  =============================================================================*/
 
 package org.didelphis.language.phonetic;
 
 import org.didelphis.language.phonetic.sequences.Sequence;
+import org.didelphis.structures.contracts.Streamable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,7 +27,7 @@ import java.util.List;
  * @author Samantha Fiona McCabe
  * Date: 1/17/2015
  */
-public class Lexicon<T> implements Iterable<List<Sequence<T>>> {
+public class Lexicon<T> implements Streamable<List<Sequence<T>>> {
 
 	private final List<List<Sequence<T>>> lexicon;
 
@@ -35,7 +36,7 @@ public class Lexicon<T> implements Iterable<List<Sequence<T>>> {
 			@NotNull Iterable<String> list) {
 		Lexicon<T> lexicon = new Lexicon<>();
 		for (String entry : list) {
-			Sequence<T> sequence = factory.getSequence(entry);
+			Sequence<T> sequence = factory.toSequence(entry);
 			lexicon.add(sequence);
 		}
 		return lexicon;
@@ -49,7 +50,7 @@ public class Lexicon<T> implements Iterable<List<Sequence<T>>> {
 		for (Iterable<String> row : lists) {
 			List<Sequence<T>> lexRow = new ArrayList<>();
 			for (String entry : row) {
-				Sequence<T> sequence = factory.getSequence(entry);
+				Sequence<T> sequence = factory.toSequence(entry);
 				lexRow.add(sequence);
 			}
 			lexicon.add(lexRow);
