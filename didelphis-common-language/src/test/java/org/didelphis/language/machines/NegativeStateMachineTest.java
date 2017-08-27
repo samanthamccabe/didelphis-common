@@ -42,7 +42,7 @@ import static org.didelphis.language.parsing.ParseDirection.FORWARD;
 
 /**
  * @author Samantha Fiona McCabe
- * Date: 1/31/2016
+ * @date 1/31/2016
  */
 public class NegativeStateMachineTest {
 

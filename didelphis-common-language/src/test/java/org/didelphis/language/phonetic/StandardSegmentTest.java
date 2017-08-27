@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Samantha Fiona McCabe
- * Date: 2/14/2015
+ * @date 2/14/2015
  */
 public class StandardSegmentTest extends PhoneticTestBase {
 

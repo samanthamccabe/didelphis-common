@@ -1,15 +1,15 @@
 /*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
+ = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
+ =                                                                              
+ = Licensed under the Apache License, Version 2.0 (the "License");              
+ = you may not use this file except in compliance with the License.             
+ = You may obtain a copy of the License at                                      
+ =     http://www.apache.org/licenses/LICENSE-2.0                               
+ = Unless required by applicable law or agreed to in writing, software          
+ = distributed under the License is distributed on an "AS IS" BASIS,            
+ = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
+ = See the License for the specific language governing permissions and          
+ = limitations under the License.                                               
  =============================================================================*/
 
 package org.didelphis.language.phonetic.features;
@@ -24,15 +24,14 @@ import java.util.Objects;
  * Class {@code AbstractFeatureArray}
  *
  * @author Samantha Fiona McCabe
- * @since 0.1.0 Date: 2017-06-15
+ * @since 0.1.0 
+ * @date 2017-06-15
  */
 public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
-	private final FeatureSpecification specification;
 	private final FeatureModel<T> featureModel;
 
 	protected AbstractFeatureArray(@NotNull FeatureModel<T> featureModel) {
 		this.featureModel = featureModel;
-		this.specification = featureModel.getSpecification();
 	}
 
 	@Override
@@ -40,14 +39,14 @@ public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
 		if (this == obj) { return true; }
 		if (!(obj instanceof AbstractFeatureArray)) {return false;}
 		FeatureArray<?> that = (FeatureArray<?>) obj;
-		for (int i = 0; i < specification.size(); i++) {
+		for (int i = 0; i < getSpecification().size(); i++) {
 			T t1 = get(i);
 			Object t2 = that.get(i);
 			if (!Objects.equals(t1, t2)) {
 				return false;
 			}
 		}
-		return specification.equals(that.getSpecification());
+		return getSpecification().equals(that.getSpecification());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -73,7 +72,7 @@ public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
 
 	@Override
 	public int size() {
-		return specification.size();
+		return getSpecification().size();
 	}
 
 	@NotNull
@@ -82,13 +81,14 @@ public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
 		return featureModel;
 	}
 
+	@NotNull
 	@Override
 	public FeatureSpecification getSpecification() {
-		return specification;
+		return featureModel.getSpecification();
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(specification, featureModel);
+		return Objects.hash(featureModel);
 	}
 }

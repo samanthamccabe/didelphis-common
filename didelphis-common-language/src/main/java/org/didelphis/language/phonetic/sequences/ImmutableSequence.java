@@ -1,15 +1,15 @@
 /*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
+ = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
+ =                                                                              
+ = Licensed under the Apache License, Version 2.0 (the "License");              
+ = you may not use this file except in compliance with the License.             
+ = You may obtain a copy of the License at                                      
+ =     http://www.apache.org/licenses/LICENSE-2.0                               
+ = Unless required by applicable law or agreed to in writing, software          
+ = distributed under the License is distributed on an "AS IS" BASIS,            
+ = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
+ = See the License for the specific language governing permissions and          
+ = limitations under the License.                                               
  =============================================================================*/
 
 package org.didelphis.language.phonetic.sequences;
@@ -26,7 +26,8 @@ import java.util.function.UnaryOperator;
  * Class {@code ImmutableSequence}
  *
  * @author Samantha Fiona McCabe
- * @since 0.1.0 Date: 2017-06-21
+ * @since 0.1.0
+	 * @date 2017-06-21
  */
 public class ImmutableSequence<T> extends BasicSequence<T>  {
 
@@ -39,7 +40,7 @@ public class ImmutableSequence<T> extends BasicSequence<T>  {
 	}
 
 	@Override
-	public boolean addAll(int index, Collection<? extends Segment<T>> c) {
+	public boolean addAll(int index, @NotNull Collection<? extends Segment<T>> c) {
 		throw new UnsupportedOperationException("Sequence is immutable.");
 	}
 
@@ -55,7 +56,7 @@ public class ImmutableSequence<T> extends BasicSequence<T>  {
 
 	@NotNull
 	@Override
-	public Segment<T> set(int i, Segment<T> s) {
+	public Segment<T> set(int i, Segment<T> segment) {
 		throw new UnsupportedOperationException("Sequence is immutable.");
 	}
 
@@ -106,12 +107,12 @@ public class ImmutableSequence<T> extends BasicSequence<T>  {
 	}
 
 	@Override
-	public boolean addAll(Collection<? extends Segment<T>> c) {
+	public boolean addAll(@NotNull Collection<? extends Segment<T>> c) {
 		throw new UnsupportedOperationException("Sequence is immutable.");
 	}
 
 	@Override
-	public boolean removeAll(Collection<?> c) {
+	public boolean removeAll(@NotNull Collection<?> c) {
 		throw new UnsupportedOperationException("Sequence is immutable.");
 	}
 
@@ -121,7 +122,7 @@ public class ImmutableSequence<T> extends BasicSequence<T>  {
 	}
 
 	@Override
-	public boolean retainAll(Collection<?> c) {
+	public boolean retainAll(@NotNull Collection<?> c) {
 		throw new UnsupportedOperationException("Sequence is immutable.");
 	}
 

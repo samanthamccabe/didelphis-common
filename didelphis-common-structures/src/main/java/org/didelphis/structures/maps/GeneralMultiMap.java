@@ -1,15 +1,15 @@
 /*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
+ = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
+ =                                                                              
+ = Licensed under the Apache License, Version 2.0 (the "License");              
+ = you may not use this file except in compliance with the License.             
+ = You may obtain a copy of the License at                                      
+ =     http://www.apache.org/licenses/LICENSE-2.0                               
+ = Unless required by applicable law or agreed to in writing, software          
+ = distributed under the License is distributed on an "AS IS" BASIS,            
+ = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
+ = See the License for the specific language governing permissions and          
+ = limitations under the License.                                               
  =============================================================================*/
 
 package org.didelphis.structures.maps;
@@ -32,31 +32,33 @@ import java.util.stream.Collectors;
  * Created by samantha on 5/4/17.
  */
 @SuppressWarnings("rawtypes")
-public class GeneralMultiMap<K, V> implements MultiMap<K, V>,
-		Delegating<Map<K,Collection<V>>> {
+public class GeneralMultiMap<K, V>
+		implements MultiMap<K, V>, Delegating<Map<K, Collection<V>>> {
 
 	private final Map<K, Collection<V>> delegate;
-	
+
 	private final Class<? extends Collection> type;
-			
+
 	public GeneralMultiMap() {
 		delegate = new HashMap<>();
 		//noinspection unchecked
 		type = HashSet.class;
 	}
-	
+
 	public GeneralMultiMap(
-			@NotNull Map<K,Collection<V>> delegate,
-			@NotNull Class<? extends Collection> type) {
+			@NotNull Map<K, Collection<V>> delegate,
+			@NotNull Class<? extends Collection> type
+	) {
 		this.delegate = new HashMap<>(delegate);
 		this.type = type;
 	}
 
 	public GeneralMultiMap(
-			@NotNull Delegating<Map<K,Collection<V>>> delegating,
-			@NotNull Class<? extends Collection> type) {
+			@NotNull Delegating<Map<K, Collection<V>>> delegating,
+			@NotNull Class<? extends Collection> type
+	) {
 		delegate = MapUtils.copyMultiMap(delegating.getDelegate(), type);
-		this.type=type;
+		this.type = type;
 	}
 
 	@Override
@@ -126,16 +128,24 @@ public class GeneralMultiMap<K, V> implements MultiMap<K, V>,
 	@NotNull
 	@Override
 	public Iterator<Tuple<K, Collection<V>>> iterator() {
-		return delegate.entrySet().stream()
-				.map(entry -> (Tuple<K,Collection<V>>) new Couple<>(
-						entry.getKey(), entry.getValue()))
-				.collect(Collectors.toList()).iterator();
+		return delegate.entrySet()
+				.stream()
+				.map(entry -> (Tuple<K, Collection<V>>) new Couple<>(
+						entry.getKey(),
+						entry.getValue()
+				))
+				.collect(Collectors.toList())
+				.iterator();
 	}
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof GeneralMultiMap)) return false;
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof GeneralMultiMap)) {
+			return false;
+		}
 		GeneralMultiMap<?, ?> that = (GeneralMultiMap<?, ?>) o;
 		return Objects.equals(delegate, that.delegate);
 	}

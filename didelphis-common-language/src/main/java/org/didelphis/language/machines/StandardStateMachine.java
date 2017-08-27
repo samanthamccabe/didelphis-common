@@ -1,15 +1,15 @@
 /*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
+ = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
+ =                                                                              
+ = Licensed under the Apache License, Version 2.0 (the "License");              
+ = you may not use this file except in compliance with the License.             
+ = You may obtain a copy of the License at                                      
+ =     http://www.apache.org/licenses/LICENSE-2.0                               
+ = Unless required by applicable law or agreed to in writing, software          
+ = distributed under the License is distributed on an "AS IS" BASIS,            
+ = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
+ = See the License for the specific language governing permissions and          
+ = limitations under the License.                                               
  =============================================================================*/
 
 package org.didelphis.language.machines;
@@ -37,11 +37,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import static org.didelphis.utilities.Patterns.template;
+import static org.didelphis.utilities.PatternUtils.template;
 
 /**
  * @author Samantha Fiona McCabe
- * Date: 3/7/2015
+ * @date 3/7/2015
  */
 public final class StandardStateMachine<T> implements StateMachine<T> {
 
@@ -105,11 +105,13 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		return stateMachine;
 	}
 
+	@NotNull
 	@Override
 	public MachineParser<T> getParser() {
 		return parser;
 	}
 
+	@NotNull
 	@Override
 	public MachineMatcher<T> getMatcher() {
 		return matcher;
@@ -130,7 +132,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 
 	@NotNull
 	@Override
-	public Collection<Integer> getMatchIndices(int startIndex, T target) {
+	public Collection<Integer> getMatchIndices(int startIndex, @NotNull T target) {
 		Collection<Integer> indices = new HashSet<>();
 
 		if (graph.isEmpty()) {

@@ -1,15 +1,15 @@
 /*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
+ = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
+ =                                                                              
+ = Licensed under the Apache License, Version 2.0 (the "License");              
+ = you may not use this file except in compliance with the License.             
+ = You may obtain a copy of the License at                                      
+ =     http://www.apache.org/licenses/LICENSE-2.0                               
+ = Unless required by applicable law or agreed to in writing, software          
+ = distributed under the License is distributed on an "AS IS" BASIS,            
+ = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
+ = See the License for the specific language governing permissions and          
+ = limitations under the License.                                               
  =============================================================================*/
 
 package org.didelphis.language.phonetic.sequences;
@@ -56,13 +56,13 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 	@Override
 	public void add(@NotNull Sequence<T> sequence) {
 		validateModelOrFail(sequence);
-		segmentList.addAll(sequence);
+		segments.addAll(sequence);
 	}
 
 	@Override
 	public void insert(@NotNull Sequence<T> sequence, int index) {
 		validateModelOrFail(sequence);
-		segmentList.addAll(index, sequence);
+		segments.addAll(index, sequence);
 	}
 
 	@Override
@@ -123,7 +123,7 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 	@Override
 	public boolean startsWith(@NotNull Segment<T> segment) {
 		validateModelOrWarn(segment);
-		return !isEmpty() && segmentList.get(0).matches(segment);
+		return !isEmpty() && segments.get(0).matches(segment);
 	}
 
 	@Override
@@ -155,7 +155,7 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 	 * all corresponding segments are consistent; i.e. if, for every segment in
 	 * each sequence, all corresponding features are equal OR one is undefined.
 	 *
-	 * @param sequence a segmentList to check against this one
+	 * @param sequence a segments to check against this one
 	 * @return true if, for each segment in both sequences, all defined features
 	 * 		in either segment are equal
 	 */
@@ -204,8 +204,8 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder(segmentList.size() * 2);
-		for (Segment<T> segment : segmentList) {
+		StringBuilder sb = new StringBuilder(segments.size() * 2);
+		for (Segment<T> segment : segments) {
 			sb.append(segment.getSymbol());
 		}
 		return sb.toString();
@@ -222,7 +222,7 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 	@Override
 	public boolean add(@NotNull Segment<T> segment) {
 		validateModelOrFail(segment);
-		return segmentList.add(segment);
+		return segments.add(segment);
 	}
 
 	@Override
@@ -236,11 +236,13 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 		return size() > o.size() ? 1 : -1;
 	}
 
+	@NotNull
 	@Override
 	public FeatureModel<T> getFeatureModel() {
 		return featureModel;
 	}
 
+	@NotNull
 	@Override
 	public FeatureSpecification getSpecification() {
 		return featureModel.getSpecification();
@@ -251,13 +253,13 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 		if (this == o) return true;
 		if (!(o instanceof BasicSequence)) return false;
 		BasicSequence that = (BasicSequence) o;
-		return Objects.equals(this.featureModel, that.featureModel) &&
-				Objects.equals(this.segmentList, that.segmentList);
+		return Objects.equals(featureModel, that.featureModel) &&
+				Objects.equals(segments, that.segments);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(featureModel, segmentList);
+		return Objects.hash(featureModel, segments);
 	}
 
 	private void validateModelOrWarn(@NotNull SpecificationBearer that) {

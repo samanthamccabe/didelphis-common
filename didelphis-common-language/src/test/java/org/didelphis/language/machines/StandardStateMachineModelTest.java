@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Samantha Fiona McCabe
- * Date: 2/28/2015
+ * @date 2/28/2015
  */
 public class StandardStateMachineModelTest {
 

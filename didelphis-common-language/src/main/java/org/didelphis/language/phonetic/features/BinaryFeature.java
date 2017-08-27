@@ -25,10 +25,11 @@ import static java.text.Normalizer.Form;
 import static java.text.Normalizer.normalize;
 
 /**
- * Class {@code BinaryFeatureType}
+ * Enum {@code BinaryFeatureType}
  *
  * @author Samantha Fiona McCabe
- * @since 0.1.0 Date: 2017-06-11
+ * @date 2017-06-11
+ * @since 0.1.0
  */
 public enum BinaryFeature implements FeatureType<Boolean> {
 	INSTANCE;
@@ -43,11 +44,12 @@ public enum BinaryFeature implements FeatureType<Boolean> {
 		String normalized = normalize(string, Form.NFKC);
 		if (normalized.equals("-") || normalized.equals("0")) {
 			return Boolean.FALSE;
-		} else if (normalized.equals("+") || normalized.equals("1")) {
+		}
+		if (normalized.equals("+") || normalized.equals("1")) {
 			return Boolean.TRUE;
 		}
-		throw new NumberFormatException("Unrecognized boolean representation " +
-				string);
+		throw new NumberFormatException("Unrecognized boolean representation "
+				+ string);
 	}
 
 	@NotNull
@@ -66,17 +68,17 @@ public enum BinaryFeature implements FeatureType<Boolean> {
 		return validate(v1) ^ validate(v2) ? 1.0 : 0.0;
 	}
 
-	private boolean validate(Boolean v) {
-		return isDefined(v) ? v : false;
-	}
-
 	@Override
 	public int intValue(Boolean value) {
-		return (value == null) ? 0 : (value ? 1 : 0);
+		return (validate(value) && value) ? 1 : 0;
 	}
 
 	@Override
 	public double doubleValue(Boolean value) {
 		return intValue(value);
+	}
+
+	private boolean validate(Boolean v) {
+		return isDefined(v) ? v : false;
 	}
 }

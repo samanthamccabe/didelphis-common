@@ -1,19 +1,21 @@
 /*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
+ = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
+ =                                                                              
+ = Licensed under the Apache License, Version 2.0 (the "License");              
+ = you may not use this file except in compliance with the License.             
+ = You may obtain a copy of the License at                                      
+ =     http://www.apache.org/licenses/LICENSE-2.0                               
+ = Unless required by applicable law or agreed to in writing, software          
+ = distributed under the License is distributed on an "AS IS" BASIS,            
+ = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
+ = See the License for the specific language governing permissions and          
  = limitations under the License.                                               
  =============================================================================*/
 
 package org.didelphis.language.phonetic.model;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.FeatureType;
 import org.didelphis.language.phonetic.features.SparseFeatureArray;
@@ -21,27 +23,20 @@ import org.didelphis.language.phonetic.features.StandardFeatureArray;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.segments.StandardSegment;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.IntStream;
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author Samantha Fiona McCabe
  */
+@ToString
+@EqualsAndHashCode
 public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(GeneralFeatureMapping.class);
-
+	private static final Pattern COMPILE = Pattern.compile("");
+	
 	private final FeatureSpecification specification;
 	private final FeatureModel<T> featureModel;
 	
@@ -49,30 +44,37 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 	private final Map<String, FeatureArray<T>> modifiers;
 	private final List<String> orderedKeys;
 
-	public GeneralFeatureMapping(@NotNull FeatureModel<T> featureModel,
+	public GeneralFeatureMapping(
+			@NotNull FeatureModel<T> featureModel,
 			@NotNull Map<String, FeatureArray<T>> featureMap,
-			@NotNull Map<String, FeatureArray<T>> modifiers) {
+			@NotNull Map<String, FeatureArray<T>> modifiers
+	) {
 		specification = featureModel.getSpecification();
 		this.featureModel = featureModel;
 		this.featureMap = Collections.unmodifiableMap(featureMap);
 		this.modifiers = Collections.unmodifiableMap(modifiers);
 
 		orderedKeys = new ArrayList<>(featureMap.keySet());
-		orderedKeys.sort((k1, k2) -> -1*Integer.compare(k1.length(), k2.length()));
+		orderedKeys.sort(GeneralFeatureMapping::compare);
+	}
+
+	private static int compare(CharSequence s1, CharSequence s2) {
+		return -1 * Integer.compare(s1.length(), s2.length());
 	}
 
 	@NotNull
 	@Override
 	public String findBestSymbol(@NotNull FeatureArray<T> featureArray) {
 
+		FeatureType<T> type = featureModel.getFeatureType();
+
 		FeatureArray<T> bestFeatures = null;
 		String bestSymbol = "";
 		double minimum = Double.MAX_VALUE;
 
-//		for (Entry<String, FeatureArray<T>> entry : featureMap.entrySet()) {
 		for (String key : orderedKeys) {
 			FeatureArray<T> features = featureMap.get(key);
-			double difference = totalDifference(featureArray, features);
+			double difference = type.difference(featureArray, features);
 			if (difference < minimum) {
 				bestSymbol = key;
 				minimum = difference;
@@ -80,14 +82,13 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 			}
 		}
 
-		StringBuilder sb = new StringBuilder();
+		String sb = "";
 		if (minimum > 0.0) {
 			Collection<String> collection = getBestDiacritic(featureArray, bestFeatures, Double.MAX_VALUE);
-			for (String diacritic : modifiers.keySet()) {
-				if (collection.contains(diacritic)) {
-					sb.append(diacritic);
-				}
-			}
+			sb = modifiers.keySet()
+					.stream()
+					.filter(collection::contains)
+					.collect(Collectors.joining());
 		}
 		return bestSymbol + sb;
 	}
@@ -117,7 +118,7 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 
 	@NotNull
 	@Override
-	public FeatureArray<T> getFeatureArray(String key) {
+	public FeatureArray<T> getFeatureArray(@NotNull String key) {
 		return featureMap.containsKey(key) 
 				? new StandardFeatureArray<>(featureMap.get(key)) 
 				: new SparseFeatureArray<>(featureModel);
@@ -143,7 +144,7 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 				}
 			}
 			FeatureArray<T> featureArray = getFeatureArray(best);
-			for (String s : string.substring(best.length()).split("")) {
+			for (String s : COMPILE.split(string.substring(best.length()))) {
 				if (modifiers.containsKey(s)) {
 					FeatureArray<T> array = modifiers.get(s);
 					featureArray.alter(array);
@@ -158,61 +159,31 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 		return featureModel;
 	}
 	
+	@NotNull
 	@Override
 	public FeatureSpecification getSpecification() {
 		return specification;
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(featureModel, featureMap, modifiers);
-	}
-
-	@Override
-	public boolean equals(@Nullable Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null || getClass() != obj.getClass()) {
-			return false;
-		}
-		final GeneralFeatureMapping other = (GeneralFeatureMapping) obj;
-		return Objects.equals(this.featureModel, other.featureModel) &&
-				Objects.equals(this.featureMap, other.featureMap) &&
-				Objects.equals(this.modifiers, other.modifiers);
-	}
-
-	private double totalDifference(
-			@NotNull FeatureArray<T> left, @NotNull FeatureArray<T> right) {
-		if (left.size() != right.size()) {
-			throw new IllegalArgumentException("Cannot compare feature arrays" +
-					" of different sizes! left: " + left.size() + " right: " +
-					right.size());
-		}
-		FeatureType<T> featureType = featureModel.getFeatureType();
-		return IntStream.range(0, left.size())
-				.mapToDouble(i -> featureType.difference(left.get(i), right.get(i)))
-				.sum();
-	}
-
 	@NotNull
 	private Collection<String> getBestDiacritic(
 			@NotNull FeatureArray<T> featureArray,
-			FeatureArray<T> bestFeatures,
+			@NotNull FeatureArray<T> bestFeatures,
 			double lastMinimum) {
-		
+
+		FeatureType<T> type = featureModel.getFeatureType();
+
 		String bestDiacritic = "";
 		double minimumDifference = lastMinimum;
 		FeatureArray<T> best = new SparseFeatureArray<>(featureModel);
 
-		for (Entry<String, FeatureArray<T>> entry : modifiers.entrySet()) {
+		for (Map.Entry<String, FeatureArray<T>> entry : modifiers.entrySet()) {
 			FeatureArray<T> diacriticFeatures = entry.getValue();
-
 			FeatureArray<T> compiled = new StandardFeatureArray<>(bestFeatures);
 			compiled.alter(diacriticFeatures);
 
 			if (!compiled.equals(bestFeatures)) {
-				double difference = totalDifference(compiled, featureArray);
+				double difference = type.difference(compiled, featureArray);
 				if (difference < minimumDifference) {
 					minimumDifference = difference;
 					bestDiacritic = entry.getKey();
@@ -224,7 +195,12 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 		Collection<String> diacriticList = new ArrayList<>();
 		if (minimumDifference > 0.0 && minimumDifference < lastMinimum) {
 			diacriticList.add(bestDiacritic);
-			diacriticList.addAll(getBestDiacritic(featureArray, best, minimumDifference));
+			Collection<String> diacritics = getBestDiacritic(
+					featureArray,
+					best,
+					minimumDifference
+			);
+			diacriticList.addAll(diacritics);
 		} else {
 			diacriticList.add(bestDiacritic);
 		}

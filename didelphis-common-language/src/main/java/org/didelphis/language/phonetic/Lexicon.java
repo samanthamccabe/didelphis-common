@@ -14,26 +14,29 @@
 
 package org.didelphis.language.phonetic;
 
+import lombok.EqualsAndHashCode;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.didelphis.structures.contracts.Streamable;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 /**
  * @author Samantha Fiona McCabe
- * Date: 1/17/2015
+	 * @date 1/17/2015
  */
+@EqualsAndHashCode
 public class Lexicon<T> implements Streamable<List<Sequence<T>>> {
 
-	private final List<List<Sequence<T>>> lexicon;
+	private final Collection<List<Sequence<T>>> lexicon;
 
 	@NotNull
-	public static <T> Lexicon<T> fromSingleColumn(@NotNull SequenceFactory<T> factory,
-			@NotNull Iterable<String> list) {
+	public static <T> Lexicon<T> fromSingleColumn(
+			@NotNull SequenceFactory<T> factory, @NotNull Iterable<String> list
+	) {
 		Lexicon<T> lexicon = new Lexicon<>();
 		for (String entry : list) {
 			Sequence<T> sequence = factory.toSequence(entry);
@@ -44,7 +47,9 @@ public class Lexicon<T> implements Streamable<List<Sequence<T>>> {
 
 	@NotNull
 	public static <T> Lexicon<T> fromRows(
-			@NotNull SequenceFactory<T> factory, @NotNull Iterable<List<String>> lists) {
+			@NotNull SequenceFactory<T> factory,
+			@NotNull Iterable<List<String>> lists
+	) {
 		Lexicon<T> lexicon = new Lexicon<>();
 
 		for (Iterable<String> row : lists) {
@@ -69,13 +74,13 @@ public class Lexicon<T> implements Streamable<List<Sequence<T>>> {
 		}
 	}
 
-	public void add(Sequence<T> sequence) {
+	public void add(@NotNull Sequence<T> sequence) {
 		List<Sequence<T>> row = new ArrayList<>();
 		row.add(sequence);
 		lexicon.add(row);
 	}
 
-	public void add(List<Sequence<T>> row ) {
+	public void add(@NotNull List<Sequence<T>> row) {
 		lexicon.add(row);
 	}
 
@@ -85,7 +90,7 @@ public class Lexicon<T> implements Streamable<List<Sequence<T>>> {
 		StringBuilder sb = new StringBuilder();
 		Iterator<List<Sequence<T>>> iterator = lexicon.iterator();
 		while (iterator.hasNext()) {
-			List<Sequence<T>> line = iterator.next();
+			Collection<Sequence<T>> line = iterator.next();
 			Iterator<Sequence<T>> it = line.iterator();
 			while (it.hasNext()) {
 				Sequence<T> sequence = it.next();
@@ -99,20 +104,6 @@ public class Lexicon<T> implements Streamable<List<Sequence<T>>> {
 			}
 		}
 		return sb.toString();
-	}
-
-	@Override
-	public boolean equals(@Nullable Object o) {
-		if (this == o) { return true;  }
-		if (o == null) { return false; }
-		if (!(o instanceof Lexicon)) { return false; }
-		Lexicon<?> lexicon1 = (Lexicon<?>) o;
-		return lexicon.equals(lexicon1.lexicon);
-	}
-
-	@Override
-	public int hashCode() {
-		return 11 * lexicon.hashCode();
 	}
 
 	@NotNull

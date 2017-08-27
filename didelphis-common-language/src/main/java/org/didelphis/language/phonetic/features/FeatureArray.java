@@ -16,6 +16,8 @@ package org.didelphis.language.phonetic.features;
 
 import org.didelphis.language.phonetic.ModelBearer;
 import org.didelphis.structures.contracts.Streamable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Samantha Fiona McCabe
@@ -45,7 +47,7 @@ public interface FeatureArray<T>
 	 * @throws NullPointerException - if the specified element is null and
 	 * 		this array does not permit null elements
 	 */
-	void set(int index, T value);
+	void set(int index, @Nullable T value);
 
 	/**
 	 * Returns the element at the specified position in this object.
@@ -57,6 +59,7 @@ public interface FeatureArray<T>
 	 * @throws IndexOutOfBoundsException - if the index is out of range (index
 	 * 		< 0 || index >= size())
 	 */
+	@Nullable
 	T get(int index);
 
 	/**
@@ -67,7 +70,7 @@ public interface FeatureArray<T>
 	 * @param array another feature array to compare to this one
 	 * @return true if all features in either segment are equal or undefined
 	 */
-	boolean matches(FeatureArray<T> array);
+	boolean matches(@NotNull FeatureArray<T> array);
 
 	/**
 	 * Combines a feature array onto this one, applying all fully specified
@@ -80,7 +83,7 @@ public interface FeatureArray<T>
 	 * 		empty array (with no defined features) will make no changes and will
 	 * 		return false
 	 */
-	boolean alter(FeatureArray<T> array);
+	boolean alter(@NotNull FeatureArray<T> array);
 
 	/**
 	 * Returns true if and only if this array contains the specified value.
@@ -88,5 +91,5 @@ public interface FeatureArray<T>
 	 * @param value the value to search for
 	 * @return true if this array contains {@code value}, false otherwise
 	 */
-	boolean contains(T value);
+	boolean contains(@Nullable T value);
 }

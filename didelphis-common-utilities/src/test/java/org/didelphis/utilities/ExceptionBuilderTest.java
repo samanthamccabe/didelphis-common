@@ -12,48 +12,36 @@
  = limitations under the License.                                               
  =============================================================================*/
 
-package org.didelphis.io;
+package org.didelphis.utilities;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.junit.jupiter.api.Test;
 
-import java.io.*;
+import java.util.Arrays;
 
-/**
- * @author Samantha Fiona McCabe
- * @date 10/11/2014
- */
-@Slf4j
-@ToString
-@EqualsAndHashCode
-public final class DiskFileHandler implements FileHandler {
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-	private final String encoding;
+class ExceptionBuilderTest {
 
-	public DiskFileHandler(String encoding) {
-		this.encoding = encoding;
+	@Test
+	void testThrows() {
+		Class<? extends Exception> type = UnsupportedOperationException.class;
+/*-<*/  assertThrows(type, () -> Exceptions.create(type)
+				.add("This is a test of {}")
+				.with(type)
+				.throwException());
+/*>-*/
 	}
 
-	@Nullable
-	@Override
-	public CharSequence read(@NotNull String path) {
-		return IOUtil.readPath(path);
-	}
+	@Test
+	void testBuild() {
+		Exception exception = Exceptions.create(Exception.class)
+				.add("This is a test of {} with some data.")
+				.with(Exception.class.getCanonicalName())
+				.data(Arrays.toString(Exception.class.getDeclaredFields()))
+				.build();
 
-	@Override
-	public boolean writeString(
-			@NotNull String path, @NotNull CharSequence data
-	) {
-		File file = new File(path);
-		try (Writer writer = new BufferedWriter(new FileWriter(file))) {
-			writer.write(data.toString());
-			return true;
-		} catch (IOException e) {
-			log.error("Failed to write to path {}", path, e);
-		}
-		return false;
+		String message = exception.getMessage();
+		assertFalse(message.isEmpty());
 	}
 }

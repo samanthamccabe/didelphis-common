@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Samantha Fiona McCabe
- * Date: 3/14/2015
+ * @date 3/14/2015
  */
 public class StandardStateMachineTest {
 
@@ -60,7 +60,7 @@ public class StandardStateMachineTest {
 	}
 
 	private static void assertMatches(StateMachine<Sequence<Integer>> machine, String target) {
-		final Collection<Integer> matchIndices = new ArrayList<>();
+		Collection<Integer> matchIndices = new ArrayList<>();
 		assertTimeoutPreemptively(Duration.ofSeconds(5),() -> {
 			Collection<Integer> collection = testMachine(machine, target);
 			matchIndices.addAll(collection);
@@ -493,7 +493,7 @@ public class StandardStateMachineTest {
 
 	private static void assertNotMatches(StateMachine<Sequence<Integer>> machine,
 			String target) {
-		final Collection<Integer> matchIndices = new ArrayList<>();
+		Collection<Integer> matchIndices = new ArrayList<>();
 		assertTimeoutPreemptively(Duration.ofSeconds(TIMEOUT),() -> {
 			Collection<Integer> collection = testMachine(machine, target);
 			matchIndices.addAll(collection);

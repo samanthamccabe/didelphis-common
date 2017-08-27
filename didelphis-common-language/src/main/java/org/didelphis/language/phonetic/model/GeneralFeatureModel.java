@@ -1,19 +1,20 @@
 /*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
+ = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
+ =                                                                              
+ = Licensed under the Apache License, Version 2.0 (the "License");              
+ = you may not use this file except in compliance with the License.             
+ = You may obtain a copy of the License at                                      
+ =     http://www.apache.org/licenses/LICENSE-2.0                               
+ = Unless required by applicable law or agreed to in writing, software          
+ = distributed under the License is distributed on an "AS IS" BASIS,            
+ = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
+ = See the License for the specific language governing permissions and          
+ = limitations under the License.                                               
  =============================================================================*/
 
 package org.didelphis.language.phonetic.model;
 
+import lombok.ToString;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.FeatureType;
@@ -29,7 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.text.Normalizer.normalize;
-import static org.didelphis.utilities.Patterns.compile;
+import static org.didelphis.utilities.PatternUtils.compile;
 
 /**
  * Class {@code GeneralFeatureModel}
@@ -37,9 +38,10 @@ import static org.didelphis.utilities.Patterns.compile;
  * @author Samantha Fiona McCabe
  * @since 0.1.0
  *
- * Date: 2017-06-09
+ * @date 2017-06-09
  */
-public class GeneralFeatureModel<T> implements FeatureModel<T> {
+@ToString
+public final class GeneralFeatureModel<T> implements FeatureModel<T> {
 
 	private static final String VALUE = "(-?\\d|[A-Zα-ω]+)";
 	private static final String NAME = "(\\w+)";
@@ -85,11 +87,11 @@ public class GeneralFeatureModel<T> implements FeatureModel<T> {
 		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
-		final GeneralFeatureModel other = (GeneralFeatureModel) obj;
-		return Objects.equals(this.specification, other.specification) &&
-				Objects.equals(this.featureType, other.featureType) &&
-				Objects.equals(this.constraints, other.constraints) &&
-				Objects.equals(this.aliases, other.aliases);
+		GeneralFeatureModel<?> other = (GeneralFeatureModel<?>) obj;
+		return Objects.equals(specification, other.specification) &&
+				Objects.equals(featureType, other.featureType) &&
+				Objects.equals(constraints, other.constraints) &&
+				Objects.equals(aliases, other.aliases);
 	}
 
 	@NotNull

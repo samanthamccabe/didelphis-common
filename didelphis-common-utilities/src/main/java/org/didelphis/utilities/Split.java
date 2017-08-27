@@ -1,19 +1,20 @@
 /*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
+ = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
+ =                                                                              
+ = Licensed under the Apache License, Version 2.0 (the "License");              
+ = you may not use this file except in compliance with the License.             
+ = You may obtain a copy of the License at                                      
+ =     http://www.apache.org/licenses/LICENSE-2.0                               
+ = Unless required by applicable law or agreed to in writing, software          
+ = distributed under the License is distributed on an "AS IS" BASIS,            
+ = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
+ = See the License for the specific language governing permissions and          
+ = limitations under the License.                                               
  =============================================================================*/
 
 package org.didelphis.utilities;
 
+import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,18 +28,18 @@ import java.util.regex.Pattern;
  * matching, and related tasks
  * Created by samantha on 3/3/17.
  */
-public final class Split {
+@UtilityClass
+public class Split {
 
-	private static final Pattern NEWLINE = Pattern.compile("\r?\n|\r");
+	private final Pattern NEWLINE = Pattern.compile("\r?\n|\r");
 
-	private Split(){}
-
-	public static List<String> splitLines(CharSequence lines) {
+	@NotNull
+	public List<String> splitLines(@NotNull CharSequence lines) {
 		return Arrays.asList(NEWLINE.split(lines));
 	}
 
 	@NotNull
-	public static List<String> splitToList(
+	public List<String> splitToList(
 			@NotNull String string, @Nullable Iterable<String> special) {
 		List<String> strings = new ArrayList<>();
 		for (int i = 0; i < string.length(); i++) {
@@ -76,7 +77,7 @@ public final class Split {
 	 * @param index
 	 * @return
 	 */
-	public static int parseParens(@NotNull CharSequence string, int index) {
+	public int parseParens(@NotNull CharSequence string, int index) {
 		switch (string.charAt(index)) {
 			case '[':
 				return findClosingBracket(string, '[', ']', index);
@@ -97,7 +98,7 @@ public final class Split {
 	 * @param startIndex
 	 * @return
 	 */
-	public static int findClosingBracket(@NotNull CharSequence string, char left,
+	public int findClosingBracket(@NotNull CharSequence string, char left,
 			char right, int startIndex) {
 		int count = 1;
 		int endIndex = startIndex;

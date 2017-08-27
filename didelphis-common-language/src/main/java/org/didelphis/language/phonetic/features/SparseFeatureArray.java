@@ -1,15 +1,15 @@
 /*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
+ = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
+ =                                                                              
+ = Licensed under the Apache License, Version 2.0 (the "License");              
+ = you may not use this file except in compliance with the License.             
+ = You may obtain a copy of the License at                                      
+ =     http://www.apache.org/licenses/LICENSE-2.0                               
+ = Unless required by applicable law or agreed to in writing, software          
+ = distributed under the License is distributed on an "AS IS" BASIS,            
+ = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
+ = See the License for the specific language governing permissions and          
+ = limitations under the License.                                               
  =============================================================================*/
 
 package org.didelphis.language.phonetic.features;
@@ -31,22 +31,24 @@ import java.util.Objects;
  * Created by samantha on 3/27/16.
  */
 public final class SparseFeatureArray<T> extends AbstractFeatureArray<T> {
-	
+
 	private final Map<Integer, T> features;
 
 	/**
 	 * @param featureModel
 	 */
 	public SparseFeatureArray(FeatureModel<T> featureModel) {
-super(featureModel);
-features = new HashMap<>();
+		super(featureModel);
+		features = new HashMap<>();
 	}
 
 	/**
 	 * @param list
 	 * @param featureModel
 	 */
-	public SparseFeatureArray(@NotNull List<T> list, FeatureModel<T> featureModel) {
+	public SparseFeatureArray(
+			@NotNull List<T> list, @NotNull FeatureModel<T> featureModel
+	) {
 		this(featureModel);
 		for (int i = 0; i < list.size(); i++) {
 			T value = list.get(i);
@@ -117,13 +119,13 @@ features = new HashMap<>();
 		FeatureType<T> featureType = getFeatureModel().getFeatureType();
 
 		boolean changed = false;
-			for (int i = 0; i < size(); i++) {
-				T v = array.get(i);
-				if (featureType.isDefined(v)) {
-					changed |= true;
-					features.put(i, v);
-				}
+		for (int i = 0; i < size(); i++) {
+			T v = array.get(i);
+			if (featureType.isDefined(v)) {
+				changed |= true;
+				features.put(i, v);
 			}
+		}
 		return changed;
 	}
 
@@ -135,15 +137,10 @@ features = new HashMap<>();
 
 	@Override
 	public Iterator<T> iterator() {
-		final List<T> list = new ArrayList<>(size());
+		List<T> list = new ArrayList<>(size());
 		Collections.fill(list, null);
 		features.forEach(list::set);
 		return list.iterator();
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(features, features.size(), size());
 	}
 
 	@Override
@@ -152,18 +149,26 @@ features = new HashMap<>();
 	}
 
 	@Override
-	public boolean equals(@Nullable Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		return super.equals(o);
+	public boolean equals(@Nullable Object obj) {
+		if (this == obj) return true;
+		if (obj == null || getClass() != obj.getClass()) return false;
+		return super.equals(obj);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(features, features.size(), size());
 	}
 
 	private void indexCheck(int index) {
 		int size = getSpecification().size();
 		if (index >= size) {
-			throw new IndexOutOfBoundsException("Provided index " + index +
-					" is larger than defined size "+ size +
-					" for feature model " + getFeatureModel());
+			throw new IndexOutOfBoundsException("Provided index "
+					+ index
+					+ " is larger than defined size "
+					+ size
+					+ " for feature model "
+					+ getFeatureModel());
 		}
 	}
 }

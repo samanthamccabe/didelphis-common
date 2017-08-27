@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Samantha Fiona McCabe
- * Date: 2/5/2015
+ * @date 2/5/2015
  */
 public class SequenceFactoryTest extends PhoneticTestBase{
 

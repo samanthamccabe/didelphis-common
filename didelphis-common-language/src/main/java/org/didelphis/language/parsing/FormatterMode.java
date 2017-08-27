@@ -1,20 +1,21 @@
 /*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
+ = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
+ =                                                                              
+ = Licensed under the Apache License, Version 2.0 (the "License");              
+ = you may not use this file except in compliance with the License.             
+ = You may obtain a copy of the License at                                      
+ =     http://www.apache.org/licenses/LICENSE-2.0                               
+ = Unless required by applicable law or agreed to in writing, software          
+ = distributed under the License is distributed on an "AS IS" BASIS,            
+ = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
+ = See the License for the specific language governing permissions and          
+ = limitations under the License.                                               
  =============================================================================*/
 
 package org.didelphis.language.parsing;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
@@ -29,51 +30,64 @@ import static org.didelphis.utilities.Split.splitToList;
 
 /**
  * This type is to succeed the earlier SegmentationMode and Normalizer mode
- * enums by merging their functionality. We originally supported types that
- * were entirely unnecessary and presented the user with an excess of options,
- * most of where were of no value (compatibility modes, or segmentation with
+ * enums by merging their functionality. We originally supported types that were
+ * entirely unnecessary and presented the user with an excess of options, most
+ * of where were of no value (compatibility modes, or segmentation with
  * composition e.g.)
  * <p>
+ *
  * @author Samantha Fiona McCabe
- * Date: 1/14/2015
+	 * @date 1/14/2015
  */
 public enum FormatterMode implements Segmenter, Formatter {
-	
+
 	// No change to input strings
 	NONE(null) {
+		@NotNull
 		@Override
-		public List<String> split(String string) {
+		public List<String> split(@NotNull String string) {
 			return split(string, Collections.emptyList());
 		}
 
+		@NotNull
 		@Override
-		public List<String> split(String string, Iterable<String> special) {
+		public List<String> split(
+				@NotNull String string, @NotNull Iterable<String> special
+		) {
 			return splitToList(string, special);
 		}
 	},
 
 	// Unicode Canonical Decomposition
 	DECOMPOSITION(Form.NFD) {
+		@NotNull
 		@Override
 		public List<String> split(@NotNull String string) {
 			return split(string, Collections.emptyList());
 		}
 
+		@NotNull
 		@Override
-		public List<String> split(@NotNull String string, Iterable<String> special) {
+		public List<String> split(
+				@NotNull String string, @NotNull Iterable<String> special
+		) {
 			return splitToList(normalize(string), special);
 		}
 	},
 
 	// Unicode Canonical Decomposition followed by Canonical Composition
 	COMPOSITION(Form.NFC) {
+		@NotNull
 		@Override
 		public List<String> split(@NotNull String string) {
 			return split(string, Collections.emptyList());
 		}
 
+		@NotNull
 		@Override
-		public List<String> split(@NotNull String string, Iterable<String> special) {
+		public List<String> split(
+				@NotNull String string, @NotNull Iterable<String> special
+		) {
 			return splitToList(normalize(string), special);
 		}
 	},
@@ -81,6 +95,7 @@ public enum FormatterMode implements Segmenter, Formatter {
 	// Uses segmentation algorithm with Unicode Canonical Decomposition
 	INTELLIGENT(Form.NFD) {
 
+		//<|--------------------------------------------------------------------
 		private static final int BINDER_START       = 0x035C;
 		private static final int BINDER_END         = 0x0362;
 		private static final int SUPERSCRIPT_ZERO   = 0x2070;
@@ -88,12 +103,15 @@ public enum FormatterMode implements Segmenter, Formatter {
 		private static final int SUPERSCRIPT_TWO    = 0x00B2;
 		private static final int SUPERSCRIPT_THREE  = 0x00B3;
 		private static final int SUPERSCRIPT_ONE    = 0x00B9;
+		//--------------------------------------------------------------------|>
 
 		private final Pattern pattern = Pattern.compile("(\\$[^$]*\\d+)");
 
 		@NotNull
 		@Override
-		public List<String> split(@NotNull String string, @NotNull Iterable<String> special) {
+		public List<String> split(
+				@NotNull String string, @NotNull Iterable<String> special
+		) {
 			String word = normalize(string);
 
 			List<String> strings = new ArrayList<>();
@@ -162,7 +180,10 @@ public enum FormatterMode implements Segmenter, Formatter {
 
 		// Finds longest item in keys which the provided string starts with
 		// Also can be used to grab index symbols
-		private String getBestMatch(@NotNull String word, @NotNull Iterable<String> keys) {
+		@NotNull
+		private String getBestMatch(
+				@NotNull String word, @NotNull Iterable<String> keys
+		) {
 
 			String bestMatch = "";
 			for (String key : keys) {
@@ -179,19 +200,19 @@ public enum FormatterMode implements Segmenter, Formatter {
 		}
 
 		private boolean isAttachable(char ch) {
-			return isSuperscriptAsciiDigit(ch) ||
-				         isMathematicalSubOrSuper(ch) ||
-				         isCombiningClass(ch);
+			return isSuperscriptAsciiDigit(ch)
+					|| isMathematicalSubOrSuper(ch)
+					|| isCombiningClass(ch);
 		}
 
 		private boolean isDoubleWidthBinder(char ch) {
 			return BINDER_START <= ch && ch <= BINDER_END;
 		}
-		
+
 		private boolean isSuperscriptAsciiDigit(char value) {
-			return value == SUPERSCRIPT_TWO || 
-				         value == SUPERSCRIPT_THREE ||
-				         value == SUPERSCRIPT_ONE;
+			return value == SUPERSCRIPT_TWO
+					|| value == SUPERSCRIPT_THREE
+					|| value == SUPERSCRIPT_ONE;
 		}
 
 		private boolean isMathematicalSubOrSuper(char value) {
@@ -200,16 +221,16 @@ public enum FormatterMode implements Segmenter, Formatter {
 
 		private boolean isCombiningClass(char ch) {
 			int type = Character.getType(ch);
-			return type == Character.MODIFIER_LETTER || // 4
-				         type == Character.MODIFIER_SYMBOL || // 27
-				         type == Character.COMBINING_SPACING_MARK || // 8
-				         type == Character.NON_SPACING_MARK; // 6
+			return type == Character.MODIFIER_LETTER
+					|| type == Character.MODIFIER_SYMBOL
+					|| type == Character.COMBINING_SPACING_MARK
+					|| type == Character.NON_SPACING_MARK;
 		}
 	};
 
 	private final Form form;
 
-	FormatterMode(Form param) {
+	FormatterMode(@Nullable Form param) {
 		form = param;
 	}
 

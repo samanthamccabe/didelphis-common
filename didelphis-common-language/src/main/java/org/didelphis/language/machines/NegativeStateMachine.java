@@ -1,52 +1,71 @@
 /*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
+ = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
+ =                                                                              
+ = Licensed under the Apache License, Version 2.0 (the "License");              
+ = you may not use this file except in compliance with the License.             
+ = You may obtain a copy of the License at                                      
+ =     http://www.apache.org/licenses/LICENSE-2.0                               
+ = Unless required by applicable law or agreed to in writing, software          
+ = distributed under the License is distributed on an "AS IS" BASIS,            
+ = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
+ = See the License for the specific language governing permissions and          
+ = limitations under the License.                                               
  =============================================================================*/
 
 package org.didelphis.language.machines;
 
-import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.language.machines.interfaces.MachineMatcher;
 import org.didelphis.language.machines.interfaces.MachineParser;
 import org.didelphis.language.machines.interfaces.StateMachine;
+import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.structures.tuples.Triple;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * @author Samantha Fiona McCabe
- * Date: 1/30/2016
+ * @date 1/30/2016
  */
 public final class NegativeStateMachine<T> implements StateMachine<T> {
 
-	private final StateMachine<T> negativeMachine;
-	private final StateMachine<T> positiveMachine;
 	private final String id;
 
+	private final StateMachine<T> negativeMachine;
+	private final StateMachine<T> positiveMachine;
 
-	public static <T> StateMachine<T> create(String id, String expression, @NotNull MachineParser<T> parser, MachineMatcher<T> matcher, ParseDirection direction) {
+	private NegativeStateMachine(
+			@NotNull String id,
+			@NotNull StateMachine<T> negative,
+			@NotNull StateMachine<T> positive
+	) {
+		this.id = id;
+		positiveMachine = positive;
+		negativeMachine = negative;
+	}
+
+	@NotNull
+	public static <T> StateMachine<T> create(
+			@NotNull String id,
+			@NotNull String expression,
+			@NotNull MachineParser<T> parser,
+			@NotNull MachineMatcher<T> matcher,
+			@NotNull ParseDirection direction
+	) {
 		// Create the actual branch, the one we don't want to match
 		StateMachine<T> negative = StandardStateMachine.create(id + 'N',
-				expression, parser, matcher, direction);
+				expression,
+				parser,
+				matcher,
+				direction
+		);
 		StateMachine<T> positive = StandardStateMachine.create(id + 'P',
-				expression, parser, matcher, direction);
+				expression,
+				parser,
+				matcher,
+				direction
+		);
 
 		// This is less elegant that I'd prefer, but bear with me:
 		// We will extract the graph and id-machine maps and then the graph for
@@ -57,71 +76,20 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 		return new NegativeStateMachine<>(id, negative, positive);
 	}
 
-	private static <T> void buildPositiveBranch(@NotNull MachineParser<T> parser, @NotNull StateMachine<T> positive) {
-		
-		Graph<T> graph = positive.getGraphs().values().iterator().next();
-		Graph<T> copy  = new Graph<>(graph);
-
-		graph.clear();
-//		for (Map.Entry<String, Map<T, Collection<String>>> mapEntry : copy.entrySet()) {
-//			for (Map.Entry<T, Collection<String>> entry : mapEntry.getValue().entrySet()) {
-		for (Triple<String, T, Collection<String>> triple : copy) {
-			
-		T arc = triple.getSecondElement();
-				Collection<String> targets = triple.getThirdElement();
-				// lambda / epsilon transition
-				String source = triple.getFirstElement();
-				if (Objects.equals(arc, parser.epsilon())) {
-						graph.put(source, parser.epsilon(), targets);
-				} else if (parser.getSpecials().containsKey(arc.toString())) {
-					T dot = parser.getDot();
-					for (Integer length :  collectLengths(parser, arc)) {
-						buildDotChain(graph, source, targets, length, dot);
-					}
-				} else {
-					graph.put(source, parser.getDot(), targets);
-				}
-			}
-		
-
-		if (positive instanceof StandardStateMachine) {
-			for (StateMachine<T> machine : ((StandardStateMachine<T>) positive).getMachinesMap().values()) {
-				if (machine instanceof NegativeStateMachine) {
-					// Unclear if this is allowed to happen
-					// or if this is the desired behavior
-					buildPositiveBranch(parser, ((NegativeStateMachine<T>) machine).negativeMachine);
-				} else {
-					buildPositiveBranch(parser, machine);
-				}
-			}
-		}
-	}
-
-	private static <T> Set<Integer> collectLengths(@NotNull MachineParser<T> parser, @NotNull T arc) {
-		return parser.getSpecials()
-				.get(arc.toString())
-				.stream()
-				.map(parser::lengthOf)
-				.collect(Collectors.toSet());
-	}
-
-	private NegativeStateMachine(String id, StateMachine<T> negative, StateMachine<T> positive) {
-		this.id = id;
-		positiveMachine = positive;
-		negativeMachine = negative;
-	}
-
 	@Override
+	@NotNull
 	public MachineParser<T> getParser() {
 		return positiveMachine.getParser();
 	}
 
 	@Override
+	@NotNull
 	public MachineMatcher<T> getMatcher() {
 		return positiveMachine.getMatcher();
 	}
 
 	@Override
+	@NotNull
 	public String getId() {
 		return id;
 	}
@@ -136,12 +104,17 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 	}
 
 	@Override
-	public Collection<Integer> getMatchIndices(int startIndex, T target) {
+	@NotNull
+	public Collection<Integer> getMatchIndices(int startIndex, @NotNull T target) {
 
 		Collection<Integer> posIndices = positiveMachine.getMatchIndices(
-				startIndex, target);
+				startIndex,
+				target
+		);
 		Collection<Integer> negIndices = negativeMachine.getMatchIndices(
-				startIndex, target);
+				startIndex,
+				target
+		);
 
 		if (!negIndices.isEmpty() && !posIndices.isEmpty()) {
 			// Machine has matched both branches
@@ -164,13 +137,79 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 
 	@Override
 	public String toString() {
-		return "NegativeStateMachine{" +
-				"negativeMachine=" + negativeMachine + ", " + 
-                "positiveMachine=" + positiveMachine +
-				'}';
+		return "NegativeStateMachine{"
+				+ "negativeMachine="
+				+ negativeMachine
+				+ ", "
+				+ "positiveMachine="
+				+ positiveMachine
+				+ '}';
 	}
 
-	private static <T> void buildDotChain(@NotNull Graph<T> graph, String key, Collection<String> endValues, int length, T dot) {
+	private static <T> void buildPositiveBranch(
+			@NotNull MachineParser<T> parser,
+			@NotNull StateMachine<T> positive
+	) {
+
+		Graph<T> graph = positive.getGraphs().values().iterator().next();
+		Graph<T> copy = new Graph<>(graph);
+
+		graph.clear();
+
+		for (Triple<String, T, Collection<String>> triple : copy) {
+
+			T arc = triple.getSecondElement();
+			Collection<String> targets = triple.getThirdElement();
+			// lambda / epsilon transition
+			String source = triple.getFirstElement();
+			if (Objects.equals(arc, parser.epsilon())) {
+				graph.put(source, parser.epsilon(), targets);
+			} else if (parser.getSpecials().containsKey(arc.toString())) {
+				T dot = parser.getDot();
+				for (Integer length : collectLengths(parser, arc)) {
+					buildDotChain(graph, source, targets, length, dot);
+				}
+			} else {
+				graph.put(source, parser.getDot(), targets);
+			}
+		}
+		
+		if (positive instanceof StandardStateMachine) {
+			for (StateMachine<T> machine : ((StandardStateMachine<T>) positive).getMachinesMap()
+					.values()) {
+				if (machine instanceof NegativeStateMachine) {
+					// Unclear if this is allowed to happen
+					// or if this is the desired behavior
+					buildPositiveBranch(
+							parser,
+							((NegativeStateMachine<T>) machine).negativeMachine
+					);
+				} else {
+					buildPositiveBranch(parser, machine);
+				}
+			}
+		}
+	}
+
+	@NotNull
+	private static <T> Iterable<Integer> collectLengths(
+			@NotNull MachineParser<T> parser,
+			@NotNull T arc
+	) {
+		return parser.getSpecials()
+				.get(arc.toString())
+				.stream()
+				.map(parser::lengthOf)
+				.collect(Collectors.toSet());
+	}
+
+	private static <T> void buildDotChain(
+			@NotNull Graph<T> graph,
+			String key,
+			Collection<String> endValues,
+			int length,
+			T dot
+	) {
 		String thisState = key;
 		for (int i = 0; i < length - 1; i++) {
 			String nextState = key + '-' + i;

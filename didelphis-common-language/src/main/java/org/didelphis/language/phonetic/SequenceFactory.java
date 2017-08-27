@@ -14,6 +14,8 @@
 
 package org.didelphis.language.phonetic;
 
+import lombok.Getter;
+import lombok.ToString;
 import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.SparseFeatureArray;
@@ -27,45 +29,45 @@ import org.didelphis.language.phonetic.sequences.BasicSequence;
 import org.didelphis.language.phonetic.sequences.ImmutableSequence;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * @author Samantha Fiona McCabe Date: 11/23/2014
+ * @author Samantha Fiona McCabe
+	 * @date 11/23/2014
  */
+@ToString(includeFieldNames = true, of = {
+		"mapping",
+		"formatterMode",
+		"reservedStrings"
+})
 public class SequenceFactory<T> implements Function<String, Sequence<T>> {
-
-	private static final Logger LOG = LoggerFactory
-			.getLogger(SequenceFactory.class);
-
-	private static final Pattern BACKREFERENCE_PATTERN = Pattern
-			.compile("\\$[^$]*\\d+");
 
 	private final FeatureMapping<T> mapping;
 	private final FormatterMode formatterMode;
-	private final Set<String> reservedStrings;
+	private final Collection<String> reservedStrings;
 
-	private final Segment<T> dotSegment;
-	private final Segment<T> borderSegment;
+	// <|-----------------------------------------------------------------------
+	@Getter private final Segment<T>  dotSegment;
+	@Getter private final Segment<T>  borderSegment;
+	
+	@Getter private final Sequence<T> dotSequence;
+	@Getter private final Sequence<T> borderSequence;
+	// -----------------------------------------------------------------------|>
 
-	private final Sequence<T> dotSequence;
-	private final Sequence<T> borderSequence;
-
-	public SequenceFactory(FeatureMapping<T> mapping, FormatterMode mode) {
-		this(mapping, new HashSet<>(), mode);
+	public SequenceFactory(
+			@NotNull FeatureMapping<T> mapping, @NotNull FormatterMode mode
+	) {
+		this(mapping, Collections.emptySet(), mode);
 	}
 
-	public SequenceFactory(FeatureMapping<T> mapping, Set<String> reserved,
-			FormatterMode mode) {
+	public SequenceFactory(
+			@NotNull FeatureMapping<T> mapping,
+			@NotNull Collection<String> reserved,
+			@NotNull FormatterMode mode
+	) {
 		this.mapping = mapping;
 		reservedStrings = reserved;
 		formatterMode = mode;
@@ -86,26 +88,6 @@ public class SequenceFactory<T> implements Function<String, Sequence<T>> {
 
 	public void reserve(String string) {
 		reservedStrings.add(string);
-	}
-
-	@NotNull
-	public Segment<T> getDotSegment() {
-		return dotSegment;
-	}
-
-	@NotNull
-	public Segment<T> getBorderSegment() {
-		return borderSegment;
-	}
-
-	@NotNull
-	public Sequence<T> getDotSequence() {
-		return dotSequence;
-	}
-
-	@NotNull
-	public Sequence<T> getBorderSequence() {
-		return borderSequence;
 	}
 
 	@NotNull
@@ -149,20 +131,14 @@ public class SequenceFactory<T> implements Function<String, Sequence<T>> {
 		}
 	}
 
-	private static int compare(@NotNull CharSequence k1, @NotNull CharSequence k2) {
+	private static int compare(
+			@NotNull CharSequence k1, @NotNull CharSequence k2
+	) {
 		return Integer.compare(k2.length(), k1.length());
 	}
 
 	public FeatureMapping<T> getFeatureMapping() {
 		return mapping;
-	}
-
-	@NotNull
-	@Override
-	public String toString() {
-		return "SequenceFactory{mapping=" + mapping +
-				", formatterMode=" + formatterMode +
-				", reservedStrings=" + reservedStrings + '}';
 	}
 
 	@NotNull

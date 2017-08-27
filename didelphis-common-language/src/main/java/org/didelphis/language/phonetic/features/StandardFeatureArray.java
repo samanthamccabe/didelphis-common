@@ -1,15 +1,15 @@
 /*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
+ = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
+ =                                                                              
+ = Licensed under the Apache License, Version 2.0 (the "License");              
+ = you may not use this file except in compliance with the License.             
+ = You may obtain a copy of the License at                                      
+ =     http://www.apache.org/licenses/LICENSE-2.0                               
+ = Unless required by applicable law or agreed to in writing, software          
+ = distributed under the License is distributed on an "AS IS" BASIS,            
+ = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
+ = See the License for the specific language governing permissions and          
+ = limitations under the License.                                               
  =============================================================================*/
 
 package org.didelphis.language.phonetic.features;
@@ -37,7 +37,9 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	 * @param value
 	 * @param featureModel
 	 */
-	public StandardFeatureArray(T value, @NotNull FeatureModel<T> featureModel) {
+	public StandardFeatureArray(
+			@Nullable T value, @NotNull FeatureModel<T> featureModel
+	) {
 		super(featureModel);
 		int size = getSpecification().size();
 		features = new ArrayList<>(size);
@@ -50,7 +52,9 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	 * @param list
 	 * @param featureModel
 	 */
-	public StandardFeatureArray(@NotNull List<T> list, @NotNull FeatureModel<T> featureModel) {
+	public StandardFeatureArray(
+			@NotNull List<T> list, @NotNull FeatureModel<T> featureModel
+	) {
 		super(featureModel);
 		features = new ArrayList<>(list);
 	}
@@ -75,12 +79,13 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	}
 
 	@Override
-	public void set(int index, T value) {
+	public void set(int index, @Nullable T value) {
 		features.set(index, value);
 		applyConstraints(index);
 	}
 
 	@Override
+	@Nullable
 	public T get(int index) {
 		return features.get(index);
 	}
@@ -105,8 +110,8 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	@Override
 	public boolean alter(@NotNull FeatureArray<T> array) {
 		if (size() != array.size()) {
-			throw new IllegalArgumentException(
-					"Attempting to compare arrays" + " of different lengths");
+			throw new IllegalArgumentException("Attempting to compare arrays"
+					+ " of different lengths");
 		}
 		FeatureType<T> featureType = getFeatureModel().getFeatureType();
 		Collection<Integer> alteredIndices = new HashSet<>();
@@ -124,7 +129,7 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	}
 
 	@Override
-	public boolean contains(T value) {
+	public boolean contains(@Nullable T value) {
 		return features.contains(value);
 	}
 
@@ -150,16 +155,16 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 		return features.iterator();
 	}
 
-	private boolean matches(T x, T y) {
+	private boolean matches(@Nullable T x, @Nullable T y) {
 		FeatureType<T> featureType = getFeatureModel().getFeatureType();
-		return !(featureType.isDefined(x) && featureType.isDefined(y)) ||
-				Objects.equals(x, y);
+		return !(featureType.isDefined(x) && featureType.isDefined(y))
+				|| Objects.equals(x, y);
 	}
 
 	private void applyConstraints(int index) {
 		for (Constraint<T> constraint : getFeatureModel().getConstraints()) {
-			if (constraint.getSource().get(index) != null &&
-					matches(constraint.getSource())) {
+			if (constraint.getSource().get(index) != null
+					&& matches(constraint.getSource())) {
 				alter(constraint.getTarget());
 			}
 		}

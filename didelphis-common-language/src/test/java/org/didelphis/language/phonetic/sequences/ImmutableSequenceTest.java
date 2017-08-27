@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Samantha Fiona McCabe
  * @since 0.1.0
- * Date: 2017-06-23
+ * @date 2017-06-23
  */
 class ImmutableSequenceTest {
 

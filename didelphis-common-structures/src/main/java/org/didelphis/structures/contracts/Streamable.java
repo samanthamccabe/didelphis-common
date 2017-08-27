@@ -14,6 +14,8 @@
 
 package org.didelphis.structures.contracts;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -22,14 +24,16 @@ import java.util.stream.StreamSupport;
  *
  * @author Samantha Fiona McCabe
  * @since 0.1.0
- * 		Date: 2017-07-28
+ * 		@date 2017-07-28
  */
 public interface Streamable<E> extends Iterable<E> {
 
+	@NotNull
 	default Stream<E> stream() {
 		return StreamSupport.stream(spliterator(), false);
 	}
 
+	@NotNull
 	default Stream<E> parallelStream() {
 		return StreamSupport.stream(spliterator(), true);
 	}

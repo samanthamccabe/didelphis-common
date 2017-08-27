@@ -104,6 +104,7 @@ public class SequenceParser<T> implements MachineParser<Sequence<T>> {
 		return Collections.unmodifiableMap(specials);
 	}
 
+	@NotNull
 	@Override
 	public Sequence<T> getDot() {
 		return factory.getDotSequence();
