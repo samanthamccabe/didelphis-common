@@ -16,6 +16,7 @@ package org.didelphis.language.phonetic.features;
 
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureSpecification;
+import org.didelphis.utilities.Exceptions;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -24,8 +25,8 @@ import java.util.Objects;
  * Class {@code AbstractFeatureArray}
  *
  * @author Samantha Fiona McCabe
- * @since 0.1.0 
  * @date 2017-06-15
+ * @since 0.1.0
  */
 public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
 	private final FeatureModel<T> featureModel;
@@ -34,28 +35,11 @@ public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
 		this.featureModel = featureModel;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) { return true; }
-		if (!(obj instanceof AbstractFeatureArray)) {return false;}
-		FeatureArray<?> that = (FeatureArray<?>) obj;
-		for (int i = 0; i < getSpecification().size(); i++) {
-			T t1 = get(i);
-			Object t2 = that.get(i);
-			if (!Objects.equals(t1, t2)) {
-				return false;
-			}
-		}
-		return getSpecification().equals(that.getSpecification());
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public int compareTo(@NotNull FeatureArray<T> o) {
-		if (size() != o.size()) {
-			throw new IllegalArgumentException(
-					"Attempting to compare arrays of different lengths");
-		}
+		sizeCheck(o);
+
 		FeatureType<T> featureType = featureModel.getFeatureType();
 		for (int i = 0; i < size(); i++) {
 			T x = get(i);
@@ -90,5 +74,35 @@ public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
 	@Override
 	public int hashCode() {
 		return Objects.hash(featureModel);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (!(obj instanceof AbstractFeatureArray)) return false;
+		FeatureArray<?> that = (FeatureArray<?>) obj;
+		for (int i = 0; i < getSpecification().size(); i++) {
+			T t1 = get(i);
+			Object t2 = that.get(i);
+			if (!Objects.equals(t1, t2)) {
+				return false;
+			}
+		}
+		return getSpecification().equals(that.getSpecification());
+	}
+
+	protected void sizeCheck(@NotNull FeatureArray<T> o) {
+		if (size() != o.size()) throw buildException(o);
+	}
+
+	@NotNull
+	private RuntimeException buildException(@NotNull FeatureArray<T> o) {
+		return Exceptions.illegalArgument()
+				.add("Attempting to compare objects with different specified")
+				.add("feature sizes. This: {} vs {}")
+				.with(size(), o.size())
+				.data(this)
+				.data(o)
+				.build();
 	}
 }

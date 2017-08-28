@@ -37,11 +37,11 @@ public abstract class AbstractTable<E> implements ResizeableTable<E> {
 
 	protected AbstractTable(int rows, int columns) {
 		if (rows < 0 || columns < 0) {
-			Exceptions.create(IndexOutOfBoundsException.class)
+			throw Exceptions.create(IndexOutOfBoundsException.class)
 					.add("Cannot create a table with negative dimensions!")
 					.add("Parameters provided: row {} / col {}")
 					.with(rows, columns)
-					.throwException();
+					.build();
 		}
 		this.rows = rows;
 		this.columns = columns;
@@ -67,39 +67,47 @@ public abstract class AbstractTable<E> implements ResizeableTable<E> {
 
 	protected void checkRowEdge(int row) {
 		if (row > rows || row < 0) {
-			throw new IndexOutOfBoundsException("Row index: "
-					+ row
-					+ ", Rows: "
-					+ rows);
+			throw Exceptions.create(IndexOutOfBoundsException.class)
+					.add("Row parameter ({}) is out of bounds while trying "
+							+ "to expand table.")
+					.with(row)
+					.add("Currently there are {} rows")
+					.with(row)
+					.build();
 		}
 	}
 
 	protected void checkRow(int row) {
 		if (row >= rows || row < 0) {
-			throw new IndexOutOfBoundsException("Row index: "
-					+ row
-					+ ", Rows: "
-					+ rows);
+			throw Exceptions.create(IndexOutOfBoundsException.class)
+					.add("Row parameter ({}) is out of bounds!")
+					.with(row)
+					.add("Currently there are {} rows")
+					.with(rows)
+					.build();
 		}
 	}
 
 	protected void checkColEdge(int col) {
 		if (col > columns || col < 0) {
-			throw new IndexOutOfBoundsException("Column index: "
-					+ col
-					+ ", Columns: "
-					+ columns);
+			throw Exceptions.create(IndexOutOfBoundsException.class)
+					.add("Column parameter ({}) is out of bounds while trying " 
+							+ "to expand table.")
+					.with(col)
+					.add("Currently there are {} columns")
+					.with(columns)
+					.build();
 		}
 	}
 
 	protected void checkCol(int col) {
 		if (col >= columns || col < 0) {
-			Exceptions.create(IndexOutOfBoundsException.class)
+			throw Exceptions.create(IndexOutOfBoundsException.class)
 					.add("Column parameter ({}) is out of bounds!")
 					.with(col)
 					.add("Currently there are {} columns")
 					.with(columns)
-					.throwException();
+					.build();
 		}
 	}
 
@@ -110,34 +118,34 @@ public abstract class AbstractTable<E> implements ResizeableTable<E> {
 
 	protected void checkRowData(@NotNull Collection<E> data) {
 		if (data.size() != columns()) {
-			Exceptions.create(IllegalArgumentException.class)
+			throw Exceptions.create(IllegalArgumentException.class)
 					.add("New row is the wrong size!")
 					.add("Has {} columns but needs {}.")
 					.with(data.size(), columns())
 					.data(data)
-					.throwException();
+					.build();
 		}
 	}
 
 	protected void checkColumnData(@NotNull Collection<E> data) {
 		if (data.size() != rows()) {
-			Exceptions.create(IllegalArgumentException.class)
+			throw Exceptions.create(IllegalArgumentException.class)
 					.add("New column is the wrong size!")
 					.add("Has {} rows but needs {}.")
 					.with(data.size(), rows())
 					.data(data)
-					.throwException();
+					.build();
 		}
 	}
 
 	protected static void negativeCheck(int rows, int cols) {
 		if (rows < 0 || cols < 0) {
-			Exceptions.create(IllegalArgumentException.class)
+			throw Exceptions.create(IllegalArgumentException.class)
 					.add("Operations to expand or shrink a table cannot")
 					.add("have negative arguments!")
 					.add("The arguments provided were row: {} and col: {}")
 					.with(rows, cols)
-					.throwException();
+					.build();
 		}
 	}
 }

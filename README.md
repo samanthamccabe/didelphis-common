@@ -16,6 +16,7 @@ of `equals`, `hashCode`, and `toString` methods, as well as logging, and
 delegation
 - Began finalizing automated code formatting rules and applied them to large
 portions of the project
+- Cleaned up old documentation and corrected formatting
 
 ### 0.1.0
 *Introduced a number of important improvements and fixes, especially for code
@@ -26,7 +27,7 @@ coverage and API flexibility*
 - Added support for resizeable tables via `ResizeableTable` interface
 - Added row and column iterators to `Table` classes
 - Created `FeatureType` interface for managing phonetic model values, allowing
-them to specify what values are **well-defined**, which are **permitted**, how 
+them to specify what values are __well-defined__, which are __permitted__, how 
 to compute a difference between values, and how to convert feature values to 
 Java primitives
 - Added `Twin`, a type of `Tuple` where both elemens are of the same type.
@@ -35,7 +36,7 @@ Java primitives
 #### Changed
 - General refactoring of code for clarity and cleanliness
 - Unpacked recursive state machines for non-negative cases.
-- Switched to use **JUnit5**
+- Switched to use __JUnit5__
 - Refactored and tested two-key maps and multimaps
 - Greatly refactored and generified `Segment` and `FeatureModel`
 - Removed restrictions on type parameters in phonetics classes

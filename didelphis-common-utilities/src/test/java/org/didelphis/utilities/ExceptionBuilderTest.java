@@ -26,11 +26,12 @@ class ExceptionBuilderTest {
 	@Test
 	void testThrows() {
 		Class<? extends Exception> type = UnsupportedOperationException.class;
-/*-<*/  assertThrows(type, () -> Exceptions.create(type)
-				.add("This is a test of {}")
-				.with(type)
-				.throwException());
-/*>-*/
+		assertThrows(type, () -> {
+			throw Exceptions.create(type)
+					.add("This is a test of {}")
+					.with(type)
+					.build();
+		});
 	}
 
 	@Test

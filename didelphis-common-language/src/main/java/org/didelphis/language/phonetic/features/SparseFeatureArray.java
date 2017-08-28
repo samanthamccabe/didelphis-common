@@ -95,10 +95,8 @@ public final class SparseFeatureArray<T> extends AbstractFeatureArray<T> {
 
 	@Override
 	public boolean matches(@NotNull FeatureArray<T> array) {
-		if (size() != array.size()) {
-			throw new IllegalArgumentException(
-					"Attempting to compare arrays of different lengths");
-		}
+		sizeCheck(array);
+
 		FeatureType<T> featureType = getFeatureModel().getFeatureType();
 		for (Entry<Integer, T> entry : features.entrySet()) {
 			T x = entry.getValue();
@@ -112,10 +110,8 @@ public final class SparseFeatureArray<T> extends AbstractFeatureArray<T> {
 
 	@Override
 	public boolean alter(@NotNull FeatureArray<T> array) {
-		if (size() != array.size()) {
-			throw new IllegalArgumentException(
-					"Attempting to compare arrays of different lengths");
-		}
+		sizeCheck(array);
+
 		FeatureType<T> featureType = getFeatureModel().getFeatureType();
 
 		boolean changed = false;

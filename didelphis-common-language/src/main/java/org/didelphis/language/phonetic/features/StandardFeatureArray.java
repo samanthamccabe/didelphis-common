@@ -92,10 +92,7 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 
 	@Override
 	public boolean matches(@NotNull FeatureArray<T> array) {
-		if (size() != array.size()) {
-			throw new IllegalArgumentException(
-					"Attempting to compare arrays of different lengths");
-		}
+		sizeCheck(array);
 
 		for (int i = 0; i < size(); i++) {
 			T x = get(i);
@@ -109,10 +106,8 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 
 	@Override
 	public boolean alter(@NotNull FeatureArray<T> array) {
-		if (size() != array.size()) {
-			throw new IllegalArgumentException("Attempting to compare arrays"
-					+ " of different lengths");
-		}
+		sizeCheck(array);
+		
 		FeatureType<T> featureType = getFeatureModel().getFeatureType();
 		Collection<Integer> alteredIndices = new HashSet<>();
 		for (int i = 0; i < features.size(); i++) {

@@ -20,11 +20,16 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
- * Class {@code Streamable}
+ * Interface {@code Streamable}
+ * <p>
+ * Like {@link Iterable} but for providing {@link Stream} access without the
+ * need for a helper. As its only methods have default implementations, it is a
+ * very simple add-on for non-collection classes which implement {@link
+ * Iterable}
  *
  * @author Samantha Fiona McCabe
+ * @date 2017-07-28
  * @since 0.1.0
- * 		@date 2017-07-28
  */
 public interface Streamable<E> extends Iterable<E> {
 

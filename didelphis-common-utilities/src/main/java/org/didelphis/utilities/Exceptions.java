@@ -14,16 +14,12 @@
 
 package org.didelphis.utilities;
 
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -51,19 +47,55 @@ public class Exceptions {
 	 *
 	 * @return a new builder
 	 */
+	@NotNull
 	public <X extends Exception> ExceptionBuilder<X> create(Class<X> type) {
-		return new ExceptionBuilder<>(type, new ArrayDeque<>());
+		return new ExceptionBuilder<>(type);
 	}
 
-	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+	/**
+	 * Convenience method for generating an {@link UnsupportedOperationException}
+	 *
+	 * @return an {@link ExceptionBuilder}
+	 */
+	@NotNull
+	public ExceptionBuilder<UnsupportedOperationException> unsupportedOperation() {
+		return new ExceptionBuilder<>(UnsupportedOperationException.class);
+	}
+
+	/**
+	 * Convenience method for generating an {@link IndexOutOfBoundsException}
+	 *
+	 * @return an {@link ExceptionBuilder}
+	 */
+	@NotNull
+	public ExceptionBuilder<IndexOutOfBoundsException> indexOutOfBounds() {
+		return new ExceptionBuilder<>(IndexOutOfBoundsException.class);
+	}
+
+	/**
+	 * Convenience method for generating an {@link IllegalArgumentException}
+	 *
+	 * @return an {@link ExceptionBuilder}
+	 */
+	@NotNull
+	public ExceptionBuilder<IllegalArgumentException> illegalArgument() {
+		return new ExceptionBuilder<>(IllegalArgumentException.class);
+	}
+
 	@Data
 	public static final class ExceptionBuilder<X extends Exception> {
 
 		private final Class<X> type;
 		private final Deque<String> messages;
-
-		private Object data;
+		private final Collection<Object> data;
+		
 		private Throwable cause;
+
+		private ExceptionBuilder(Class<X> type) {
+			this.type = type;
+			messages = new ArrayDeque<>();
+			data = new ArrayList<>();
+		}
 
 		@NotNull
 		public ExceptionBuilder<X> add(String string) {
@@ -83,7 +115,7 @@ public class Exceptions {
 		}
 
 		public ExceptionBuilder<X> data(Object object) {
-			data = object;
+			data.add(object);
 			return this;
 		}
 
@@ -94,9 +126,12 @@ public class Exceptions {
 					: messages.stream().collect(Collectors.joining(" "));
 			StringBuilder stringBuilder = new StringBuilder(baseMessage);
 			stringBuilder.append('\n');
-			if (data != null) {
+			if (!data.isEmpty()) {
 				stringBuilder.append("With Data:\n");
-				stringBuilder.append(Objects.toString(data, "null"));
+				for (Object datum : data) {
+					stringBuilder.append(Objects.toString(datum, "null"));
+					stringBuilder.append('\n');
+				}
 				stringBuilder.append('\n');
 			}
 
@@ -110,10 +145,6 @@ public class Exceptions {
 			} catch (ReflectiveOperationException e) {
 				throw new UnsupportedOperationException(message, e);
 			}
-		}
-
-		public void throwException() throws X {
-			throw build();
 		}
 	}
 }

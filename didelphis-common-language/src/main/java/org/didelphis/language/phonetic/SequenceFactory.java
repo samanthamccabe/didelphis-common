@@ -36,26 +36,21 @@ import java.util.stream.Collectors;
 
 /**
  * @author Samantha Fiona McCabe
-	 * @date 11/23/2014
+ * @date 11/23/2014
  */
-@ToString(includeFieldNames = true, of = {
-		"mapping",
-		"formatterMode",
-		"reservedStrings"
-})
+@ToString(of = {"mapping", "formatterMode", "reservedStrings"})
 public class SequenceFactory<T> implements Function<String, Sequence<T>> {
 
 	private final FeatureMapping<T> mapping;
 	private final FormatterMode formatterMode;
 	private final Collection<String> reservedStrings;
 
-	// <|-----------------------------------------------------------------------
+	// <* ----------------------------------------------------------------------
 	@Getter private final Segment<T>  dotSegment;
 	@Getter private final Segment<T>  borderSegment;
-	
 	@Getter private final Sequence<T> dotSequence;
 	@Getter private final Sequence<T> borderSequence;
-	// -----------------------------------------------------------------------|>
+	// ---------------------------------------------------------------------- *>
 
 	public SequenceFactory(
 			@NotNull FeatureMapping<T> mapping, @NotNull FormatterMode mode
@@ -68,17 +63,16 @@ public class SequenceFactory<T> implements Function<String, Sequence<T>> {
 			@NotNull Collection<String> reserved,
 			@NotNull FormatterMode mode
 	) {
-		this.mapping = mapping;
+		this.mapping    = mapping;
 		reservedStrings = reserved;
-		formatterMode = mode;
+		formatterMode   = mode;
+ 
+		FeatureModel<T> model  = this.mapping.getFeatureModel();
+		FeatureArray<T> sparse = new SparseFeatureArray<>(model);
 
-		FeatureModel<T> model = this.mapping.getFeatureModel();
-		FeatureArray<T> sparseArray = new SparseFeatureArray<>(model);
-
-		dotSegment = new ImmutableSegment<>(".", sparseArray);
-		borderSegment = new ImmutableSegment<>("#", sparseArray);
-
-		dotSequence = new ImmutableSequence<>(dotSegment);
+		dotSegment     = new ImmutableSegment<>(".", sparse);
+		borderSegment  = new ImmutableSegment<>("#", sparse);
+		dotSequence    = new ImmutableSequence<>(dotSegment);
 		borderSequence = new ImmutableSequence<>(borderSegment);
 	}
 

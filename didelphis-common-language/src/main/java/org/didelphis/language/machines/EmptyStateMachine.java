@@ -15,10 +15,12 @@
 package org.didelphis.language.machines;
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.didelphis.language.machines.interfaces.MachineMatcher;
 import org.didelphis.language.machines.interfaces.MachineParser;
 import org.didelphis.language.machines.interfaces.StateMachine;
+import org.didelphis.utilities.Exceptions;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -33,14 +35,15 @@ import java.util.Map;
  * @since 0.1.0
  */
 @SuppressWarnings("unchecked")
+@EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EmptyStateMachine<T> implements StateMachine<T> {
 
 	private static final EmptyStateMachine<?> MACHINE
 			= new EmptyStateMachine<>();
-	
-	private static final Map<String, ? extends Graph<?>> EMPTY_MAP 
-			= Collections.emptyMap();
+
+	private static final Map<String, ? extends Graph<?>> EMPTY_MAP = Collections
+			.emptyMap();
 
 	@NotNull
 	public static <T> StateMachine<T> getInstance() {
@@ -50,8 +53,9 @@ public final class EmptyStateMachine<T> implements StateMachine<T> {
 	@NotNull
 	@Override
 	public MachineParser<T> getParser() {
-		throw new UnsupportedOperationException("Empty state machine has no" 
-				+ " associated parser");
+		throw Exceptions.unsupportedOperation()
+				.add("Empty state machine has no associated parser")
+				.build();
 	}
 
 	@Override
@@ -71,7 +75,9 @@ public final class EmptyStateMachine<T> implements StateMachine<T> {
 	}
 
 	@Override
-	public Collection<Integer> getMatchIndices(int startIndex, @NotNull T target) {
+	public Collection<Integer> getMatchIndices(
+			int startIndex, @NotNull T target
+	) {
 		return Collections.singleton(startIndex);
 	}
 }
