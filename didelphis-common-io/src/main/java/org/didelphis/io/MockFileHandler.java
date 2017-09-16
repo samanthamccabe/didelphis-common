@@ -1,21 +1,22 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
- =                                                                              
- = Licensed under the Apache License, Version 2.0 (the "License");              
- = you may not use this file except in compliance with the License.             
- = You may obtain a copy of the License at                                      
- =     http://www.apache.org/licenses/LICENSE-2.0                               
- = Unless required by applicable law or agreed to in writing, software          
- = distributed under the License is distributed on an "AS IS" BASIS,            
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
- = See the License for the specific language governing permissions and          
- = limitations under the License.                                               
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.io;
 
 import lombok.Data;
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
+import lombok.NonNull;
 
 import java.util.Map;
 
@@ -31,13 +32,13 @@ public final class MockFileHandler implements FileHandler {
 	private final Map<String, CharSequence> mockFileSystem;
 
 	@Override
-	public CharSequence read(@NotNull String path) {
+	public CharSequence read( @NonNull String path) {
 		return mockFileSystem.get(path);
 	}
 
 	@Override
 	public boolean writeString(
-			@NotNull String path, @NotNull CharSequence data
+			 @NonNull String path,  @NonNull CharSequence data
 	) {
 		mockFileSystem.put(path, data);
 		return true;

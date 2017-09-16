@@ -1,22 +1,22 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.language.machines;
 
+import lombok.NonNull;
 import org.didelphis.language.machines.interfaces.StateMachine;
 import org.didelphis.structures.tuples.Triple;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -29,7 +29,7 @@ public final class Graphs {
 	private Graphs() {
 	}
 
-	public static <T> String asGML(@NotNull StateMachine<T> machine) {
+	public static <T> String asGML(@NonNull StateMachine<T> machine) {
 		StringBuilder sb = new StringBuilder(0x1000);
 
 		String name = machine.getId();
@@ -55,8 +55,8 @@ public final class Graphs {
 	private static <T> int populatePrimary(
 			int nodeIndex,
 			StateMachine<T> machine,
-			@NotNull StringBuilder stringBuilder,
-			@NotNull Map<String, Integer> idToIndex) {
+			@NonNull StringBuilder stringBuilder,
+			@NonNull Map<String, Integer> idToIndex) {
 		if (machine instanceof StandardStateMachine) {
 			Iterable<StateMachine<T>> values = ((StandardStateMachine<T>) machine)
 					.getMachinesMap()
@@ -72,9 +72,9 @@ public final class Graphs {
 	}
 
 	private static <T> int populate(int nodeIndex,
-			@NotNull StateMachine<T> machine,
-			@NotNull StringBuilder sb,
-			@NotNull Map<String, Integer> idToIndex) {
+			@NonNull StateMachine<T> machine,
+			@NonNull StringBuilder sb,
+			@NonNull Map<String, Integer> idToIndex) {
 		Iterable<Graph<T>> graphs = machine.getGraphs().values();
 		for (Graph<T> graph : graphs) {
 
@@ -106,8 +106,8 @@ public final class Graphs {
 		return populatePrimary(nodeIndex + 1, machine, sb, idToIndex);
 	}
 
-	private static int addNode(@NotNull StringBuilder sb,
-			@NotNull Map<String, Integer> idToIndex, int nodeIndex, String nodeId) {
+	private static int addNode(@NonNull StringBuilder sb,
+			@NonNull Map<String, Integer> idToIndex, int nodeIndex, String nodeId) {
 		if (!idToIndex.containsKey(nodeId)) {
 			idToIndex.put(nodeId, nodeIndex);
 			sb.append("\tnode  [\n");

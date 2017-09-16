@@ -1,22 +1,22 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
- =                                                                              
- = Licensed under the Apache License, Version 2.0 (the "License");              
- = you may not use this file except in compliance with the License.             
- = You may obtain a copy of the License at                                      
- =     http://www.apache.org/licenses/LICENSE-2.0                               
- = Unless required by applicable law or agreed to in writing, software          
- = distributed under the License is distributed on an "AS IS" BASIS,            
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
- = See the License for the specific language governing permissions and          
- = limitations under the License.                                               
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.language.phonetic.features;
 
 import org.didelphis.io.NullFileHandler;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -39,9 +39,9 @@ public enum IntegerFeature implements FeatureType<Integer> {
 		return new FeatureModelLoader<>(INSTANCE, NullFileHandler.INSTANCE, "");
 	}
 
-	@NotNull
+	@NonNull
 	@Override
-	public Integer parseValue(@NotNull String string) {
+	public Integer parseValue(@NonNull String string) {
 		String normalize = normalize(string, Form.NFKC);
 		if (normalize.equals("+")) {
 			return 1;
@@ -54,7 +54,7 @@ public enum IntegerFeature implements FeatureType<Integer> {
 		}
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public Collection<Integer> listUndefined() {
 		return Collections.singleton(null);
@@ -82,7 +82,7 @@ public enum IntegerFeature implements FeatureType<Integer> {
 		return (value == null) ? Double.NaN : value.doubleValue();
 	}
 
-	@NotNull
+	@NonNull
 	private Integer checkValue(@Nullable Integer value) {
 		return isDefined(value) ? value : 0;
 	}

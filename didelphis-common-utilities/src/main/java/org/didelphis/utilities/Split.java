@@ -1,21 +1,21 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
- =                                                                              
- = Licensed under the Apache License, Version 2.0 (the "License");              
- = you may not use this file except in compliance with the License.             
- = You may obtain a copy of the License at                                      
- =     http://www.apache.org/licenses/LICENSE-2.0                               
- = Unless required by applicable law or agreed to in writing, software          
- = distributed under the License is distributed on an "AS IS" BASIS,            
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
- = See the License for the specific language governing permissions and          
- = limitations under the License.                                               
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.utilities;
 
+import lombok.NonNull;
 import lombok.experimental.UtilityClass;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -33,14 +33,14 @@ public class Split {
 
 	private final Pattern NEWLINE = Pattern.compile("\r?\n|\r");
 
-	@NotNull
-	public List<String> splitLines(@NotNull CharSequence lines) {
+	@NonNull
+	public List<String> splitLines(@NonNull CharSequence lines) {
 		return Arrays.asList(NEWLINE.split(lines));
 	}
 
-	@NotNull
+	@NonNull
 	public List<String> splitToList(
-			@NotNull String string, @Nullable Iterable<String> special) {
+			@NonNull String string, @Nullable Iterable<String> special) {
 		List<String> strings = new ArrayList<>();
 		for (int i = 0; i < string.length(); i++) {
 
@@ -77,7 +77,7 @@ public class Split {
 	 * @param index
 	 * @return
 	 */
-	public int parseParens(@NotNull CharSequence string, int index) {
+	public int parseParens(@NonNull CharSequence string, int index) {
 		switch (string.charAt(index)) {
 			case '[':
 				return findClosingBracket(string, '[', ']', index);
@@ -98,7 +98,7 @@ public class Split {
 	 * @param startIndex
 	 * @return
 	 */
-	public int findClosingBracket(@NotNull CharSequence string, char left,
+	public int findClosingBracket(@NonNull CharSequence string, char left,
 			char right, int startIndex) {
 		int count = 1;
 		int endIndex = startIndex;

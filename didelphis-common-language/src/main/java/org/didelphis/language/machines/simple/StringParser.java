@@ -1,29 +1,25 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
- =                                                                              
- = Licensed under the Apache License, Version 2.0 (the "License");              
- = you may not use this file except in compliance with the License.             
- = You may obtain a copy of the License at                                      
- =     http://www.apache.org/licenses/LICENSE-2.0                               
- = Unless required by applicable law or agreed to in writing, software          
- = distributed under the License is distributed on an "AS IS" BASIS,            
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
- = See the License for the specific language governing permissions and          
- = limitations under the License.                                               
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.language.machines.simple;
 
+import lombok.NonNull;
 import org.didelphis.language.machines.Expression;
 import org.didelphis.language.machines.interfaces.MachineParser;
 import org.didelphis.utilities.Split;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by samantha on 3/3/17.
@@ -38,7 +34,7 @@ public final class StringParser implements MachineParser<String> {
 
 	private static final StringParser INSTANCE = new StringParser();
 	
-	@NotNull
+	@NonNull
 	public static StringParser getInstance() {
 		return INSTANCE;
 	}
@@ -50,9 +46,9 @@ public final class StringParser implements MachineParser<String> {
 		return null;
 	}
 
-	@NotNull
+	@NonNull
 	@Override
-	public List<Expression> parseExpression(@NotNull String expression) {
+	public List<Expression> parseExpression(@NonNull String expression) {
 		List<Expression> list = new ArrayList<>();
 		if (!expression.isEmpty()) {
 			List<String> symbols = Split.splitToList(expression, SPECIALS.keySet());
@@ -85,7 +81,7 @@ public final class StringParser implements MachineParser<String> {
 		return null;
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public Map<String, Collection<String>> getSpecials() {
 		return null; // TODO: --------------------------------------------------
@@ -97,12 +93,12 @@ public final class StringParser implements MachineParser<String> {
 	}
 
 	@Override
-	public int lengthOf(@NotNull String s) {
+	public int lengthOf(@NonNull String s) {
 		return s.length();
 	}
 
-	@NotNull
-	private static Expression updateExpressionBuffer(@NotNull Collection<Expression> list, @NotNull Expression buffer) {
+	@NonNull
+	private static Expression updateExpressionBuffer(@NonNull Collection<Expression> list, @NonNull Expression buffer) {
 		// Add the contents of buffer if not empty
 		if (buffer.isEmpty()) {
 			return buffer;

@@ -1,25 +1,25 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
- =                                                                              
- = Licensed under the Apache License, Version 2.0 (the "License");              
- = you may not use this file except in compliance with the License.             
- = You may obtain a copy of the License at                                      
- =     http://www.apache.org/licenses/LICENSE-2.0                               
- = Unless required by applicable law or agreed to in writing, software          
- = distributed under the License is distributed on an "AS IS" BASIS,            
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
- = See the License for the specific language governing permissions and          
- = limitations under the License.                                               
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.language.machines;
 
+import lombok.NonNull;
 import org.didelphis.language.machines.interfaces.MachineMatcher;
 import org.didelphis.language.machines.interfaces.MachineParser;
 import org.didelphis.language.machines.interfaces.StateMachine;
 import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.structures.tuples.Triple;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,22 +36,22 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 	private final StateMachine<T> positiveMachine;
 
 	private NegativeStateMachine(
-			@NotNull String id,
-			@NotNull StateMachine<T> negative,
-			@NotNull StateMachine<T> positive
+			@NonNull String id,
+			@NonNull StateMachine<T> negative,
+			@NonNull StateMachine<T> positive
 	) {
 		this.id = id;
 		positiveMachine = positive;
 		negativeMachine = negative;
 	}
 
-	@NotNull
+	@NonNull
 	public static <T> StateMachine<T> create(
-			@NotNull String id,
-			@NotNull String expression,
-			@NotNull MachineParser<T> parser,
-			@NotNull MachineMatcher<T> matcher,
-			@NotNull ParseDirection direction
+			@NonNull String id,
+			@NonNull String expression,
+			@NonNull MachineParser<T> parser,
+			@NonNull MachineMatcher<T> matcher,
+			@NonNull ParseDirection direction
 	) {
 		// Create the actual branch, the one we don't want to match
 		StateMachine<T> negative = StandardStateMachine.create(id + 'N',
@@ -77,24 +77,24 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 	}
 
 	@Override
-	@NotNull
+	@NonNull
 	public MachineParser<T> getParser() {
 		return positiveMachine.getParser();
 	}
 
 	@Override
-	@NotNull
+	@NonNull
 	public MachineMatcher<T> getMatcher() {
 		return positiveMachine.getMatcher();
 	}
 
 	@Override
-	@NotNull
+	@NonNull
 	public String getId() {
 		return id;
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public Map<String, Graph<T>> getGraphs() {
 		Map<String, Graph<T>> map = new HashMap<>();
@@ -104,8 +104,8 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 	}
 
 	@Override
-	@NotNull
-	public Collection<Integer> getMatchIndices(int startIndex, @NotNull T target) {
+	@NonNull
+	public Collection<Integer> getMatchIndices(int startIndex, @NonNull T target) {
 
 		Collection<Integer> posIndices = positiveMachine.getMatchIndices(
 				startIndex,
@@ -147,8 +147,8 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 	}
 
 	private static <T> void buildPositiveBranch(
-			@NotNull MachineParser<T> parser,
-			@NotNull StateMachine<T> positive
+			@NonNull MachineParser<T> parser,
+			@NonNull StateMachine<T> positive
 	) {
 
 		Graph<T> graph = positive.getGraphs().values().iterator().next();
@@ -191,10 +191,10 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 		}
 	}
 
-	@NotNull
+	@NonNull
 	private static <T> Iterable<Integer> collectLengths(
-			@NotNull MachineParser<T> parser,
-			@NotNull T arc
+			@NonNull MachineParser<T> parser,
+			@NonNull T arc
 	) {
 		return parser.getSpecials()
 				.get(arc.toString())
@@ -204,7 +204,7 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 	}
 
 	private static <T> void buildDotChain(
-			@NotNull Graph<T> graph,
+			@NonNull Graph<T> graph,
 			String key,
 			Collection<String> endValues,
 			int length,

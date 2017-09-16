@@ -1,20 +1,20 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
- =                                                                              
- = Licensed under the Apache License, Version 2.0 (the "License");              
- = you may not use this file except in compliance with the License.             
- = You may obtain a copy of the License at                                      
- =     http://www.apache.org/licenses/LICENSE-2.0                               
- = Unless required by applicable law or agreed to in writing, software          
- = distributed under the License is distributed on an "AS IS" BASIS,            
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
- = See the License for the specific language governing permissions and          
- = limitations under the License.                                               
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.language.parsing;
 
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.Normalizer;
@@ -29,30 +29,32 @@ import static org.didelphis.utilities.Split.parseParens;
 import static org.didelphis.utilities.Split.splitToList;
 
 /**
- * This type is to succeed the earlier SegmentationMode and Normalizer mode
- * enums by merging their functionality. We originally supported types that were
- * entirely unnecessary and presented the user with an excess of options, most
- * of where were of no value (compatibility modes, or segmentation with
- * composition e.g.)
- * <p>
+ * Enum {@code FormatterMode}
+ *
+ * This type is to succeed the earlier {@code SegmentationMode} and {@code 
+ * Normalizer} mode enums by merging their functionality. We originally 
+ * supported types that were entirely unnecessary and presented the user with an
+ * excess of options, most of where were of no value (compatibility modes, or
+ * segmentation with composition e.g.)
  *
  * @author Samantha Fiona McCabe
-	 * @date 1/14/2015
+ * @date 2015-01-14
+ * @since 0.1.0
  */
 public enum FormatterMode implements Segmenter, Formatter {
 
 	// No change to input strings
 	NONE(null) {
-		@NotNull
+		@NonNull
 		@Override
-		public List<String> split(@NotNull String string) {
+		public List<String> split(@NonNull String string) {
 			return split(string, Collections.emptyList());
 		}
 
-		@NotNull
+		@NonNull
 		@Override
 		public List<String> split(
-				@NotNull String string, @NotNull Iterable<String> special
+				@NonNull String string, @NonNull Iterable<String> special
 		) {
 			return splitToList(string, special);
 		}
@@ -60,16 +62,16 @@ public enum FormatterMode implements Segmenter, Formatter {
 
 	// Unicode Canonical Decomposition
 	DECOMPOSITION(Form.NFD) {
-		@NotNull
+		@NonNull
 		@Override
-		public List<String> split(@NotNull String string) {
+		public List<String> split(@NonNull String string) {
 			return split(string, Collections.emptyList());
 		}
 
-		@NotNull
+		@NonNull
 		@Override
 		public List<String> split(
-				@NotNull String string, @NotNull Iterable<String> special
+				@NonNull String string, @NonNull Iterable<String> special
 		) {
 			return splitToList(normalize(string), special);
 		}
@@ -77,16 +79,16 @@ public enum FormatterMode implements Segmenter, Formatter {
 
 	// Unicode Canonical Decomposition followed by Canonical Composition
 	COMPOSITION(Form.NFC) {
-		@NotNull
+		@NonNull
 		@Override
-		public List<String> split(@NotNull String string) {
+		public List<String> split(@NonNull String string) {
 			return split(string, Collections.emptyList());
 		}
 
-		@NotNull
+		@NonNull
 		@Override
 		public List<String> split(
-				@NotNull String string, @NotNull Iterable<String> special
+				@NonNull String string, @NonNull Iterable<String> special
 		) {
 			return splitToList(normalize(string), special);
 		}
@@ -95,22 +97,22 @@ public enum FormatterMode implements Segmenter, Formatter {
 	// Uses segmentation algorithm with Unicode Canonical Decomposition
 	INTELLIGENT(Form.NFD) {
 
-		//<|--------------------------------------------------------------------
-		private static final int BINDER_START       = 0x035C;
-		private static final int BINDER_END         = 0x0362;
-		private static final int SUPERSCRIPT_ZERO   = 0x2070;
-		private static final int SUBSCRIPT_SMALL_T  = 0x209C;
-		private static final int SUPERSCRIPT_TWO    = 0x00B2;
-		private static final int SUPERSCRIPT_THREE  = 0x00B3;
-		private static final int SUPERSCRIPT_ONE    = 0x00B9;
-		//--------------------------------------------------------------------|>
+		/* ------------------------------------------------------------------<*/
+		private static final int BINDER_START      = 0x035C;
+		private static final int BINDER_END        = 0x0362;
+		private static final int SUPERSCRIPT_ZERO  = 0x2070;
+		private static final int SUBSCRIPT_SMALL_T = 0x209C;
+		private static final int SUPERSCRIPT_TWO   = 0x00B2;
+		private static final int SUPERSCRIPT_THREE = 0x00B3;
+		private static final int SUPERSCRIPT_ONE   = 0x00B9;
+		/*>-------------------------------------------------------------------*/
 
 		private final Pattern pattern = Pattern.compile("(\\$[^$]*\\d+)");
 
-		@NotNull
+		@NonNull
 		@Override
 		public List<String> split(
-				@NotNull String string, @NotNull Iterable<String> special
+				@NonNull String string, @NonNull Iterable<String> special
 		) {
 			String word = normalize(string);
 
@@ -172,17 +174,17 @@ public enum FormatterMode implements Segmenter, Formatter {
 			return strings;
 		}
 
-		@NotNull
+		@NonNull
 		@Override
-		public List<String> split(@NotNull String string) {
+		public List<String> split(@NonNull String string) {
 			return split(string, Collections.emptyList());
 		}
 
 		// Finds longest item in keys which the provided string starts with
 		// Also can be used to grab index symbols
-		@NotNull
+		@NonNull
 		private String getBestMatch(
-				@NotNull String word, @NotNull Iterable<String> keys
+				@NonNull String word, @NonNull Iterable<String> keys
 		) {
 
 			String bestMatch = "";
@@ -234,9 +236,9 @@ public enum FormatterMode implements Segmenter, Formatter {
 		form = param;
 	}
 
-	@NotNull
+	@NonNull
 	@Override
-	public String normalize(@NotNull String string) {
+	public String normalize(@NonNull String string) {
 		return (form == null) ? string : Normalizer.normalize(string, form);
 	}
 }

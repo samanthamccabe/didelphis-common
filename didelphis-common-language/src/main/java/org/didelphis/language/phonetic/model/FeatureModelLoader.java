@@ -1,19 +1,20 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
- =                                                                              
- = Licensed under the Apache License, Version 2.0 (the "License");              
- = you may not use this file except in compliance with the License.             
- = You may obtain a copy of the License at                                      
- =     http://www.apache.org/licenses/LICENSE-2.0                               
- = Unless required by applicable law or agreed to in writing, software          
- = distributed under the License is distributed on an "AS IS" BASIS,            
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
- = See the License for the specific language governing permissions and          
- = limitations under the License.                                               
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.language.phonetic.model;
 
+import lombok.NonNull;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.didelphis.io.FileHandler;
@@ -22,9 +23,9 @@ import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.FeatureType;
 import org.didelphis.language.phonetic.features.SparseFeatureArray;
+import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -38,7 +39,11 @@ import static java.util.regex.Pattern.compile;
 import static org.didelphis.utilities.Split.splitLines;
 
 /**
- * Created by samantha on 2/18/17.
+ * Class {@code FeatureModelLoader}
+ *
+ * @author Samantha Fiona McCabe
+ * @date 2017-02-18
+ * @since 0.1.0
  */
 @ToString
 @Slf4j
@@ -50,23 +55,21 @@ public final class FeatureModelLoader<T> {
 	private enum ParseZone {
 		FEATURES, ALIASES, CONSTRAINTS, SYMBOLS, MODIFIERS, NONE;
 
-		boolean matches(@NotNull String string) {
+		boolean matches(@NonNull String string) {
 			return name().equals(string.toUpperCase());
 		}
 	}
 
 	/*-----------------------------------------------------------------------<*/
-	private static final Pattern FEATURES_PATTERN = compile("(?<name>\\w+)"
-			+ "(\\s+(?<code>\\w*))?", CASE_INSENSITIVE);
-	private static final Pattern TRANSFORM = compile("\\s*>\\s*");
-	private static final Pattern BRACKETS  = compile("[\\[\\]]");
-	private static final Pattern EQUALS    = compile("\\s*=\\s*");
-	private static final Pattern IMPORT    = compile("import\\s+" 
-			+ "['\"]([^'\"]+)['\"]", CASE_INSENSITIVE);
-	private static final Pattern COMMENT_PATTERN = compile("\\s*%.*");
-	private static final Pattern SYMBOL_PATTERN  = compile("([^\\t]+)\\t(.*)");
-	private static final Pattern TAB_PATTERN     = compile("\\t");
-	private static final Pattern DOTTED_CIRCLE   = compile("◌", LITERAL);
+	private static final Pattern FEATURES_PATTERN = compile("(?<name>\\w+)(\\s+(?<code>\\w*))?", CASE_INSENSITIVE);
+	private static final Pattern TRANSFORM        = compile("\\s*>\\s*");
+	private static final Pattern BRACKETS         = compile("[\\[\\]]");
+	private static final Pattern EQUALS           = compile("\\s*=\\s*");
+	private static final Pattern IMPORT           = compile("import\\s+['\"]([^'\"]+)['\"]", CASE_INSENSITIVE);
+	private static final Pattern COMMENT_PATTERN  = compile("\\s*%.*");
+	private static final Pattern SYMBOL_PATTERN   = compile("([^\\t]+)\\t(.*)");
+	private static final Pattern TAB_PATTERN      = compile("\\t");
+	private static final Pattern DOTTED_CIRCLE    = compile("◌", LITERAL);
 	
 	private final MultiMap<ParseZone, String> zoneData;
 	
@@ -100,19 +103,23 @@ public final class FeatureModelLoader<T> {
 	}
 
 	public FeatureModelLoader(
-			@NotNull FeatureType<T> featureType,
-			@NotNull FileHandler fileHandler,
-			@NotNull String path
+			@NonNull FeatureType<T> featureType,
+			@NonNull FileHandler fileHandler,
+			@NonNull String path
 	) {
-		this(featureType, fileHandler, splitLines(fileHandler.read(path)));
+		this(featureType,
+				fileHandler,
+				splitLines(fileHandler.readOrThrow(path,
+						NullPointerException.class
+				))
+		);
 	}
 
 	public FeatureModelLoader(
-			@NotNull FeatureType<T> featureType,
-			@NotNull FileHandler fileHandler,
-			@NotNull Iterable<String> lines
+			@NonNull FeatureType<T> featureType,
+			@NonNull FileHandler fileHandler,
+			@NonNull Iterable<String> lines
 	) {
-
 		this.featureType = featureType;
 		this.fileHandler = fileHandler;
 
@@ -123,33 +130,33 @@ public final class FeatureModelLoader<T> {
 		for (ParseZone zone : ParseZone.values()) {
 			map.put(zone, new ArrayList<>());
 		}
-		zoneData = new GeneralMultiMap<>(map, ArrayList.class);
+		zoneData = new GeneralMultiMap<>(map, Suppliers.ofList());
 
 		parse(lines);
 		populate();
 	}
 
-	@NotNull
-	public Constraint<T> parseConstraint(@NotNull CharSequence entry) {
+	@NonNull
+	public Constraint<T> parseConstraint(@NonNull CharSequence entry) {
 		String[] split = TRANSFORM.split(entry, 2);
 		String source = split[0];
 		String target = split[1];
 		FeatureArray<T> sMap = featureModel.parseFeatureString(source);
 		FeatureArray<T> tMap = featureModel.parseFeatureString(target);
-		return new Constraint<>(featureModel, sMap, tMap);
+		return new Constraint<>(sMap, tMap);
 	}
 
-	@NotNull
+	@NonNull
 	public FeatureSpecification getSpecification() {
 		return specification;
 	}
 
-	@NotNull
+	@NonNull
 	public FeatureModel<T> getFeatureModel() {
 		return featureModel;
 	}
 
-	@NotNull
+	@NonNull
 	public FeatureMapping<T> getFeatureMapping() {
 		return featureMapping;
 	}
@@ -200,7 +207,7 @@ public final class FeatureModelLoader<T> {
 	/**
 	 * Traverses the provided data and sorts commands into the appropriate bins
 	 */
-	private void parse(@NotNull Iterable<String> lines) {
+	private void parse(@NonNull Iterable<String> lines) {
 		ParseZone currentZone = ParseZone.NONE;
 		for (CharSequence string : lines) {
 			String line = COMMENT_PATTERN.matcher(string).replaceAll("").trim();
@@ -246,7 +253,7 @@ public final class FeatureModelLoader<T> {
 		}
 	}
 
-	@NotNull
+	@NonNull
 	private Map<String, FeatureArray<T>> populateModifiers() {
 		Map<String, FeatureArray<T>> diacritics = new LinkedHashMap<>();
 		Iterable<String> lines = zoneData.get(ParseZone.MODIFIERS);
@@ -272,7 +279,7 @@ public final class FeatureModelLoader<T> {
 		return diacritics;
 	}
 
-	@NotNull
+	@NonNull
 	private Map<String, FeatureArray<T>> populateSymbols() {
 		Map<String, FeatureArray<T>> featureMap = new LinkedHashMap<>();
 		Iterable<String> lines = zoneData.get(ParseZone.SYMBOLS);
@@ -302,8 +309,7 @@ public final class FeatureModelLoader<T> {
 	 *
 	 * @return
 	 */
-	@Nullable
-	private static ParseZone determineZone(@NotNull String string) {
+	private static @Nullable ParseZone determineZone(@NonNull String string) {
 		return Arrays.stream(ParseZone.values())
 				.filter(zone -> zone.matches(string))
 				.findFirst()
@@ -311,9 +317,9 @@ public final class FeatureModelLoader<T> {
 	}
 
 	private static <T> void checkFeatureCollisions(
-			@NotNull String symbol,
-			@NotNull Map<String, FeatureArray<T>> featureMap,
-			@NotNull FeatureArray<T> features
+			@NonNull String symbol,
+			@NonNull Map<String, FeatureArray<T>> featureMap,
+			@NonNull FeatureArray<T> features
 	) {
 		if (featureMap.containsValue(features)) {
 			for (Entry<String, FeatureArray<T>> e : featureMap.entrySet()) {

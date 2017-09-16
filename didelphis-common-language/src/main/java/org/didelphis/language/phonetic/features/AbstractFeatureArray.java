@@ -1,23 +1,23 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
- =                                                                              
- = Licensed under the Apache License, Version 2.0 (the "License");              
- = you may not use this file except in compliance with the License.             
- = You may obtain a copy of the License at                                      
- =     http://www.apache.org/licenses/LICENSE-2.0                               
- = Unless required by applicable law or agreed to in writing, software          
- = distributed under the License is distributed on an "AS IS" BASIS,            
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
- = See the License for the specific language governing permissions and          
- = limitations under the License.                                               
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.language.phonetic.features;
 
+import lombok.NonNull;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureSpecification;
 import org.didelphis.utilities.Exceptions;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -31,13 +31,13 @@ import java.util.Objects;
 public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
 	private final FeatureModel<T> featureModel;
 
-	protected AbstractFeatureArray(@NotNull FeatureModel<T> featureModel) {
+	protected AbstractFeatureArray(@NonNull FeatureModel<T> featureModel) {
 		this.featureModel = featureModel;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public int compareTo(@NotNull FeatureArray<T> o) {
+	public int compareTo(@NonNull FeatureArray<T> o) {
 		sizeCheck(o);
 
 		FeatureType<T> featureType = featureModel.getFeatureType();
@@ -59,13 +59,13 @@ public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
 		return getSpecification().size();
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public FeatureModel<T> getFeatureModel() {
 		return featureModel;
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public FeatureSpecification getSpecification() {
 		return featureModel.getSpecification();
@@ -91,12 +91,12 @@ public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
 		return getSpecification().equals(that.getSpecification());
 	}
 
-	protected void sizeCheck(@NotNull FeatureArray<T> o) {
+	protected void sizeCheck(@NonNull FeatureArray<T> o) {
 		if (size() != o.size()) throw buildException(o);
 	}
 
-	@NotNull
-	private RuntimeException buildException(@NotNull FeatureArray<T> o) {
+	@NonNull
+	private RuntimeException buildException(@NonNull FeatureArray<T> o) {
 		return Exceptions.illegalArgument()
 				.add("Attempting to compare objects with different specified")
 				.add("feature sizes. This: {} vs {}")

@@ -1,16 +1,16 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
- =                                                                              
- = Licensed under the Apache License, Version 2.0 (the "License");              
- = you may not use this file except in compliance with the License.             
- = You may obtain a copy of the License at                                      
- =     http://www.apache.org/licenses/LICENSE-2.0                               
- = Unless required by applicable law or agreed to in writing, software          
- = distributed under the License is distributed on an "AS IS" BASIS,            
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
- = See the License for the specific language governing permissions and          
- = limitations under the License.                                               
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.language.machines;
 
@@ -133,7 +133,7 @@ public class StandardStateMachineTest {
 	}
 
 	@Test
-	void testBasic03() throws IOException {
+	void testBasic03() {
 		StateMachine<Sequence<Integer>> machine = getMachine("aaa?");
 		assertMatches(machine, "aa");
 		assertMatches(machine, "aaa");
@@ -143,7 +143,7 @@ public class StandardStateMachineTest {
 	}
 
 	@Test
-	void testBasic04() throws IOException {
+	void testBasic04() {
 		StateMachine<Sequence<Integer>> machine = getMachine("ab*cd?ab");
 
 		assertMatches(machine, "acab");
@@ -163,7 +163,7 @@ public class StandardStateMachineTest {
 	}
 
 	@Test
-	void testStar() throws IOException {
+	void testStar() {
 		StateMachine<Sequence<Integer>> machine = getMachine("aa*");
 
 		assertMatches(machine, "a");
@@ -175,7 +175,7 @@ public class StandardStateMachineTest {
 	}
 
 	@Test
-	void testStateMachinePlus() throws IOException {
+	void testStateMachinePlus() {
 		StateMachine<Sequence<Integer>> machine = getMachine("a+");
 
 		assertMatches(machine, "a");
@@ -214,7 +214,7 @@ public class StandardStateMachineTest {
 	}
 
 	@Test
-	void testGroupStar02() throws IOException {
+	void testGroupStar02() {
 		StateMachine<Sequence<Integer>> machine = getMachine("d(eo*)*b");
 
 		assertMatches(machine, "db");
@@ -232,7 +232,7 @@ public class StandardStateMachineTest {
 	}
 
 	@Test
-	void testGroupOptional01() throws IOException {
+	void testGroupOptional01() {
 		StateMachine<Sequence<Integer>> machine = getMachine("(ab)?(cd)(ef)");
 
 		assertMatches(machine, "abcdef");
@@ -241,7 +241,7 @@ public class StandardStateMachineTest {
 
 
 	@Test
-	void testSets01() throws IOException {
+	void testSets01() {
 		StateMachine<Sequence<Integer>> machine = getMachine("{ x ɣ }");
 
 		assertMatches(machine, "x");
@@ -250,7 +250,7 @@ public class StandardStateMachineTest {
 	}
 
 	@Test
-	void testSets02() throws IOException {
+	void testSets02() {
 		StateMachine<Sequence<Integer>> machine = getMachine("{ab {cd xy} ef}tr");
 
 		assertMatches(machine, "abtr");
@@ -270,7 +270,7 @@ public class StandardStateMachineTest {
 	}
 
 	@Test
-	void testGroupPlus01() throws IOException {
+	void testGroupPlus01() {
 		StateMachine<Sequence<Integer>> machine = getMachine("(ab)+");
 
 		assertMatches(machine, "ab");
@@ -279,7 +279,7 @@ public class StandardStateMachineTest {
 	}
 
 	@Test
-	void testComplexGroups01() throws IOException {
+	void testComplexGroups01() {
 		StateMachine<Sequence<Integer>> machine = getMachine("(a+l(ham+b)*ra)+");
 
 		assertMatches(machine, "alhambra");
@@ -352,7 +352,7 @@ public class StandardStateMachineTest {
 	}
 
 	@Test
-	void testComplex01() throws IOException {
+	void testComplex01() {
 		StateMachine<Sequence<Integer>> machine = getMachine("a?(b?c?)d?b");
 
 		assertMatches(machine, "b");
@@ -386,7 +386,7 @@ public class StandardStateMachineTest {
 	}
 
 	@Test
-	void testDot01() throws IOException {
+	void testDot01() {
 		StateMachine<Sequence<Integer>> machine = getMachine("..");
 
 		assertMatches(machine, "ab");
@@ -406,7 +406,7 @@ public class StandardStateMachineTest {
 	}
 
 	@Test
-	void testDot02() throws IOException {
+	void testDot02() {
 		StateMachine<Sequence<Integer>> machine = getMachine("a..");
 
 		assertMatches(machine, "abb");

@@ -1,20 +1,21 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
- =                                                                              
- = Licensed under the Apache License, Version 2.0 (the "License");              
- = you may not use this file except in compliance with the License.             
- = You may obtain a copy of the License at                                      
- =     http://www.apache.org/licenses/LICENSE-2.0                               
- = Unless required by applicable law or agreed to in writing, software          
- = distributed under the License is distributed on an "AS IS" BASIS,            
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
- = See the License for the specific language governing permissions and          
- = limitations under the License.                                               
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.language.phonetic.model;
 
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.ToString;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.FeatureType;
@@ -22,7 +23,7 @@ import org.didelphis.language.phonetic.features.SparseFeatureArray;
 import org.didelphis.language.phonetic.features.StandardFeatureArray;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.segments.StandardSegment;
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -45,9 +46,9 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 	private final List<String> orderedKeys;
 
 	public GeneralFeatureMapping(
-			@NotNull FeatureModel<T> featureModel,
-			@NotNull Map<String, FeatureArray<T>> featureMap,
-			@NotNull Map<String, FeatureArray<T>> modifiers
+			@NonNull FeatureModel<T> featureModel,
+			@NonNull Map<String, FeatureArray<T>> featureMap,
+			@NonNull Map<String, FeatureArray<T>> modifiers
 	) {
 		specification = featureModel.getSpecification();
 		this.featureModel = featureModel;
@@ -62,9 +63,9 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 		return -1 * Integer.compare(s1.length(), s2.length());
 	}
 
-	@NotNull
+	@NonNull
 	@Override
-	public String findBestSymbol(@NotNull FeatureArray<T> featureArray) {
+	public String findBestSymbol(@NonNull FeatureArray<T> featureArray) {
 
 		FeatureType<T> type = featureModel.getFeatureType();
 
@@ -93,40 +94,40 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 		return bestSymbol + sb;
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public Set<String> getSymbols() {
 		return featureMap.keySet();
 	}
 	
 	@Override
-	public boolean containsKey(@NotNull String key) {
+	public boolean containsKey(@NonNull String key) {
 		return featureMap.containsKey(key);
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public Map<String, FeatureArray<T>> getFeatureMap() {
 		return featureMap;
 	}
 	
-	@NotNull
+	@NonNull
 	@Override
 	public Map<String, FeatureArray<T>> getModifiers() {
 		return modifiers;
 	}
 
-	@NotNull
+	@NonNull
 	@Override
-	public FeatureArray<T> getFeatureArray(@NotNull String key) {
+	public FeatureArray<T> getFeatureArray(@NonNull String key) {
 		return featureMap.containsKey(key) 
 				? new StandardFeatureArray<>(featureMap.get(key)) 
 				: new SparseFeatureArray<>(featureModel);
 	}
 	
-	@NotNull
+	@NonNull
 	@Override
-	public Segment<T> parseSegment(@NotNull String string) {
+	public Segment<T> parseSegment(@NonNull String string) {
 		if (featureMap.isEmpty()) {
 			FeatureArray<T> featureArray = new StandardFeatureArray<>(
 					new ArrayList<>(),
@@ -153,22 +154,22 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 			return new StandardSegment<>(string, featureArray);
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public FeatureModel<T> getFeatureModel() {
 		return featureModel;
 	}
 	
-	@NotNull
+	@NonNull
 	@Override
 	public FeatureSpecification getSpecification() {
 		return specification;
 	}
 
-	@NotNull
+	@NonNull
 	private Collection<String> getBestDiacritic(
-			@NotNull FeatureArray<T> featureArray,
-			@NotNull FeatureArray<T> bestFeatures,
+			@NonNull FeatureArray<T> featureArray,
+			@NonNull FeatureArray<T> bestFeatures,
 			double lastMinimum) {
 
 		FeatureType<T> type = featureModel.getFeatureType();

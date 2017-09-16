@@ -1,25 +1,25 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
- =                                                                              
- = Licensed under the Apache License, Version 2.0 (the "License");              
- = you may not use this file except in compliance with the License.             
- = You may obtain a copy of the License at                                      
- =     http://www.apache.org/licenses/LICENSE-2.0                               
- = Unless required by applicable law or agreed to in writing, software          
- = distributed under the License is distributed on an "AS IS" BASIS,            
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
- = See the License for the specific language governing permissions and          
- = limitations under the License.                                               
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.language.phonetic.model;
 
+import lombok.NonNull;
 import lombok.ToString;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.FeatureType;
 import org.didelphis.language.phonetic.features.SparseFeatureArray;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.Normalizer.Form;
@@ -64,10 +64,10 @@ public final class GeneralFeatureModel<T> implements FeatureModel<T> {
 	 * @param aliases
 	 */
 	public GeneralFeatureModel(
-			@NotNull FeatureType<T> featureType,
-			@NotNull FeatureSpecification specification,
-			@NotNull List<Constraint<T>> constraints,
-			@NotNull Map<String, FeatureArray<T>> aliases) {
+			@NonNull FeatureType<T> featureType,
+			@NonNull FeatureSpecification specification,
+			@NonNull List<Constraint<T>> constraints,
+			@NonNull Map<String, FeatureArray<T>> aliases) {
 		this.featureType = featureType;
 		this.specification = specification;
 		this.constraints = constraints;
@@ -94,15 +94,15 @@ public final class GeneralFeatureModel<T> implements FeatureModel<T> {
 				Objects.equals(aliases, other.aliases);
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public List<Constraint<T>> getConstraints() {
 		return constraints;
 	}
 
-	@NotNull
+	@NonNull
 	@Override
-	public FeatureArray<T> parseFeatureString(@NotNull String string) {
+	public FeatureArray<T> parseFeatureString(@NonNull String string) {
 		String normal = normalize(string, Form.NFKC);
 		String pattern = BRACKETS_PATTERN.matcher(normal).replaceAll("$1");
 		FeatureArray<T> arr = new SparseFeatureArray<>(this);
@@ -133,19 +133,19 @@ public final class GeneralFeatureModel<T> implements FeatureModel<T> {
 		return arr;
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public FeatureType<T> getFeatureType() {
 		return featureType;
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public FeatureSpecification getSpecification() {
 		return specification;
 	}
 
-	private static int retrieveIndex(String label, String string, @NotNull Map<String, Integer> names) {
+	private static int retrieveIndex(String label, String string, @NonNull Map<String, Integer> names) {
 		if (names.containsKey(label)) {
 			return names.get(label);
 		}

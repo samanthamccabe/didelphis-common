@@ -1,22 +1,22 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
- =                                                                              
- = Licensed under the Apache License, Version 2.0 (the "License");              
- = you may not use this file except in compliance with the License.             
- = You may obtain a copy of the License at                                      
- =     http://www.apache.org/licenses/LICENSE-2.0                               
- = Unless required by applicable law or agreed to in writing, software          
- = distributed under the License is distributed on an "AS IS" BASIS,            
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
- = See the License for the specific language governing permissions and          
- = limitations under the License.                                               
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.language.phonetic.sequences;
 
+import lombok.NonNull;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.utilities.Exceptions;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -40,7 +40,7 @@ public class ImmutableSequence<T> extends BasicSequence<T> {
 		super(segment);
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public Segment<T> remove(int index) {
 		throw unsupported();
@@ -61,24 +61,24 @@ public class ImmutableSequence<T> extends BasicSequence<T> {
 		throw unsupported();
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public Segment<T> set(int index, Segment<T> element) {
 		throw unsupported();
 	}
 
 	@Override
-	public boolean addAll(@NotNull Collection<? extends Segment<T>> c) {
+	public boolean addAll(@NonNull Collection<? extends Segment<T>> c) {
 		throw unsupported();
 	}
 
 	@Override
-	public boolean retainAll(@NotNull Collection<?> c) {
+	public boolean retainAll(@NonNull Collection<?> c) {
 		throw unsupported();
 	}
 
 	@Override
-	public boolean removeAll(@NotNull Collection<?> c) {
+	public boolean removeAll(@NonNull Collection<?> c) {
 		throw unsupported();
 	}
 
@@ -94,7 +94,7 @@ public class ImmutableSequence<T> extends BasicSequence<T> {
 
 	@Override
 	public boolean addAll(
-			int index, @NotNull Collection<? extends Segment<T>> c
+			int index, @NonNull Collection<? extends Segment<T>> c
 	) {
 		throw unsupported();
 	}
@@ -105,37 +105,37 @@ public class ImmutableSequence<T> extends BasicSequence<T> {
 	}
 
 	@Override
-	public void add(@NotNull Sequence<T> sequence) {
+	public void add(@NonNull Sequence<T> sequence) {
 		throw unsupported();
 	}
 
 	@Override
-	public void insert(@NotNull Sequence<T> sequence, int index) {
+	public void insert(@NonNull Sequence<T> sequence, int index) {
 		throw unsupported();
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public Sequence<T> replaceAll(
-			@NotNull Sequence<T> source, @NotNull Sequence<T> target
+			@NonNull Sequence<T> source, @NonNull Sequence<T> target
 	) {
 		throw unsupported();
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public BasicSequence<T> remove(int start, int end) {
 		throw unsupported();
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public String toString() {
 		return super.toString() + " (immutable)";
 	}
 
 	@Override
-	public boolean add(@NotNull Segment<T> segment) {
+	public boolean add(@NonNull Segment<T> segment) {
 		throw unsupported();
 	}
 

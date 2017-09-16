@@ -1,23 +1,23 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
- =                                                                              
- = Licensed under the Apache License, Version 2.0 (the "License");              
- = you may not use this file except in compliance with the License.             
- = You may obtain a copy of the License at                                      
- =     http://www.apache.org/licenses/LICENSE-2.0                               
- = Unless required by applicable law or agreed to in writing, software          
- = distributed under the License is distributed on an "AS IS" BASIS,            
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
- = See the License for the specific language governing permissions and          
- = limitations under the License.                                               
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.utilities;
 
 import lombok.Data;
+import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 /**
  * Utility Class {@code Exceptions}
- * <p>
+ *
  * Allows cleaner and more fluent generation of exceptions, and better reporting
  * and formatting of relevant data pertaining to the cause.
  *
@@ -47,17 +47,18 @@ public class Exceptions {
 	 *
 	 * @return a new builder
 	 */
-	@NotNull
+	@NonNull
 	public <X extends Exception> ExceptionBuilder<X> create(Class<X> type) {
 		return new ExceptionBuilder<>(type);
 	}
+
 
 	/**
 	 * Convenience method for generating an {@link UnsupportedOperationException}
 	 *
 	 * @return an {@link ExceptionBuilder}
 	 */
-	@NotNull
+	@NonNull
 	public ExceptionBuilder<UnsupportedOperationException> unsupportedOperation() {
 		return new ExceptionBuilder<>(UnsupportedOperationException.class);
 	}
@@ -67,7 +68,7 @@ public class Exceptions {
 	 *
 	 * @return an {@link ExceptionBuilder}
 	 */
-	@NotNull
+	@NonNull
 	public ExceptionBuilder<IndexOutOfBoundsException> indexOutOfBounds() {
 		return new ExceptionBuilder<>(IndexOutOfBoundsException.class);
 	}
@@ -77,7 +78,7 @@ public class Exceptions {
 	 *
 	 * @return an {@link ExceptionBuilder}
 	 */
-	@NotNull
+	@NonNull
 	public ExceptionBuilder<IllegalArgumentException> illegalArgument() {
 		return new ExceptionBuilder<>(IllegalArgumentException.class);
 	}
@@ -88,7 +89,7 @@ public class Exceptions {
 		private final Class<X> type;
 		private final Deque<String> messages;
 		private final Collection<Object> data;
-		
+
 		private Throwable cause;
 
 		private ExceptionBuilder(Class<X> type) {
@@ -97,13 +98,13 @@ public class Exceptions {
 			data = new ArrayList<>();
 		}
 
-		@NotNull
+		@NonNull
 		public ExceptionBuilder<X> add(String string) {
 			messages.push(string);
 			return this;
 		}
 
-		@NotNull
+		@NonNull
 		public ExceptionBuilder<X> with(Object... objects) {
 			String message = messages.pop();
 			for (Object object : objects) {
@@ -119,7 +120,7 @@ public class Exceptions {
 			return this;
 		}
 
-		@NotNull
+		@NonNull
 		public X build() {
 			String baseMessage = messages.isEmpty()
 					? "No message provided."

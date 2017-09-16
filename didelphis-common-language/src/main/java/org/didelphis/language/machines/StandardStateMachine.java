@@ -1,40 +1,33 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
- =                                                                              
- = Licensed under the Apache License, Version 2.0 (the "License");              
- = you may not use this file except in compliance with the License.             
- = You may obtain a copy of the License at                                      
- =     http://www.apache.org/licenses/LICENSE-2.0                               
- = Unless required by applicable law or agreed to in writing, software          
- = distributed under the License is distributed on an "AS IS" BASIS,            
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
- = See the License for the specific language governing permissions and          
- = limitations under the License.                                               
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.language.machines;
 
-import org.didelphis.language.parsing.ParseDirection;
-import org.didelphis.language.parsing.ParseException;
+import lombok.NonNull;
 import org.didelphis.language.machines.interfaces.MachineMatcher;
 import org.didelphis.language.machines.interfaces.MachineParser;
 import org.didelphis.language.machines.interfaces.StateMachine;
+import org.didelphis.language.parsing.ParseDirection;
+import org.didelphis.language.parsing.ParseException;
 import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Tuple;
 import org.didelphis.utilities.Split;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import static org.didelphis.utilities.PatternUtils.template;
@@ -81,9 +74,9 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		nodes.add(startStateId);
 	}
 
-	@NotNull
-	public static <T> StateMachine<T> create(String id, @NotNull String expression,
-			@NotNull MachineParser<T> parser, MachineMatcher<T> matcher,
+	@NonNull
+	public static <T> StateMachine<T> create(String id, @NonNull String expression,
+			@NonNull MachineParser<T> parser, MachineMatcher<T> matcher,
 			ParseDirection direction) {
 		checkBadQuantification(expression);
 		StandardStateMachine<T> stateMachine = new StandardStateMachine<>(id,
@@ -105,13 +98,13 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		return stateMachine;
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public MachineParser<T> getParser() {
 		return parser;
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public MachineMatcher<T> getMatcher() {
 		return matcher;
@@ -122,7 +115,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		return id;
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public Map<String, Graph<T>> getGraphs() {
 		Map<String, Graph<T>> map = new HashMap<>();
@@ -130,9 +123,9 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		return map;
 	}
 
-	@NotNull
+	@NonNull
 	@Override
-	public Collection<Integer> getMatchIndices(int startIndex, @NotNull T target) {
+	public Collection<Integer> getMatchIndices(int startIndex, @NonNull T target) {
 		Collection<Integer> indices = new HashSet<>();
 
 		if (graph.isEmpty()) {
@@ -195,7 +188,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 	}
 
 	// package only access
-	@NotNull
+	@NonNull
 	@SuppressWarnings("ReturnOfCollectionOrArrayField")
 	Map<String, StateMachine<T>> getMachinesMap() {
 		// this needs to mutable:
@@ -203,8 +196,8 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		return machinesMap;
 	}
 
-	@NotNull
-	private String createParallel(String start, int index, @NotNull String expression) {
+	@NonNull
+	private String createParallel(String start, int index, @NonNull String expression) {
 		int i = A_ASCII; // A
 		String output = start + "-Out";
 		for (String subExp : parseSubExpressions(expression)) {
@@ -223,7 +216,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 	}
 
 	private String parseExpression(String start, int startingIndex,
-			String prefix, @NotNull Iterable<Expression> expressions) {
+			String prefix, @NonNull Iterable<Expression> expressions) {
 
 		int nodeId = startingIndex;
 		String previous = start;
@@ -280,7 +273,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 	}
 
 	private String constructNegativeNode(String end, String start,
-			String machine, @NotNull String meta) {
+			String machine, @NonNull String meta) {
 		T e = parser.epsilon();
 		// All machines contain this arc
 		graph.add(start, e, machine);
@@ -304,9 +297,9 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		return end;
 	}
 
-	@NotNull
+	@NonNull
 	private String constructRecursiveNode(String machineNode, String startNode,
-			@NotNull String meta) {
+			@NonNull String meta) {
 		T e = parser.epsilon();
 
 		String endNode = startNode + 'X';
@@ -333,7 +326,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 	}
 
 	private String constructTerminalNode(String previousNode,
-			String currentNode, String exp, @NotNull String meta) {
+			String currentNode, String exp, @NonNull String meta) {
 		T t = parser.transform(exp);
 		T e = parser.epsilon();
 		String referenceNode;
@@ -361,7 +354,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		return referenceNode;
 	}
 
-	private static void checkBadQuantification(@NotNull String expression) {
+	private static void checkBadQuantification(@NonNull String expression) {
 		if (ILLEGAL.matcher(expression).find()) {
 			throw new ParseException(
 					"Illegal modification of boundary characters.",
@@ -369,14 +362,14 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		}
 	}
 
-	private static void check(@NotNull String expr, @NotNull CharSequence closingBracket) {
+	private static void check(@NonNull String expr, @NonNull CharSequence closingBracket) {
 		if (!expr.contains(closingBracket)) {
 			throw new ParseException("Unmatched parenthesis", expr);
 		}
 	}
 
-	@NotNull
-	private static Iterable<String> parseSubExpressions(@NotNull String expression) {
+	@NonNull
+	private static Iterable<String> parseSubExpressions(@NonNull String expression) {
 		Collection<String> subExpressions = new ArrayList<>();
 		StringBuilder buffer = new StringBuilder();
 		for (int i = 0; i < expression.length(); i++) {

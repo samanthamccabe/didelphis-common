@@ -1,21 +1,21 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
- =                                                                              
- = Licensed under the Apache License, Version 2.0 (the "License");              
- = you may not use this file except in compliance with the License.             
- = You may obtain a copy of the License at                                      
- =     http://www.apache.org/licenses/LICENSE-2.0                               
- = Unless required by applicable law or agreed to in writing, software          
- = distributed under the License is distributed on an "AS IS" BASIS,            
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
- = See the License for the specific language governing permissions and          
- = limitations under the License.                                               
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.language.machines.interfaces;
 
+import lombok.NonNull;
 import org.didelphis.language.machines.Expression;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -40,7 +40,7 @@ public interface MachineParser<T> {
 	 * @param expression
 	 * @return
 	 */
-	@NotNull
+	@NonNull
 	List<Expression> parseExpression(String expression);
 
 	/**
@@ -56,7 +56,7 @@ public interface MachineParser<T> {
 	 * @return a {@code collection} of supported special symbols and their
 	 * corresponding literal values
 	 */
-	@NotNull
+	@NonNull
 	Map<String, Collection<T>> getSpecials();
 
 	/**
@@ -64,7 +64,7 @@ public interface MachineParser<T> {
 	 * corresponding to "." in traditional regular expression languages
 	 * @return a uniform value for "dot" transitions, which accept any value
 	 */
-	@NotNull
+	@NonNull
 	T getDot();
 
 	/**
@@ -73,6 +73,6 @@ public interface MachineParser<T> {
 	 * @param t the data element whose length is to be determined
 	 * @return the length of the provided element
 	 */
-	int lengthOf(@NotNull T t);
+	int lengthOf(@NonNull T t);
 	
 }

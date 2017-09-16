@@ -1,40 +1,42 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.structures.tables;
 
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import lombok.ToString;
 import org.didelphis.structures.contracts.Delegating;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
+ * Class {@code RectangularTable}
+ *
  * @param <E>
+ *
  * @author Samantha Fiona McCabe
+ * @date 2017-02-11
+ * @since 0.1.0
  */
-public class RectangularTable<E>
-		extends AbstractTable<E>
+@ToString
+@EqualsAndHashCode(callSuper = true)
+public class RectangularTable<E> extends AbstractTable<E>
 		implements Delegating<List<E>> {
 
 	private final List<E> array;
@@ -44,7 +46,9 @@ public class RectangularTable<E>
 		array = new ArrayList<>(row * col);
 	}
 
-	public RectangularTable(@NotNull Iterable<? extends Iterable<E>> rowList, int row, int col) {
+	public RectangularTable(
+			@NonNull Iterable<? extends Iterable<E>> rowList, int row, int col
+	) {
 		this(row, col);
 		for (Iterable<E> rowElements : rowList) {
 			for (E element : rowElements) {
@@ -65,18 +69,22 @@ public class RectangularTable<E>
 		array = new ArrayList<>(delegate);
 	}
 
-	public RectangularTable(@NotNull RectangularTable<E> table) {
+	public RectangularTable(@NonNull RectangularTable<E> table) {
 		this(table.rows(), table.columns());
 		array.addAll(table.array);
 	}
 
 	/**
 	 * Retrieve the element at the specified location
+	 *
 	 * @param row the index for row
 	 * @param col the index for column
+	 *
 	 * @return the object stored at these coordinates
+	 * 
+	 * @throws IndexOutOfBoundsException if either row or column is negative
 	 */
-	@NotNull
+	@NonNull
 	@Override
 	public E get(int row, int col) {
 		checkRanges(row, col);
@@ -86,42 +94,44 @@ public class RectangularTable<E>
 
 	/**
 	 * Put an element into the specified location in the Table
+	 *
 	 * @param row the index for row
 	 * @param col the index for column
 	 * @param element the object to place at the specified coordinates
+	 * 
+	 * @return the previous value
+	 * 
+	 * @throws IndexOutOfBoundsException if either row or column is negative
 	 */
-	@NotNull
+	@NonNull
 	@Override
-	public E set(int row, int col, @NotNull E element) {
+	public E set(int row, int col, @NonNull E element) {
 		checkRanges(row, col);
 		int index = getIndex(row, col);
 		return array.set(index, element);
 	}
 
-	@NotNull
+	@NonNull
 	@Override
-	public
-	List<E> getRow(int row) {
+	public List<E> getRow(int row) {
 		checkRow(row);
 		int startIndex = getIndex(row, 0);
-		int endIndex   = getIndex(row, columns());
+		int endIndex = getIndex(row, columns());
 		return array.subList(startIndex, endIndex);
 	}
 
-	@NotNull
+	@NonNull
 	@Override
-	public
-	List<E> getColumn(int col) {
+	public List<E> getColumn(int col) {
 		checkCol(col);
 		return IntStream.range(0, rows())
 				.mapToObj((int i) -> get(i, col))
 				.collect(Collectors.toList());
 	}
 
-	@NotNull
+	@NonNull
 	@Override
-	public
-	List<E> setRow(int row, @NotNull List<E> data) {
+	public List<E> setRow(int row, @NonNull List<E> data) {
 		checkRow(row);
 		checkRowData(data);
 		List<E> oldEntries = new ArrayList<>(getRow(row));
@@ -133,10 +143,9 @@ public class RectangularTable<E>
 		return oldEntries;
 	}
 
-	@NotNull
+	@NonNull
 	@Override
-	public
-	List<E> setColumn(int col, @NotNull List<E> data) {
+	public List<E> setColumn(int col, @NonNull List<E> data) {
 		checkCol(col);
 		checkColumnData(data);
 		List<E> oldEntries = getColumn(col);
@@ -148,32 +157,32 @@ public class RectangularTable<E>
 		return oldEntries;
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public Stream<E> stream() {
 		return array.stream();
 	}
 
 	@Override
-	public void apply(@NotNull Function<E, E> function) {
+	public void apply(@NonNull Function<E, E> function) {
 		for (int i = 0; i < array.size(); i++) {
 			array.set(i, function.apply(array.get(i)));
 		}
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public Iterator<Collection<E>> rowIterator() {
 		return new RowIterator<>(array, rows(), columns());
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public Iterator<Collection<E>> columnIterator() {
 		return new ColumnIterator<>(array, rows(), columns());
 	}
 
-	@NotNull
+	@NonNull
 	@Deprecated
 	@Override
 	public String formattedTable() {
@@ -187,27 +196,6 @@ public class RectangularTable<E>
 			}
 		}
 		return sb.toString();
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(array, columns(), rows());
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof RectangularTable)) return false;
-		RectangularTable<?> that = (RectangularTable<?>) o;
-		return Objects.equals(array, that.array) && rows() == that.rows() &&
-				columns() == that.columns();
-	}
-
-	@NotNull
-	@Override
-	public String toString() {
-		return "RectangularTable{numberRows=" + rows() + ", numberColumns=" +
-				columns() + ", array=" + array + '}';
 	}
 
 	@Override
@@ -233,12 +221,12 @@ public class RectangularTable<E>
 	public void expand(int rows, int cols, E fillerValue) {
 		negativeCheck(rows, cols);
 
-		List<E> newRow = Collections.nCopies(columns(), fillerValue);
+		Collection<E> newRow = Collections.nCopies(columns(), fillerValue);
 		for (int i = 0; i < rows; i++) {
 			insertRow(rows(), newRow);
 		}
 
-		List<E> newColumn = Collections.nCopies(rows(), fillerValue);
+		Collection<E> newColumn = Collections.nCopies(rows(), fillerValue);
 		for (int i = 0; i < cols; i++) {
 			insertColumn(columns(), newColumn);
 		}
@@ -249,10 +237,15 @@ public class RectangularTable<E>
 		negativeCheck(rows, cols);
 
 		if (rows > rows() || cols > columns()) {
-			throw new IndexOutOfBoundsException("Unable to shrink table by " +
-					rows + ", "+ cols  + " because the current size of the " +
-					"table is less than this amount: " +
-					rows() + ", " + columns());
+			throw new IndexOutOfBoundsException("Unable to shrink table by "
+					+ rows
+					+ ", "
+					+ cols
+					+ " because the current size of the "
+					+ "table is less than this amount: "
+					+ rows()
+					+ ", "
+					+ columns());
 		}
 
 		for (int i = 0; i < rows; i++) {
@@ -264,7 +257,7 @@ public class RectangularTable<E>
 	}
 
 	@Override
-	public void insertRow(int row, @NotNull Collection<E> data) {
+	public void insertRow(int row, @NonNull Collection<E> data) {
 		checkRowEdge(row);
 		checkRowData(data);
 		array.addAll(getIndex(row, 0), data);
@@ -272,7 +265,7 @@ public class RectangularTable<E>
 	}
 
 	@Override
-	public void insertColumn(int col, @NotNull Collection<E> data) {
+	public void insertColumn(int col, @NonNull Collection<E> data) {
 		checkColEdge(col);
 		checkColumnData(data);
 		int index = getIndex(0, col);
@@ -283,7 +276,7 @@ public class RectangularTable<E>
 		setColumns(columns() + 1);
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public Collection<E> removeRow(int row) {
 		checkRow(row);
@@ -296,7 +289,7 @@ public class RectangularTable<E>
 		return list;
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public Collection<E> removeColumn(int col) {
 		checkCol(col);
@@ -310,7 +303,7 @@ public class RectangularTable<E>
 		return list;
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public List<E> getDelegate() {
 		return Collections.unmodifiableList(array);
@@ -319,10 +312,12 @@ public class RectangularTable<E>
 	/**
 	 * Computes and returns the absolute index of the internal array based on
 	 * the provided coordinates.
+	 *
 	 * @param col the column position
 	 * @param row the row position
+	 *
 	 * @return the absolute index of the internal array based on the provided
-	 * coordinates.
+	 * 		coordinates.
 	 */
 	private int getIndex(int row, int col) {
 		return getIndex(row, col, columns());
@@ -332,12 +327,13 @@ public class RectangularTable<E>
 		return col + row * columns;
 	}
 
-	private static final class RowIterator<E> implements Iterator<Collection<E>> {
+	private static final class RowIterator<E>
+			implements Iterator<Collection<E>> {
 
 		private final List<E> list;
 		private final int rows;
 		private final int columns;
-		private int i = 0;
+		private int i;
 
 		private RowIterator(List<E> list, int rows, int columns) {
 			this.list = list;
@@ -356,21 +352,22 @@ public class RectangularTable<E>
 				throw new NoSuchElementException();
 			}
 			int index1 = getIndex(i, 0, columns);
-			int index2 = getIndex(i+1, 0, columns);
+			int index2 = getIndex(i + 1, 0, columns);
 			i++;
 			return list.subList(index1, index2);
 		}
 	}
 
-	private static final class ColumnIterator<E> implements Iterator<Collection<E>> {
+	private static final class ColumnIterator<E>
+			implements Iterator<Collection<E>> {
 
 		private final List<E> array;
 		private final int rows;
 		private final int columns;
-		private int i = 0;
+		private int i;
 
 		private ColumnIterator(List<E> list, int rows, int columns) {
-			this.array = list;
+			array = list;
 			this.rows = rows;
 			this.columns = columns;
 		}
@@ -385,10 +382,9 @@ public class RectangularTable<E>
 			if (i >= columns) {
 				throw new NoSuchElementException();
 			}
-			Collection<E> list = new ArrayList<>();
-			for (int r = 0; r < rows; r++) {
-				list.add(array.get(getIndex(r, i, columns)));
-			}
+			Collection<E> list = IntStream.range(0, rows)
+					.mapToObj(r -> array.get(getIndex(r, i, columns)))
+					.collect(Collectors.toList());
 			i++;
 			return list;
 		}

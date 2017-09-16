@@ -1,27 +1,27 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
- =                                                                              
- = Licensed under the Apache License, Version 2.0 (the "License");              
- = you may not use this file except in compliance with the License.             
- = You may obtain a copy of the License at                                      
- =     http://www.apache.org/licenses/LICENSE-2.0                               
- = Unless required by applicable law or agreed to in writing, software          
- = distributed under the License is distributed on an "AS IS" BASIS,            
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
- = See the License for the specific language governing permissions and          
- = limitations under the License.                                               
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.language.machines;
 
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import org.didelphis.language.machines.interfaces.MachineMatcher;
 import org.didelphis.language.machines.interfaces.MachineParser;
 import org.didelphis.language.machines.interfaces.StateMachine;
 import org.didelphis.utilities.Exceptions;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -45,12 +45,12 @@ public final class EmptyStateMachine<T> implements StateMachine<T> {
 	private static final Map<String, ? extends Graph<?>> EMPTY_MAP = Collections
 			.emptyMap();
 
-	@NotNull
+	@NonNull
 	public static <T> StateMachine<T> getInstance() {
 		return (StateMachine<T>) MACHINE;
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public MachineParser<T> getParser() {
 		throw Exceptions.unsupportedOperation()
@@ -68,7 +68,7 @@ public final class EmptyStateMachine<T> implements StateMachine<T> {
 		return "Empty State Machine";
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public Map<String, Graph<T>> getGraphs() {
 		return (Map<String, Graph<T>>) EMPTY_MAP;
@@ -76,7 +76,7 @@ public final class EmptyStateMachine<T> implements StateMachine<T> {
 
 	@Override
 	public Collection<Integer> getMatchIndices(
-			int startIndex, @NotNull T target
+			int startIndex, @NonNull T target
 	) {
 		return Collections.singleton(startIndex);
 	}

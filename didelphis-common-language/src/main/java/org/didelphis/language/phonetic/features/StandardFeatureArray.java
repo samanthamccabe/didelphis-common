@@ -1,30 +1,25 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
- =                                                                              
- = Licensed under the Apache License, Version 2.0 (the "License");              
- = you may not use this file except in compliance with the License.             
- = You may obtain a copy of the License at                                      
- =     http://www.apache.org/licenses/LICENSE-2.0                               
- = Unless required by applicable law or agreed to in writing, software          
- = distributed under the License is distributed on an "AS IS" BASIS,            
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
- = See the License for the specific language governing permissions and          
- = limitations under the License.                                               
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.language.phonetic.features;
 
+import lombok.NonNull;
 import org.didelphis.language.phonetic.model.Constraint;
 import org.didelphis.language.phonetic.model.FeatureModel;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author Samantha Fiona McCabe Created: 3/26/2016
@@ -38,7 +33,7 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	 * @param featureModel
 	 */
 	public StandardFeatureArray(
-			@Nullable T value, @NotNull FeatureModel<T> featureModel
+			@Nullable T value, @NonNull FeatureModel<T> featureModel
 	) {
 		super(featureModel);
 		int size = getSpecification().size();
@@ -53,7 +48,7 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	 * @param featureModel
 	 */
 	public StandardFeatureArray(
-			@NotNull List<T> list, @NotNull FeatureModel<T> featureModel
+			@NonNull List<T> list, @NonNull FeatureModel<T> featureModel
 	) {
 		super(featureModel);
 		features = new ArrayList<>(list);
@@ -62,7 +57,7 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	/**
 	 * @param array
 	 */
-	public StandardFeatureArray(@NotNull StandardFeatureArray<T> array) {
+	public StandardFeatureArray(@NonNull StandardFeatureArray<T> array) {
 		super(array.getFeatureModel());
 		features = new ArrayList<>(array.features);
 	}
@@ -70,7 +65,7 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	/**
 	 * @param array
 	 */
-	public StandardFeatureArray(@NotNull FeatureArray<T> array) {
+	public StandardFeatureArray(@NonNull FeatureArray<T> array) {
 		super(array.getFeatureModel());
 		features = new ArrayList<>(size());
 		for (int i = 0; i < size(); i++) {
@@ -85,13 +80,12 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	}
 
 	@Override
-	@Nullable
-	public T get(int index) {
+	public @Nullable T get(int index) {
 		return features.get(index);
 	}
 
 	@Override
-	public boolean matches(@NotNull FeatureArray<T> array) {
+	public boolean matches(@NonNull FeatureArray<T> array) {
 		sizeCheck(array);
 
 		for (int i = 0; i < size(); i++) {
@@ -105,7 +99,7 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	}
 
 	@Override
-	public boolean alter(@NotNull FeatureArray<T> array) {
+	public boolean alter(@NonNull FeatureArray<T> array) {
 		sizeCheck(array);
 		
 		FeatureType<T> featureType = getFeatureModel().getFeatureType();
