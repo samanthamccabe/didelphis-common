@@ -23,6 +23,7 @@ import org.didelphis.language.parsing.ParseException;
 import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Tuple;
 import org.didelphis.utilities.Split;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,9 +105,9 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		return parser;
 	}
 
-	@NonNull
 	@Override
-	public MachineMatcher<T> getMatcher() {
+	@NonNull
+	public @NotNull MachineMatcher<T> getMatcher() {
 		return matcher;
 	}
 
@@ -123,9 +124,9 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		return map;
 	}
 
-	@NonNull
 	@Override
-	public Collection<Integer> getMatchIndices(int startIndex, @NonNull T target) {
+	@NonNull
+	public @NotNull Collection<Integer> getMatchIndices(int startIndex, @NonNull T target) {
 		Collection<Integer> indices = new HashSet<>();
 
 		if (graph.isEmpty()) {
@@ -354,17 +355,21 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		return referenceNode;
 	}
 
-	private static void checkBadQuantification(@NonNull String expression) {
+	private static void checkBadQuantification(@NonNull CharSequence expression) {
 		if (ILLEGAL.matcher(expression).find()) {
-			throw new ParseException(
-					"Illegal modification of boundary characters.",
-					expression);
+			throw ParseException.builder().add("Illegal modification of " 
+					+ "boundary characters.")
+					.data(expression)
+					.build();
 		}
 	}
 
 	private static void check(@NonNull String expr, @NonNull CharSequence closingBracket) {
 		if (!expr.contains(closingBracket)) {
-			throw new ParseException("Unmatched parenthesis", expr);
+			throw ParseException.builder()
+					.add("Unmatched parenthesis")
+					.data(expr)
+					.build();
 		}
 	}
 

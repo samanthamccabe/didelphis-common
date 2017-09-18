@@ -24,6 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * @author Samantha Fiona McCabe
@@ -127,12 +129,8 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 		if (isEmpty() || sequence.size() > size()) {
 			return false;
 		}
-		for (int i = 0; i < sequence.size(); i++) {
-			if (!get(i).matches(sequence.get(i))) {
-				return false;
-			}
-		}
-		return true;
+		return IntStream.range(0, sequence.size())
+				.allMatch(i -> get(i).matches(sequence.get(i)));
 	}
 
 	@NonNull
@@ -200,11 +198,9 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder(segments.size() * 2);
-		for (Segment<T> segment : segments) {
-			sb.append(segment.getSymbol());
-		}
-		return sb.toString();
+		return segments.stream()
+				.map(Segment::getSymbol)
+				.collect(Collectors.joining());
 	}
 
 	@NonNull
@@ -248,7 +244,7 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 	public boolean equals(@Nullable Object o) {
 		if (this == o) return true;
 		if (!(o instanceof BasicSequence)) return false;
-		BasicSequence that = (BasicSequence) o;
+		BasicSequence<?> that = (BasicSequence<?>) o;
 		return Objects.equals(featureModel, that.featureModel) &&
 				Objects.equals(segments, that.segments);
 	}

@@ -19,6 +19,7 @@ import lombok.NonNull;
 /**
  * Created by samantha on 2/6/17.
  */
+@FunctionalInterface
 public interface Formatter {
 	@NonNull
 	String normalize(String string);

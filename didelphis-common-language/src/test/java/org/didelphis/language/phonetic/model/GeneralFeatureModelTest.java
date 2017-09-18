@@ -31,8 +31,8 @@ import static org.junit.jupiter.api.Assertions.*;
  * Class {@code GeneralFeatureModelTest}
  *
  * @author Samantha Fiona McCabe
+ * @date 2017-06-15
  * @since 0.1.0
-	 * @date 2017-06-15
  */
 @SuppressWarnings("ObjectEqualsNull")
 class GeneralFeatureModelTest extends PhoneticTestBase {
@@ -45,23 +45,25 @@ class GeneralFeatureModelTest extends PhoneticTestBase {
 	static void init() {
 		model = loader.getFeatureModel();
 		other = new FeatureModelLoader<>(IntegerFeature.INSTANCE,
-				ClassPathFileHandler.INSTANCE, "AT_hybrid.model")
-				.getFeatureModel();
+				ClassPathFileHandler.INSTANCE,
+				"AT_hybrid.model"
+		).getFeatureModel();
 		empty = new FeatureModelLoader<>(IntegerFeature.INSTANCE,
-				ClassPathFileHandler.INSTANCE, Collections.emptyList())
-				.getFeatureModel();
+				ClassPathFileHandler.INSTANCE,
+				Collections.emptyList()
+		).getFeatureModel();
 	}
 
 	@Test
 	void testToString() {
-		assertEquals(model.toString(),other.toString());
-		assertNotEquals(model.toString(),empty.toString());
+		assertEquals(model.toString(), other.toString());
+		assertNotEquals(model.toString(), empty.toString());
 	}
 
 	@Test
 	void testHashCode() {
-		assertEquals(model.hashCode(),other.hashCode());
-		assertNotEquals(model.hashCode(),empty.hashCode());
+		assertEquals(model.hashCode(), other.hashCode());
+		assertNotEquals(model.hashCode(), empty.hashCode());
 	}
 
 	@SuppressWarnings("EqualsBetweenInconvertibleTypes")
@@ -83,18 +85,24 @@ class GeneralFeatureModelTest extends PhoneticTestBase {
 	@Test
 	void parseFeatureString() {
 		FeatureArray<Integer> arr = model.parseFeatureString("[+consonantal]");
-		assertEquals(1, (int) arr.get(model.getSpecification().getIndex("consonantal")));
+		assertEquals(1,
+				(int) arr.get(model.getSpecification().getIndex("consonantal"))
+		);
 		assertNull(arr.get(model.getSpecification().getIndex("lateral")));
 	}
 
 	@Test
-	void parseFeatureString_ParseException() {
-		assertThrows(ParseException.class, ()-> model.parseFeatureString("[?x]"));
+	void parseFeatureStringThrowsParseException01() {
+		assertThrows(ParseException.class,
+				() -> model.parseFeatureString("[?x]")
+		);
 	}
 
 	@Test
-	void parseFeatureString_IllegalArgumentException() {
-		assertThrows(IllegalArgumentException.class, () -> model.parseFeatureString("[+x]"));
+	void parseFeatureStringThrowsParseException02() {
+		assertThrows(ParseException.class,
+				() -> model.parseFeatureString("[+x]")
+		);
 	}
 
 	@Test
@@ -105,14 +113,22 @@ class GeneralFeatureModelTest extends PhoneticTestBase {
 
 	@Test
 	void size() {
-		assertEquals(model.getSpecification().size(), other.getSpecification().size());
-		assertNotEquals(model.getSpecification().size(), empty.getSpecification().size());
+		assertEquals(model.getSpecification().size(),
+				other.getSpecification().size()
+		);
+		assertNotEquals(model.getSpecification().size(),
+				empty.getSpecification().size()
+		);
 	}
 
 	@Test
 	void getFeatureIndices() {
-		assertEquals(model.getSpecification().getFeatureIndices(), other.getSpecification().getFeatureIndices());
-		assertNotEquals(model.getSpecification().getFeatureIndices(), empty.getSpecification().getFeatureIndices());
+		assertEquals(model.getSpecification().getFeatureIndices(),
+				other.getSpecification().getFeatureIndices()
+		);
+		assertNotEquals(model.getSpecification().getFeatureIndices(),
+				empty.getSpecification().getFeatureIndices()
+		);
 	}
 
 	@Test
@@ -126,8 +142,12 @@ class GeneralFeatureModelTest extends PhoneticTestBase {
 
 	@Test
 	void getFeatureNames() {
-		assertEquals(model.getSpecification().getFeatureNames(), other.getSpecification().getFeatureNames());
-		assertNotEquals(model.getSpecification().getFeatureNames(), empty.getSpecification().getFeatureNames());
+		assertEquals(model.getSpecification().getFeatureNames(),
+				other.getSpecification().getFeatureNames()
+		);
+		assertNotEquals(model.getSpecification().getFeatureNames(),
+				empty.getSpecification().getFeatureNames()
+		);
 	}
 
 }

@@ -15,24 +15,15 @@
 package org.didelphis.structures.maps;
 
 import org.didelphis.structures.maps.interfaces.TwoKeyMap;
-import org.didelphis.structures.tuples.Triple;
 import org.didelphis.structures.tuples.Couple;
+import org.didelphis.structures.tuples.Triple;
 import org.didelphis.structures.tuples.Tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by samantha on 4/9/17.
@@ -170,8 +161,7 @@ class SymmetricalTwoKeyMapTest {
 					.newInstance(hashMap);
 
 			assertEquals("Y", map.get("X"));
-		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-			//			e.printStackTrace();
+		} catch (Exception ignored) {
 		}
 
 		assertEquals(expected, map.keys());

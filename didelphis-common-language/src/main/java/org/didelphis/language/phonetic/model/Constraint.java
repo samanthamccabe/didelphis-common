@@ -20,10 +20,12 @@ import org.didelphis.language.phonetic.ModelBearer;
 import org.didelphis.language.phonetic.features.FeatureArray;
 
 /**
+ * Class {@code Constraint}
+ * 
  * @author Samantha Fiona McCabe
- * @date 3/1/2016
+ * @date 2016-01-03
+ * @since 0.1.0
  */
-@ToString(exclude = "featureModel")
 @EqualsAndHashCode(exclude = "featureModel")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class Constraint<T> implements ModelBearer<T> {
@@ -43,5 +45,10 @@ public class Constraint<T> implements ModelBearer<T> {
 		source = constraint.source;
 		target = constraint.target;
 		featureModel = constraint.featureModel;
+	}
+	
+	@Override
+	public String toString() {
+		return source + " -> " + target;
 	}
 }

@@ -60,5 +60,5 @@ public interface Sequence<T>
 	List<Integer> indicesOf(@NonNull Sequence<T> sequence);
 
 	@NonNull
-	BasicSequence<T> getReverseSequence();
+	Sequence<T> getReverseSequence();
 }

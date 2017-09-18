@@ -28,6 +28,7 @@ import org.didelphis.language.phonetic.sequences.BasicSequence;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -106,9 +107,9 @@ public class SequenceParser<T> implements MachineParser<Sequence<T>> {
 		return Collections.unmodifiableMap(specials);
 	}
 
-	@NonNull
 	@Override
-	public Sequence<T> getDot() {
+	@NonNull
+	public @NotNull Sequence<T> getDot() {
 		return factory.getDotSequence();
 	}
 

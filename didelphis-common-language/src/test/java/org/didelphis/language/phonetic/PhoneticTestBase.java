@@ -25,7 +25,7 @@ import org.junit.jupiter.api.BeforeAll;
  *
  * @author Samantha Fiona McCabe
  * @since 0.1.0
-	 * @date 2017-06-24
+ * @date 2017-06-24
  */
 public class PhoneticTestBase {
 

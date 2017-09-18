@@ -14,8 +14,10 @@
 
 package org.didelphis.language.phonetic.model;
 
+import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.ToString;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.didelphis.io.FileHandler;
 import org.didelphis.io.NullFileHandler;
@@ -47,6 +49,7 @@ import static org.didelphis.utilities.Split.splitLines;
  */
 @ToString
 @Slf4j
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public final class FeatureModelLoader<T> {
 
 	/**
@@ -61,26 +64,26 @@ public final class FeatureModelLoader<T> {
 	}
 
 	/*-----------------------------------------------------------------------<*/
-	private static final Pattern FEATURES_PATTERN = compile("(?<name>\\w+)(\\s+(?<code>\\w*))?", CASE_INSENSITIVE);
-	private static final Pattern TRANSFORM        = compile("\\s*>\\s*");
-	private static final Pattern BRACKETS         = compile("[\\[\\]]");
-	private static final Pattern EQUALS           = compile("\\s*=\\s*");
-	private static final Pattern IMPORT           = compile("import\\s+['\"]([^'\"]+)['\"]", CASE_INSENSITIVE);
-	private static final Pattern COMMENT_PATTERN  = compile("\\s*%.*");
-	private static final Pattern SYMBOL_PATTERN   = compile("([^\\t]+)\\t(.*)");
-	private static final Pattern TAB_PATTERN      = compile("\\t");
-	private static final Pattern DOTTED_CIRCLE    = compile("◌", LITERAL);
+	static final Pattern FEATURES_PATTERN = compile("(?<name>\\w+)(\\s+(?<code>\\w*))?", CASE_INSENSITIVE);
+	static final Pattern TRANSFORM        = compile("\\s*>\\s*");
+	static final Pattern BRACKETS         = compile("[\\[\\]]");
+	static final Pattern EQUALS           = compile("\\s*=\\s*");
+	static final Pattern IMPORT           = compile("import\\s+['\"]([^'\"]+)['\"]", CASE_INSENSITIVE);
+	static final Pattern COMMENT_PATTERN  = compile("\\s*%.*");
+	static final Pattern SYMBOL_PATTERN   = compile("([^\\t]+)\\t(.*)");
+	static final Pattern TAB_PATTERN      = compile("\\t");
+	static final Pattern DOTTED_CIRCLE    = compile("◌", LITERAL);
 	
-	private final MultiMap<ParseZone, String> zoneData;
+	final MultiMap<ParseZone, String> zoneData;
 	
-	private final List<String>         featureNames;
-	private final Map<String, Integer> featureIndices;
-	private final FeatureType<T>       featureType;
-	private final FileHandler          fileHandler;
+	final List<String>         featureNames;
+	final Map<String, Integer> featureIndices;
+	final FeatureType<T>       featureType;
+	final FileHandler          fileHandler;
 
-	private FeatureSpecification specification;
-	private FeatureModel<T>      featureModel;
-	private FeatureMapping<T>    featureMapping;
+	FeatureSpecification specification;
+	FeatureModel<T>      featureModel;
+	FeatureMapping<T>    featureMapping;
 	/*>-----------------------------------------------------------------------*/
 
 	public FeatureModelLoader(FeatureType<T> featureType) {
@@ -182,7 +185,7 @@ public final class FeatureModelLoader<T> {
 
 		// populate constraints
 		zoneData.get(ParseZone.CONSTRAINTS)
-				.parallelStream()
+				.stream()
 				.map(this::parseConstraint)
 				.forEach(constraints::add);
 
@@ -193,13 +196,13 @@ public final class FeatureModelLoader<T> {
 	}
 
 	private FeatureSpecification parseSpecification() {
-		// 1. populate the fields, create raw representations
+		// 1. populate the fields, builder raw representations
 		// 2. instantiate the featureModel object w size
-		// 3. create correct internal objects with instance
+		// 3. builder correct internal objects with instance
 		// 4. add objects back to instance
 
 		populateFeatures();
-		// Once the main feature definitions are parsed, it's possible to create
+		// Once the main feature definitions are parsed, it's possible to builder
 		// the featureModel instance
 		return new DefaultFeatureSpecification(featureNames, featureIndices);
 	}
@@ -247,7 +250,10 @@ public final class FeatureModelLoader<T> {
 					featureIndices.put(code, i);
 				}
 			} else {
-				throw new ParseException("Unrecognized FEATURE command", entry);
+				throw ParseException.builder()
+						.add("Unrecognized 'FEATURE' command.")
+						.data(entry)
+						.build();
 			}
 			i++;
 		}

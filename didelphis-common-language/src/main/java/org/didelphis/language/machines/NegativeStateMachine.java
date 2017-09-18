@@ -20,6 +20,7 @@ import org.didelphis.language.machines.interfaces.MachineParser;
 import org.didelphis.language.machines.interfaces.StateMachine;
 import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.structures.tuples.Triple;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -82,9 +83,9 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 		return positiveMachine.getParser();
 	}
 
-	@Override
 	@NonNull
-	public MachineMatcher<T> getMatcher() {
+	@Override
+	public @NotNull MachineMatcher<T> getMatcher() {
 		return positiveMachine.getMatcher();
 	}
 
@@ -103,9 +104,9 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 		return map;
 	}
 
-	@Override
 	@NonNull
-	public Collection<Integer> getMatchIndices(int startIndex, @NonNull T target) {
+	@Override
+	public @NotNull Collection<Integer> getMatchIndices(int startIndex, @NonNull T target) {
 
 		Collection<Integer> posIndices = positiveMachine.getMatchIndices(
 				startIndex,

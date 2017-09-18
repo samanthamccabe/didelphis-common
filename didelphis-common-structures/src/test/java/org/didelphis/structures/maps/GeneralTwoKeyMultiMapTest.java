@@ -32,7 +32,6 @@ class GeneralTwoKeyMultiMapTest extends TwoKeyMapTestBase {
 	private GeneralTwoKeyMultiMap<String, String, String> map1;
 	private GeneralTwoKeyMultiMap<String, String, String> map2;
 	
-	@SuppressWarnings("unchecked")
 	@BeforeEach
 	void init() {
 		map = new GeneralTwoKeyMultiMap<>();

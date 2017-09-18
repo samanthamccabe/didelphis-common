@@ -17,7 +17,9 @@ package org.didelphis.utilities;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 
+import java.util.Arrays;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Utility Class {@code PatternUtils}
@@ -26,16 +28,17 @@ import java.util.regex.Pattern;
  * @date 2017-02-24
  * @since 0.1.0
  */
+@SuppressWarnings("TypeMayBeWeakened")
 @UtilityClass
 public class PatternUtils {
 
 	private final Pattern WHITESPACES = Pattern.compile("\\s+");
-	
+
 	@NonNull
 	public String cleanSpaces(@NonNull CharSequence charSequence) {
 		return WHITESPACES.matcher(charSequence).replaceAll(" ");
 	}
-	
+
 	@NonNull
 	public Pattern template(@NonNull String head, @NonNull String... vars) {
 		String regex = head;
@@ -53,11 +56,6 @@ public class PatternUtils {
 
 	@NonNull
 	private String concat(@NonNull String head, @NonNull String... tail) {
-		StringBuilder sb = new StringBuilder(0x100);
-		sb.append(head);
-		for (String string : tail) {
-			sb.append(string);
-		}
-		return sb.toString();
+		return Arrays.stream(tail).collect(Collectors.joining("", head, ""));
 	}
 }

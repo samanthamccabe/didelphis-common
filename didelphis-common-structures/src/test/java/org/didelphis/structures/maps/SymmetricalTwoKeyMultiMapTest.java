@@ -29,7 +29,6 @@ class SymmetricalTwoKeyMultiMapTest {
 	private SymmetricalTwoKeyMultiMap<String, String> map1;
 	private SymmetricalTwoKeyMultiMap<String, String> map2;
 
-	@SuppressWarnings("unchecked")
 	@BeforeEach
 	void init() {
 		map = new SymmetricalTwoKeyMultiMap<>();

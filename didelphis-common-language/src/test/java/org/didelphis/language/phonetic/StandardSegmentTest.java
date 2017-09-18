@@ -169,7 +169,7 @@ public class StandardSegmentTest extends PhoneticTestBase {
 		int received = features.get(5);
 		int expected = -1;
 
-		assertEquals(expected, received, 00001);
+		assertEquals(expected, received, 0.001);
 	}
 
 	@Test

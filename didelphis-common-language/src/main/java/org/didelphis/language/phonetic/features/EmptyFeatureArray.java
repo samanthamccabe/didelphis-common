@@ -16,7 +16,6 @@ package org.didelphis.language.phonetic.features;
 
 
 import lombok.EqualsAndHashCode;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.didelphis.language.phonetic.model.FeatureModel;

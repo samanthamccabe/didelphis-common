@@ -35,7 +35,6 @@ public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
 		this.featureModel = featureModel;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public int compareTo(@NonNull FeatureArray<T> o) {
 		sizeCheck(o);
@@ -73,7 +72,7 @@ public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(featureModel);
+		return featureModel.getSpecification().hashCode();
 	}
 
 	@Override

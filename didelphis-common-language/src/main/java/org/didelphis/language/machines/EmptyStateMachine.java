@@ -22,6 +22,7 @@ import org.didelphis.language.machines.interfaces.MachineMatcher;
 import org.didelphis.language.machines.interfaces.MachineParser;
 import org.didelphis.language.machines.interfaces.StateMachine;
 import org.didelphis.utilities.Exceptions;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -59,7 +60,7 @@ public final class EmptyStateMachine<T> implements StateMachine<T> {
 	}
 
 	@Override
-	public MachineMatcher<T> getMatcher() {
+	public @NotNull MachineMatcher<T> getMatcher() {
 		return (t1, t2, i) -> i;
 	}
 
@@ -75,7 +76,7 @@ public final class EmptyStateMachine<T> implements StateMachine<T> {
 	}
 
 	@Override
-	public Collection<Integer> getMatchIndices(
+	public @NotNull Collection<Integer> getMatchIndices(
 			int startIndex, @NonNull T target
 	) {
 		return Collections.singleton(startIndex);

@@ -18,6 +18,7 @@ import lombok.NonNull;
 import org.didelphis.language.machines.Expression;
 import org.didelphis.language.machines.interfaces.MachineParser;
 import org.didelphis.utilities.Split;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -88,7 +89,7 @@ public final class StringParser implements MachineParser<String> {
 	}
 
 	@Override
-	public String getDot() {
+	public @NotNull String getDot() {
 		return ".";
 	}
 

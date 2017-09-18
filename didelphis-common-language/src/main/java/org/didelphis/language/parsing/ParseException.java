@@ -14,10 +14,10 @@
 
 package org.didelphis.language.parsing;
 
-import lombok.NonNull;
+import org.didelphis.utilities.Exceptions;
 
 /**
- * Exception {@code  ParseException}
+ * Exception {@code ParseException}
  *
  * @author Samantha Fiona McCabe
  * @date 8/25/2014
@@ -25,25 +25,23 @@ import lombok.NonNull;
  */
 public class ParseException extends RuntimeException {
 
-	private final String data;
+	public ParseException() {
+	}
 
-	public ParseException(String message, String data) {
+	public ParseException(String message) {
 		super(message);
-		this.data = data;
 	}
 
-	public ParseException(String message, String data, Throwable cause) {
+	public ParseException(String message, Throwable cause) {
 		super(message, cause);
-		this.data = data;
 	}
 
-	@NonNull
-	@Override
-	public String toString() {
-		return super.toString() + ' ' + data;
+	public ParseException(Throwable cause) {
+		super(cause);
 	}
 
-	public String getData() {
-		return data;
+	public static Exceptions.ExceptionBuilder<ParseException> builder() {
+		return Exceptions.create(ParseException.class);
 	}
+
 }

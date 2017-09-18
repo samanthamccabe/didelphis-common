@@ -51,8 +51,7 @@ public class Exceptions {
 	public <X extends Exception> ExceptionBuilder<X> create(Class<X> type) {
 		return new ExceptionBuilder<>(type);
 	}
-
-
+	
 	/**
 	 * Convenience method for generating an {@link UnsupportedOperationException}
 	 *

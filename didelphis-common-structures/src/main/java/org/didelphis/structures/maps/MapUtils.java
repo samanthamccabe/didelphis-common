@@ -30,7 +30,7 @@ import java.util.Map.Entry;
  * @date 2017-04-30
  * @since 0.1.0
  */
-@SuppressWarnings({"rawtypes", "unchecked", "JavaReflectionMemberAccess"})
+@SuppressWarnings("JavaReflectionMemberAccess")
 @Slf4j
 @UtilityClass
 public final class MapUtils {

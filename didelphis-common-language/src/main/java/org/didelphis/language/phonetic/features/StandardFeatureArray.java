@@ -14,16 +14,23 @@
 
 package org.didelphis.language.phonetic.features;
 
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import org.didelphis.language.phonetic.model.Constraint;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
- * @author Samantha Fiona McCabe Created: 3/26/2016
+ * Class {@code StandardFeatureArray}
+ *
+ * @author Samantha Fiona McCabe
+ * @date 2016-03-26
+ * @since 0.1.0
  */
+@EqualsAndHashCode(callSuper = true)
 public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 
 	private final List<T> features;
@@ -101,7 +108,7 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	@Override
 	public boolean alter(@NonNull FeatureArray<T> array) {
 		sizeCheck(array);
-		
+
 		FeatureType<T> featureType = getFeatureModel().getFeatureType();
 		Collection<Integer> alteredIndices = new HashSet<>();
 		for (int i = 0; i < features.size(); i++) {
@@ -123,20 +130,10 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	}
 
 	@Override
-	public boolean equals(@Nullable Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		return super.equals(o);
-	}
-
-	@Override
-	public int hashCode() {
-		return features.hashCode();
-	}
-
-	@Override
 	public String toString() {
-		return features.toString();
+		return features.stream()
+				.map(Objects::toString)
+				.collect(Collectors.joining(";", "[[", "]]"));
 	}
 
 	@Override

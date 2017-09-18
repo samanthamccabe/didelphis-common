@@ -223,10 +223,10 @@ class SparseFeatureArrayTest extends PhoneticTestBase {
 	@Test
 	void testHashCode() {
 		assertEquals(array.hashCode(), new SparseFeatureArray<>(array).hashCode());
+		assertNotEquals(array.hashCode(), new SparseFeatureArray<>(empty));
 		FeatureArray<Integer> array1 = new SparseFeatureArray<>(array);
 		array1.set(0, 0);
 		assertNotEquals(array.hashCode(), array1.hashCode());
-		assertNotEquals(array.hashCode(), new SparseFeatureArray<>(empty));
 	}
 
 }

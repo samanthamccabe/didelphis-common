@@ -156,7 +156,7 @@ class StandardFeatureArrayTest extends PhoneticTestBase {
 	
 	@Test
 	void iterator() {
-		
+		assertTrue(array.iterator().hasNext());
 	}
 
 	@Test

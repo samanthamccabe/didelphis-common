@@ -28,7 +28,7 @@ import org.didelphis.utilities.Exceptions;
  */
 @FunctionalInterface
 public interface ModelBearer<T> extends SpecificationBearer {
-	
+
 	@NonNull
 	FeatureModel<T> getFeatureModel();
 

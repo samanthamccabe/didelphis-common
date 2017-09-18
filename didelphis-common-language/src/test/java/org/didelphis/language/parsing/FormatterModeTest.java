@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 /**
  * Created by samantha on 4/15/17.
  */
-@SuppressWarnings("UnnecessaryUnicodeEscape")
 class FormatterModeTest {
 
 	@Test

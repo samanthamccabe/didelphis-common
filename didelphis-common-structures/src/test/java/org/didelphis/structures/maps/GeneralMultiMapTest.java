@@ -14,19 +14,15 @@
 
 package org.didelphis.structures.maps;
 
+import org.didelphis.structures.tuples.Tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -36,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class GeneralMultiMapTest {
 	
 	private GeneralMultiMap<String, String> map;
+	private GeneralMultiMap<String, String> map1;
 	
 	@BeforeEach
 	void init() {
@@ -46,6 +43,10 @@ class GeneralMultiMapTest {
 		map.add("Z", "d");
 		map.add("Z", "e");
 		map.add("Z", "f");
+		
+		map1 = new GeneralMultiMap<>(map);
+		map1.add("X", "1");
+		map1.add("X", "2");
 	}
 	
 	@Test
@@ -132,26 +133,42 @@ class GeneralMultiMapTest {
 
 	@Test
 	void isEmpty() {
+		assertFalse(map.isEmpty());
+		assertTrue(new GeneralMultiMap<>().isEmpty());
 	}
 
 	@Test
 	void clear() {
+		assertFalse(map.isEmpty());
+		map.clear();
+		assertTrue(map.isEmpty());
 	}
 
 	@Test
 	void iterator() {
+		Iterator<Tuple<String, Collection<String>>> iterator = map.iterator();
+		assertTrue(iterator.hasNext());
 	}
 
 	@Test
 	void equals() {
+		assertEquals(map, new GeneralMultiMap<>(map));
+		assertNotEquals(map, new GeneralMultiMap<>());
+		assertNotEquals(map, map1);
 	}
 
 	@Test
 	void testHashCode() {
+		assertEquals(map.hashCode(), new GeneralMultiMap<>(map).hashCode());
+		assertNotEquals(map.hashCode(), new GeneralMultiMap<>().hashCode());
+		assertNotEquals(map.hashCode(), map1.hashCode());
 	}
 
 	@Test
 	void testToString() {
+		assertEquals(map.toString(), new GeneralMultiMap<>(map).toString());
+		assertNotEquals(map.toString(), new GeneralMultiMap<>().toString());
+		assertNotEquals(map.toString(), map1.toString());
 	}
 
 }

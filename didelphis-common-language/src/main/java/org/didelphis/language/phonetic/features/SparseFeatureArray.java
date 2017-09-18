@@ -16,13 +16,18 @@ package org.didelphis.language.phonetic.features;
 
 import lombok.NonNull;
 import org.didelphis.language.phonetic.model.FeatureModel;
-import org.jetbrains.annotations.Nullable;
+import org.didelphis.utilities.Exceptions;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
- * Created by samantha on 3/27/16.
+ * Class {@code SparseFeatureArray}
+ *
+ * @author Samantha Fiona McCabe
+ * @date 2016-03-27
+ * @since 0.1.0
  */
 public final class SparseFeatureArray<T> extends AbstractFeatureArray<T> {
 
@@ -31,9 +36,9 @@ public final class SparseFeatureArray<T> extends AbstractFeatureArray<T> {
 	/**
 	 * @param featureModel
 	 */
-	public SparseFeatureArray(FeatureModel<T> featureModel) {
+	public SparseFeatureArray(@NonNull FeatureModel<T> featureModel) {
 		super(featureModel);
-		features = new HashMap<>();
+		features = new TreeMap<>();
 	}
 
 	/**
@@ -88,9 +93,26 @@ public final class SparseFeatureArray<T> extends AbstractFeatureArray<T> {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		if (obj == this) return true;
+		if (!(obj instanceof SparseFeatureArray)) return false;
+		SparseFeatureArray<?> array = (SparseFeatureArray<?>) obj;
+		return super.equals(obj) && features.equals(array.features);
+	}
+	
+	@Override
+	public int hashCode() {
+		int code = super.hashCode();
+		code *= features.entrySet().stream()
+				.mapToInt(entry -> 
+						entry.getValue().hashCode() ^ (entry.getKey() >> 1))
+				.reduce(1, (k, v) -> k * v);
+		return code;
+	}
+	
+	@Override
 	public boolean matches(@NonNull FeatureArray<T> array) {
 		sizeCheck(array);
-
 		FeatureType<T> featureType = getFeatureModel().getFeatureType();
 		for (Entry<Integer, T> entry : features.entrySet()) {
 			T x = entry.getValue();
@@ -135,30 +157,20 @@ public final class SparseFeatureArray<T> extends AbstractFeatureArray<T> {
 
 	@Override
 	public String toString() {
-		return "SparseFeatureArray{" + features + '}';
-	}
-
-	@Override
-	public boolean equals(@Nullable Object obj) {
-		if (this == obj) return true;
-		if (obj == null || getClass() != obj.getClass()) return false;
-		return super.equals(obj);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(features, features.size(), size());
+		return features.entrySet()
+				.stream()
+				.map(entry -> entry.getKey() + "=" + entry.getValue())
+				.collect(Collectors.joining(";", "{", "}"));
 	}
 
 	private void indexCheck(int index) {
 		int size = getSpecification().size();
 		if (index >= size) {
-			throw new IndexOutOfBoundsException("Provided index "
-					+ index
-					+ " is larger than defined size "
-					+ size
-					+ " for feature model "
-					+ getFeatureModel());
+			throw Exceptions.indexOutOfBounds()
+					.add("Provided index {} is larger than the defined size {}"
+							+ " of the feature model.")
+					.with(index, size)
+					.build();
 		}
 	}
 }

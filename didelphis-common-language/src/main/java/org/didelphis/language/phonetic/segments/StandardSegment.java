@@ -19,11 +19,11 @@
 
 package org.didelphis.language.phonetic.segments;
 
-import lombok.NonNull;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureSpecification;
 import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -52,8 +52,6 @@ public class StandardSegment<T> implements Segment<T> {
 	 *
 	 * @param symbol the phonetic symbol representing this segment
 	 * @param featureArray the feature array representing this segment
-	 * @param modelParam the model corresponding to the symbol and feature
-	 * 		array
 	 */
 	public StandardSegment(String symbol, FeatureArray<T> featureArray) {
 		this.symbol = symbol;
@@ -131,7 +129,7 @@ public class StandardSegment<T> implements Segment<T> {
 	}
 
 	@Override
-	public int compareTo(Segment<T> o) {
+	public int compareTo(@NotNull Segment<T> o) {
 		if (equals(o)) {
 			return 0;
 		} else {

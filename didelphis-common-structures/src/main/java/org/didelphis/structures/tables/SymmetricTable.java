@@ -18,6 +18,7 @@ import lombok.NonNull;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -267,13 +268,13 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 	@Override
 	public Collection<E> removeRow(int row) {
 		checkRow(row);
-		Collection<E> list = new ArrayList<>();
+		Collection<E> list;
 		// Get index to start
 		int start = getIndex(row, 0);
 		// Remove r+1 elements
-		for (int i = 0; i < row + 1; i++) {
-			list.add(array.remove(start));
-		}
+		list = IntStream.range(0, row + 1)
+				.mapToObj(i -> array.remove(start))
+				.collect(Collectors.toList());
 		// While elements remain:
 		int i = 1;
 		while (list.size() < rows()) {
@@ -324,10 +325,9 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 			if (i >= columns) {
 				throw new NoSuchElementException();
 			}
-			Collection<E> list = new ArrayList<>();
-			for (int j = 0; j < columns; j++) {
-				list.add(array.get(getIndex(i, j)));
-			}
+			Collection<E> list = IntStream.range(0, columns)
+					.mapToObj(j -> array.get(getIndex(i, j)))
+					.collect(Collectors.toList());
 			i++;
 			return list;
 		}
