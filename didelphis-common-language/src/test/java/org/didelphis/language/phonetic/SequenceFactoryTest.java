@@ -15,8 +15,12 @@
 package org.didelphis.language.phonetic;
 
 import org.didelphis.language.parsing.FormatterMode;
+import org.didelphis.language.phonetic.features.EmptyFeatureArray;
+import org.didelphis.language.phonetic.model.FeatureModel;
+import org.didelphis.language.phonetic.segments.ImmutableSegment;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.sequences.Sequence;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
@@ -26,9 +30,106 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Samantha Fiona McCabe
- * @date 2/5/2015
+ * @date 2015/02/05
+ * @since 0.0.0
  */
-public class SequenceFactoryTest extends PhoneticTestBase{
+class SequenceFactoryTest extends PhoneticTestBase {
+
+	private SequenceFactory<Integer> testFactory;
+
+	@BeforeEach
+	void init() {
+		testFactory = new SequenceFactory<>(loader.getFeatureMapping(),
+				FormatterMode.INTELLIGENT
+		);
+	}
+
+	@Test
+	void apply() {
+		assertEquals(factory.toSequence("a"), factory.apply("a"));
+	}
+
+	@Test
+	void toSegment() {
+		assertEquals(loader.getFeatureMapping().parseSegment("a"),
+				factory.toSegment("a")
+		);
+	}
+
+	@Test
+	void toSequence() {
+		Sequence<Integer> sequence = factory.toSequence("");
+		sequence.add(factory.toSegment("a"));
+		assertEquals(factory.toSequence("a"), sequence);
+	}
+
+	@Test
+	void getSpecialStrings() {
+		assertEquals(new HashSet<>(loader.getFeatureMapping().getSymbols()),
+				new HashSet<>(factory.getSpecialStrings())
+		);
+	}
+
+	@Test
+	void getFeatureMapping() {
+		assertEquals(loader.getFeatureMapping(), factory.getFeatureMapping());
+	}
+
+	@Test
+	void getFormatterMode() {
+		assertEquals(FormatterMode.INTELLIGENT, factory.getFormatterMode());
+	}
+
+	@Test
+	void getReservedStrings() {
+		assertTrue(factory.getReservedStrings().isEmpty());
+	}
+
+	@Test
+	void getDotSegment() {
+		Segment<Integer> segment = factory.getDotSegment();
+		FeatureModel<Integer> model = factory.getFeatureMapping()
+				.getFeatureModel();
+		EmptyFeatureArray<Integer> array = new EmptyFeatureArray<>(model);
+		assertEquals(segment, new ImmutableSegment<>(".", array));
+		assertSame(segment, factory.toSegment("."));
+	}
+
+	@Test
+	void getBorderSegment() {
+		Segment<Integer> segment = factory.getBorderSegment();
+		FeatureModel<Integer> model = factory.getFeatureMapping()
+				.getFeatureModel();
+		EmptyFeatureArray<Integer> array = new EmptyFeatureArray<>(model);
+
+		assertEquals(segment, new ImmutableSegment<>("#", array));
+		assertSame(segment, factory.toSegment("#"));
+	}
+
+	@Test
+	void getDotSequence() {
+		assertEquals(factory.getDotSequence(), factory.toSequence("."));
+	}
+
+	@Test
+	void getBorderSequence() {
+		assertEquals(factory.getBorderSequence(), factory.toSequence("#"));
+	}
+
+	@Test
+	void testToString() {
+		assertEquals(factory.toString(), testFactory.toString());
+	}
+
+	@Test
+	void equals() {
+		assertEquals(factory, testFactory);
+	}
+
+	@Test
+	void testHashCode() {
+		assertEquals(factory.hashCode(), testFactory.hashCode());
+	}
 
 	@Test
 	void testGetSequence01() {
@@ -44,10 +145,11 @@ public class SequenceFactoryTest extends PhoneticTestBase{
 		reserved.add("th");
 		reserved.add("kh");
 
-		SequenceFactory<Integer> factory = new SequenceFactory<>(
-				loader.getFeatureMapping(),
-			reserved,
-			FormatterMode.NONE);
+		SequenceFactory<Integer> factory
+				= new SequenceFactory<>(loader.getFeatureMapping(),
+				reserved,
+				FormatterMode.NONE
+		);
 
 		Sequence<Integer> expected = factory.toSequence("");
 		expected.add(factory.toSegment("a"));
@@ -63,7 +165,7 @@ public class SequenceFactoryTest extends PhoneticTestBase{
 		for (int i = 0; i < expected.size(); i++) {
 			Segment<Integer> ex = expected.get(i);
 			Segment<Integer> re = received.get(i);
-			assertEquals(ex, re, "index: "+i);
+			assertEquals(ex, re, "index: " + i);
 		}
 
 		assertEquals(expected, received);

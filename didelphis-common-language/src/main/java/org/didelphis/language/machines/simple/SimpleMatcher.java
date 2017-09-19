@@ -20,7 +20,7 @@ import org.didelphis.language.machines.interfaces.MachineMatcher;
 /**
  * Created by samantha on 3/3/17.
  */
-public class SimpleMatcher implements MachineMatcher<String> {
+public final class SimpleMatcher implements MachineMatcher<String> {
 
 	@Override
 	public int match(@NonNull String target, @NonNull String arc, int index) {

@@ -23,12 +23,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by samantha on 2/23/17.
+ * 
+ * @param <T>
  */
 public interface MachineParser<T> {
 
 	/**
-	 * Transform an expression string into a corresponding state machine
+	 * Transform an expression string into a corresponding terminal symbol, the
+	 * same as is consumed from an input while searching for a match.
 	 * @param expression
 	 * @return
 	 */
@@ -36,7 +38,7 @@ public interface MachineParser<T> {
 	T transform(String expression);
 
 	/**
-	 * Parse an expression to a list of sub-expressions
+	 * Parse an expression string to a list of sub-expressions
 	 * @param expression
 	 * @return
 	 */

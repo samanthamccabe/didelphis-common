@@ -23,12 +23,10 @@ import org.didelphis.structures.contracts.Delegating;
 import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Tuple;
+import org.didelphis.utilities.Exceptions;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -50,6 +48,20 @@ import java.util.stream.Collectors;
 public class GeneralMultiMap<K, V>
 		implements MultiMap<K, V>, Delegating<Map<K, ? extends Collection<V>>> {
 
+	private static final GeneralMultiMap<?, ?> EMPTY = new GeneralMultiMap<>(
+			Collections.emptyMap(),
+			() -> { throw Exceptions.unsupportedOperation()
+					.add("Attempting to modify an immutable,",
+							"empty instance of class {}")
+					.with(GeneralMultiMap.class)
+					.build(); }
+	);
+	
+	@SuppressWarnings("unchecked")
+	public static <K, V> GeneralMultiMap<K,V> emptyMultiMap() {
+		return (GeneralMultiMap<K, V>) EMPTY;
+	}
+	
 	@Delegate
 	private final Map<K, Collection<V>> delegate;
 	private final Supplier<? extends Collection<V>> supplier;

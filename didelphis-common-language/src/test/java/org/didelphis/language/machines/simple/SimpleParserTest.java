@@ -25,9 +25,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Created by samantha on 3/3/17.
  */
-class StringParserTest {
+class SimpleParserTest {
 	
-	private static final StringParser PARSER = StringParser.getInstance();
+	private static final SimpleParser PARSER = SimpleParser.INSTANCE;
 	
 	@Test
 	void parseExpression_Plain01() {

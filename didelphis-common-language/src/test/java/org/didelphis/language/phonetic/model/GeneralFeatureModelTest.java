@@ -17,7 +17,7 @@ package org.didelphis.language.phonetic.model;
 import org.didelphis.io.ClassPathFileHandler;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.PhoneticTestBase;
-import org.didelphis.language.phonetic.features.ByteFeature;
+import org.didelphis.language.phonetic.features.DoubleFeature;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.junit.jupiter.api.BeforeAll;
@@ -108,7 +108,7 @@ class GeneralFeatureModelTest extends PhoneticTestBase {
 	@Test
 	void getFeatureType() {
 		assertEquals(IntegerFeature.INSTANCE, model.getFeatureType());
-		assertNotEquals(ByteFeature.INSTANCE, model.getFeatureType());
+		assertNotEquals(DoubleFeature.INSTANCE, model.getFeatureType());
 	}
 
 	@Test

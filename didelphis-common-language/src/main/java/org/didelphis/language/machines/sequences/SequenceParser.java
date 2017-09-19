@@ -33,15 +33,20 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 /**
- * Created by samantha on 2/25/17.
+ * Class {@code SequenceParser}
+ *
+ * @param <T> 
+ *
+ * @author Samantha Fiona McCabe
+ * @date 2017-02-25
+ * @since 0.1.0
  */
 public class SequenceParser<T> implements MachineParser<Sequence<T>> {
 
 	private final SequenceFactory<T> factory;
 
-//	private final Map<String, Collection<Sequence<T>>> specials;
 	private final MultiMap<String, Sequence<T>> specials;
-	
+
 	private final Sequence<T> epsilon;
 
 	public SequenceParser(@NonNull SequenceFactory<T> factory) {
@@ -136,8 +141,7 @@ public class SequenceParser<T> implements MachineParser<Sequence<T>> {
 
 	@NonNull
 	private static Expression updateBuffer(
-			@NonNull Collection<Expression> list,
-			@NonNull Expression buffer
+			@NonNull Collection<Expression> list, @NonNull Expression buffer
 	) {
 		// Add the contents of buffer if not empty
 		if (buffer.isEmpty()) {

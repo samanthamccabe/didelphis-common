@@ -35,7 +35,6 @@ import java.util.Map;
  * @date 2017-06-17
  * @since 0.1.0
  */
-@SuppressWarnings("unchecked")
 @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EmptyStateMachine<T> implements StateMachine<T> {
@@ -46,6 +45,7 @@ public final class EmptyStateMachine<T> implements StateMachine<T> {
 	private static final Map<String, ? extends Graph<?>> EMPTY_MAP = Collections
 			.emptyMap();
 
+	@SuppressWarnings("unchecked")
 	@NonNull
 	public static <T> StateMachine<T> getInstance() {
 		return (StateMachine<T>) MACHINE;
@@ -69,6 +69,7 @@ public final class EmptyStateMachine<T> implements StateMachine<T> {
 		return "Empty State Machine";
 	}
 
+	@SuppressWarnings("unchecked")
 	@NonNull
 	@Override
 	public Map<String, Graph<T>> getGraphs() {

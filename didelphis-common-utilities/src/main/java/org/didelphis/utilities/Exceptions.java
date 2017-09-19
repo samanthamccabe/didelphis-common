@@ -98,8 +98,15 @@ public class Exceptions {
 		}
 
 		@NonNull
-		public ExceptionBuilder<X> add(String string) {
-			messages.push(string);
+		public ExceptionBuilder<X> add(String string, String... strings) {
+			if (strings.length > 0) {
+				Collection<String> list = new ArrayList<>();
+				list.add(string);
+				list.addAll(Arrays.asList(strings));
+				messages.push(list.stream().collect(Collectors.joining(" ")));
+			} else {
+				messages.push(string);
+			}
 			return this;
 		}
 

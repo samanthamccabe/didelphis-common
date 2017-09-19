@@ -21,14 +21,17 @@ import lombok.ToString;
 import org.didelphis.structures.maps.GeneralTwoKeyMultiMap;
 
 /**
+ * Class {@code Graph}
+ *
  * @author Samantha Fiona McCabe
- * @date 1/28/2016
+ * @date 2016-01-28
+ * @since 0.1.0
  */
 @ToString
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class Graph<T> extends GeneralTwoKeyMultiMap<String, T, String> {
-	
+
 	public Graph(@NonNull GeneralTwoKeyMultiMap<String, T, String> graph) {
 		super(graph);
 	}

@@ -17,34 +17,28 @@ package org.didelphis.language.machines.simple;
 import lombok.NonNull;
 import org.didelphis.language.machines.Expression;
 import org.didelphis.language.machines.interfaces.MachineParser;
+import org.didelphis.structures.maps.GeneralMultiMap;
+import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.didelphis.utilities.Split;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
 /**
- * Created by samantha on 3/3/17.
+ * Enum {@code SimpleParser}
+ *
+ * A basic {@link String}-based parser instance 
+ * 
+ * @author Samantha Fiona McCabe
+ * @date 2017-03-03
+ * @since 0.1.0
  */
-public final class StringParser implements MachineParser<String> {
-	
-	private static final Map<String, Collection<String>> SPECIALS = specials();
+public enum SimpleParser implements MachineParser<String> {
+	INSTANCE;
 
-	private static Map<String, Collection<String>> specials() {
-		return new HashMap<>(); // TODO:
-	}
-
-	private static final StringParser INSTANCE = new StringParser();
-	
-	@NonNull
-	public static StringParser getInstance() {
-		return INSTANCE;
-	}
-
-	private StringParser() {}
-	
 	@Override
 	public String transform(String expression) {
-		return null;
+		return expression;
 	}
 
 	@NonNull
@@ -52,11 +46,8 @@ public final class StringParser implements MachineParser<String> {
 	public List<Expression> parseExpression(@NonNull String expression) {
 		List<Expression> list = new ArrayList<>();
 		if (!expression.isEmpty()) {
-			List<String> symbols = Split.splitToList(expression, SPECIALS.keySet());
-			
-			//TODO: repeated code below ?? =>>
 			Expression buffer = new Expression();
-			for (String symbol : symbols) {
+			for (String symbol : Split.splitToList(expression, null)) {
 				if ("*?+".contains(symbol)) {
 					buffer.setMetacharacter(symbol);
 					buffer = updateExpressionBuffer(list, buffer);
@@ -72,20 +63,19 @@ public final class StringParser implements MachineParser<String> {
 			if (!buffer.getExpression().isEmpty()) {
 				list.add(buffer);
 			}
-			//TODO: <<= end repeated code ??
 		}
 		return list;
 	}
 
 	@Override
 	public String epsilon() {
-		return null;
+		return "";
 	}
 
 	@NonNull
 	@Override
-	public Map<String, Collection<String>> getSpecials() {
-		return null; // TODO: --------------------------------------------------
+	public MultiMap<String, String> getSpecials() {
+		return GeneralMultiMap.emptyMultiMap();
 	}
 
 	@Override
@@ -99,7 +89,9 @@ public final class StringParser implements MachineParser<String> {
 	}
 
 	@NonNull
-	private static Expression updateExpressionBuffer(@NonNull Collection<Expression> list, @NonNull Expression buffer) {
+	private static Expression updateExpressionBuffer(
+			@NonNull Collection<Expression> list, @NonNull Expression buffer
+	) {
 		// Add the contents of buffer if not empty
 		if (buffer.isEmpty()) {
 			return buffer;
