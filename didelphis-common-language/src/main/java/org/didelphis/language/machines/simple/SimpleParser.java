@@ -68,6 +68,16 @@ public enum SimpleParser implements MachineParser<String> {
 	}
 
 	@Override
+	public String getWordStart() {
+		return "^";
+	}
+
+	@Override
+	public String getWordEnd() {
+		return "$";
+	}
+	
+	@Override
 	public String epsilon() {
 		return "";
 	}

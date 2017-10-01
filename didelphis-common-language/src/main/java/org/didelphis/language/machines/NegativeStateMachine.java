@@ -33,8 +33,8 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 
 	private final String id;
 
-	private final StateMachine<T> negativeMachine;
-	private final StateMachine<T> positiveMachine;
+	private final StateMachine<T> negative;
+	private final StateMachine<T> positive;
 
 	private NegativeStateMachine(
 			@NonNull String id,
@@ -42,8 +42,8 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 			@NonNull StateMachine<T> positive
 	) {
 		this.id = id;
-		positiveMachine = positive;
-		negativeMachine = negative;
+		this.positive = positive;
+		this.negative = negative;
 	}
 
 	@NonNull
@@ -80,13 +80,13 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 	@Override
 	@NonNull
 	public MachineParser<T> getParser() {
-		return positiveMachine.getParser();
+		return positive.getParser();
 	}
 
 	@NonNull
 	@Override
 	public @NotNull MachineMatcher<T> getMatcher() {
-		return positiveMachine.getMatcher();
+		return positive.getMatcher();
 	}
 
 	@Override
@@ -99,29 +99,23 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 	@Override
 	public Map<String, Graph<T>> getGraphs() {
 		Map<String, Graph<T>> map = new HashMap<>();
-		map.putAll(positiveMachine.getGraphs());
-		map.putAll(negativeMachine.getGraphs());
+		map.putAll(positive.getGraphs());
+		map.putAll(negative.getGraphs());
 		return map;
 	}
 
 	@NonNull
 	@Override
-	public @NotNull Collection<Integer> getMatchIndices(int startIndex, @NonNull T target) {
+	public Set<Integer> getMatchIndices(int start, @NonNull T target) {
 
-		Collection<Integer> posIndices = positiveMachine.getMatchIndices(
-				startIndex,
-				target
-		);
-		Collection<Integer> negIndices = negativeMachine.getMatchIndices(
-				startIndex,
-				target
-		);
+		Set<Integer> posIndices = positive.getMatchIndices(start, target);
+		Set<Integer> negIndices = negative.getMatchIndices(start, target);
 
 		if (!negIndices.isEmpty() && !posIndices.isEmpty()) {
 			// Machine has matched both branches
-			int positive = new TreeSet<>(posIndices).last();
-			int negative = new TreeSet<>(negIndices).last();
-			return positive == negative ? Collections.emptySet() : posIndices;
+			int pos = new TreeSet<>(posIndices).last();
+			int neg = new TreeSet<>(negIndices).last();
+			return pos == neg ? Collections.emptySet() : posIndices;
 		} else if (!posIndices.isEmpty()) {
 			return posIndices;
 		} else {
@@ -139,11 +133,11 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 	@Override
 	public String toString() {
 		return "NegativeStateMachine{"
-				+ "negativeMachine="
-				+ negativeMachine
+				+ "negative="
+				+ negative
 				+ ", "
-				+ "positiveMachine="
-				+ positiveMachine
+				+ "positive="
+				+ positive
 				+ '}';
 	}
 
@@ -183,7 +177,7 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 					// or if this is the desired behavior
 					buildPositiveBranch(
 							parser,
-							((NegativeStateMachine<T>) machine).negativeMachine
+							((NegativeStateMachine<T>) machine).negative
 					);
 				} else {
 					buildPositiveBranch(parser, machine);

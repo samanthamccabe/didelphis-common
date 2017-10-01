@@ -17,12 +17,12 @@ package org.didelphis.language.machines.interfaces;
 import lombok.NonNull;
 import org.didelphis.language.machines.Graph;
 
-import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Samantha Fiona McCabe
- * @date 4/7/2015
+ * @date 2015-04-07
  */
 public interface StateMachine<T> {
 
@@ -34,20 +34,20 @@ public interface StateMachine<T> {
 	String getId();
 
 	/**
-	 * Returns a maps of {@code StateMachine} ids to its associated graph. This
+	 * Returns a map of {@link StateMachine} ids to its associated graph. This
 	 * ensures accessibility for machines which contain multiple embedded state
 	 * machines.
-	 * @return {@code Map} from {@code StateMachine} id → {@code Graph}
+	 * @return a {@link Map},  from {@link StateMachine} id → {@link Graph}
 	 */
 	@NonNull
 	Map<String, Graph<T>> getGraphs();
 	
 	/**
 	 * Returns the indices
-	 * @param startIndex
+	 * @param start
 	 * @param target
 	 * @return
 	 */
 	@NonNull
-	Collection<Integer> getMatchIndices(int startIndex, @NonNull T target);
+	Set<Integer> getMatchIndices(int start, @NonNull T target);
 }

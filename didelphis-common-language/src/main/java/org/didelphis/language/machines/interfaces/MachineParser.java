@@ -16,17 +16,20 @@ package org.didelphis.language.machines.interfaces;
 
 import lombok.NonNull;
 import org.didelphis.language.machines.Expression;
+import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 
  * @param <T>
  */
 public interface MachineParser<T> {
+
+	T getWordStart();
+
+	T getWordEnd();
 
 	/**
 	 * Transform an expression string into a corresponding terminal symbol, the
@@ -53,13 +56,13 @@ public interface MachineParser<T> {
 	T epsilon();
 
 	/**
-	 * Provides a {@code collection} of supported special symbols and their
+	 * Provides a collection of supported special symbols and their
 	 * corresponding literal values
-	 * @return a {@code collection} of supported special symbols and their
+	 * @return a collection of supported special symbols and their
 	 * corresponding literal values
 	 */
 	@NonNull
-	Map<String, Collection<T>> getSpecials();
+	MultiMap<String, T> getSpecials();
 
 	/**
 	 * Provides a uniform value for "dot" transitions, which accept any value,

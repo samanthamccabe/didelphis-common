@@ -15,36 +15,34 @@
 package org.didelphis.language.machines;
 
 import org.didelphis.io.ClassPathFileHandler;
-import org.didelphis.language.parsing.FormatterMode;
-import org.didelphis.language.parsing.ParseDirection;
-import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.machines.interfaces.StateMachine;
 import org.didelphis.language.machines.sequences.SequenceMatcher;
 import org.didelphis.language.machines.sequences.SequenceParser;
+import org.didelphis.language.parsing.FormatterMode;
+import org.didelphis.language.parsing.ParseDirection;
+import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.SequenceFactory;
 import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.model.FeatureMapping;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Samantha Fiona McCabe
  * @date 3/14/2015
  */
 public class StandardStateMachineTest {
-
-	private static final Logger LOG = LoggerFactory.getLogger(
-			StandardStateMachineTest.class);
 
 	private static final SequenceFactory<Integer> FACTORY = factory();
 	private static final int TIMEOUT = 2;
@@ -278,6 +276,24 @@ public class StandardStateMachineTest {
 	}
 
 	@Test
+	void testGroupStarEnd01() {
+		StateMachine<Sequence<Integer>> machine = getMachine("(ab)*#");
+
+		assertMatches(machine, "");
+		assertMatches(machine, "ab");
+		assertMatches(machine, "abab");
+		assertMatches(machine, "ababab");
+
+		assertNotMatches(machine, "a");
+		assertNotMatches(machine, "aba");
+		assertNotMatches(machine, "ababa");
+		assertNotMatches(machine, "abababa");
+		assertNotMatches(machine, "ba");
+		assertNotMatches(machine, "baba");
+		assertNotMatches(machine, "bababa");
+	}
+		
+	@Test
 	void testComplexGroups01() {
 		StateMachine<Sequence<Integer>> machine = getMachine("(a+l(ham+b)*ra)+");
 
@@ -493,12 +509,11 @@ public class StandardStateMachineTest {
 	private static void assertNotMatches(StateMachine<Sequence<Integer>> machine,
 			String target) {
 		Collection<Integer> matchIndices = new ArrayList<>();
-		assertTimeoutPreemptively(Duration.ofSeconds(TIMEOUT),() -> {
+//		assertTimeoutPreemptively(Duration.ofSeconds(TIMEOUT),() -> {
 			Collection<Integer> collection = testMachine(machine, target);
 			matchIndices.addAll(collection);
-		});
-		assertTrue(matchIndices.isEmpty(),
-				"Machine accepted input it should not have: " + target);
+//		});
+		assertTrue(matchIndices.isEmpty(), "Machine accepted input it should not have: " + target);
 	}
 
 	private static Collection<Integer> testMachine(

@@ -24,8 +24,6 @@ import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Tuple;
 import org.didelphis.utilities.Split;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -39,9 +37,6 @@ import static org.didelphis.utilities.PatternUtils.template;
  */
 public final class StandardStateMachine<T> implements StateMachine<T> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(
-			StandardStateMachine.class);
-
 	private static final Pattern ILLEGAL = template("#$1|$1$1", "[*+?]");
 
 	private static final int A_ASCII = 0x41; // dec 65 / 0x41
@@ -52,7 +47,6 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 	private final String id;
 	private final String startStateId;
 	private final Collection<String> acceptingStates;
-	private final Set<String> nodes;
 	private final Map<String, StateMachine<T>> machinesMap;
 
 	// {String (Node ID), Sequence (Arc)} --> String (Node ID)
@@ -69,10 +63,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 
 		machinesMap = new HashMap<>();
 		acceptingStates = new HashSet<>();
-		nodes = new HashSet<>();
 		graph = new Graph<>();
-
-		nodes.add(startStateId);
 	}
 
 	@NonNull
@@ -80,7 +71,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 			@NonNull MachineParser<T> parser, MachineMatcher<T> matcher,
 			ParseDirection direction) {
 		checkBadQuantification(expression);
-		StandardStateMachine<T> stateMachine = new StandardStateMachine<>(id,
+		StandardStateMachine<T> machine = new StandardStateMachine<>(id,
 				parser,
 				matcher,
 				direction);
@@ -90,13 +81,10 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 			Collections.reverse(expressions);
 		}
 
-		String accepting = stateMachine.parseExpression(
-				stateMachine.startStateId,
-				0,
-				"",
-				expressions);
-		stateMachine.acceptingStates.add(accepting);
-		return stateMachine;
+		String start = machine.startStateId;
+		String accepting = machine.parseExpression(start, 0, "", expressions);
+		machine.acceptingStates.add(accepting);
+		return machine;
 	}
 
 	@NonNull
@@ -126,8 +114,8 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 
 	@Override
 	@NonNull
-	public @NotNull Collection<Integer> getMatchIndices(int startIndex, @NonNull T target) {
-		Collection<Integer> indices = new HashSet<>();
+	public Set<Integer> getMatchIndices(int start, @NonNull T target) {
+		Set<Integer> indices = new HashSet<>();
 
 		if (graph.isEmpty()) {
 			indices.add(0);
@@ -136,9 +124,9 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 
 		Collection<Tuple<Integer,String>> states = new ArrayList<>();
 
-		// At the beginning of the process, we are in the start-state, so
+		// At the beginning of the addToGraph, we are in the start-state, so
 		// add an initial state at the beginning of the sequence
-		states.add(new Couple<>(startIndex, startStateId));
+		states.add(new Couple<>(start, startStateId));
 
 		// if the condition is empty, it will always match
 		Collection<Tuple<Integer,String>> swap = new ArrayList<>();
@@ -190,7 +178,6 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 
 	// package only access
 	@NonNull
-	@SuppressWarnings("ReturnOfCollectionOrArrayField")
 	Map<String, StateMachine<T>> getMachinesMap() {
 		// this needs to mutable:
 		// see NegativeStateMachine.create(..)
@@ -227,12 +214,10 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 			String meta = expression.getMetacharacter();
 			boolean negative = expression.isNegative();
 			String current = prefix + '-' + nodeId;
-			nodes.add(current);
 
 			if (negative) {
 				createNegative(expr, current);
 				String nextNode = current + 'X';
-				nodes.add(nextNode);
 				previous = constructNegativeNode(nextNode,
 						previous,
 						current,
@@ -275,9 +260,18 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 
 	private String constructNegativeNode(String end, String start,
 			String machine, @NonNull String meta) {
-		T e = parser.epsilon();
 		// All machines contain this arc
-		graph.add(start, e, machine);
+		graph.add(start, parser.epsilon(), machine);
+		addToGraph(start, end, machine, meta);
+		return end;
+	}
+
+	private void addToGraph(
+			String start,
+			String end, 
+			String machine, 
+			@NonNull String meta) {
+		T e = parser.epsilon();
 		switch (meta) {
 			case "?":
 				graph.add(machine, e, end);
@@ -295,34 +289,13 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 				graph.add(machine, e, end);
 				break;
 		}
-		return end;
 	}
 
 	@NonNull
 	private String constructRecursiveNode(String machineNode, String startNode,
 			@NonNull String meta) {
-		T e = parser.epsilon();
-
 		String endNode = startNode + 'X';
-		nodes.add(endNode);
-
-		switch (meta) {
-			case "?":
-				graph.add(machineNode, e, endNode);
-				graph.add(startNode, e, endNode);
-				break;
-			case "*":
-				graph.add(machineNode, e, startNode);
-				graph.add(startNode, e, endNode);
-				break;
-			case "+":
-				graph.add(machineNode, e, endNode);
-				graph.add(endNode, e, startNode);
-				break;
-			default:
-				graph.add(machineNode, e, endNode);
-				break;
-		}
+		addToGraph(startNode, endNode, machineNode, meta);
 		return endNode;
 	}
 
@@ -379,7 +352,6 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		StringBuilder buffer = new StringBuilder();
 		for (int i = 0; i < expression.length(); i++) {
 			char c = expression.charAt(i);
-			/*  */
 			if (c == '{') {
 				int index = Split.findClosingBracket(expression, '{', '}', i);
 				buffer.append(expression.substring(i, index));

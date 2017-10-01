@@ -18,20 +18,35 @@ import lombok.Data;
 import lombok.NonNull;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Samantha Fiona McCabe
- * @date 9/1/13
- * Time: 9:34 PM
+ * 
+ * @author Samantha Fiona McCabe
+ * @date 2013-09-01
+
  * Expression creates and stores a compact representation of a regular 
  * expression string and is used as a preprocessor for the creation of 
  * state-machines for regex matching
  */
 @Data
 public class Expression {
-	private String  expression    = "";
-	private String  metacharacter = "";
+	private String  expression;
+	private String  metacharacter;
 	private boolean negative;
 	
+	public Expression() {
+		this("","",false);
+	}
+	
+	public Expression(String expression) {
+		this(expression, "", false);
+	}
+	
+	public Expression(String expression, String metacharacter, boolean negative) {
+		this.expression = expression;
+		this.metacharacter = metacharacter;
+		this.negative = negative;
+	}
+
+
 	@NonNull
 	@Override
 	public String toString() {

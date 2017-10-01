@@ -14,10 +14,10 @@
 
 package org.didelphis.utilities;
 
-import lombok.Data;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -43,13 +43,30 @@ public class Exceptions {
 	 * Creates a builder for the exception of the provided type.
 	 *
 	 * @param type the {@link Class} of the exception to be created
+	 * @param cause the {@link Throwable} cause of this exception; may be null
+	 *      if there is no cause.
 	 * @param <X> the type of the exception to be created
 	 *
 	 * @return a new builder
 	 */
 	@NonNull
-	public <X extends Exception> ExceptionBuilder<X> create(Class<X> type) {
-		return new ExceptionBuilder<>(type);
+	public <X extends Exception> ExceptionBuilder<X> create(
+			@NonNull Class<X> type, 
+			@Nullable Throwable cause) {
+		return new ExceptionBuilder<>(type, cause);
+	}
+
+	/**
+	 * Creates a builder for the exception of the provided type.
+	 *
+	 * @param type the {@link Class} of the exception to be created
+	 * @param <X> the type of the exception to be created
+	 *
+	 * @return a new builder
+	 */
+	public <X extends Exception> ExceptionBuilder<X> create(
+			@NonNull Class<X> type) {
+		return new ExceptionBuilder<>(type, null);
 	}
 	
 	/**
@@ -81,20 +98,27 @@ public class Exceptions {
 	public ExceptionBuilder<IllegalArgumentException> illegalArgument() {
 		return new ExceptionBuilder<>(IllegalArgumentException.class);
 	}
-
-	@Data
+	
 	public static final class ExceptionBuilder<X extends Exception> {
 
 		private final Class<X> type;
 		private final Deque<String> messages;
 		private final Collection<Object> data;
 
-		private Throwable cause;
+		private final Throwable cause;
 
 		private ExceptionBuilder(Class<X> type) {
 			this.type = type;
 			messages = new ArrayDeque<>();
 			data = new ArrayList<>();
+			cause = null;
+		}
+
+		private ExceptionBuilder(Class<X> type, Throwable cause) {
+			this.type = type;
+			messages = new ArrayDeque<>();
+			data = new ArrayList<>();
+			this.cause = cause;
 		}
 
 		@NonNull
@@ -126,6 +150,14 @@ public class Exceptions {
 			return this;
 		}
 
+		/**
+		 * 
+		 * @return a new {@link Exception} of the builder's type. with message
+		 *      and data as 
+		 * @throws UnsupportedOperationException if the {@link Exception} being
+		 *      created does not implement the standard constructors, because
+		 *      instantiation is done reflectively
+		 */
 		@NonNull
 		public X build() {
 			String baseMessage = messages.isEmpty()

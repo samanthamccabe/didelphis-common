@@ -24,9 +24,9 @@ import org.didelphis.language.machines.interfaces.StateMachine;
 import org.didelphis.utilities.Exceptions;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Class {@code EmptyStateMachine}
@@ -77,9 +77,9 @@ public final class EmptyStateMachine<T> implements StateMachine<T> {
 	}
 
 	@Override
-	public @NotNull Collection<Integer> getMatchIndices(
-			int startIndex, @NonNull T target
+	public Set<Integer> getMatchIndices(
+			int start, @NonNull T target
 	) {
-		return Collections.singleton(startIndex);
+		return Collections.singleton(start);
 	}
 }

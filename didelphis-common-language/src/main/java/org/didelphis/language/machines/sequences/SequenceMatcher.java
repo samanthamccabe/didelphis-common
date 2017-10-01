@@ -40,16 +40,18 @@ public class SequenceMatcher<T> implements MachineMatcher<Sequence<T>> {
 
 	@Override
 	public int match(
-			@NonNull Sequence<T> target,
-			@NonNull Sequence<T> arc,
-			int index
+			@NonNull Sequence<T> target, @NonNull Sequence<T> arc, int index
 	) {
 		SequenceFactory<T> factory = parser.getSequenceFactory();
 
 		Sequence<T> tail = target.subsequence(index);
 
-		if (Objects.equals(arc, factory.getBorderSequence())) {
-			return (tail.isEmpty() || index == 0) ? index + 1 : -1;
+		if (arc.equals(parser.getWordStart())) {
+			return index == 0 ? index + 1 : -1;
+		}
+		
+		if (arc.equals(parser.getWordEnd())) {
+			return tail.isEmpty() ? index + 1 : -1;
 		}
 
 		if (Objects.equals(arc, parser.epsilon())) {
@@ -57,7 +59,7 @@ public class SequenceMatcher<T> implements MachineMatcher<Sequence<T>> {
 		}
 
 		Map<String, Collection<Sequence<T>>> specials = parser.getSpecials();
-		
+
 		String value = arc.toString();
 		if (specials.containsKey(value)) {
 			return specials.get(value)

@@ -15,12 +15,14 @@
 package org.didelphis.language.machines.sequences;
 
 import lombok.NonNull;
+import lombok.ToString;
 import org.didelphis.language.machines.Expression;
 import org.didelphis.language.machines.interfaces.MachineParser;
 import org.didelphis.language.parsing.FormatterMode;
+import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.SequenceFactory;
+import org.didelphis.language.phonetic.features.EmptyFeatureArray;
 import org.didelphis.language.phonetic.features.FeatureArray;
-import org.didelphis.language.phonetic.features.SparseFeatureArray;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.segments.StandardSegment;
@@ -30,7 +32,9 @@ import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Class {@code SequenceParser}
@@ -41,12 +45,25 @@ import java.util.*;
  * @date 2017-02-25
  * @since 0.1.0
  */
+@ToString
 public class SequenceParser<T> implements MachineParser<Sequence<T>> {
 
 	private final SequenceFactory<T> factory;
 
 	private final MultiMap<String, Sequence<T>> specials;
 
+	@Override
+	public Sequence<T> getWordStart() {
+		return wordStart;
+	}
+
+	@Override
+	public Sequence<T> getWordEnd() {
+		return wordEnd;
+	}
+
+	private final Sequence<T> wordStart;
+	private final Sequence<T> wordEnd;
 	private final Sequence<T> epsilon;
 
 	public SequenceParser(@NonNull SequenceFactory<T> factory) {
@@ -61,22 +78,49 @@ public class SequenceParser<T> implements MachineParser<Sequence<T>> {
 		this.specials = specials;
 		// Generate epsilon / lambda symbol
 		FeatureModel<T> model = factory.getFeatureMapping().getFeatureModel();
-		FeatureArray<T> array = new SparseFeatureArray<>(model);
+		FeatureArray<T> array = new EmptyFeatureArray<>(model);
 		Segment<T> segment = new StandardSegment<>("\uD835\uDF06", array);
-		epsilon = new BasicSequence<>(segment);
+		
+		wordStart = new BasicSequence<>(new StandardSegment<>("#[", array));
+		wordEnd   = new BasicSequence<>(new StandardSegment<>("]#", array));
+		epsilon   = new BasicSequence<>(segment);
 	}
 
 	@Override
 	public Sequence<T> transform(String expression) {
+		if (expression.equals("#[")) return wordStart;
+		if (expression.equals("]#")) return wordEnd;
 		return factory.toSequence(expression);
 	}
 
 	@NonNull
 	@Override
 	public List<Expression> parseExpression(String expression) {
+		
+		boolean start = expression.charAt(0) == '#';
+		boolean end   = expression.charAt(expression.length() - 1) == '#';
+
+		String string = expression;
+
+		if (start) {
+			string = string.substring(1);
+		}
+
+		if (end) {
+			string = string.substring(0, string.length() - 1);
+		}
+		
+		if (string.contains("#")) {
+			throw ParseException.builder().add("Expression may not contain '#")
+					.add("except initially or finally.")
+					.data(expression)
+					.build();
+		}
+		
 		FormatterMode formatterMode = factory.getFormatterMode();
 		Collection<String> special = factory.getSpecialStrings();
-		List<String> strings = formatterMode.split(expression, special);
+		List<String> strings = formatterMode.split(string, special);
+		
 		List<Expression> list = new ArrayList<>();
 		if (!strings.isEmpty()) {
 			Expression buffer = new Expression();
@@ -97,6 +141,15 @@ public class SequenceParser<T> implements MachineParser<Sequence<T>> {
 				list.add(buffer);
 			}
 		}
+		
+		if (start) {
+			list.add(0, new Expression("#["));
+		}
+		
+		if (end) {
+			list.add(new Expression("]#"));
+		}
+		
 		return list;
 	}
 
@@ -108,8 +161,8 @@ public class SequenceParser<T> implements MachineParser<Sequence<T>> {
 
 	@NonNull
 	@Override
-	public Map<String, Collection<Sequence<T>>> getSpecials() {
-		return Collections.unmodifiableMap(specials);
+	public MultiMap<String, Sequence<T>> getSpecials() {
+		return specials;
 	}
 
 	@Override
@@ -121,17 +174,6 @@ public class SequenceParser<T> implements MachineParser<Sequence<T>> {
 	@Override
 	public int lengthOf(@NonNull Sequence<T> segments) {
 		return segments.size();
-	}
-
-	@NonNull
-	@Override
-	public String toString() {
-		return "SequenceParser{"
-				+ "factory="
-				+ factory
-				+ ", specials="
-				+ specials
-				+ '}';
 	}
 
 	@NonNull
