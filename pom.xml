@@ -32,10 +32,10 @@
     <name>Didelphis Common Modules</name>
 
     <modules>
+        <module>didelphis-common-utilities</module>
         <module>didelphis-common-io</module>
         <module>didelphis-common-structures</module>
         <module>didelphis-common-language</module>
-        <module>didelphis-common-utilities</module>
     </modules>
 
 </project>

@@ -40,9 +40,10 @@ public enum ClassPathFileHandler implements FileHandler {
 	}
 
 	@Override
-	public @Nullable String read( @NonNull String path) {
+	public @Nullable String read(@NonNull String path) {
 		ClassLoader classLoader = ClassPathFileHandler.class.getClassLoader();
 		InputStream stream = classLoader.getResourceAsStream(path);
+		if (stream == null) return null; // TODO:
 		return IOUtil.readStream(stream);
 	}
 

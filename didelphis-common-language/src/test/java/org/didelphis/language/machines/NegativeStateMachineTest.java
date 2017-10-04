@@ -175,13 +175,13 @@ public class NegativeStateMachineTest {
 	@Test
 	void testSet02() {
 		StateMachine<Sequence<Integer>> machine = getMachine("#!{a b c}#");
-		fail(machine, "#a");
-		fail(machine, "#b");
-		fail(machine, "#c");
+		fail(machine, "a");
+		fail(machine, "b");
+		fail(machine, "c");
 
-		test(machine, "#x");
-		test(machine, "#y");
-		test(machine, "#z");
+		test(machine, "x");
+		test(machine, "y");
+		test(machine, "z");
 	}
 
 	@Test
@@ -320,7 +320,7 @@ public class NegativeStateMachineTest {
 	}
 
 	@NonNull
-	private Map<String, Collection<Sequence<Integer>>> parse(String string) {
+	private static Map<String, Collection<Sequence<Integer>>> parse(String string) {
 		String[] split = string.split("\\s*=\\s*");
 		List<String> strings = Arrays.asList(split[1].split("\\s+"));
 		Map<String, Collection<Sequence<Integer>>> map = new HashMap<>();

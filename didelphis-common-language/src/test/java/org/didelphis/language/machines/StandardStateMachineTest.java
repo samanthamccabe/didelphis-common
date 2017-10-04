@@ -28,14 +28,12 @@ import org.didelphis.language.phonetic.model.FeatureModelLoader;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.junit.jupiter.api.Test;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -58,10 +56,10 @@ public class StandardStateMachineTest {
 
 	private static void assertMatches(StateMachine<Sequence<Integer>> machine, String target) {
 		Collection<Integer> matchIndices = new ArrayList<>();
-		assertTimeoutPreemptively(Duration.ofSeconds(5),() -> {
+//		assertTimeoutPreemptively(Duration.ofSeconds(5),() -> {
 			Collection<Integer> collection = testMachine(machine, target);
 			matchIndices.addAll(collection);
-		});
+//		});
 		assertFalse(matchIndices.isEmpty(), "Machine failed to accept input: " + target);
 	}
 
@@ -110,6 +108,50 @@ public class StandardStateMachineTest {
 		assertThrowsParse("(a");
 	}
 
+	@Test
+	void testEmpty() {
+		StateMachine<Sequence<Integer>> machine = getMachine("");
+		assertMatches(machine, "");
+		assertMatches(machine, "a");
+		assertMatches(machine, "ab");
+		assertMatches(machine, "abc");
+	}
+	
+	@Test
+	void testBoundaries1() {
+		StateMachine<Sequence<Integer>> machine = getMachine("#a#");
+		
+		assertMatches(machine, "a");
+
+		assertNotMatches(machine, "");
+		assertNotMatches(machine, "aa");
+		assertNotMatches(machine, "x");
+	}
+
+	@Test
+	void testBoundaries2() {
+		StateMachine<Sequence<Integer>> machine = getMachine("#a");
+
+		assertMatches(machine, "a");
+		assertMatches(machine, "aa");
+		
+		assertNotMatches(machine, "");
+		assertNotMatches(machine, "ba");
+		assertNotMatches(machine, "x");
+	}
+
+	@Test
+	void testBoundaries3() {
+		StateMachine<Sequence<Integer>> machine = getMachine("a#");
+
+		assertMatches(machine, "a");
+
+		assertNotMatches(machine, "ba");
+		assertNotMatches(machine, "aa");
+		assertNotMatches(machine, "");
+		assertNotMatches(machine, "x");
+	}
+	
 	@Test
 	void testBasic01() {
 		StateMachine<Sequence<Integer>> machine = getMachine("a");

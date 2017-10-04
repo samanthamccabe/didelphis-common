@@ -34,7 +34,7 @@ class ClassPathFileHandlerTest {
 	@Test
 	void readWithException() {
 		assertThrows(IllegalArgumentException.class,
-				() -> ClassPathFileHandler.INSTANCE.read("will fail"));
+				() -> ClassPathFileHandler.INSTANCE.readOrThrow("will fail", IllegalArgumentException.class));
 	}
 
 	@Test

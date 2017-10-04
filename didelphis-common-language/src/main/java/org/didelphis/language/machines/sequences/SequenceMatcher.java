@@ -47,11 +47,11 @@ public class SequenceMatcher<T> implements MachineMatcher<Sequence<T>> {
 		Sequence<T> tail = target.subsequence(index);
 
 		if (arc.equals(parser.getWordStart())) {
-			return index == 0 ? index + 1 : -1;
+			return index == 0 ? index : -1;
 		}
 		
 		if (arc.equals(parser.getWordEnd())) {
-			return tail.isEmpty() ? index + 1 : -1;
+			return tail.isEmpty() ? index : -1;
 		}
 
 		if (Objects.equals(arc, parser.epsilon())) {

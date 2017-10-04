@@ -34,6 +34,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -97,19 +98,11 @@ public class SequenceParser<T> implements MachineParser<Sequence<T>> {
 	@Override
 	public List<Expression> parseExpression(String expression) {
 		
+		if (expression.isEmpty()) return Collections.emptyList();
+		
 		boolean start = expression.charAt(0) == '#';
 		boolean end   = expression.charAt(expression.length() - 1) == '#';
-
-		String string = expression;
-
-		if (start) {
-			string = string.substring(1);
-		}
-
-		if (end) {
-			string = string.substring(0, string.length() - 1);
-		}
-		
+		String string = trimBounds(expression, start, end);
 		if (string.contains("#")) {
 			throw ParseException.builder().add("Expression may not contain '#")
 					.add("except initially or finally.")
@@ -145,12 +138,21 @@ public class SequenceParser<T> implements MachineParser<Sequence<T>> {
 		if (start) {
 			list.add(0, new Expression("#["));
 		}
-		
 		if (end) {
 			list.add(new Expression("]#"));
 		}
-		
 		return list;
+	}
+
+	private static String trimBounds(String exp, boolean start, boolean end) {
+		String string = exp;
+		if (start) {
+			string = string.substring(1);
+		}
+		if (end) {
+			string = string.substring(0, string.length() - 1);
+		}
+		return string;
 	}
 
 	@NonNull
