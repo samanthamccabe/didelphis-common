@@ -12,42 +12,62 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.machines.interfaces;
+package org.didelphis.language.automata;
 
-import lombok.NonNull;
-import org.didelphis.language.machines.Graph;
+import org.didelphis.language.matching.Quantifier;
 
-import java.util.Map;
-import java.util.Set;
+import java.util.List;
 
 /**
+ * Interface {@code Expression}
+ * 
  * @author Samantha Fiona McCabe
- * @date 2015-04-07
+ * @date 2013-09-01
+
+ * Expression creates and stores a compact representation of a regular 
+ * expression string and is used as a preprocessor for the creation of 
+ * state-automata for regex matching
  */
-public interface StateMachine<T> {
+public interface Expression {
 
-	@NonNull
-	MachineParser<T> getParser();
-
-	@NonNull MachineMatcher<T> getMatcher();
-
-	String getId();
-
-	/**
-	 * Returns a map of {@link StateMachine} ids to its associated graph. This
-	 * ensures accessibility for machines which contain multiple embedded state
-	 * machines.
-	 * @return a {@link Map},  from {@link StateMachine} id → {@link Graph}
-	 */
-	@NonNull
-	Map<String, Graph<T>> getGraphs();
+	boolean hasChildren();
 	
-	/**
-	 * Returns the indices
-	 * @param start
-	 * @param target
-	 * @return
-	 */
-	@NonNull
-	Set<Integer> getMatchIndices(int start, @NonNull T target);
+	String getTerminal();
+	
+	List<Expression> getChildren();
+	
+	Quantifier getQuantifier();
+
+	enum DefaultQuantifier implements Quantifier {
+		NONE("", false),
+		STAR("*", true),
+		PLUS("+", true),
+		HOOK("?", true),
+		STAR_RELUCTANT("*?", false),
+		PLUS_RELUCTANT("+?", false);
+
+		private final String symbol;
+		private final boolean isGreedy;
+
+		DefaultQuantifier(String symbol, boolean isGreedy) {
+			this.symbol = symbol;
+			this.isGreedy = isGreedy;
+		}
+		
+		@Override
+		public String getSymbol() {
+			return symbol;
+		}
+		
+		@Override
+		public boolean isGreedy() {
+			return isGreedy;
+		}
+		
+		@Override
+		public String toString() {
+			return symbol;
+		}
+	}
 }
+	

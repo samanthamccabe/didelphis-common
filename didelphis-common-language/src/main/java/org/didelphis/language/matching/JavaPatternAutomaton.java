@@ -12,53 +12,49 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.machines;
+package org.didelphis.language.matching;
 
-import lombok.Data;
-import lombok.NonNull;
+import lombok.ToString;
+import lombok.Value;
+import lombok.experimental.Delegate;
+
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
+ * Class {@code JavaPatternAutomaton}
+ *
+ * A {@link Automaton} wrapper for the normal {@link Pattern} class.
  * 
  * @author Samantha Fiona McCabe
- * @date 2013-09-01
-
- * Expression creates and stores a compact representation of a regular 
- * expression string and is used as a preprocessor for the creation of 
- * state-machines for regex matching
+ * @date 10/17/17
  */
-@Data
-public class Expression {
-	private String  expression;
-	private String  metacharacter;
-	private boolean negative;
-	
-	public Expression() {
-		this("","",false);
-	}
-	
-	public Expression(String expression) {
-		this(expression, "", false);
-	}
-	
-	public Expression(String expression, String metacharacter, boolean negative) {
-		this.expression = expression;
-		this.metacharacter = metacharacter;
-		this.negative = negative;
-	}
+@ToString
+public class JavaPatternAutomaton implements Automaton<String> {
 
+	private final Pattern pattern;
 
-	@NonNull
+	public JavaPatternAutomaton(String pattern) {
+		this(pattern, 0);
+	}
+	
+	public JavaPatternAutomaton(String pattern, int flags) {
+		this.pattern = Pattern.compile(pattern, flags);
+	}
+	
 	@Override
-	public String toString() {
-		return (negative ? "!" : "") + expression + metacharacter;
-	}
-	
-	public boolean isEmpty() {
-		return expression.isEmpty();
-	}
-
-	public boolean isNegative() {
-		return negative;
+	public Match<String> match(String input, int start) {
+		Matcher matcher = pattern.matcher(input);
+		if (matcher.find(start)) {
+			return new PatternMatch(matcher.toMatchResult());
+		}
+		return null;
 	}
 
+	@Value
+	private static final class PatternMatch implements Match<String> {
+		@Delegate
+		MatchResult matchResult;
+	}
 }

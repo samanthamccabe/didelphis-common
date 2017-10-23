@@ -12,10 +12,10 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.machines.interfaces;
+package org.didelphis.language.automata.interfaces;
 
 import lombok.NonNull;
-import org.didelphis.language.machines.Expression;
+import org.didelphis.language.automata.Expression;
 import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,7 +25,7 @@ import java.util.List;
  * 
  * @param <T>
  */
-public interface MachineParser<T> {
+public interface LanguageParser<T> {
 
 	T getWordStart();
 

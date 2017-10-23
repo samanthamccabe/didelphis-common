@@ -12,27 +12,27 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.machines;
-
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.ToString;
-import org.didelphis.structures.maps.GeneralTwoKeyMultiMap;
+package org.didelphis.language.matching;
 
 /**
- * Class {@code Graph}
+ * Interface {@code Automaton}
  *
+ * Represents an automaton for accepting formal languages.
+ * 
  * @author Samantha Fiona McCabe
- * @date 2016-01-28
- * @since 0.1.0
+ * @date 10/17/17
+ * @see java.util.regex.Pattern
  */
-@ToString
-@EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor
-public class Graph<T> extends GeneralTwoKeyMultiMap<String, T, String> {
+@FunctionalInterface
+public interface Automaton<T> {
 
-	public Graph(@NonNull GeneralTwoKeyMultiMap<String, T, String> graph) {
-		super(graph);
+	Match<T> match(T input, int start);
+
+	default boolean matches(T input) {
+		return match(input).start() > -1;
+	}
+	
+	default Match<T> match(T input) {
+		return match(input, 0);
 	}
 }

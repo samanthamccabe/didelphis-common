@@ -12,27 +12,46 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.machines.interfaces;
+package org.didelphis.language.automata;
 
-import lombok.NonNull;
+import lombok.ToString;
+import org.didelphis.language.matching.Quantifier;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
- * Interface {@code MachineMatcher}
- *
- * @param <T>
+ * Class {@code TerminalNode}
  *
  * @author Samantha Fiona McCabe
- * @date 2017-02-23
- * @since 0.1.0
+ * @date 10/12/17
  */
-@FunctionalInterface
-public interface MachineMatcher<T> {
+@ToString
+public class TerminalNode implements Expression {
 
-	/**
-	 * @param target the input to the state machine
-	 * @param index
-	 *
-	 * @return
-	 */
-	int match(@NonNull T target, @NonNull T arc, int index);
+	private final String terminal;
+
+	public TerminalNode(String terminal) {
+		this.terminal = terminal;
+	}
+
+	@Override
+	public boolean hasChildren() {
+		return false;
+	}
+
+	@Override
+	public String getTerminal() {
+		return terminal;
+	}
+
+	@Override
+	public List<Expression> getChildren() {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public Quantifier getQuantifier() {
+		return null;
+	}
 }

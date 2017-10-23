@@ -12,12 +12,12 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.machines;
+package org.didelphis.language.automata;
 
 import lombok.NonNull;
-import org.didelphis.language.machines.interfaces.MachineMatcher;
-import org.didelphis.language.machines.interfaces.MachineParser;
-import org.didelphis.language.machines.interfaces.StateMachine;
+import org.didelphis.language.automata.interfaces.MachineMatcher;
+import org.didelphis.language.automata.interfaces.LanguageParser;
+import org.didelphis.language.automata.interfaces.StateMachine;
 import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.structures.tuples.Couple;
@@ -41,7 +41,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 
 	private static final int A_ASCII = 0x41; // dec 65 / 0x41
 
-	private final MachineParser<T> parser;
+	private final LanguageParser<T> parser;
 	private final MachineMatcher<T> matcher;
 	private final ParseDirection direction;
 	private final String id;
@@ -52,7 +52,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 	// {String (Node ID), Sequence (Arc)} --> String (Node ID)
 	private final Graph<T> graph;
 
-	private StandardStateMachine(String id, MachineParser<T> parser,
+	private StandardStateMachine(String id, LanguageParser<T> parser,
 			MachineMatcher<T> matcher, ParseDirection direction) {
 		this.parser = parser;
 		this.id = id;
@@ -68,7 +68,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 
 	@NonNull
 	public static <T> StateMachine<T> create(String id, @NonNull String expression,
-			@NonNull MachineParser<T> parser, MachineMatcher<T> matcher,
+			@NonNull LanguageParser<T> parser, MachineMatcher<T> matcher,
 			ParseDirection direction) {
 		checkBadQuantification(expression);
 		StandardStateMachine<T> machine = new StandardStateMachine<>(id,
@@ -89,7 +89,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 
 	@NonNull
 	@Override
-	public MachineParser<T> getParser() {
+	public LanguageParser<T> getParser() {
 		return parser;
 	}
 
@@ -135,7 +135,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 				String currentNode = state.getRight();
 				int index = state.getLeft();
 
-				// Check internal state machines
+				// Check internal state automata
 				Collection<Integer> indicesToCheck;
 				if (machinesMap.containsKey(currentNode)) {
 					indicesToCheck = machinesMap.get(currentNode)
@@ -210,9 +210,12 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		String previous = start;
 		for (Expression expression : expressions) {
 			nodeId++;
+			
+		/*	TODO >>>
 			String expr = expression.getExpression();
 			String meta = expression.getMetacharacter();
 			boolean negative = expression.isNegative();
+			
 			String current = prefix + '-' + nodeId;
 
 			if (negative) {
@@ -245,6 +248,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 							meta);
 				}
 			}
+		*/
 		}
 		return previous;
 	}
@@ -260,7 +264,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 
 	private String constructNegativeNode(String end, String start,
 			String machine, @NonNull String meta) {
-		// All machines contain this arc
+		// All automata contain this arc
 		graph.add(start, parser.epsilon(), machine);
 		addToGraph(start, end, machine, meta);
 		return end;

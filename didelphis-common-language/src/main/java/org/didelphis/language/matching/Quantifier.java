@@ -12,18 +12,19 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.machines.simple;
-
-import lombok.NonNull;
-import org.didelphis.language.machines.interfaces.MachineMatcher;
+package org.didelphis.language.matching;
 
 /**
- * Created by samantha on 3/3/17.
+ * Interface {@code Quantifier}
+ *
+ * Simple value object interface for formal language quantification
+ * 
+ * @author Samantha Fiona McCabe
+ * @date 10/23/17
  */
-public final class SimpleMatcher implements MachineMatcher<String> {
-
-	@Override
-	public int match(@NonNull String target, @NonNull String arc, int index) {
-		return 0;
-	}
+public interface Quantifier {
+	
+	String getSymbol();
+	
+	boolean isGreedy();
 }

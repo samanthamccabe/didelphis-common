@@ -12,10 +12,10 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.machines;
+package org.didelphis.language.automata;
 
-import org.didelphis.language.machines.interfaces.MachineMatcher;
-import org.didelphis.language.machines.interfaces.StateMachine;
+import org.didelphis.language.automata.interfaces.MachineMatcher;
+import org.didelphis.language.automata.interfaces.StateMachine;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

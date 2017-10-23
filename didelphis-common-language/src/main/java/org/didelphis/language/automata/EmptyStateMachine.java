@@ -12,15 +12,15 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.machines;
+package org.didelphis.language.automata;
 
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import org.didelphis.language.machines.interfaces.MachineMatcher;
-import org.didelphis.language.machines.interfaces.MachineParser;
-import org.didelphis.language.machines.interfaces.StateMachine;
+import org.didelphis.language.automata.interfaces.MachineMatcher;
+import org.didelphis.language.automata.interfaces.LanguageParser;
+import org.didelphis.language.automata.interfaces.StateMachine;
 import org.didelphis.utilities.Exceptions;
 import org.jetbrains.annotations.NotNull;
 
@@ -53,7 +53,7 @@ public final class EmptyStateMachine<T> implements StateMachine<T> {
 
 	@NonNull
 	@Override
-	public MachineParser<T> getParser() {
+	public LanguageParser<T> getParser() {
 		throw Exceptions.unsupportedOperation()
 				.add("Empty state machine has no associated parser")
 				.build();

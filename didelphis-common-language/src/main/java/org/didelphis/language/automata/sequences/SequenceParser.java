@@ -12,14 +12,13 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.machines.sequences;
+package org.didelphis.language.automata.sequences;
 
 import lombok.NonNull;
 import lombok.ToString;
-import org.didelphis.language.machines.Expression;
-import org.didelphis.language.machines.interfaces.MachineParser;
+import org.didelphis.language.automata.Expression;
+import org.didelphis.language.automata.interfaces.LanguageParser;
 import org.didelphis.language.parsing.FormatterMode;
-import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.SequenceFactory;
 import org.didelphis.language.phonetic.features.EmptyFeatureArray;
 import org.didelphis.language.phonetic.features.FeatureArray;
@@ -47,7 +46,7 @@ import java.util.List;
  * @since 0.1.0
  */
 @ToString
-public class SequenceParser<T> implements MachineParser<Sequence<T>> {
+public class SequenceParser<T> implements LanguageParser<Sequence<T>> {
 
 	private final SequenceFactory<T> factory;
 
@@ -100,29 +99,18 @@ public class SequenceParser<T> implements MachineParser<Sequence<T>> {
 		
 		if (expression.isEmpty()) return Collections.emptyList();
 		
-		boolean start = expression.charAt(0) == '#';
-		boolean end   = expression.charAt(expression.length() - 1) == '#';
-		String string = trimBounds(expression, start, end);
-		if (string.contains("#")) {
-			throw ParseException.builder().add("Expression may not contain '#")
-					.add("except initially or finally.")
-					.data(expression)
-					.build();
-		}
-		
 		FormatterMode formatterMode = factory.getFormatterMode();
 		Collection<String> special = factory.getSpecialStrings();
-		List<String> strings = formatterMode.split(string, special);
-		
+		List<String> strings = formatterMode.split(expression, special);
 		List<Expression> list = new ArrayList<>();
 		if (!strings.isEmpty()) {
-			Expression buffer = new Expression();
+		/*		
+		Expression buffer = new Expression();
 			for (String symbol : strings) {
 				if ("*?+".contains(symbol)) {
 					buffer.setMetacharacter(symbol);
 					buffer = updateBuffer(list, buffer);
-				} else if (symbol.equals("!")) {
-					// first in an expression
+				} else if ("!".equals(symbol)) {
 					buffer = updateBuffer(list, buffer);
 					buffer.setNegative(true);
 				} else {
@@ -133,26 +121,9 @@ public class SequenceParser<T> implements MachineParser<Sequence<T>> {
 			if (!buffer.getExpression().isEmpty()) {
 				list.add(buffer);
 			}
-		}
-		
-		if (start) {
-			list.add(0, new Expression("#["));
-		}
-		if (end) {
-			list.add(new Expression("]#"));
+		*/
 		}
 		return list;
-	}
-
-	private static String trimBounds(String exp, boolean start, boolean end) {
-		String string = exp;
-		if (start) {
-			string = string.substring(1);
-		}
-		if (end) {
-			string = string.substring(0, string.length() - 1);
-		}
-		return string;
 	}
 
 	@NonNull
@@ -183,16 +154,16 @@ public class SequenceParser<T> implements MachineParser<Sequence<T>> {
 		return factory;
 	}
 
-	@NonNull
-	private static Expression updateBuffer(
-			@NonNull Collection<Expression> list, @NonNull Expression buffer
-	) {
-		// Add the contents of buffer if not empty
-		if (buffer.isEmpty()) {
-			return buffer;
-		} else {
-			list.add(buffer);
-			return new Expression();
-		}
-	}
+//	@NonNull
+//	private static Expression updateBuffer(
+//			@NonNull Collection<Expression> list, @NonNull Expression buffer
+//	) {
+//		// Add the contents of buffer if not empty
+//		if (buffer.isEmpty()) {
+//			return buffer;
+//		} else {
+//			list.add(buffer);
+//			return new Expression();
+//		}
+//	}
 }

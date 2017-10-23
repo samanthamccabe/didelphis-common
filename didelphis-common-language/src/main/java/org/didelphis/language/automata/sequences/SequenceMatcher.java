@@ -12,11 +12,11 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.machines.sequences;
+package org.didelphis.language.automata.sequences;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.didelphis.language.machines.interfaces.MachineMatcher;
+import org.didelphis.language.automata.interfaces.MachineMatcher;
 import org.didelphis.language.phonetic.SequenceFactory;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import lombok.NonNull;

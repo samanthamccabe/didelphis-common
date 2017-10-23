@@ -12,12 +12,12 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.machines;
+package org.didelphis.language.automata;
 
 import org.didelphis.io.ClassPathFileHandler;
-import org.didelphis.language.machines.interfaces.StateMachine;
-import org.didelphis.language.machines.sequences.SequenceMatcher;
-import org.didelphis.language.machines.sequences.SequenceParser;
+import org.didelphis.language.automata.interfaces.StateMachine;
+import org.didelphis.language.automata.sequences.SequenceMatcher;
+import org.didelphis.language.automata.sequences.SequenceParser;
 import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.language.parsing.ParseException;
@@ -115,6 +115,15 @@ public class StandardStateMachineTest {
 		assertMatches(machine, "a");
 		assertMatches(machine, "ab");
 		assertMatches(machine, "abc");
+	}
+
+	@Test
+	void testBoundaryOnly() {
+		StateMachine<Sequence<Integer>> machine = getMachine("#");
+		assertMatches(machine, "");
+		assertNotMatches(machine, "a");
+		assertNotMatches(machine, "ab");
+		assertNotMatches(machine, "abc");
 	}
 	
 	@Test
@@ -534,6 +543,19 @@ public class StandardStateMachineTest {
 		assertNotMatches(machine, "acd");
 	}
 
+	@Test
+	void testBoundaryInSet01() {
+		StateMachine<Sequence<Integer>> machine = getMachine(".{a b #}");
+
+		assertMatches(machine, "x");
+		assertMatches(machine, "xa");
+		assertMatches(machine, "xb");
+		
+		assertNotMatches(machine, "m");
+		assertNotMatches(machine, "xaa");
+		assertNotMatches(machine, "xab");
+	}
+	
 	private static void assertThrowsParse(String expression) {
 		assertThrows(ParseException.class, () -> getMachine(expression));
 	}
@@ -550,11 +572,7 @@ public class StandardStateMachineTest {
 
 	private static void assertNotMatches(StateMachine<Sequence<Integer>> machine,
 			String target) {
-		Collection<Integer> matchIndices = new ArrayList<>();
-//		assertTimeoutPreemptively(Duration.ofSeconds(TIMEOUT),() -> {
-			Collection<Integer> collection = testMachine(machine, target);
-			matchIndices.addAll(collection);
-//		});
+		Collection<Integer> matchIndices = testMachine(machine, target);
 		assertTrue(matchIndices.isEmpty(), "Machine accepted input it should not have: " + target);
 	}
 

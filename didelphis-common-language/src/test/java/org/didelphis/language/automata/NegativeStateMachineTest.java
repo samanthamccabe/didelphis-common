@@ -12,14 +12,14 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.machines;
+package org.didelphis.language.automata;
 
 import lombok.NonNull;
 import org.didelphis.io.ClassPathFileHandler;
-import org.didelphis.language.machines.interfaces.MachineParser;
-import org.didelphis.language.machines.interfaces.StateMachine;
-import org.didelphis.language.machines.sequences.SequenceMatcher;
-import org.didelphis.language.machines.sequences.SequenceParser;
+import org.didelphis.language.automata.interfaces.LanguageParser;
+import org.didelphis.language.automata.interfaces.StateMachine;
+import org.didelphis.language.automata.sequences.SequenceMatcher;
+import org.didelphis.language.automata.sequences.SequenceParser;
 import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.phonetic.SequenceFactory;
 import org.didelphis.language.phonetic.features.IntegerFeature;
@@ -377,7 +377,7 @@ public class NegativeStateMachineTest {
 	private static Collection<Integer> testMachine(
 			StateMachine<Sequence<Integer>> stateMachine, String target
 	) {
-		MachineParser<Sequence<Integer>> parser = stateMachine.getParser();
+		LanguageParser<Sequence<Integer>> parser = stateMachine.getParser();
 		Sequence<Integer> sequence = parser.transform(target);
 		return stateMachine.getMatchIndices(0, sequence);
 	}

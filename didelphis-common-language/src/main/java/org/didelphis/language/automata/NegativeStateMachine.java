@@ -12,12 +12,12 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.machines;
+package org.didelphis.language.automata;
 
 import lombok.NonNull;
-import org.didelphis.language.machines.interfaces.MachineMatcher;
-import org.didelphis.language.machines.interfaces.MachineParser;
-import org.didelphis.language.machines.interfaces.StateMachine;
+import org.didelphis.language.automata.interfaces.MachineMatcher;
+import org.didelphis.language.automata.interfaces.LanguageParser;
+import org.didelphis.language.automata.interfaces.StateMachine;
 import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.structures.tuples.Triple;
 import org.jetbrains.annotations.NotNull;
@@ -50,7 +50,7 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 	public static <T> StateMachine<T> create(
 			@NonNull String id,
 			@NonNull String expression,
-			@NonNull MachineParser<T> parser,
+			@NonNull LanguageParser<T> parser,
 			@NonNull MachineMatcher<T> matcher,
 			@NonNull ParseDirection direction
 	) {
@@ -79,7 +79,7 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 
 	@Override
 	@NonNull
-	public MachineParser<T> getParser() {
+	public LanguageParser<T> getParser() {
 		return positive.getParser();
 	}
 
@@ -142,7 +142,7 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 	}
 
 	private static <T> void buildPositiveBranch(
-			@NonNull MachineParser<T> parser,
+			@NonNull LanguageParser<T> parser,
 			@NonNull StateMachine<T> positive
 	) {
 
@@ -188,7 +188,7 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 
 	@NonNull
 	private static <T> Iterable<Integer> collectLengths(
-			@NonNull MachineParser<T> parser,
+			@NonNull LanguageParser<T> parser,
 			@NonNull T arc
 	) {
 		return parser.getSpecials()
