@@ -290,7 +290,8 @@ public class StandardStateMachineModelTest {
 	private static StateMachine<Sequence<Integer>> getMachine(String expression) {
 		SequenceParser<Integer> parser = new SequenceParser<>(factory);
 		SequenceMatcher<Integer> matcher = new SequenceMatcher<>(parser);
-		return StandardStateMachine.create("M0", expression, parser, matcher, ParseDirection.FORWARD);
+		
+		return StandardStateMachine.create("M0", parser.parseExpression(expression), parser, matcher, ParseDirection.FORWARD);
 	}
 
 	private static void test(StateMachine<Sequence<Integer>> stateMachine,

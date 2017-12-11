@@ -14,13 +14,13 @@
 
 package org.didelphis.language.automata;
 
-import lombok.NonNull;
-import org.didelphis.language.automata.interfaces.MachineMatcher;
+import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.interfaces.LanguageParser;
+import org.didelphis.language.automata.interfaces.MachineMatcher;
 import org.didelphis.language.automata.interfaces.StateMachine;
 import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.structures.tuples.Triple;
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -49,7 +49,7 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 	@NonNull
 	public static <T> StateMachine<T> create(
 			@NonNull String id,
-			@NonNull String expression,
+			@NonNull Expression expression,
 			@NonNull LanguageParser<T> parser,
 			@NonNull MachineMatcher<T> matcher,
 			@NonNull ParseDirection direction
@@ -77,20 +77,20 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 		return new NegativeStateMachine<>(id, negative, positive);
 	}
 
-	@Override
 	@NonNull
+	@Override
 	public LanguageParser<T> getParser() {
 		return positive.getParser();
 	}
 
 	@NonNull
 	@Override
-	public @NotNull MachineMatcher<T> getMatcher() {
+	public MachineMatcher<T> getMatcher() {
 		return positive.getMatcher();
 	}
 
-	@Override
 	@NonNull
+	@Override
 	public String getId() {
 		return id;
 	}

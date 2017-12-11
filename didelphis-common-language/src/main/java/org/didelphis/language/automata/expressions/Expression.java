@@ -12,19 +12,34 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.matching;
+package org.didelphis.language.automata.expressions;
+
+import lombok.NonNull;
+
+import java.util.List;
 
 /**
- * Interface {@code Quantifier}
+ * Interface {@code Expression}
  *
- * Simple value object interface for formal language quantification
- * 
  * @author Samantha Fiona McCabe
- * @date 10/23/17
+ * @date 2013-09-01
+ *
+ * 	Expression creates and stores a compact representation of a regular
+ * 	expression string and is used as a preprocessor for the creation of
+ * 	state-automata for regex matching
  */
-public interface Quantifier {
+public interface Expression {
+
+	boolean hasChildren();
+
+	boolean isNegative();
 	
-	String getSymbol();
-	
-	boolean isGreedy();
+	@NonNull String getTerminal();
+
+	@NonNull List<Expression> getChildren();
+
+	@NonNull String getQuantifier();
+
+	@NonNull Expression reverse();
+
 }

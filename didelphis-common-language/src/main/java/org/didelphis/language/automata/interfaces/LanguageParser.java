@@ -14,19 +14,27 @@
 
 package org.didelphis.language.automata.interfaces;
 
-import lombok.NonNull;
-import org.didelphis.language.automata.Expression;
+import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.structures.maps.interfaces.MultiMap;
+import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
- * 
+ * Interface {@code Language Parser}
  * @param <T>
+ *     
+ * @since 0.2.0
+ * @date 2017-10-25
  */
 public interface LanguageParser<T> {
 
+	Map<String, String> supportedDelimiters();
+
+	Set<String> supportedQuantifiers();
+	
 	T getWordStart();
 
 	T getWordEnd();
@@ -42,11 +50,11 @@ public interface LanguageParser<T> {
 
 	/**
 	 * Parse an expression string to a list of sub-expressions
-	 * @param expression
+	 * @param rawExpression
 	 * @return
 	 */
 	@NonNull
-	List<Expression> parseExpression(String expression);
+	Expression parseExpression(String rawExpression);
 
 	/**
 	 * Provides a uniform value for epsilon transitions 

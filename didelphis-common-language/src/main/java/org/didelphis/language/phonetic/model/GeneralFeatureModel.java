@@ -16,13 +16,13 @@ package org.didelphis.language.phonetic.model;
 
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
-import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.FeatureType;
 import org.didelphis.language.phonetic.features.SparseFeatureArray;
+import lombok.NonNull;
 
 import java.text.Normalizer.Form;
 import java.util.List;

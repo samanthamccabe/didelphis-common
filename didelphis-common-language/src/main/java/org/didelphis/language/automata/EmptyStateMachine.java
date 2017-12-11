@@ -18,11 +18,10 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import org.didelphis.language.automata.interfaces.MachineMatcher;
 import org.didelphis.language.automata.interfaces.LanguageParser;
+import org.didelphis.language.automata.interfaces.MachineMatcher;
 import org.didelphis.language.automata.interfaces.StateMachine;
 import org.didelphis.utilities.Exceptions;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.Map;
@@ -45,8 +44,8 @@ public final class EmptyStateMachine<T> implements StateMachine<T> {
 	private static final Map<String, ? extends Graph<?>> EMPTY_MAP = Collections
 			.emptyMap();
 
-	@SuppressWarnings("unchecked")
 	@NonNull
+	@SuppressWarnings("unchecked")
 	public static <T> StateMachine<T> getInstance() {
 		return (StateMachine<T>) MACHINE;
 	}
@@ -59,8 +58,9 @@ public final class EmptyStateMachine<T> implements StateMachine<T> {
 				.build();
 	}
 
+	@NonNull
 	@Override
-	public @NotNull MachineMatcher<T> getMatcher() {
+	public MachineMatcher<T> getMatcher() {
 		return (t1, t2, i) -> i;
 	}
 
@@ -69,8 +69,8 @@ public final class EmptyStateMachine<T> implements StateMachine<T> {
 		return "Empty State Machine";
 	}
 
-	@SuppressWarnings("unchecked")
 	@NonNull
+	@SuppressWarnings("unchecked")
 	@Override
 	public Map<String, Graph<T>> getGraphs() {
 		return (Map<String, Graph<T>>) EMPTY_MAP;

@@ -12,62 +12,49 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata;
+package org.didelphis.language.automata.expressions;
 
-import org.didelphis.language.matching.Quantifier;
+import lombok.Value;
+import lombok.NonNull;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * Interface {@code Expression}
- * 
+ * Class {@code ParallelNode}
+ *
  * @author Samantha Fiona McCabe
- * @date 2013-09-01
-
- * Expression creates and stores a compact representation of a regular 
- * expression string and is used as a preprocessor for the creation of 
- * state-automata for regex matching
+ * @date 11/6/17
  */
-public interface Expression {
+@Value
+public class ParallelNode implements Expression {
 
-	boolean hasChildren();
+	List<Expression> children;
+	String quantifier;
+	boolean negative;
 	
-	String getTerminal();
-	
-	List<Expression> getChildren();
-	
-	Quantifier getQuantifier();
+	@Override
+	public boolean hasChildren() {
+		return !children.isEmpty();
+	}
 
-	enum DefaultQuantifier implements Quantifier {
-		NONE("", false),
-		STAR("*", true),
-		PLUS("+", true),
-		HOOK("?", true),
-		STAR_RELUCTANT("*?", false),
-		PLUS_RELUCTANT("+?", false);
+	@NonNull
+	@Override
+	public String getTerminal() {
+		return "";
+	}
 
-		private final String symbol;
-		private final boolean isGreedy;
+	@NonNull
+	@Override
+	public Expression reverse() {
+		List<Expression> revChildren = children.stream()
+				.map(Expression::reverse)
+				.collect(Collectors.toList());
+		return new ParallelNode(revChildren, quantifier, negative);
+	}
 
-		DefaultQuantifier(String symbol, boolean isGreedy) {
-			this.symbol = symbol;
-			this.isGreedy = isGreedy;
-		}
-		
-		@Override
-		public String getSymbol() {
-			return symbol;
-		}
-		
-		@Override
-		public boolean isGreedy() {
-			return isGreedy;
-		}
-		
-		@Override
-		public String toString() {
-			return symbol;
-		}
+	@Override
+	public String toString() {
+		return (negative ? "!" : "") + children.stream().map(Expression::toString).collect(Collectors.joining("|", "(", ")")) + quantifier;
 	}
 }
-	

@@ -23,7 +23,7 @@ import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureSpecification;
 import lombok.NonNull;
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
 
 import java.util.Objects;
 
@@ -129,7 +129,7 @@ public class StandardSegment<T> implements Segment<T> {
 	}
 
 	@Override
-	public int compareTo(@NotNull Segment<T> o) {
+	public int compareTo(@NonNull Segment<T> o) {
 		if (equals(o)) {
 			return 0;
 		} else {

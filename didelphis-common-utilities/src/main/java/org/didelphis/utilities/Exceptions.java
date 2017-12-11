@@ -50,7 +50,8 @@ public class Exceptions {
 	 * @return a new builder
 	 */
 	@NonNull
-	public <X extends Exception> ExceptionBuilder<X> create(
+	public
+	<X extends Exception> ExceptionBuilder<X> create(
 			@NonNull Class<X> type, 
 			@Nullable Throwable cause) {
 		return new ExceptionBuilder<>(type, cause);

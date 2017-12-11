@@ -14,9 +14,9 @@
 
 package org.didelphis.language.phonetic.segments;
 
-import lombok.NonNull;
 import org.didelphis.language.phonetic.ModelBearer;
 import org.didelphis.language.phonetic.features.FeatureArray;
+import lombok.NonNull;
 
 /**
  * Interface {@code Segment}

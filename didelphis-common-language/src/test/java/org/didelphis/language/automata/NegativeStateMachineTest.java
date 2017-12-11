@@ -14,7 +14,6 @@
 
 package org.didelphis.language.automata;
 
-import lombok.NonNull;
 import org.didelphis.io.ClassPathFileHandler;
 import org.didelphis.language.automata.interfaces.LanguageParser;
 import org.didelphis.language.automata.interfaces.StateMachine;
@@ -28,6 +27,7 @@ import org.didelphis.language.phonetic.model.FeatureModelLoader;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.maps.GeneralMultiMap;
+import lombok.NonNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -341,18 +341,17 @@ public class NegativeStateMachineTest {
 
 		SequenceParser<Integer> parser = new SequenceParser<>(factory);
 		SequenceMatcher<Integer> matcher = new SequenceMatcher<>(parser);
-		return StandardStateMachine.create("M0", exp, parser, matcher, FORWARD);
+		return StandardStateMachine.create("M0", parser.parseExpression(exp), parser, matcher, FORWARD);
 	}
 
 	private static StateMachine<Sequence<Integer>> getMachine(
 			Map<String, Collection<Sequence<Integer>>> map, String exp
 	) {
-
 		SequenceParser<Integer> parser = new SequenceParser<>(FACTORY,
 				new GeneralMultiMap<>(map, Suppliers.ofHashSet())
 		);
 		SequenceMatcher<Integer> matcher = new SequenceMatcher<>(parser);
-		return StandardStateMachine.create("M0", exp, parser, matcher, FORWARD);
+		return StandardStateMachine.create("M0", parser.parseExpression(exp), parser, matcher, FORWARD);
 	}
 
 	private static void test(

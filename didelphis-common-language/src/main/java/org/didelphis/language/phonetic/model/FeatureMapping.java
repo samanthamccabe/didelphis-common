@@ -14,11 +14,11 @@
 
 package org.didelphis.language.phonetic.model;
 
-import lombok.NonNull;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.ModelBearer;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.segments.Segment;
+import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;

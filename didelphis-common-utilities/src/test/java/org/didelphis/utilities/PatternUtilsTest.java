@@ -12,48 +12,8 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata;
+package org.didelphis.utilities;
 
-import lombok.ToString;
-import org.didelphis.language.matching.Quantifier;
+class PatternUtilsTest {
 
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * Class {@code ExpressionNode}
- *
- * @author Samantha Fiona McCabe
- * @date 10/13/17
- */
-@ToString
-public class ExpressionNode implements Expression {
-
-	private final List<Expression> children;
-	private final Quantifier quantifier;
-	
-	public ExpressionNode(Quantifier quantifier) {
-		children = new ArrayList<>();
-		this.quantifier = quantifier;
-	}
-	
-	@Override
-	public boolean hasChildren() {
-		return true;
-	}
-
-	@Override
-	public String getTerminal() {
-		return "";
-	}
-
-	@Override
-	public List<Expression> getChildren() {
-		return children;
-	}
-
-	@Override
-	public Quantifier getQuantifier() {
-		return quantifier;
-	}
 }
