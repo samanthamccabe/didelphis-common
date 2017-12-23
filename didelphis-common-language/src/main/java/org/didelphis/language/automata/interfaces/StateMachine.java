@@ -24,7 +24,6 @@ import java.util.Set;
  * @author Samantha Fiona McCabe
  * @date 2015-04-07
  */
-@Deprecated
 public interface StateMachine<T> {
 
 	@NonNull

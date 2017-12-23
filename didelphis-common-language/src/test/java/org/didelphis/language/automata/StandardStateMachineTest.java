@@ -47,21 +47,6 @@ class StandardStateMachineTest {
 
 	private static final SequenceFactory<Integer> FACTORY = factory();
 
-	private static SequenceFactory<Integer> factory() {
-		FeatureModelLoader<Integer> loader = new FeatureModelLoader<>(
-				IntegerFeature.INSTANCE,
-				ClassPathFileHandler.INSTANCE,
-				Collections.emptyList());
-		FeatureMapping<Integer> mapping = loader.getFeatureMapping();
-		return new SequenceFactory<>(mapping, FormatterMode.NONE);
-	}
-
-	private static void assertMatches(StateMachine<Sequence<Integer>> machine, String target) {
-		Collection<Integer> collection = testMachine(machine, target);
-		Collection<Integer> matchIndices = new ArrayList<>(collection);
-		assertFalse(matchIndices.isEmpty(), "Machine failed to accept input: " + target);
-	}
-
 	@Test
 	void testIllegalBoundary01() {
 		assertThrowsParse("a#?");
@@ -124,7 +109,7 @@ class StandardStateMachineTest {
 		assertNotMatches(machine, "ab");
 		assertNotMatches(machine, "abc");
 	}
-	
+
 	@Test
 	void testBoundaries1() {
 		StateMachine<Sequence<Integer>> machine = getMachine("#a#");
@@ -147,7 +132,7 @@ class StandardStateMachineTest {
 		assertNotMatches(machine, "ba");
 		assertNotMatches(machine, "x");
 	}
-
+	
 	@Test
 	void testBoundaries3() {
 		StateMachine<Sequence<Integer>> machine = getMachine("a#");
@@ -159,7 +144,7 @@ class StandardStateMachineTest {
 		assertNotMatches(machine, "");
 		assertNotMatches(machine, "x");
 	}
-	
+
 	@Test
 	void testBasic01() {
 		StateMachine<Sequence<Integer>> machine = getMachine("a");
@@ -184,7 +169,7 @@ class StandardStateMachineTest {
 		assertNotMatches(machine, "ab");
 		assertNotMatches(machine, "abb");
 	}
-
+	
 	@Test
 	void testBasic03() {
 		StateMachine<Sequence<Integer>> machine = getMachine("aaa?");
@@ -296,7 +281,7 @@ class StandardStateMachineTest {
 		assertMatches(machine, "abcdef");
 		assertMatches(machine, "cdef");
 	}
-	
+
 	@Test
 	void testSets01() {
 		StateMachine<Sequence<Integer>> machine = getMachine("{ x ɣ }");
@@ -319,7 +304,7 @@ class StandardStateMachineTest {
 		assertNotMatches(machine, "a");
 		assertNotMatches(machine, "tr");
 	}
-
+	
 	@Test
 	void testSetsExtraSpace01() {
 		StateMachine<Sequence<Integer>> machine = getMachine("{cʰ  c  ɟ}");
@@ -356,7 +341,7 @@ class StandardStateMachineTest {
 		assertNotMatches(machine, "baba");
 		assertNotMatches(machine, "bababa");
 	}
-		
+
 	@Test
 	void testComplexGroups01() {
 		StateMachine<Sequence<Integer>> machine = getMachine("(a+l(ham+b)*ra)+");
@@ -380,7 +365,7 @@ class StandardStateMachineTest {
 		assertNotMatches(machine, "rs");
 		assertNotMatches(machine, "ls");
 	}
-
+		
 	@Test
 	void testComplex07() {
 		StateMachine<Sequence<Integer>> machine = getMachine("{r l}?{i u}?s");
@@ -542,14 +527,12 @@ class StandardStateMachineTest {
 		assertNotMatches(machine, "ab");
 	}
 
-
 	@Test
 	void testBoundary() {
 		StateMachine<Sequence<Integer>> machine = getMachine("a#");
 		assertMatches(machine, "a");
 		assertNotMatches(machine, "ab");
 	}
-
 
 	@Test
 	void testGroupsDotStar() {
@@ -579,6 +562,26 @@ class StandardStateMachineTest {
 		assertNotMatches(machine, "xaa");
 		assertNotMatches(machine, "xab");
 	}
+
+	private static SequenceFactory<Integer> factory() {
+		FeatureModelLoader<Integer> loader = new FeatureModelLoader<>(
+				IntegerFeature.INSTANCE,
+				ClassPathFileHandler.INSTANCE,
+				Collections.emptyList());
+		FeatureMapping<Integer> mapping = loader.getFeatureMapping();
+		return new SequenceFactory<>(mapping, FormatterMode.NONE);
+	}
+
+	private static void assertMatches(StateMachine<Sequence<Integer>> machine, String target) {
+		assertTimeoutPreemptively(Duration.ofSeconds(5), () -> {
+			Collection<Integer> collection = testMachine(machine, target);
+			Collection<Integer> matchIndices = new ArrayList<>(collection);
+			assertFalse(
+					matchIndices.isEmpty(),
+					"Machine failed to accept input: " + target
+			);
+		});
+	}
 	
 	private static void assertThrowsParse(String expression) {
 		assertThrows(ParseException.class, () -> getMachine(expression));
@@ -595,10 +598,14 @@ class StandardStateMachineTest {
 				ParseDirection.FORWARD);
 	}
 
-	private static void assertNotMatches(StateMachine<Sequence<Integer>> machine,
-			String target) {
-		Collection<Integer> matchIndices = testMachine(machine, target);
-		assertTrue(matchIndices.isEmpty(), "Machine accepted input it should not have: " + target);
+	private static void assertNotMatches(StateMachine<Sequence<Integer>> machine, String target) {
+		assertTimeoutPreemptively(Duration.ofSeconds(5), () -> {
+			Collection<Integer> matchIndices = testMachine(machine, target);
+			assertTrue(
+					matchIndices.isEmpty(),
+					"Machine accepted input it should not have: " + target
+			);
+		});
 	}
 
 	private static Collection<Integer> testMachine(

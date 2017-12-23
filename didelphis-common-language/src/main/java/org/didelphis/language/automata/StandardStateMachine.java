@@ -18,7 +18,6 @@ import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import org.didelphis.language.automata.expressions.Expression;
-import org.didelphis.language.automata.expressions.ParallelNode;
 import org.didelphis.language.automata.interfaces.LanguageParser;
 import org.didelphis.language.automata.interfaces.MachineMatcher;
 import org.didelphis.language.automata.interfaces.StateMachine;
@@ -84,7 +83,11 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 			expression = expression.reverse();
 		}
 
-		String accepting = machine.parseExpression(machine.startStateId, 0, "", Collections.singletonList(expression));
+		String accepting = machine.parseExpression(
+				machine.startStateId, 
+				0, 
+				"Node", 
+				Collections.singletonList(expression));
 		machine.acceptingStates.add(accepting);
 		return machine;
 	}
@@ -151,7 +154,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 					indices.addAll(indicesToCheck);
 				}
 
-				if (graph.getDelegate().containsKey(currentNode)) {
+				if (graph.containsKey(currentNode)) {
 					for (Integer mIndex : indicesToCheck) {
 						// ----------------------------------------------------
 						Map<T, Collection<String>> map = graph.getDelegate().get(currentNode);
@@ -205,8 +208,11 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		return output;
 	}
 
-	private String parseExpression(String start, int startingIndex,
-			String prefix, @NonNull Iterable<Expression> expressions) {
+	private String parseExpression(
+			String start, 
+			int startingIndex,
+			@NonNull String prefix, 
+			@NonNull Iterable<Expression> expressions) {
 
 		int nodeId = startingIndex;
 		String previous = start;
@@ -227,7 +233,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 						meta);
 			} else {
 				if (expression.hasChildren()) {
-					if (expression instanceof ParallelNode) {
+					if (expression.isParallel()) {
 						graph.add(previous, parser.epsilon(), current);
 						String endNode = createParallel(current, nodeId, expression);
 						previous = constructRecursiveNode(endNode, current, meta);
@@ -251,8 +257,9 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 	}
 
 	private void createNegative(Expression expression, String current) {
+		Expression negated = expression.withNegative(false);
 		StateMachine<T> machine = NegativeStateMachine.create(current,
-				expression,
+				negated,
 				parser,
 				matcher,
 				direction);

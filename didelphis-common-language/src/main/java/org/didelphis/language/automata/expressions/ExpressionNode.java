@@ -53,6 +53,11 @@ public class ExpressionNode implements Expression {
 		return !children.isEmpty();
 	}
 
+	@Override
+	public boolean isParallel() {
+		return false;
+	}
+
 	@NonNull
 	@Override
 	public String getTerminal() {
@@ -67,6 +72,12 @@ public class ExpressionNode implements Expression {
 				.collect(Collectors.toList());
 		Collections.reverse(revChildren);
 		return new ExpressionNode(revChildren, quantifier, negative);
+	}
+
+	@NonNull
+	@Override
+	public Expression withNegative(boolean isNegative) {
+		return new ExpressionNode(children, quantifier, isNegative);
 	}
 
 	@Override

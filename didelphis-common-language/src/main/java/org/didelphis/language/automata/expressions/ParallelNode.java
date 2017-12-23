@@ -38,6 +38,11 @@ public class ParallelNode implements Expression {
 		return !children.isEmpty();
 	}
 
+	@Override
+	public boolean isParallel() {
+		return true;
+	}
+
 	@NonNull
 	@Override
 	public String getTerminal() {
@@ -53,8 +58,16 @@ public class ParallelNode implements Expression {
 		return new ParallelNode(revChildren, quantifier, negative);
 	}
 
+	@NonNull
+	@Override
+	public Expression withNegative(boolean isNegative) {
+		return new ParallelNode(children, quantifier, isNegative);
+	}
+
 	@Override
 	public String toString() {
-		return (negative ? "!" : "") + children.stream().map(Expression::toString).collect(Collectors.joining("|", "(", ")")) + quantifier;
+		return (negative ? "!" : "") + children.stream()
+				.map(Expression::toString)
+				.collect(Collectors.joining("|", "(", ")")) + quantifier;
 	}
 }

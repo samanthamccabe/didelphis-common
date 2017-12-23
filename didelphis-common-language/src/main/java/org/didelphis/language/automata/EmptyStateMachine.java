@@ -76,6 +76,7 @@ public final class EmptyStateMachine<T> implements StateMachine<T> {
 		return (Map<String, Graph<T>>) EMPTY_MAP;
 	}
 
+	@NonNull
 	@Override
 	public Set<Integer> getMatchIndices(
 			int start, @NonNull T target

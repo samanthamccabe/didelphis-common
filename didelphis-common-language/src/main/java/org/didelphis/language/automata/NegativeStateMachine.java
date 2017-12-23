@@ -70,8 +70,8 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 
 		// This is less elegant that I'd prefer, but bear with me:
 		// We will extract the graph and id-machine maps and then the graph for
-		// *each* machine recursively. We do this in order to replace each
-		// literal terminal symbol with the literal dot (.) character
+		// *each* machine recursively, in order to replace each literal terminal
+		// symbol with the dot (. / "accept-all") character
 		buildPositiveBranch(parser, positive);
 
 		return new NegativeStateMachine<>(id, negative, positive);
@@ -111,6 +111,7 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 		Set<Integer> posIndices = positive.getMatchIndices(start, target);
 		Set<Integer> negIndices = negative.getMatchIndices(start, target);
 
+/*
 		if (!negIndices.isEmpty() && !posIndices.isEmpty()) {
 			// Machine has matched both branches
 			int pos = new TreeSet<>(posIndices).last();
@@ -121,13 +122,15 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 		} else {
 			return Collections.emptySet();
 		}
+*/
 
 		/* This is left here as reference; not used because this method
 		 * is not greedy - this was the first attempt, but does not work
+		 * */
 		// Complement --- remove negatives from positives
-		positiveIndices.removeAll(negIndices);
-		return positiveIndices;
-		*/
+		posIndices.removeAll(negIndices);
+		return posIndices;
+		
 	}
 
 	@Override

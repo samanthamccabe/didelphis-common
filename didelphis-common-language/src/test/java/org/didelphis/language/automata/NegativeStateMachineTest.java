@@ -14,6 +14,7 @@
 
 package org.didelphis.language.automata;
 
+import lombok.NonNull;
 import org.didelphis.io.ClassPathFileHandler;
 import org.didelphis.language.automata.interfaces.LanguageParser;
 import org.didelphis.language.automata.interfaces.StateMachine;
@@ -27,10 +28,10 @@ import org.didelphis.language.phonetic.model.FeatureModelLoader;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.maps.GeneralMultiMap;
-import lombok.NonNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -136,9 +137,9 @@ public class NegativeStateMachineTest {
 		test(machine, "xyxyxy");
 
 		// These are too short
-		fail(machine, "aab");
-		fail(machine, "bab");
-		fail(machine, "cab");
+		fail(machine, "aabxy");
+		fail(machine, "babxy");
+		fail(machine, "cabxy");
 	}
 
 	@Test
@@ -155,9 +156,9 @@ public class NegativeStateMachineTest {
 		test(machine, "acxy");
 
 		// These are too short
-		fail(machine, "aab");
-		fail(machine, "bab");
-		fail(machine, "cab");
+		fail(machine, "aabxy");
+		fail(machine, "babxy");
+		fail(machine, "cabxy");
 	}
 
 	@Test
@@ -324,12 +325,10 @@ public class NegativeStateMachineTest {
 		String[] split = string.split("\\s*=\\s*");
 		List<String> strings = Arrays.asList(split[1].split("\\s+"));
 		Map<String, Collection<Sequence<Integer>>> map = new HashMap<>();
-		map.put(
-				split[0],
-				strings.stream()
-						.map(FACTORY::toSequence)
-						.collect(Collectors.toList())
-		);
+		List<Sequence<Integer>> collect = strings.stream()
+				.map(FACTORY::toSequence)
+				.collect(Collectors.toList());
+		map.put(split[0], collect);
 		return map;
 	}
 
@@ -354,30 +353,37 @@ public class NegativeStateMachineTest {
 		return StandardStateMachine.create("M0", parser.parseExpression(exp), parser, matcher, FORWARD);
 	}
 
-	private static void test(
-			StateMachine<Sequence<Integer>> stateMachine, String target
+	private static <T> void test(
+			StateMachine<T> stateMachine, String target
 	) {
-		Collection<Integer> matchIndices = testMachine(stateMachine, target);
-		Assertions.assertFalse(matchIndices.isEmpty(),
-				"Machine failed to accept input: " + target
-		);
+		Assertions.assertTimeoutPreemptively(Duration.ofSeconds(5), () -> {
+
+			Collection<Integer> matchIndices = testMachine(stateMachine, target);
+			Assertions.assertFalse(matchIndices.isEmpty(),
+					"Machine failed to accept input: " + target
+			);
+		});
 	}
 
-	private static void fail(
-			StateMachine<Sequence<Integer>> stateMachine, String target
+	private static <T> void fail(
+			StateMachine<T> stateMachine, 
+			String target
 	) {
-		Collection<Integer> matchIndices = testMachine(stateMachine, target);
-		Assertions.assertTrue(
-				matchIndices.isEmpty(),
-				"Machine accepted input it should not have: " + target
-		);
+		
+		Assertions.assertTimeoutPreemptively(Duration.ofSeconds(5), () -> {
+			Collection<Integer> matchIndices = testMachine(stateMachine, target);
+			Assertions.assertTrue(
+					matchIndices.isEmpty(),
+					"Machine accepted input it should not have: " + target
+			);			
+		});
 	}
 
-	private static Collection<Integer> testMachine(
-			StateMachine<Sequence<Integer>> stateMachine, String target
+	private static <T> Collection<Integer> testMachine(
+			StateMachine<T> stateMachine, String target
 	) {
-		LanguageParser<Sequence<Integer>> parser = stateMachine.getParser();
-		Sequence<Integer> sequence = parser.transform(target);
+		LanguageParser<T> parser = stateMachine.getParser();
+		T sequence = parser.transform(target);
 		return stateMachine.getMatchIndices(0, sequence);
 	}
 }

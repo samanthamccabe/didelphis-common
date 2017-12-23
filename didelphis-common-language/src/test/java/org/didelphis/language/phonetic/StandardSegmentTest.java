@@ -116,11 +116,11 @@ public class StandardSegmentTest extends PhoneticTestBase {
 
 	@Test
 	void testMatch02() {
-		Segment<Integer> a = factory.toSegment("a");
-		Segment<Integer> n = factory.toSegment("n");
+		Segment<Integer> g1 = factory.toSegment("a");
+		Segment<Integer> g2 = factory.toSegment("n");
 
-		assertFalse(a.matches(n), "a matches n");
-		assertFalse(n.matches(a), "n matches a");
+		assertFalse(g1.matches(g2), "a matches n");
+		assertFalse(g2.matches(g1), "n matches a");
 	}
 
 	@Test

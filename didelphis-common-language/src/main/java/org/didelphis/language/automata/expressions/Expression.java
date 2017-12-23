@@ -34,6 +34,8 @@ public interface Expression {
 
 	boolean isNegative();
 	
+	boolean isParallel();
+	
 	@NonNull String getTerminal();
 
 	@NonNull List<Expression> getChildren();
@@ -42,4 +44,5 @@ public interface Expression {
 
 	@NonNull Expression reverse();
 
+	@NonNull Expression withNegative(boolean isNegative);
 }

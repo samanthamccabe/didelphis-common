@@ -164,7 +164,7 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(array);
+		return SymmetricTable.class.hashCode() ^ array.hashCode();
 	}
 
 	@Override
@@ -268,11 +268,10 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 	@Override
 	public Collection<E> removeRow(int row) {
 		checkRow(row);
-		Collection<E> list;
 		// Get index to start
 		int start = getIndex(row, 0);
 		// Remove r+1 elements
-		list = IntStream.range(0, row + 1)
+		Collection<E> list = IntStream.range(0, row + 1)
 				.mapToObj(i -> array.remove(start))
 				.collect(Collectors.toList());
 		// While elements remain:

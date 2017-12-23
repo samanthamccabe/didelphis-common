@@ -19,11 +19,10 @@
 
 package org.didelphis.language.phonetic.segments;
 
+import lombok.NonNull;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureSpecification;
-import lombok.NonNull;
-import lombok.NonNull;
 
 import java.util.Objects;
 
@@ -105,6 +104,12 @@ public class StandardSegment<T> implements Segment<T> {
 		return features.getFeatureModel();
 	}
 
+	@NonNull
+	@Override
+	public FeatureSpecification getSpecification() {
+		return features.getSpecification();
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(symbol, features);
@@ -141,12 +146,6 @@ public class StandardSegment<T> implements Segment<T> {
 			}
 			return value;
 		}
-	}
-
-	@NonNull
-	@Override
-	public FeatureSpecification getSpecification() {
-		return features.getSpecification();
 	}
 
 }

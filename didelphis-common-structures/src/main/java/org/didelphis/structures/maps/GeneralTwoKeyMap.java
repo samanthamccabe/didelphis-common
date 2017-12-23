@@ -122,7 +122,6 @@ public class GeneralTwoKeyMap<T, U, V>
 	}
 
 	@NonNull
-	@SuppressWarnings("ReturnOfCollectionOrArrayField")
 	@Override
 	public Map<T, Map<U, V>> getDelegate() {
 		return delegate;

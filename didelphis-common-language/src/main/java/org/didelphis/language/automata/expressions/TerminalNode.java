@@ -52,6 +52,11 @@ public class TerminalNode implements Expression {
 		return false;
 	}
 
+	@Override
+	public boolean isParallel() {
+		return false;
+	}
+
 	@NonNull
 	@Override
 	public String getTerminal() {
@@ -74,6 +79,12 @@ public class TerminalNode implements Expression {
 	@Override
 	public Expression reverse() {
 		return this;
+	}
+
+	@NonNull
+	@Override
+	public Expression withNegative(boolean isNegative) {
+		return new TerminalNode(terminal, quantifier, isNegative);
 	}
 
 	@Override
