@@ -64,10 +64,16 @@ public class ParallelNode implements Expression {
 		return new ParallelNode(children, quantifier, isNegative);
 	}
 
+	@NonNull
+	@Override
+	public Expression withQuantifier(String newQuantifier) {
+		return new ParallelNode(children, newQuantifier, negative);
+	}
+
 	@Override
 	public String toString() {
 		return (negative ? "!" : "") + children.stream()
 				.map(Expression::toString)
-				.collect(Collectors.joining("|", "(", ")")) + quantifier;
+				.collect(Collectors.joining(" ", "{", "}")) + quantifier;
 	}
 }

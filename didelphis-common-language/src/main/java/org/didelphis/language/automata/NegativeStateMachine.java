@@ -55,13 +55,15 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 			@NonNull ParseDirection direction
 	) {
 		// Create the actual branch, the one we don't want to match
-		StateMachine<T> negative = StandardStateMachine.create(id + 'N',
+		StateMachine<T> negative = StandardStateMachine.create(
+				id + 'N',
 				expression,
 				parser,
 				matcher,
 				direction
 		);
-		StateMachine<T> positive = StandardStateMachine.create(id + 'P',
+		StateMachine<T> positive = StandardStateMachine.create(
+				id + 'P',
 				expression,
 				parser,
 				matcher,
@@ -111,7 +113,6 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 		Set<Integer> posIndices = positive.getMatchIndices(start, target);
 		Set<Integer> negIndices = negative.getMatchIndices(start, target);
 
-/*
 		if (!negIndices.isEmpty() && !posIndices.isEmpty()) {
 			// Machine has matched both branches
 			int pos = new TreeSet<>(posIndices).last();
@@ -122,15 +123,13 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 		} else {
 			return Collections.emptySet();
 		}
-*/
 
 		/* This is left here as reference; not used because this method
 		 * is not greedy - this was the first attempt, but does not work
 		 * */
 		// Complement --- remove negatives from positives
-		posIndices.removeAll(negIndices);
-		return posIndices;
-		
+		//posIndices.removeAll(negIndices);
+		//return posIndices;
 	}
 
 	@Override

@@ -238,7 +238,7 @@ public class SequenceParser<T> implements LanguageParser<Sequence<T>> {
 					List<String> elements = Split.whitespace(substring);
 
 					List<Expression> children = elements.stream()
-							.map(element -> Split.toList(element, keys))
+							.map(element -> split(element))
 							.map(list -> parse(rawExp, list))
 							.collect(Collectors.toList());
 

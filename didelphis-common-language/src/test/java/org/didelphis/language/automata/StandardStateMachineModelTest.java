@@ -15,15 +15,15 @@
 package org.didelphis.language.automata;
 
 import org.didelphis.io.ClassPathFileHandler;
-import org.didelphis.io.FileHandler;
-import org.didelphis.language.parsing.FormatterMode;
-import org.didelphis.language.parsing.ParseDirection;
-import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.automata.interfaces.StateMachine;
 import org.didelphis.language.automata.sequences.SequenceMatcher;
 import org.didelphis.language.automata.sequences.SequenceParser;
+import org.didelphis.language.parsing.FormatterMode;
+import org.didelphis.language.parsing.ParseDirection;
+import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.SequenceFactory;
 import org.didelphis.language.phonetic.features.IntegerFeature;
+import org.didelphis.language.phonetic.model.FeatureMapping;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.junit.jupiter.api.BeforeAll;
@@ -53,13 +53,13 @@ public class StandardStateMachineModelTest {
 
 		FormatterMode mode = FormatterMode.INTELLIGENT;
 
-		FileHandler handler = ClassPathFileHandler.INSTANCE;
-		
-		factory = new SequenceFactory<>(new FeatureModelLoader<>(
+		FeatureModelLoader<Integer> loader = new FeatureModelLoader<>(
 				IntegerFeature.INSTANCE,
 				ClassPathFileHandler.INSTANCE,
 				name
-		).getFeatureMapping(), mode);
+		);
+		FeatureMapping<Integer> featureMapping = loader.getFeatureMapping();
+		factory = new SequenceFactory<>(featureMapping, mode);
 	}
 	
 	@Test

@@ -87,6 +87,12 @@ public class TerminalNode implements Expression {
 		return new TerminalNode(terminal, quantifier, isNegative);
 	}
 
+	@NonNull
+	@Override
+	public Expression withQuantifier(String newQuantifier) {
+		return new TerminalNode(terminal, newQuantifier, negative);
+	}
+
 	@Override
 	public String toString() {
 		return (negative ? "!" : "") + terminal + quantifier;

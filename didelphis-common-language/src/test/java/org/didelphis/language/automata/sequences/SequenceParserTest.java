@@ -31,13 +31,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class SequenceParserTest {
 
 	private SequenceParser<?> parser;
-	private SequenceFactory<?> factory;
-	private FeatureModelLoader<?> loader;
 
 	@BeforeEach
 	void init() {
-		loader = new FeatureModelLoader<>(BinaryFeature.INSTANCE);
-		factory = new SequenceFactory<>(
+		FeatureModelLoader<?> loader
+				= new FeatureModelLoader<>(BinaryFeature.INSTANCE);
+		SequenceFactory<?> factory = new SequenceFactory<>(
 				loader.getFeatureMapping(),
 				FormatterMode.NONE
 		);
@@ -91,6 +90,16 @@ class SequenceParserTest {
 		assertEquals(2, ch1.getChildren().size());
 		assertEquals("?", ch1.getQuantifier());
 		assertTrue(ch1.isNegative());
+	}
+	
+	@Test
+	void testNegationGroups() {
+		Expression expression = parser.parseExpression("!((ab)+)xy#");
+		List<Expression> children = expression.getChildren();
+		assertEquals(4, children.size());
+		Expression first = children.get(0);
+		assertTrue(first.isNegative());
+		
 	}
 	
 	@Test

@@ -86,7 +86,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		String accepting = machine.parseExpression(
 				machine.startStateId, 
 				0, 
-				"Node", 
+				"O", 
 				Collections.singletonList(expression));
 		machine.acceptingStates.add(accepting);
 		return machine;
@@ -257,7 +257,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 	}
 
 	private void createNegative(Expression expression, String current) {
-		Expression negated = expression.withNegative(false);
+		Expression negated = expression.withNegative(false).withQuantifier("");
 		StateMachine<T> machine = NegativeStateMachine.create(current,
 				negated,
 				parser,

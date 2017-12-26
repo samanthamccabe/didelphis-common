@@ -16,6 +16,7 @@ package org.didelphis.language.automata;
 
 import lombok.NonNull;
 import org.didelphis.io.ClassPathFileHandler;
+import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.interfaces.LanguageParser;
 import org.didelphis.language.automata.interfaces.StateMachine;
 import org.didelphis.language.automata.sequences.SequenceMatcher;
@@ -33,6 +34,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static org.didelphis.language.parsing.ParseDirection.FORWARD;
@@ -143,17 +145,22 @@ public class NegativeStateMachineTest {
 	}
 
 	@Test
-	void testeGroup04() {
+	void testGroup04() {
+		// 2017-12-25: !(ab)+ == (!(ab))+ ?
+		//             !(ab)+ != !((ab)+) - this is the correct interpretation
 		StateMachine<Sequence<Integer>> machine = getMachine("!(ab)+xy#");
+
+		test(machine, "aaxy");
+		test(machine, "acxy");
+		test(machine, "cbxy");
+		test(machine, "ccxy");
+		
 		fail(machine, "abxy");
 		fail(machine, "ababxy");
 		fail(machine, "abababxy");
 
 		fail(machine, "aaabxy");
 		fail(machine, "acabxy");
-
-		test(machine, "aaxy");
-		test(machine, "acxy");
 
 		// These are too short
 		fail(machine, "aabxy");
@@ -228,13 +235,19 @@ public class NegativeStateMachineTest {
 
 	@Test
 	void testSet03Special() {
+
+		Pattern pattern = Pattern.compile("[^abc]+$");
+
 		StateMachine<Sequence<Integer>> machine = getMachine("!{a b c}+#");
 
-		// This is important as a distinction between:
-		//     A) !{a b c}+
-		//     B) !{a b c}+#
-		// in that (A) will accept these but (B) will not:
+		test(machine, "xxx");
 
+		fail(machine, "aaa");
+		fail(machine, "aax");
+		fail(machine, "xaa");
+		fail(machine, "xax");
+		fail(machine, "axx");
+		fail(machine, "xxa");
 		fail(machine, "xa");
 		fail(machine, "yb");
 		fail(machine, "zc");
@@ -340,7 +353,8 @@ public class NegativeStateMachineTest {
 
 		SequenceParser<Integer> parser = new SequenceParser<>(factory);
 		SequenceMatcher<Integer> matcher = new SequenceMatcher<>(parser);
-		return StandardStateMachine.create("M0", parser.parseExpression(exp), parser, matcher, FORWARD);
+		Expression expression = parser.parseExpression(exp);
+		return StandardStateMachine.create("M0", expression, parser, matcher, FORWARD);
 	}
 
 	private static StateMachine<Sequence<Integer>> getMachine(
@@ -356,7 +370,7 @@ public class NegativeStateMachineTest {
 	private static <T> void test(
 			StateMachine<T> stateMachine, String target
 	) {
-		Assertions.assertTimeoutPreemptively(Duration.ofSeconds(5), () -> {
+		Assertions.assertTimeoutPreemptively(Duration.ofSeconds(1), () -> {
 
 			Collection<Integer> matchIndices = testMachine(stateMachine, target);
 			Assertions.assertFalse(matchIndices.isEmpty(),
@@ -370,7 +384,7 @@ public class NegativeStateMachineTest {
 			String target
 	) {
 		
-		Assertions.assertTimeoutPreemptively(Duration.ofSeconds(5), () -> {
+		Assertions.assertTimeoutPreemptively(Duration.ofSeconds(1), () -> {
 			Collection<Integer> matchIndices = testMachine(stateMachine, target);
 			Assertions.assertTrue(
 					matchIndices.isEmpty(),

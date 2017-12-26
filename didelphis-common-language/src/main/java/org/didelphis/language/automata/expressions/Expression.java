@@ -45,4 +45,6 @@ public interface Expression {
 	@NonNull Expression reverse();
 
 	@NonNull Expression withNegative(boolean isNegative);
+	
+	@NonNull Expression withQuantifier(String newQuantifier);
 }

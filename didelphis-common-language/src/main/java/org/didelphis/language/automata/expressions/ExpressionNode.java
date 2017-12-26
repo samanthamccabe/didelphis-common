@@ -80,6 +80,12 @@ public class ExpressionNode implements Expression {
 		return new ExpressionNode(children, quantifier, isNegative);
 	}
 
+	@NonNull
+	@Override
+	public Expression withQuantifier(String newQuantifier) {
+		return new ExpressionNode(children, newQuantifier, negative);
+	}
+
 	@Override
 	public String toString() {
 		return (negative ? "!" : "") + children.stream()
