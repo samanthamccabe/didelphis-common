@@ -14,11 +14,11 @@
 
 package org.didelphis.language.phonetic.sequences;
 
-import lombok.NonNull;
 import org.didelphis.language.phonetic.SpecificationBearer;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureSpecification;
 import org.didelphis.language.phonetic.segments.Segment;
+import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

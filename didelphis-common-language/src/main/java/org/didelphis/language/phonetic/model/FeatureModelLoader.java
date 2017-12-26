@@ -15,7 +15,6 @@
 package org.didelphis.language.phonetic.model;
 
 import lombok.AccessLevel;
-import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +27,7 @@ import org.didelphis.language.phonetic.features.SparseFeatureArray;
 import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
+import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -38,7 +38,7 @@ import java.util.regex.Pattern;
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static java.util.regex.Pattern.LITERAL;
 import static java.util.regex.Pattern.compile;
-import static org.didelphis.utilities.Split.splitLines;
+import static org.didelphis.utilities.Split.lines;
 
 /**
  * Class {@code FeatureModelLoader}
@@ -112,7 +112,7 @@ public final class FeatureModelLoader<T> {
 	) {
 		this(featureType,
 				fileHandler,
-				splitLines(fileHandler.readOrThrow(path,
+				lines(fileHandler.readOrThrow(path,
 						NullPointerException.class
 				))
 		);
@@ -222,7 +222,7 @@ public final class FeatureModelLoader<T> {
 				if (matcher.find()) {
 					String filePath = matcher.group(1);
 					CharSequence fileData = fileHandler.read(filePath);
-					Iterable<String> list = splitLines(fileData);
+					Iterable<String> list = lines(fileData);
 					parse(list);
 					continue;
 				}

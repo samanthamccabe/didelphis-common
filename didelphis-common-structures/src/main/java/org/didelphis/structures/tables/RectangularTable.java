@@ -15,9 +15,9 @@
 package org.didelphis.structures.tables;
 
 import lombok.EqualsAndHashCode;
-import lombok.NonNull;
 import lombok.ToString;
 import org.didelphis.structures.contracts.Delegating;
+import lombok.NonNull;
 
 import java.util.*;
 import java.util.function.Function;

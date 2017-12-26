@@ -14,8 +14,8 @@
 
 package org.didelphis.io;
 
-import lombok.NonNull;
 import lombok.ToString;
+import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;

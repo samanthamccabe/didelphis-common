@@ -12,19 +12,8 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.matching;
+package org.didelphis.utilities;
 
-/**
- * Interface {@code Quantifier}
- *
- * Simple value object interface for formal language quantification
- * 
- * @author Samantha Fiona McCabe
- * @date 10/23/17
- */
-public interface Quantifier {
-	
-	String getSymbol();
-	
-	boolean isGreedy();
+class PatternUtilsTest {
+
 }

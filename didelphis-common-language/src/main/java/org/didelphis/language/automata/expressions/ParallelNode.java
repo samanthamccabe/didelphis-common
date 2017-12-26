@@ -12,48 +12,68 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata;
+package org.didelphis.language.automata.expressions;
 
-import lombok.ToString;
-import org.didelphis.language.matching.Quantifier;
+import lombok.Value;
+import lombok.NonNull;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * Class {@code ExpressionNode}
+ * Class {@code ParallelNode}
  *
  * @author Samantha Fiona McCabe
- * @date 10/13/17
+ * @date 11/6/17
  */
-@ToString
-public class ExpressionNode implements Expression {
+@Value
+public class ParallelNode implements Expression {
 
-	private final List<Expression> children;
-	private final Quantifier quantifier;
-	
-	public ExpressionNode(Quantifier quantifier) {
-		children = new ArrayList<>();
-		this.quantifier = quantifier;
-	}
+	List<Expression> children;
+	String quantifier;
+	boolean negative;
 	
 	@Override
 	public boolean hasChildren() {
+		return !children.isEmpty();
+	}
+
+	@Override
+	public boolean isParallel() {
 		return true;
 	}
 
+	@NonNull
 	@Override
 	public String getTerminal() {
 		return "";
 	}
 
+	@NonNull
 	@Override
-	public List<Expression> getChildren() {
-		return children;
+	public Expression reverse() {
+		List<Expression> revChildren = children.stream()
+				.map(Expression::reverse)
+				.collect(Collectors.toList());
+		return new ParallelNode(revChildren, quantifier, negative);
+	}
+
+	@NonNull
+	@Override
+	public Expression withNegative(boolean isNegative) {
+		return new ParallelNode(children, quantifier, isNegative);
+	}
+
+	@NonNull
+	@Override
+	public Expression withQuantifier(String newQuantifier) {
+		return new ParallelNode(children, newQuantifier, negative);
 	}
 
 	@Override
-	public Quantifier getQuantifier() {
-		return quantifier;
+	public String toString() {
+		return (negative ? "!" : "") + children.stream()
+				.map(Expression::toString)
+				.collect(Collectors.joining(" ", "{", "}")) + quantifier;
 	}
 }

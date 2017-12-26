@@ -14,9 +14,9 @@
 
 package org.didelphis.language.phonetic.sequences;
 
-import lombok.NonNull;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.utilities.Exceptions;
+import lombok.NonNull;
 
 import java.util.Collection;
 import java.util.Comparator;

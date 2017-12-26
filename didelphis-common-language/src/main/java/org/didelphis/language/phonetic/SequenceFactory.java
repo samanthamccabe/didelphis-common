@@ -15,7 +15,6 @@
 package org.didelphis.language.phonetic;
 
 import lombok.EqualsAndHashCode;
-import lombok.NonNull;
 import lombok.ToString;
 import lombok.Value;
 import org.didelphis.language.parsing.FormatterMode;
@@ -30,6 +29,7 @@ import org.didelphis.language.phonetic.segments.StandardSegment;
 import org.didelphis.language.phonetic.sequences.BasicSequence;
 import org.didelphis.language.phonetic.sequences.ImmutableSequence;
 import org.didelphis.language.phonetic.sequences.Sequence;
+import lombok.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collection;

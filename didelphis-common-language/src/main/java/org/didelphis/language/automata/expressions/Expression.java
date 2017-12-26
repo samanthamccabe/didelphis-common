@@ -12,62 +12,39 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata;
+package org.didelphis.language.automata.expressions;
 
-import org.didelphis.language.matching.Quantifier;
+import lombok.NonNull;
 
 import java.util.List;
 
 /**
  * Interface {@code Expression}
- * 
+ *
  * @author Samantha Fiona McCabe
  * @date 2013-09-01
-
- * Expression creates and stores a compact representation of a regular 
- * expression string and is used as a preprocessor for the creation of 
- * state-automata for regex matching
+ *
+ * 	Expression creates and stores a compact representation of a regular
+ * 	expression string and is used as a preprocessor for the creation of
+ * 	state-automata for regex matching
  */
 public interface Expression {
 
 	boolean hasChildren();
-	
-	String getTerminal();
-	
-	List<Expression> getChildren();
-	
-	Quantifier getQuantifier();
 
-	enum DefaultQuantifier implements Quantifier {
-		NONE("", false),
-		STAR("*", true),
-		PLUS("+", true),
-		HOOK("?", true),
-		STAR_RELUCTANT("*?", false),
-		PLUS_RELUCTANT("+?", false);
+	boolean isNegative();
+	
+	boolean isParallel();
+	
+	@NonNull String getTerminal();
 
-		private final String symbol;
-		private final boolean isGreedy;
+	@NonNull List<Expression> getChildren();
 
-		DefaultQuantifier(String symbol, boolean isGreedy) {
-			this.symbol = symbol;
-			this.isGreedy = isGreedy;
-		}
-		
-		@Override
-		public String getSymbol() {
-			return symbol;
-		}
-		
-		@Override
-		public boolean isGreedy() {
-			return isGreedy;
-		}
-		
-		@Override
-		public String toString() {
-			return symbol;
-		}
-	}
+	@NonNull String getQuantifier();
+
+	@NonNull Expression reverse();
+
+	@NonNull Expression withNegative(boolean isNegative);
+	
+	@NonNull Expression withQuantifier(String newQuantifier);
 }
-	

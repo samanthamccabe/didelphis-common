@@ -12,10 +12,10 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata;
+package org.didelphis.language.automata.expressions;
 
-import lombok.ToString;
-import org.didelphis.language.matching.Quantifier;
+import lombok.NonNull;
+import lombok.Value;
 
 import java.util.Collections;
 import java.util.List;
@@ -26,13 +26,25 @@ import java.util.List;
  * @author Samantha Fiona McCabe
  * @date 10/12/17
  */
-@ToString
+@Value
 public class TerminalNode implements Expression {
 
-	private final String terminal;
-
-	public TerminalNode(String terminal) {
+	String terminal;
+	String quantifier;
+	boolean negative;
+	
+	public TerminalNode(String terminal, String quantifier, boolean negative) {
 		this.terminal = terminal;
+		this.quantifier = quantifier;
+		this.negative = negative;
+	}
+
+	public TerminalNode(String terminal, String quantifier) {
+		this(terminal, quantifier, false);
+	}
+	
+	public TerminalNode(String terminal) {
+		this(terminal, "", false);
 	}
 
 	@Override
@@ -41,17 +53,48 @@ public class TerminalNode implements Expression {
 	}
 
 	@Override
+	public boolean isParallel() {
+		return false;
+	}
+
+	@NonNull
+	@Override
 	public String getTerminal() {
 		return terminal;
 	}
 
+	@NonNull
 	@Override
 	public List<Expression> getChildren() {
 		return Collections.emptyList();
 	}
 
+	@NonNull
 	@Override
-	public Quantifier getQuantifier() {
-		return null;
+	public String getQuantifier() {
+		return quantifier;
+	}
+
+	@NonNull
+	@Override
+	public Expression reverse() {
+		return this;
+	}
+
+	@NonNull
+	@Override
+	public Expression withNegative(boolean isNegative) {
+		return new TerminalNode(terminal, quantifier, isNegative);
+	}
+
+	@NonNull
+	@Override
+	public Expression withQuantifier(String newQuantifier) {
+		return new TerminalNode(terminal, newQuantifier, negative);
+	}
+
+	@Override
+	public String toString() {
+		return (negative ? "!" : "") + terminal + quantifier;
 	}
 }

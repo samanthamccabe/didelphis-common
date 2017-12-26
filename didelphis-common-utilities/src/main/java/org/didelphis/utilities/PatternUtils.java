@@ -14,7 +14,9 @@
 
 package org.didelphis.utilities;
 
+import lombok.AccessLevel;
 import lombok.NonNull;
+import lombok.experimental.FieldDefaults;
 import lombok.experimental.UtilityClass;
 
 import java.util.Arrays;
@@ -30,13 +32,14 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings("TypeMayBeWeakened")
 @UtilityClass
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PatternUtils {
 
-	private final Pattern WHITESPACES = Pattern.compile("\\s+");
+	Pattern WHITESPACE = Pattern.compile("\\s+");
 
 	@NonNull
 	public String cleanSpaces(@NonNull CharSequence charSequence) {
-		return WHITESPACES.matcher(charSequence).replaceAll(" ");
+		return WHITESPACE.matcher(charSequence).replaceAll(" ");
 	}
 
 	@NonNull

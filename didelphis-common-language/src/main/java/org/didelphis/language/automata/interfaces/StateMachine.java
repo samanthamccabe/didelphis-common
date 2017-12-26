@@ -14,8 +14,8 @@
 
 package org.didelphis.language.automata.interfaces;
 
-import lombok.NonNull;
 import org.didelphis.language.automata.Graph;
+import lombok.NonNull;
 
 import java.util.Map;
 import java.util.Set;
@@ -24,7 +24,6 @@ import java.util.Set;
  * @author Samantha Fiona McCabe
  * @date 2015-04-07
  */
-@Deprecated
 public interface StateMachine<T> {
 
 	@NonNull

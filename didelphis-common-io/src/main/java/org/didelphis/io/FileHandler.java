@@ -14,8 +14,8 @@
 
 package org.didelphis.io;
 
-import lombok.NonNull;
 import org.didelphis.utilities.Exceptions;
+import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
 /**

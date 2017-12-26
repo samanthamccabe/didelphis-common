@@ -15,11 +15,11 @@
 package org.didelphis.language.phonetic.sequences;
 
 import lombok.EqualsAndHashCode;
-import lombok.NonNull;
 import lombok.experimental.Delegate;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.structures.contracts.Delegating;
+import lombok.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collection;

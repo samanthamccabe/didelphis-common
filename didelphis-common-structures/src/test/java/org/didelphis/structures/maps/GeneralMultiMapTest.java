@@ -120,7 +120,7 @@ class GeneralMultiMapTest {
 	@Test
 	void getDelegate() {
 		Map<String, Collection<String>> delegate = new HashMap<>();
-		delegate.put("X", new HashSet<>(Arrays.asList("a")));
+		delegate.put("X", new HashSet<>(Collections.singletonList("a")));
 		delegate.put("Y", new HashSet<>(Arrays.asList("b", "c")));
 		delegate.put("Z", new HashSet<>(Arrays.asList("d", "e", "f")));
 		assertEquals(delegate, map.getDelegate());

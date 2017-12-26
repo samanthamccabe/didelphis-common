@@ -14,13 +14,13 @@
 
 package org.didelphis.language.automata;
 
-import lombok.NonNull;
-import org.didelphis.language.automata.interfaces.MachineMatcher;
+import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.interfaces.LanguageParser;
+import org.didelphis.language.automata.interfaces.MachineMatcher;
 import org.didelphis.language.automata.interfaces.StateMachine;
 import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.structures.tuples.Triple;
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -49,19 +49,21 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 	@NonNull
 	public static <T> StateMachine<T> create(
 			@NonNull String id,
-			@NonNull String expression,
+			@NonNull Expression expression,
 			@NonNull LanguageParser<T> parser,
 			@NonNull MachineMatcher<T> matcher,
 			@NonNull ParseDirection direction
 	) {
 		// Create the actual branch, the one we don't want to match
-		StateMachine<T> negative = StandardStateMachine.create(id + 'N',
+		StateMachine<T> negative = StandardStateMachine.create(
+				id + 'N',
 				expression,
 				parser,
 				matcher,
 				direction
 		);
-		StateMachine<T> positive = StandardStateMachine.create(id + 'P',
+		StateMachine<T> positive = StandardStateMachine.create(
+				id + 'P',
 				expression,
 				parser,
 				matcher,
@@ -70,27 +72,27 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 
 		// This is less elegant that I'd prefer, but bear with me:
 		// We will extract the graph and id-machine maps and then the graph for
-		// *each* machine recursively. We do this in order to replace each
-		// literal terminal symbol with the literal dot (.) character
+		// *each* machine recursively, in order to replace each literal terminal
+		// symbol with the dot (. / "accept-all") character
 		buildPositiveBranch(parser, positive);
 
 		return new NegativeStateMachine<>(id, negative, positive);
 	}
 
-	@Override
 	@NonNull
+	@Override
 	public LanguageParser<T> getParser() {
 		return positive.getParser();
 	}
 
 	@NonNull
 	@Override
-	public @NotNull MachineMatcher<T> getMatcher() {
+	public MachineMatcher<T> getMatcher() {
 		return positive.getMatcher();
 	}
 
-	@Override
 	@NonNull
+	@Override
 	public String getId() {
 		return id;
 	}
@@ -124,10 +126,10 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 
 		/* This is left here as reference; not used because this method
 		 * is not greedy - this was the first attempt, but does not work
+		 * */
 		// Complement --- remove negatives from positives
-		positiveIndices.removeAll(negIndices);
-		return positiveIndices;
-		*/
+		//posIndices.removeAll(negIndices);
+		//return posIndices;
 	}
 
 	@Override

@@ -14,10 +14,10 @@
 
 package org.didelphis.io;
 
-import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Contract;
+import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;

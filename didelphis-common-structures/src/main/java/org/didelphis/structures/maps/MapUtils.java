@@ -14,10 +14,10 @@
 
 package org.didelphis.structures.maps;
 
-import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.didelphis.structures.Suppliers;
+import lombok.NonNull;
 
 import java.util.Collection;
 import java.util.Map;
@@ -30,7 +30,6 @@ import java.util.Map.Entry;
  * @date 2017-04-30
  * @since 0.1.0
  */
-@SuppressWarnings("JavaReflectionMemberAccess")
 @Slf4j
 @UtilityClass
 public final class MapUtils {

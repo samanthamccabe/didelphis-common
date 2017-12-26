@@ -14,75 +14,80 @@
 
 package org.didelphis.language.automata;
 
+import lombok.AccessLevel;
 import lombok.NonNull;
-import org.didelphis.language.automata.interfaces.MachineMatcher;
+import lombok.experimental.FieldDefaults;
+import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.interfaces.LanguageParser;
+import org.didelphis.language.automata.interfaces.MachineMatcher;
 import org.didelphis.language.automata.interfaces.StateMachine;
 import org.didelphis.language.parsing.ParseDirection;
-import org.didelphis.language.parsing.ParseException;
 import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Tuple;
-import org.didelphis.utilities.Split;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.regex.Pattern;
-
-import static org.didelphis.utilities.PatternUtils.template;
 
 /**
  * @author Samantha Fiona McCabe
  * @date 3/7/2015
  */
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public final class StandardStateMachine<T> implements StateMachine<T> {
+	
+	static int A_ASCII = 0x41; // dec 65 / 0x41
 
-	private static final Pattern ILLEGAL = template("#$1|$1$1", "[*+?]");
-
-	private static final int A_ASCII = 0x41; // dec 65 / 0x41
-
-	private final LanguageParser<T> parser;
-	private final MachineMatcher<T> matcher;
-	private final ParseDirection direction;
-	private final String id;
-	private final String startStateId;
-	private final Collection<String> acceptingStates;
-	private final Map<String, StateMachine<T>> machinesMap;
+	LanguageParser<T> parser;
+	MachineMatcher<T> matcher;
+	ParseDirection direction;
+	String id;
+	String startStateId;
+	Collection<String> acceptingStates;
+	Map<String, StateMachine<T>> machinesMap;
 
 	// {String (Node ID), Sequence (Arc)} --> String (Node ID)
-	private final Graph<T> graph;
+	Graph<T> graph;
 
-	private StandardStateMachine(String id, LanguageParser<T> parser,
-			MachineMatcher<T> matcher, ParseDirection direction) {
+	private StandardStateMachine(
+			String id,
+			LanguageParser<T> parser,
+			MachineMatcher<T> matcher,
+			ParseDirection direction
+	) {
 		this.parser = parser;
 		this.id = id;
 		this.matcher = matcher;
 		this.direction = direction;
 
 		startStateId = this.id + "-S";
-
+	
 		machinesMap = new HashMap<>();
 		acceptingStates = new HashSet<>();
 		graph = new Graph<>();
 	}
 
 	@NonNull
-	public static <T> StateMachine<T> create(String id, @NonNull String expression,
-			@NonNull LanguageParser<T> parser, MachineMatcher<T> matcher,
+	public static <T> StateMachine<T> create(
+			String id,
+			@NonNull Expression expression,
+			@NonNull LanguageParser<T> parser,
+			MachineMatcher<T> matcher,
 			ParseDirection direction) {
-		checkBadQuantification(expression);
+
 		StandardStateMachine<T> machine = new StandardStateMachine<>(id,
 				parser,
 				matcher,
 				direction);
-		List<Expression> expressions = parser.parseExpression(expression);
-
+		
 		if (direction == ParseDirection.BACKWARD) {
-			Collections.reverse(expressions);
+			expression = expression.reverse();
 		}
 
-		String start = machine.startStateId;
-		String accepting = machine.parseExpression(start, 0, "", expressions);
+		String accepting = machine.parseExpression(
+				machine.startStateId, 
+				0, 
+				"O", 
+				Collections.singletonList(expression));
 		machine.acceptingStates.add(accepting);
 		return machine;
 	}
@@ -93,9 +98,9 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		return parser;
 	}
 
-	@Override
 	@NonNull
-	public @NotNull MachineMatcher<T> getMatcher() {
+	@Override
+	public MachineMatcher<T> getMatcher() {
 		return matcher;
 	}
 
@@ -112,8 +117,8 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		return map;
 	}
 
-	@Override
 	@NonNull
+	@Override
 	public Set<Integer> getMatchIndices(int start, @NonNull T target) {
 		Set<Integer> indices = new HashSet<>();
 
@@ -149,7 +154,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 					indices.addAll(indicesToCheck);
 				}
 
-				if (graph.getDelegate().containsKey(currentNode)) {
+				if (graph.containsKey(currentNode)) {
 					for (Integer mIndex : indicesToCheck) {
 						// ----------------------------------------------------
 						Map<T, Collection<String>> map = graph.getDelegate().get(currentNode);
@@ -176,7 +181,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		return "StandardStateMachine{" + id + '}';
 	}
 
-	// package only access
+	// package only access TODO: seems like a problem
 	@NonNull
 	Map<String, StateMachine<T>> getMachinesMap() {
 		// this needs to mutable:
@@ -185,77 +190,76 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 	}
 
 	@NonNull
-	private String createParallel(String start, int index, @NonNull String expression) {
+	private String createParallel(String start, int index, @NonNull Expression expression) {
 		int i = A_ASCII; // A
 		String output = start + "-Out";
-		for (String subExp : parseSubExpressions(expression)) {
-			Iterable<Expression> expressions = parser.parseExpression(subExp);
+		for (Expression child : expression.getChildren()) {
 			String prefix = String.valueOf((char) i);
 			// Machine is built to have one shared start-state and one end-state
 			// for *each* individual branch
 			String closingState = parseExpression(start,
 					index,
 					prefix + '-' + start,
-					expressions);
+					Collections.singletonList(child)
+			);
 			i++;
 			graph.add(closingState, parser.epsilon(), output);
 		}
 		return output;
 	}
 
-	private String parseExpression(String start, int startingIndex,
-			String prefix, @NonNull Iterable<Expression> expressions) {
+	private String parseExpression(
+			String start, 
+			int startingIndex,
+			@NonNull String prefix, 
+			@NonNull Iterable<Expression> expressions) {
 
 		int nodeId = startingIndex;
 		String previous = start;
 		for (Expression expression : expressions) {
 			nodeId++;
 			
-		/*	TODO >>>
-			String expr = expression.getExpression();
-			String meta = expression.getMetacharacter();
+			String meta = expression.getQuantifier();
 			boolean negative = expression.isNegative();
 			
 			String current = prefix + '-' + nodeId;
 
 			if (negative) {
-				createNegative(expr, current);
+				createNegative(expression, current);
 				String nextNode = current + 'X';
 				previous = constructNegativeNode(nextNode,
 						previous,
 						current,
 						meta);
 			} else {
-				if (expr.startsWith("(")) {
-					check(expr, ")");
-					graph.add(previous, parser.epsilon(), current);
-					String substring = expr.substring(1, expr.length() - 1);
-					String endNode = parseExpression(current,
-							nodeId,
-							"G-" + current,
-							parser.parseExpression(substring));
-					previous = constructRecursiveNode(endNode, current, meta);
-				} else if (expr.startsWith("{")) {
-					check(expr, "}");
-					graph.add(previous, parser.epsilon(), current);
-					String substring = expr.substring(1, expr.length() - 1);
-					String endNode = createParallel(current, nodeId, substring);
-					previous = constructRecursiveNode(endNode, current, meta);
+				if (expression.hasChildren()) {
+					if (expression.isParallel()) {
+						graph.add(previous, parser.epsilon(), current);
+						String endNode = createParallel(current, nodeId, expression);
+						previous = constructRecursiveNode(endNode, current, meta);
+					} else {
+						graph.add(previous, parser.epsilon(), current);
+						String endNode = parseExpression(current,
+								nodeId,
+								"G-" + current,
+								expression.getChildren());
+						previous = constructRecursiveNode(endNode, current, meta);
+					}	
 				} else {
 					previous = constructTerminalNode(previous,
 							current,
-							expr,
+							expression.getTerminal(),
 							meta);
 				}
 			}
-		*/
 		}
 		return previous;
 	}
 
-	private void createNegative(String expr, String current) {
+	private void createNegative(Expression expression, String current) {
+		Expression negated = expression.withNegative(false).withQuantifier("");
 		StateMachine<T> machine = NegativeStateMachine.create(current,
-				expr,
+				negated,
 				parser,
 				matcher,
 				direction);
@@ -270,11 +274,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		return end;
 	}
 
-	private void addToGraph(
-			String start,
-			String end, 
-			String machine, 
-			@NonNull String meta) {
+	private void addToGraph(String start, String end, String machine, String meta) {
 		T e = parser.epsilon();
 		switch (meta) {
 			case "?":
@@ -303,8 +303,12 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		return endNode;
 	}
 
-	private String constructTerminalNode(String previousNode,
-			String currentNode, String exp, @NonNull String meta) {
+	@NonNull
+	private String constructTerminalNode(
+			@NonNull String previousNode,
+			@NonNull String currentNode, 
+			@NonNull String exp, 
+			@NonNull String meta) {
 		T t = parser.transform(exp);
 		T e = parser.epsilon();
 		String referenceNode;
@@ -330,51 +334,5 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 				break;
 		}
 		return referenceNode;
-	}
-
-	private static void checkBadQuantification(@NonNull CharSequence expression) {
-		if (ILLEGAL.matcher(expression).find()) {
-			throw ParseException.builder().add("Illegal modification of " 
-					+ "boundary characters.")
-					.data(expression)
-					.build();
-		}
-	}
-
-	private static void check(@NonNull String expr, @NonNull CharSequence closingBracket) {
-		if (!expr.contains(closingBracket)) {
-			throw ParseException.builder()
-					.add("Unmatched parenthesis")
-					.data(expr)
-					.build();
-		}
-	}
-
-	@NonNull
-	private static Iterable<String> parseSubExpressions(@NonNull String expression) {
-		Collection<String> subExpressions = new ArrayList<>();
-		StringBuilder buffer = new StringBuilder();
-		for (int i = 0; i < expression.length(); i++) {
-			char c = expression.charAt(i);
-			if (c == '{') {
-				int index = Split.findClosingBracket(expression, '{', '}', i);
-				buffer.append(expression.substring(i, index));
-				i = index - 1;
-			} else if (c == '(') {
-				int index = Split.findClosingBracket(expression, '(', ')', i);
-				buffer.append(expression.substring(i, index));
-				i = index - 1;
-			} else if (c != ' ') {
-				buffer.append(c);
-			} else if (buffer.length() > 0) { // No isEmpty() call available
-				subExpressions.add(buffer.toString());
-				buffer = new StringBuilder();
-			}
-		}
-
-		if (buffer.length() > 0) {
-			subExpressions.add(buffer.toString());
-		}
-		return subExpressions;
 	}
 }

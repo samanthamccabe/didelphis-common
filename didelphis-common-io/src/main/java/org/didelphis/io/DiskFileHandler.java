@@ -15,9 +15,9 @@
 package org.didelphis.io;
 
 import lombok.EqualsAndHashCode;
-import lombok.NonNull;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;

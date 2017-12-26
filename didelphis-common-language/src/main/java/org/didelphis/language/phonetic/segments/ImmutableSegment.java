@@ -14,8 +14,8 @@
 
 package org.didelphis.language.phonetic.segments;
 
-import lombok.NonNull;
 import org.didelphis.language.phonetic.features.FeatureArray;
+import lombok.NonNull;
 
 /**
  * Class {@code ImmutableSegment}

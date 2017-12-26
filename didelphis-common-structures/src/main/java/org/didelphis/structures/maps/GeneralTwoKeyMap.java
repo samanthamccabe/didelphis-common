@@ -15,7 +15,6 @@
 package org.didelphis.structures.maps;
 
 import lombok.EqualsAndHashCode;
-import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.Delegate;
 import org.didelphis.structures.Suppliers;
@@ -24,6 +23,7 @@ import org.didelphis.structures.maps.interfaces.TwoKeyMap;
 import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Triple;
 import org.didelphis.structures.tuples.Tuple;
+import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -122,7 +122,6 @@ public class GeneralTwoKeyMap<T, U, V>
 	}
 
 	@NonNull
-	@SuppressWarnings("ReturnOfCollectionOrArrayField")
 	@Override
 	public Map<T, Map<U, V>> getDelegate() {
 		return delegate;

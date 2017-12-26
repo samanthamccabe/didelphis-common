@@ -26,7 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.didelphis.utilities.Split.parseParens;
-import static org.didelphis.utilities.Split.splitToList;
+import static org.didelphis.utilities.Split.toList;
 
 /**
  * Enum {@code FormatterMode}
@@ -56,7 +56,7 @@ public enum FormatterMode implements Segmenter, Formatter {
 		public List<String> split(
 				@NonNull String string, @NonNull Iterable<String> special
 		) {
-			return splitToList(string, special);
+			return toList(string, special);
 		}
 	},
 
@@ -73,7 +73,7 @@ public enum FormatterMode implements Segmenter, Formatter {
 		public List<String> split(
 				@NonNull String string, @NonNull Iterable<String> special
 		) {
-			return splitToList(normalize(string), special);
+			return toList(normalize(string), special);
 		}
 	},
 
@@ -90,7 +90,7 @@ public enum FormatterMode implements Segmenter, Formatter {
 		public List<String> split(
 				@NonNull String string, @NonNull Iterable<String> special
 		) {
-			return splitToList(normalize(string), special);
+			return toList(normalize(string), special);
 		}
 	},
 
@@ -109,9 +109,7 @@ public enum FormatterMode implements Segmenter, Formatter {
 
 		private final Pattern pattern = Pattern.compile("(\\$[^$]*\\d+)");
 
-		@NonNull
-		@Override
-		public List<String> split(
+		@NonNull @Override public List<String> split(
 				@NonNull String string, @NonNull Iterable<String> special
 		) {
 			String word = normalize(string);

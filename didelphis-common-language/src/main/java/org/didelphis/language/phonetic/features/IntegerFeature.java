@@ -84,6 +84,9 @@ public enum IntegerFeature implements FeatureType<Integer> {
 
 	@NonNull
 	private Integer checkValue(@Nullable Integer value) {
+		if (value == null) {
+			return 0;
+		}
 		return isDefined(value) ? value : 0;
 	}
 }

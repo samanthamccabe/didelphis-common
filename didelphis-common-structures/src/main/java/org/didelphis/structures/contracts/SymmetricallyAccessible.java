@@ -14,9 +14,9 @@
 
 package org.didelphis.structures.contracts;
 
-import lombok.NonNull;
 import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Tuple;
+import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;

@@ -16,8 +16,8 @@ package org.didelphis.language.phonetic.model;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.ToString;
+import lombok.NonNull;
 
 import java.util.*;
 

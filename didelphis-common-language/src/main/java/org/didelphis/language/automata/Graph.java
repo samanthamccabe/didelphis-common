@@ -15,10 +15,9 @@
 package org.didelphis.language.automata;
 
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.ToString;
 import org.didelphis.structures.maps.GeneralTwoKeyMultiMap;
+import lombok.NonNull;
 
 /**
  * Class {@code Graph}
@@ -29,9 +28,11 @@ import org.didelphis.structures.maps.GeneralTwoKeyMultiMap;
  */
 @ToString
 @EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor
-public class Graph<T> extends GeneralTwoKeyMultiMap<String, T, String> {
+public final class Graph<T> extends GeneralTwoKeyMultiMap<String, T, String> {
 
+	public Graph() {
+	}
+	
 	public Graph(@NonNull GeneralTwoKeyMultiMap<String, T, String> graph) {
 		super(graph);
 	}
