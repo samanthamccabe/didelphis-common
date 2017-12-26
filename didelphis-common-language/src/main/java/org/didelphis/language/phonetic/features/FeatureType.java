@@ -1,23 +1,24 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.language.phonetic.features;
 
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.stream.IntStream;
 
 /**
  * Class {@code FeatureType}
@@ -35,7 +36,7 @@ import java.util.Collection;
  * @author Samantha Fiona McCabe
  * @since 0.1.0
  *
- * Date: 2017-06-11
+ * @date 2017-06-11
  */
 public interface FeatureType<T> {
 
@@ -50,12 +51,12 @@ public interface FeatureType<T> {
 	 * @return the value represented by the string argument
 	 *
 	 * @throws NumberFormatException if the {@code String} does not contain a
-	 * parsable value;.
+	 * parseable value;.
 	 */
-	@NotNull
-	T parseValue(@NotNull String string);
+	@NonNull
+	T parseValue(@NonNull String string);
 
-	@NotNull
+	@NonNull
 	Collection<T> listUndefined();
 
 	/**
@@ -65,7 +66,7 @@ public interface FeatureType<T> {
 	 * @return true iff the value is defined
 	 */
 	default boolean isDefined(@Nullable T value) {
-		return value != null && !listUndefined().contains(value);
+		return !(value == null || listUndefined().contains(value));
 	}
 
 	/**
@@ -105,4 +106,35 @@ public interface FeatureType<T> {
 	 */
 	double doubleValue(@Nullable T value);
 
+	/**
+	 * A convenience function for determining the total difference between
+	 * arrays 
+	 * @param index 
+	 * @param left
+	 * @param right
+	 * @return the difference between two feature arrays at the specified index
+	 */
+	default double difference(
+			int index,
+			@NonNull FeatureArray<T> left,
+			@NonNull FeatureArray<T> right
+	) {
+		return difference(left.get(index), right.get(index));
+	}
+
+	/**
+	 * 
+	 * @param left
+	 * @param right
+	 * @return
+	 */
+	default double difference(
+			@NonNull FeatureArray<T> left,
+			@NonNull FeatureArray<T> right
+	) {
+		assert left.size() == right.size() : "Feature arrays not of same size.";
+		return IntStream.range(0, left.size())
+				.mapToDouble(i -> difference(i, left, right))
+				.sum();
+	}
 }

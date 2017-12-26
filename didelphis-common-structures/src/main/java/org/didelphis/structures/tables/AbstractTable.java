@@ -1,50 +1,60 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.structures.tables;
 
-import org.jetbrains.annotations.NotNull;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import org.didelphis.utilities.Exceptions;
+import lombok.NonNull;
 
 import java.text.DecimalFormat;
 import java.util.Collection;
 
 /**
+ * Abstract Class {@code AbstractTable}
+ *
  * @author Samantha Fiona McCabe
- * Date: 4/17/2016
+ * @date 4/17/2016
+ * @since 0.1.0
  */
+@ToString
+@EqualsAndHashCode
 public abstract class AbstractTable<E> implements ResizeableTable<E> {
 
-	@Deprecated
-	protected static final DecimalFormat DECIMAL_FORMAT =
-			new DecimalFormat(" 0.000;-0.000");
+	@Deprecated protected static final DecimalFormat DECIMAL_FORMAT
+			= new DecimalFormat(" 0.000;-0.000");
 
 	private int rows;
 	private int columns;
 
 	protected AbstractTable(int rows, int columns) {
 		if (rows < 0 || columns < 0) {
-			throw new IndexOutOfBoundsException(
-					"Dimensions of a table cannot be negative");
+			throw Exceptions.create(IndexOutOfBoundsException.class)
+					.add("Cannot create a table with negative dimensions!")
+					.add("Parameters provided: row {} / col {}")
+					.with(rows, columns)
+					.build();
 		}
 		this.rows = rows;
 		this.columns = columns;
 	}
-	
+
 	protected void setRows(int size) {
 		rows = size;
 	}
-	
+
 	protected void setColumns(int size) {
 		columns = size;
 	}
@@ -61,57 +71,85 @@ public abstract class AbstractTable<E> implements ResizeableTable<E> {
 
 	protected void checkRowEdge(int row) {
 		if (row > rows || row < 0) {
-			throw new IndexOutOfBoundsException(
-					"Row index: " + row + ", Rows: " + rows);
+			throw Exceptions.create(IndexOutOfBoundsException.class)
+					.add("Row parameter ({}) is out of bounds while trying "
+							+ "to expand table.")
+					.with(row)
+					.add("Currently there are {} rows")
+					.with(row)
+					.build();
 		}
 	}
 
 	protected void checkRow(int row) {
 		if (row >= rows || row < 0) {
-			throw new IndexOutOfBoundsException(
-					"Row index: " + row + ", Rows: " + rows);
+			throw Exceptions.create(IndexOutOfBoundsException.class)
+					.add("Row parameter ({}) is out of bounds!")
+					.with(row)
+					.add("Currently there are {} rows")
+					.with(rows)
+					.build();
 		}
 	}
 
 	protected void checkColEdge(int col) {
 		if (col > columns || col < 0) {
-			throw new IndexOutOfBoundsException(
-					"Column index: " + col + ", Columns: " + columns);
+			throw Exceptions.create(IndexOutOfBoundsException.class)
+					.add("Column parameter ({}) is out of bounds while trying " 
+							+ "to expand table.")
+					.with(col)
+					.add("Currently there are {} columns")
+					.with(columns)
+					.build();
 		}
 	}
 
 	protected void checkCol(int col) {
 		if (col >= columns || col < 0) {
-			throw new IndexOutOfBoundsException(
-					"Column index: " + col + ", Columns: " + columns);
+			throw Exceptions.create(IndexOutOfBoundsException.class)
+					.add("Column parameter ({}) is out of bounds!")
+					.with(col)
+					.add("Currently there are {} columns")
+					.with(columns)
+					.build();
 		}
 	}
-	
+
 	protected void checkRanges(int row, int col) {
 		checkRow(row);
 		checkCol(col);
 	}
 
-	protected void checkRowData(@NotNull Collection<E> data) {
+	protected void checkRowData(@NonNull Collection<E> data) {
 		if (data.size() != columns()) {
-			throw new IllegalArgumentException("New row data is the wrong " +
-					"size: " + data.size() + " but there are " + columns() +
-					" columns.");
+			throw Exceptions.create(IllegalArgumentException.class)
+					.add("New row is the wrong size!")
+					.add("Has {} columns but needs {}.")
+					.with(data.size(), columns())
+					.data(data)
+					.build();
 		}
 	}
 
-	protected void checkColumnData(@NotNull Collection<E> data) {
+	protected void checkColumnData(@NonNull Collection<E> data) {
 		if (data.size() != rows()) {
-			throw new IllegalArgumentException("New column data is the wrong " +
-					"size: " + data.size() + " but there are " + rows() +
-					" rows.");
+			throw Exceptions.create(IllegalArgumentException.class)
+					.add("New column is the wrong size!")
+					.add("Has {} rows but needs {}.")
+					.with(data.size(), rows())
+					.data(data)
+					.build();
 		}
 	}
 
 	protected static void negativeCheck(int rows, int cols) {
 		if (rows < 0 || cols < 0) {
-			throw new IllegalArgumentException("expand/shrink operations must" +
-					" not take negative arguments. r=" + rows + " c=" + cols);
+			throw Exceptions.create(IllegalArgumentException.class)
+					.add("Operations to expand or shrink a table cannot")
+					.add("have negative arguments!")
+					.add("The arguments provided were row: {} and col: {}")
+					.with(rows, cols)
+					.build();
 		}
 	}
 }

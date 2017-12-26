@@ -1,22 +1,23 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.language.phonetic.features;
 
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureSpecification;
-import org.jetbrains.annotations.NotNull;
+import org.didelphis.utilities.Exceptions;
+import lombok.NonNull;
 
 import java.util.Objects;
 
@@ -24,39 +25,20 @@ import java.util.Objects;
  * Class {@code AbstractFeatureArray}
  *
  * @author Samantha Fiona McCabe
- * @since 0.1.0 Date: 2017-06-15
+ * @date 2017-06-15
+ * @since 0.1.0
  */
 public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
-	private final FeatureSpecification specification;
 	private final FeatureModel<T> featureModel;
 
-	protected AbstractFeatureArray(@NotNull FeatureModel<T> featureModel) {
+	protected AbstractFeatureArray(@NonNull FeatureModel<T> featureModel) {
 		this.featureModel = featureModel;
-		this.specification = featureModel.getSpecification();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) { return true; }
-		if (!(obj instanceof AbstractFeatureArray)) {return false;}
-		FeatureArray<?> that = (FeatureArray<?>) obj;
-		for (int i = 0; i < specification.size(); i++) {
-			T t1 = get(i);
-			Object t2 = that.get(i);
-			if (!Objects.equals(t1, t2)) {
-				return false;
-			}
-		}
-		return specification.equals(that.getSpecification());
-	}
+	public int compareTo(@NonNull FeatureArray<T> o) {
+		sizeCheck(o);
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public int compareTo(@NotNull FeatureArray<T> o) {
-		if (size() != o.size()) {
-			throw new IllegalArgumentException(
-					"Attempting to compare arrays of different lengths");
-		}
 		FeatureType<T> featureType = featureModel.getFeatureType();
 		for (int i = 0; i < size(); i++) {
 			T x = get(i);
@@ -73,22 +55,53 @@ public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
 
 	@Override
 	public int size() {
-		return specification.size();
+		return getSpecification().size();
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public FeatureModel<T> getFeatureModel() {
 		return featureModel;
 	}
 
+	@NonNull
 	@Override
 	public FeatureSpecification getSpecification() {
-		return specification;
+		return featureModel.getSpecification();
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(specification, featureModel);
+		return featureModel.getSpecification().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (!(obj instanceof AbstractFeatureArray)) return false;
+		FeatureArray<?> that = (FeatureArray<?>) obj;
+		for (int i = 0; i < getSpecification().size(); i++) {
+			T t1 = get(i);
+			Object t2 = that.get(i);
+			if (!Objects.equals(t1, t2)) {
+				return false;
+			}
+		}
+		return getSpecification().equals(that.getSpecification());
+	}
+
+	protected void sizeCheck(@NonNull FeatureArray<T> o) {
+		if (size() != o.size()) throw buildException(o);
+	}
+
+	@NonNull
+	private RuntimeException buildException(@NonNull FeatureArray<T> o) {
+		return Exceptions.illegalArgument()
+				.add("Attempting to compare objects with different specified")
+				.add("feature sizes. This: {} vs {}")
+				.with(size(), o.size())
+				.data(this)
+				.data(o)
+				.build();
 	}
 }

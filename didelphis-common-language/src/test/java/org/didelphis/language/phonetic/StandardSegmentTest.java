@@ -1,16 +1,16 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
- =                                                                              
- = Licensed under the Apache License, Version 2.0 (the "License");              
- = you may not use this file except in compliance with the License.             
- = You may obtain a copy of the License at                                      
- =     http://www.apache.org/licenses/LICENSE-2.0                               
- = Unless required by applicable law or agreed to in writing, software          
- = distributed under the License is distributed on an "AS IS" BASIS,            
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
- = See the License for the specific language governing permissions and          
- = limitations under the License.                                               
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.language.phonetic;
 
@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Samantha Fiona McCabe
- * Date: 2/14/2015
+ * @date 2/14/2015
  */
 public class StandardSegmentTest extends PhoneticTestBase {
 
@@ -116,11 +116,11 @@ public class StandardSegmentTest extends PhoneticTestBase {
 
 	@Test
 	void testMatch02() {
-		Segment<Integer> a = factory.toSegment("a");
-		Segment<Integer> n = factory.toSegment("n");
+		Segment<Integer> g1 = factory.toSegment("a");
+		Segment<Integer> g2 = factory.toSegment("n");
 
-		assertFalse(a.matches(n), "a matches n");
-		assertFalse(n.matches(a), "n matches a");
+		assertFalse(g1.matches(g2), "a matches n");
+		assertFalse(g2.matches(g1), "n matches a");
 	}
 
 	@Test
@@ -169,7 +169,7 @@ public class StandardSegmentTest extends PhoneticTestBase {
 		int received = features.get(5);
 		int expected = -1;
 
-		assertEquals(expected, received, 00001);
+		assertEquals(expected, received, 0.001);
 	}
 
 	@Test

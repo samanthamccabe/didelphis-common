@@ -1,82 +1,159 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
- =                                                                              
- = Licensed under the Apache License, Version 2.0 (the "License");              
- = you may not use this file except in compliance with the License.             
- = You may obtain a copy of the License at                                      
- =     http://www.apache.org/licenses/LICENSE-2.0                               
- = Unless required by applicable law or agreed to in writing, software          
- = distributed under the License is distributed on an "AS IS" BASIS,            
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
- = See the License for the specific language governing permissions and          
- = limitations under the License.                                               
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.structures.maps.interfaces;
 
-import org.didelphis.structures.Structure;
 import org.didelphis.structures.contracts.Streamable;
 import org.didelphis.structures.tuples.Triple;
 import org.didelphis.structures.tuples.Tuple;
+import lombok.NonNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
 /**
- * Created by samantha on 1/15/17.
+ * Interface {@code TwoKeyMap}
+ *
+ * @author Samantha Fiona McCabe
+ * @date 2017-01-15
+ * @since 0.1.0
  */
 public interface TwoKeyMap<T, U, V>
-		extends Streamable<Triple<T, U, V>>, Structure {
+		extends Map<T, Map<U, V>>, Streamable<Triple<T, U, V>> {
 
 	/**
 	 * Return the value stored under the two keys
 	 *
-	 * @param k1 the first key; may be null
-	 * @param k2 the second key; may be null
+	 * @param k1 the first key; may be {@code null}
+	 * @param k2 the second key; may be {@code null}
 	 *
-	 * @return the value stored under the given keys
+	 * @return the value stored under the given keys; may be {@code null} if
+	 * 		either the keys have no associated value or if a {@code null} has
+	 * 		been stored explicitly
 	 */
-	V get(T k1, U k2);
+	@Nullable V get(@Nullable T k1, @Nullable U k2);
 
-	/**
-	 * Returns all keys associated with the provided key such that, together,
-	 * they have an associated value
-	 * @param k1 the first key; may be null
-	 * @return a collection of the second keys associated with the provided key;
-	 * null if the provided key is not present
-	 */
-	Collection<U> getAssociatedKeys(T k1);
-	
 	/**
 	 * Inserts a new value under the two keys
 	 *
-	 * @param k1 the first key; may be null
-	 * @param k2 the second key; may be null
+	 * @param k1 the first key; may be {@code null}
+	 * @param k2 the second key; may be {@code null}
 	 * @param value the value to be inserted under the given keys
 	 */
-	void put(T k1, U k2, V value);
+	void put(@Nullable T k1, @Nullable U k2, @Nullable V value);
 
 	/**
 	 * Checks whether a value is present under the two keys
 	 *
-	 * @param k1 the first key; may be null
-	 * @param k2 the second key; may be null
+	 * @param k1 the first key; may be {@code null}
+	 * @param k2 the second key; may be {@code null}
 	 *
 	 * @return true if the maps contains a value under the two keys
 	 */
-	boolean contains(T k1, U k2);
+	boolean contains(@Nullable T k1, @Nullable U k2);
 
 	/**
-	 * @return a collection of tuples containing the maps's key pairs
+	 * @return a collection of tuples containing the maps's key pairs;
+	 * 		guaranteed to not be {@code null}
 	 */
-	Collection<Tuple<T,U>> keys();
+	@NonNull
+	Collection<Tuple<T, U>> keys();
 
 	/**
-	 * Removes the value associated with the provided keys.
+	 * Returns the number of key-value mappings in this map.  If the
+	 * map contains more than {@code Integer.MAX_VALUE} elements, returns
+	 * {@code Integer.MAX_VALUE}.
+	 *
+	 * @return the number of key-value mappings in this map
+	 *
+	 * @implNote for complex map structures, it is not necessarily apparent
+	 * 		what semantics of {@code size()} should be. However, one reasonable
+	 * 		and consistent solution is that {@code size()} out to return the
+	 * 		same number of items as are contained within the output of {@code 
+	 * 		iterator()}
+	 */
+	@Override
+	default int size() {
+		long count = stream().count();
+		return count > Integer.MAX_VALUE
+				? Integer.MAX_VALUE
+				: Math.toIntExact(count);
+	}
+
+	/**
+	 * Remove and return the value stored under the two keys
+	 *
+	 * @param k1 the first key; may be {@code null}
+	 * @param k2 the second key; may be {@code null}
+	 *
+	 * @return the value stored under the given keys; may be {@code null} if
+	 * 		either the keys have no associated value or if a {@code null} has
+	 * 		been stored explicitly
+	 */
+	default @Nullable V removeKeys(@Nullable T k1, @Nullable U k2) {
+		if (contains(k1, k2)) {
+			Map<U, V> map = get(k1);
+			return map.remove(k2);
+		}
+		return null;
+	}
+
+	/**
+	 * A null-safe version of {@link #contains(T, U)}
+	 *
+	 * @param k1 the first key; may be {@code null}
+	 * @param k2 the second key; may be {@code null}
+	 *
+	 * @return true iff the map contains a non-{@code null} value under the two
+	 * 		keys
+	 */
+	default boolean containsNotNull(@Nullable T k1, @Nullable U k2) {
+		return contains(k1, k2) && get(k1, k2) != null;
+	}
+
+	/**
+	 * Returns all keys associated with the provided key such that, together,
+	 * they have an associated value
+	 *
+	 * @param k1 the first key; may be null
+	 *
+	 * @return a collection of the second keys associated with the provided key;
+	 * 		null if the provided key is not present
+	 */
+	@NonNull
+	default Collection<U> getAssociatedKeys(@Nullable T k1) {
+		return containsKey(k1) ? get(k1).keySet() : Collections.emptySet();
+	}
+
+	/**
+	 * Analogous to {@link Map#getOrDefault(Object, Object)} but for two keys.
+	 * It performs a {@link TwoKeyMap#contains(T, U)} check and either returns
+	 * the stored value, or the provided default.
+	 *
 	 * @param k1 the first key; may be null
 	 * @param k2 the second key; may be null
-	 * @return the value associated with the provided key pair, if it exists; if
-	 * no key pair exists, this operation will return null;
+	 * @param value the default value to be returned in case to stored value
+	 * 		is found or is null
+	 *
+	 * @return the retrieved value if present and not null, or the provided
+	 * 		default if not.
 	 */
-	V remove(T k1, U k2);
-
+	@NonNull
+	default V getOrDefault(@Nullable T k1, @Nullable U k2, @NonNull V value) {
+		//noinspection ConstantConditions
+		return containsNotNull(k1, k2) ? get(k1, k2) : value;
+	}
 }

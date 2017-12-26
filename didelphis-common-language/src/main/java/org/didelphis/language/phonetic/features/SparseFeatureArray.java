@@ -1,52 +1,53 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.language.phonetic.features;
 
 import org.didelphis.language.phonetic.model.FeatureModel;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.didelphis.utilities.Exceptions;
+import lombok.NonNull;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
- * Created by samantha on 3/27/16.
+ * Class {@code SparseFeatureArray}
+ *
+ * @author Samantha Fiona McCabe
+ * @date 2016-03-27
+ * @since 0.1.0
  */
 public final class SparseFeatureArray<T> extends AbstractFeatureArray<T> {
-	
+
 	private final Map<Integer, T> features;
 
 	/**
 	 * @param featureModel
 	 */
-	public SparseFeatureArray(FeatureModel<T> featureModel) {
-super(featureModel);
-features = new HashMap<>();
+	public SparseFeatureArray(@NonNull FeatureModel<T> featureModel) {
+		super(featureModel);
+		features = new TreeMap<>();
 	}
 
 	/**
 	 * @param list
 	 * @param featureModel
 	 */
-	public SparseFeatureArray(@NotNull List<T> list, FeatureModel<T> featureModel) {
+	public SparseFeatureArray(
+			@NonNull List<T> list, @NonNull FeatureModel<T> featureModel
+	) {
 		this(featureModel);
 		for (int i = 0; i < list.size(); i++) {
 			T value = list.get(i);
@@ -59,7 +60,7 @@ features = new HashMap<>();
 	/**
 	 * @param array
 	 */
-	public SparseFeatureArray(@NotNull FeatureArray<T> array) {
+	public SparseFeatureArray(@NonNull FeatureArray<T> array) {
 		super(array.getFeatureModel());
 		features = new HashMap<>();
 		FeatureType<T> type = array.getFeatureModel().getFeatureType();
@@ -74,7 +75,7 @@ features = new HashMap<>();
 	/**
 	 * @param array
 	 */
-	public SparseFeatureArray(@NotNull SparseFeatureArray<T> array) {
+	public SparseFeatureArray(@NonNull SparseFeatureArray<T> array) {
 		super(array.getFeatureModel());
 		features = new HashMap<>(array.features);
 	}
@@ -92,11 +93,26 @@ features = new HashMap<>();
 	}
 
 	@Override
-	public boolean matches(@NotNull FeatureArray<T> array) {
-		if (size() != array.size()) {
-			throw new IllegalArgumentException(
-					"Attempting to compare arrays of different lengths");
-		}
+	public boolean equals(Object obj) {
+		if (obj == this) return true;
+		if (!(obj instanceof SparseFeatureArray)) return false;
+		SparseFeatureArray<?> array = (SparseFeatureArray<?>) obj;
+		return super.equals(obj) && features.equals(array.features);
+	}
+	
+	@Override
+	public int hashCode() {
+		int code = super.hashCode();
+		code *= features.entrySet().stream()
+				.mapToInt(entry -> 
+						entry.getValue().hashCode() ^ (entry.getKey() >> 1))
+				.reduce(1, (k, v) -> k * v);
+		return code;
+	}
+	
+	@Override
+	public boolean matches(@NonNull FeatureArray<T> array) {
+		sizeCheck(array);
 		FeatureType<T> featureType = getFeatureModel().getFeatureType();
 		for (Entry<Integer, T> entry : features.entrySet()) {
 			T x = entry.getValue();
@@ -109,21 +125,19 @@ features = new HashMap<>();
 	}
 
 	@Override
-	public boolean alter(@NotNull FeatureArray<T> array) {
-		if (size() != array.size()) {
-			throw new IllegalArgumentException(
-					"Attempting to compare arrays of different lengths");
-		}
+	public boolean alter(@NonNull FeatureArray<T> array) {
+		sizeCheck(array);
+
 		FeatureType<T> featureType = getFeatureModel().getFeatureType();
 
 		boolean changed = false;
-			for (int i = 0; i < size(); i++) {
-				T v = array.get(i);
-				if (featureType.isDefined(v)) {
-					changed |= true;
-					features.put(i, v);
-				}
+		for (int i = 0; i < size(); i++) {
+			T v = array.get(i);
+			if (featureType.isDefined(v)) {
+				changed |= true;
+				features.put(i, v);
 			}
+		}
 		return changed;
 	}
 
@@ -135,35 +149,28 @@ features = new HashMap<>();
 
 	@Override
 	public Iterator<T> iterator() {
-		final List<T> list = new ArrayList<>(size());
+		List<T> list = new ArrayList<>(size());
 		Collections.fill(list, null);
 		features.forEach(list::set);
 		return list.iterator();
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hash(features, features.size(), size());
-	}
-
-	@Override
 	public String toString() {
-		return "SparseFeatureArray{" + features + '}';
-	}
-
-	@Override
-	public boolean equals(@Nullable Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		return super.equals(o);
+		return features.entrySet()
+				.stream()
+				.map(entry -> entry.getKey() + "=" + entry.getValue())
+				.collect(Collectors.joining(";", "{", "}"));
 	}
 
 	private void indexCheck(int index) {
 		int size = getSpecification().size();
 		if (index >= size) {
-			throw new IndexOutOfBoundsException("Provided index " + index +
-					" is larger than defined size "+ size +
-					" for feature model " + getFeatureModel());
+			throw Exceptions.indexOutOfBounds()
+					.add("Provided index {} is larger than the defined size {}"
+							+ " of the feature model.")
+					.with(index, size)
+					.build();
 		}
 	}
 }

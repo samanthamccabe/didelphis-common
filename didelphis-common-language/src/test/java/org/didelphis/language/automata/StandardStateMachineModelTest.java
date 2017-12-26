@@ -1,29 +1,29 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
- =                                                                              
- = Licensed under the Apache License, Version 2.0 (the "License");              
- = you may not use this file except in compliance with the License.             
- = You may obtain a copy of the License at                                      
- =     http://www.apache.org/licenses/LICENSE-2.0                               
- = Unless required by applicable law or agreed to in writing, software          
- = distributed under the License is distributed on an "AS IS" BASIS,            
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
- = See the License for the specific language governing permissions and          
- = limitations under the License.                                               
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
-package org.didelphis.language.machines;
+package org.didelphis.language.automata;
 
 import org.didelphis.io.ClassPathFileHandler;
-import org.didelphis.io.FileHandler;
+import org.didelphis.language.automata.interfaces.StateMachine;
+import org.didelphis.language.automata.sequences.SequenceMatcher;
+import org.didelphis.language.automata.sequences.SequenceParser;
 import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.language.parsing.ParseException;
-import org.didelphis.language.machines.interfaces.StateMachine;
-import org.didelphis.language.machines.sequences.SequenceMatcher;
-import org.didelphis.language.machines.sequences.SequenceParser;
 import org.didelphis.language.phonetic.SequenceFactory;
 import org.didelphis.language.phonetic.features.IntegerFeature;
+import org.didelphis.language.phonetic.model.FeatureMapping;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.junit.jupiter.api.BeforeAll;
@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Samantha Fiona McCabe
- * Date: 2/28/2015
+ * @date 2/28/2015
  */
 public class StandardStateMachineModelTest {
 
@@ -53,13 +53,13 @@ public class StandardStateMachineModelTest {
 
 		FormatterMode mode = FormatterMode.INTELLIGENT;
 
-		FileHandler handler = ClassPathFileHandler.INSTANCE;
-		
-		factory = new SequenceFactory<>(new FeatureModelLoader<>(
+		FeatureModelLoader<Integer> loader = new FeatureModelLoader<>(
 				IntegerFeature.INSTANCE,
 				ClassPathFileHandler.INSTANCE,
 				name
-		).getFeatureMapping(), mode);
+		);
+		FeatureMapping<Integer> featureMapping = loader.getFeatureMapping();
+		factory = new SequenceFactory<>(featureMapping, mode);
 	}
 	
 	@Test
@@ -290,7 +290,8 @@ public class StandardStateMachineModelTest {
 	private static StateMachine<Sequence<Integer>> getMachine(String expression) {
 		SequenceParser<Integer> parser = new SequenceParser<>(factory);
 		SequenceMatcher<Integer> matcher = new SequenceMatcher<>(parser);
-		return StandardStateMachine.create("M0", expression, parser, matcher, ParseDirection.FORWARD);
+		
+		return StandardStateMachine.create("M0", parser.parseExpression(expression), parser, matcher, ParseDirection.FORWARD);
 	}
 
 	private static void test(StateMachine<Sequence<Integer>> stateMachine,

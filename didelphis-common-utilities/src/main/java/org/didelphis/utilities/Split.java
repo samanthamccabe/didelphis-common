@@ -1,45 +1,71 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.utilities;
 
-import org.jetbrains.annotations.NotNull;
+import lombok.AccessLevel;
+import lombok.NonNull;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Split (Utility) - a class for general string segmentation tools, bracket
- * matching, and related tasks
- * Created by samantha on 3/3/17.
+ * Utility class {@code Split}
+ *
+ * General collection of String segmentation tools, bracket matching, and
+ * related tasks
+ *
+ * @date 2017-03-03
  */
-public final class Split {
+@UtilityClass
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class Split {
 
-	private static final Pattern NEWLINE = Pattern.compile("\r?\n|\r");
+	Pattern NEWLINE = Pattern.compile("\r?\n|\r");
+	Pattern WHITESPACE = Pattern.compile("\\s+");
 
-	private Split(){}
-
-	public static List<String> splitLines(CharSequence lines) {
+	public Map<String, String> DELIMITERS = new HashMap<>();
+	static {
+		DELIMITERS.put("[", "]");
+		DELIMITERS.put("(", ")");
+		DELIMITERS.put("{", "}");
+	}
+	
+	/**
+	 * @param lines
+	 *
+	 * @return
+	 */
+	@NonNull
+	public List<String> lines(@NonNull CharSequence lines) {
 		return Arrays.asList(NEWLINE.split(lines));
 	}
 
-	@NotNull
-	public static List<String> splitToList(
-			@NotNull String string, @Nullable Iterable<String> special) {
+	/**
+	 * @param string
+	 * @param special
+	 *
+	 * @return
+	 */
+	@NonNull
+	public List<String> toList(
+			@NonNull String string, @Nullable Iterable<String> special
+	) {
 		List<String> strings = new ArrayList<>();
 		for (int i = 0; i < string.length(); i++) {
 
@@ -69,51 +95,134 @@ public final class Split {
 		}
 		return strings;
 	}
-
-	/**
-	 * Finds the closing bracket which accompanies
-	 * @param string
-	 * @param index
-	 * @return
-	 */
-	public static int parseParens(@NotNull CharSequence string, int index) {
-		switch (string.charAt(index)) {
-			case '[':
-				return findClosingBracket(string, '[', ']', index);
-			case '(':
-				return findClosingBracket(string, '(', ')', index);
-			case '{':
-				return findClosingBracket(string, '{', '}', index);
-			default:
-				return -1;
+	
+	@NonNull
+	public List<String> whitespace(String string) {
+		List<String> list = new ArrayList<>();
+		int cursor = 0;
+		for (int i = 0; i < string.length();) {
+			String substring = string.substring(i);
+			Matcher matcher = WHITESPACE.matcher(substring);
+			if (matcher.lookingAt()) {
+				String chunk = string.substring(cursor, i);
+				list.add(chunk);
+				int end = matcher.end();
+				cursor = end + i;
+				i = cursor;
+			} else {
+				int end = parseParens(string, i);
+				if (end > i) {
+					i = end;
+				} else {
+					i++;
+				}
+			}
 		}
+		
+		if (cursor < string.length()) {
+			list.add(string.substring(cursor, string.length()));
+		}
+		
+		return list;
+	}
+	
+	/**
+	 * Finds the index of the bracket matching the one at {@code index} within
+	 * the provided {@code String}.
+	 *
+	 * @param string the {@link CharSequence} to be matched for
+	 * @param index of the opening bracket.
+	 *
+	 * @return the index of the corresponding closing bracket.
+	 */
+	public int parseParens(@NonNull String string, int index) {
+		return parseParens(string, DELIMITERS, index);
+	}
+	
+	public int parseParens(
+			@NonNull String string, 
+			@NonNull Map<String, String> parens,
+			int index
+	) {
+		return parens.entrySet()
+				.stream()
+				.filter(entry -> string.startsWith(entry.getKey(), index))
+				.findFirst()
+				.map(entry -> findClosingBracket(string,
+						entry.getKey(),
+						entry.getValue(),
+						index
+				))
+				.orElse(-1);
 	}
 
 	/**
-	 * 
+	 *  Determines the index of the closing bracket which corresponds to the 
+	 *  opening bracket in {@param string}, located at {@param startIndex}
+	 *
 	 * @param string
+	 * @param startIndex
 	 * @param left
 	 * @param right
-	 * @param startIndex
+	 *
 	 * @return
 	 */
-	public static int findClosingBracket(@NotNull CharSequence string, char left,
-			char right, int startIndex) {
+	public int findClosingBracket(
+			@NonNull CharSequence string, int startIndex, char left, char right
+	) {
 		int count = 1;
 		int endIndex = startIndex;
-
-		boolean matched = false;
-		for (int i = startIndex + 1; i < string.length() && !matched; i++) {
+		for (int i = startIndex + 1; i < string.length(); i++) {
 			char ch = string.charAt(i);
 			if (ch == right && count == 1) {
-				matched = true;
 				endIndex = i;
+				break;
 			} else if (ch == right) {
 				count++;
 			} else if (ch == left) {
 				count--;
 			}
 		}
+		/* 'endIndex' is the index of the closing bracket; we advance by 1 to 
+		 * because we always need the next index for a substring that includes
+		 * the closing bracket, or we need to continue operations after the
+		 * bracketed expression is closed. 
+		 */
+		return endIndex + 1;
+	}
+
+	/**
+	 * Determines the index of the closing bracket which corresponds to the
+	 * opening bracket in {@param string}, located at {@param startIndex}
+	 * 
+	 * @param string
+	 * @param left
+	 * @param right
+	 * @param startIndex
+	 *
+	 * @return
+	 */
+	public int findClosingBracket(
+			@NonNull String string, @NonNull String left, @NonNull String right, int startIndex
+	) {
+		int count = 1;
+		int endIndex = startIndex;
+
+		for (int i = startIndex + 1; i < string.length(); i++) {
+			if (string.startsWith(right, i) && count == 1) {
+				endIndex = i;
+				break;
+			} else if (string.startsWith(right, i)) {
+				count++;
+			} else if (string.startsWith(left, i)) {
+				count--;
+			}
+		}
+		/* 'endIndex' is the index of the closing bracket; we advance by 1 to
+		 * because we always need the next index for a substring that includes
+		 * the closing bracket, or we need to continue operations after the
+		 * bracketed expression is closed.
+		 */
 		return endIndex + 1;
 	}
 }

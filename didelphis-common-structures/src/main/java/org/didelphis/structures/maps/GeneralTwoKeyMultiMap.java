@@ -1,89 +1,75 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.structures.maps;
 
-import org.didelphis.structures.contracts.Delegating;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.maps.interfaces.TwoKeyMultiMap;
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
+ * Class {@code GeneralTwoKeyMultiMap}
+ *
  * @author Samantha Fiona McCabe
- * Date: 4/10/2016
+ * @date 2016/04/10
+ * @since 0.1.0
  */
-@SuppressWarnings("rawtypes")
-public class GeneralTwoKeyMultiMap<T, U, V> 
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+public class GeneralTwoKeyMultiMap<T, U, V>
 		extends GeneralTwoKeyMap<T, U, Collection<V>>
 		implements TwoKeyMultiMap<T, U, V> {
 
-	private static final int HASH_ID = 0x50de3d56;
-	
-	private final Class<? extends Collection> type;
+	private final Supplier<? extends Collection<V>> collectionSupplier;
+
 
 	public GeneralTwoKeyMultiMap() {
-		//noinspection unchecked
-		type = HashSet.class;
-	}
-
-	public GeneralTwoKeyMultiMap(
-			@NotNull Map<T, Map<U, Collection<V>>> delegateMap,
-			@NotNull Class<? extends Collection> type
-	) {
-		super(delegateMap);
-		this.type = type;
+		collectionSupplier = Suppliers.ofHashSet();
 	}
 	
 	public GeneralTwoKeyMultiMap(
-			@NotNull Delegating<Map<T, Map<U, Collection<V>>>> map,
-			@NotNull Class<? extends Collection> type
+			@NonNull Map<T, Map<U, Collection<V>>> delegate,
+			@NonNull Supplier<Map<U, Collection<V>>> mapSupplier,
+			@NonNull Supplier<? extends Collection<V>> collectionSupplier
 	) {
-		super(MapUtils.copyTwoKeyMultiMap(map.getDelegate(), type));
-		this.type = type;
+		super(delegate, mapSupplier);
+		this.collectionSupplier = collectionSupplier;
+	}
+	
+	public GeneralTwoKeyMultiMap(GeneralTwoKeyMultiMap<T, U, V> map) {
+		this(MapUtils.copyTwoKeyMultiMap(map.getDelegate()),
+				map.getMapSupplier(),
+				map.collectionSupplier);
 	}
 
+
 	@Override
-	public void add(T k1, U k2, V value) {
-		if (contains(k1, k2)) {
-			get(k1, k2).add(value);
-		} else {
-			Collection<V> set = MapUtils.newCollection(type);
+	public void add(T k1, U k2, @Nullable V value) {
+		Collection<V> collection = get(k1, k2);
+		if (collection == null) {
+			Collection<V> set = collectionSupplier.get();
 			set.add(value);
 			put(k1, k2, set);
+		} else {
+			collection.add(value);
 		}
-	}
-	
-	@Override
-	public int hashCode() {
-		return HASH_ID * Objects.hash(getDelegate());
-	}
-	
-	@Override
-	public boolean equals(Object object) {
-		if (object == this) return true;
-		if (!(object instanceof GeneralTwoKeyMultiMap)) return false;
-		Delegating<?> map = (Delegating<?>) object;
-		return getDelegate().equals(map.getDelegate());
-	}
-	
-	@NotNull
-	@Override
-	public String toString() {
-		return getClass().getName() + '{' + getDelegate() + '}';
 	}
 }

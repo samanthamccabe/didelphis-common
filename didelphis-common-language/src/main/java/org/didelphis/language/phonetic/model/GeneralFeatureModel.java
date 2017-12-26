@@ -1,59 +1,63 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.language.phonetic.model;
 
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.FieldDefaults;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.FeatureType;
 import org.didelphis.language.phonetic.features.SparseFeatureArray;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import lombok.NonNull;
 
 import java.text.Normalizer.Form;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.text.Normalizer.normalize;
-import static org.didelphis.utilities.Patterns.compile;
+import static org.didelphis.utilities.PatternUtils.compile;
 
 /**
  * Class {@code GeneralFeatureModel}
  *
  * @author Samantha Fiona McCabe
+ * @date 2017-06-09
  * @since 0.1.0
- *
- * Date: 2017-06-09
  */
-public class GeneralFeatureModel<T> implements FeatureModel<T> {
+@ToString
+@EqualsAndHashCode
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+public final class GeneralFeatureModel<T> implements FeatureModel<T> {
 
-	private static final String VALUE = "(-?\\d|[A-Zα-ω]+)";
-	private static final String NAME = "(\\w+)";
-	private static final String ASSIGN = "([=:><])";
+	static String VALUE  = "(-?\\d|[A-Zα-ω]+)";
+	static String NAME   = "(\\w+)";
+	static String ASSIGN = "([=:><])";
 
-	private static final Pattern VALUE_PATTERN = compile(VALUE, ASSIGN, NAME);
-	private static final Pattern BINARY_PATTERN = compile("([+\\-−])", NAME);
-	private static final Pattern FEATURE_PATTERN = compile("[,;]\\s*|\\s+");
-	private static final Pattern BRACKETS_PATTERN = compile("\\[([^]]+)]");
+	static Pattern VALUE_PATTERN   = compile(VALUE, ASSIGN, NAME);
+	static Pattern BINARY_PATTERN  = compile("([+\\-−])", NAME);
+	static Pattern FEATURE_PATTERN = compile("[,;]\\s*|\\s+");
+	static Pattern BRACKET_PATTERN = compile("\\[(.+?)]");
 
-	private final FeatureSpecification specification;
-	private final List<Constraint<T>> constraints;
-	private final Map<String, FeatureArray<T>> aliases;
-	private final FeatureType<T> featureType;
+	FeatureSpecification specification;
+	List<Constraint<T>> constraints;
+	Map<String, FeatureArray<T>> aliases;
+	FeatureType<T> featureType;
 
 	/**
 	 * @param featureType
@@ -62,47 +66,29 @@ public class GeneralFeatureModel<T> implements FeatureModel<T> {
 	 * @param aliases
 	 */
 	public GeneralFeatureModel(
-			@NotNull FeatureType<T> featureType,
-			@NotNull FeatureSpecification specification,
-			@NotNull List<Constraint<T>> constraints,
-			@NotNull Map<String, FeatureArray<T>> aliases) {
+			@NonNull FeatureType<T> featureType,
+			@NonNull FeatureSpecification specification,
+			@NonNull List<Constraint<T>> constraints,
+			@NonNull Map<String, FeatureArray<T>> aliases
+	) {
 		this.featureType = featureType;
 		this.specification = specification;
 		this.constraints = constraints;
 		this.aliases = aliases;
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(specification, constraints, aliases, featureType);
-	}
 
-	@Override
-	public boolean equals(@Nullable Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null || getClass() != obj.getClass()) {
-			return false;
-		}
-		final GeneralFeatureModel other = (GeneralFeatureModel) obj;
-		return Objects.equals(this.specification, other.specification) &&
-				Objects.equals(this.featureType, other.featureType) &&
-				Objects.equals(this.constraints, other.constraints) &&
-				Objects.equals(this.aliases, other.aliases);
-	}
-
-	@NotNull
+	@NonNull
 	@Override
 	public List<Constraint<T>> getConstraints() {
 		return constraints;
 	}
 
-	@NotNull
+	@NonNull
 	@Override
-	public FeatureArray<T> parseFeatureString(@NotNull String string) {
-		String normal = normalize(string, Form.NFKC);
-		String pattern = BRACKETS_PATTERN.matcher(normal).replaceAll("$1");
+	public FeatureArray<T> parseFeatureString(@NonNull String string) {
+		CharSequence normal = normalize(string, Form.NFKC);
+		CharSequence pattern = BRACKET_PATTERN.matcher(normal).replaceAll("$1");
 		FeatureArray<T> arr = new SparseFeatureArray<>(this);
 		Map<String, Integer> indices = specification.getFeatureIndices();
 		for (String element : FEATURE_PATTERN.split(pattern)) {
@@ -123,30 +109,40 @@ public class GeneralFeatureModel<T> implements FeatureModel<T> {
 					int value = retrieveIndex(featureName, string, indices);
 					arr.set(value, featureType.parseValue(featureValue));
 				} else {
-					throw new ParseException("Unrecognized feature \"" + 
-							element + "\" in definition.", string);
+					throw ParseException.builder()
+							.add("Unrecognized feature '{}' in definition")
+							.with(element)
+							.data(string)
+							.build();
 				}
 			}
 		}
 		return arr;
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public FeatureType<T> getFeatureType() {
 		return featureType;
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public FeatureSpecification getSpecification() {
 		return specification;
 	}
 
-	private static int retrieveIndex(String label, String string, @NotNull Map<String, Integer> names) {
+	private static int retrieveIndex(
+			@NonNull String label,
+			@NonNull String string,
+			@NonNull Map<String, Integer> names
+	) {
 		if (names.containsKey(label)) {
 			return names.get(label);
 		}
-		throw new IllegalArgumentException("Invalid feature label " + label + " in " + string);
+		throw ParseException.builder().add("Invalid feature label {}")
+				.with(label)
+				.data(string)
+				.build();
 	}
 }

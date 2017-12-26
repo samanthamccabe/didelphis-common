@@ -1,16 +1,16 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 /*
  * To change this template, choose Tools | Templates
@@ -19,16 +19,17 @@
 
 package org.didelphis.language.phonetic.segments;
 
+import lombok.NonNull;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureSpecification;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
 /**
  * @author Samantha Fiona McCabe
- * @since 0.1.0 Date: 2017-03-16
+ * @since 0.1.0
+	 * @date 2017-03-16
  */
 public class StandardSegment<T> implements Segment<T> {
 
@@ -40,7 +41,7 @@ public class StandardSegment<T> implements Segment<T> {
 	 *
 	 * @param segment the {@code Segment} to be copied
 	 */
-	public StandardSegment(@NotNull Segment<T> segment) {
+	public StandardSegment(@NonNull Segment<T> segment) {
 		symbol = segment.getSymbol();
 		features = segment.getFeatures();
 	}
@@ -50,8 +51,6 @@ public class StandardSegment<T> implements Segment<T> {
 	 *
 	 * @param symbol the phonetic symbol representing this segment
 	 * @param featureArray the feature array representing this segment
-	 * @param modelParam the model corresponding to the symbol and feature
-	 * 		array
 	 */
 	public StandardSegment(String symbol, FeatureArray<T> featureArray) {
 		this.symbol = symbol;
@@ -66,7 +65,7 @@ public class StandardSegment<T> implements Segment<T> {
 	 * @return a new segment based on this one with modifications from the other
 	 */
 	@Override
-	public boolean alter(@NotNull Segment<T> segment) {
+	public boolean alter(@NonNull Segment<T> segment) {
 		return features.alter(segment.getFeatures());
 	}
 
@@ -80,28 +79,35 @@ public class StandardSegment<T> implements Segment<T> {
 	 * 		equal
 	 */
 	@Override
-	public boolean matches(@NotNull Segment<T> segment) {
+	public boolean matches(@NonNull Segment<T> segment) {
 		if (features.size() == 0 && segment.getFeatures().size() == 0) {
 			return symbol.equals(segment.getSymbol());
 		}
 		return features.matches(segment.getFeatures());
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public String getSymbol() {
 		return symbol;
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public FeatureArray<T> getFeatures() {
 		return features;
 	}
 
+	@NonNull
 	@Override
 	public FeatureModel<T> getFeatureModel() {
 		return features.getFeatureModel();
+	}
+
+	@NonNull
+	@Override
+	public FeatureSpecification getSpecification() {
+		return features.getSpecification();
 	}
 
 	@Override
@@ -128,7 +134,7 @@ public class StandardSegment<T> implements Segment<T> {
 	}
 
 	@Override
-	public int compareTo(Segment<T> o) {
+	public int compareTo(@NonNull Segment<T> o) {
 		if (equals(o)) {
 			return 0;
 		} else {
@@ -140,11 +146,6 @@ public class StandardSegment<T> implements Segment<T> {
 			}
 			return value;
 		}
-	}
-
-	@Override
-	public FeatureSpecification getSpecification() {
-		return features.getSpecification();
 	}
 
 }

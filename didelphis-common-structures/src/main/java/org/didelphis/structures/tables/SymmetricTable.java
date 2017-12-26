@@ -1,29 +1,24 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.structures.tables;
 
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -41,7 +36,7 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 		array = new ArrayList<>(n + ((n * n) / 2));
 	}
 
-	public SymmetricTable(int n, @NotNull List<E> array) {
+	public SymmetricTable(int n, @NonNull List<E> array) {
 		super(n, n);
 		int size = n + ((n * n - n) / 2);
 		if (array.size() == size) {
@@ -62,25 +57,25 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 		}
 	}
 
-	protected SymmetricTable(@NotNull SymmetricTable<E> otherTable) {
+	protected SymmetricTable(@NonNull SymmetricTable<E> otherTable) {
 		this(otherTable.rows());
 		array.addAll(otherTable.array);
 	}
-
-	@NotNull
+	
+	@NonNull
 	@Override
 	public E get(int row, int col) {
 		return array.get(getIndex(col, row));
 	}
 
-	@NotNull
+	@NonNull
 	@Override
-	public E set(int row, int col, @NotNull E element) {
+	public E set(int row, int col, @NonNull E element) {
 		int index = getIndex(col, row);
 		return array.set(index, element);
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public
 	List<E> getRow(int row) {
@@ -93,17 +88,17 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 		return collection;
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public
 	List<E> getColumn(int col) {
 		return getRow(col);
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public
-	List<E> setRow(int row, @NotNull List<E> data) {
+	List<E> setRow(int row, @NonNull List<E> data) {
 		checkRow(row);
 		checkRowData(data);
 		List<E> original = new ArrayList<>();
@@ -116,39 +111,39 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 		return original;
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public
-	List<E> setColumn(int col, @NotNull List<E> data) {
+	List<E> setColumn(int col, @NonNull List<E> data) {
 		return setRow(col, data);
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public Stream<E> stream() {
 		return array.stream();
 	}
 
 	@Override
-	public void apply(@NotNull Function<E, E> function) {
+	public void apply(@NonNull Function<E, E> function) {
 		for (int i = 0; i < array.size(); i++) {
 			array.set(i, function.apply(array.get(i)));
 		}
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public Iterator<Collection<E>> rowIterator() {
 		return new ColumnIterator<>(array, columns());
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public Iterator<Collection<E>> columnIterator() {
 		return new ColumnIterator<>(array, columns());
 	}
 
-	@NotNull
+	@NonNull
 	@Deprecated
 	@Override
 	public String formattedTable() {
@@ -169,7 +164,7 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(array);
+		return SymmetricTable.class.hashCode() ^ array.hashCode();
 	}
 
 	@Override
@@ -180,7 +175,7 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 		return Objects.equals(array, that.array);
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public String toString() {
 		return "SymmetricTable{"+ rows() + ": " + array + '}';
@@ -238,7 +233,7 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 	}
 
 	@Override
-	public void insertRow(int row, @NotNull Collection<E> data) {
+	public void insertRow(int row, @NonNull Collection<E> data) {
 		checkRow(row);
 		int size = columns() + 1;
 		if (data.size() != size) {
@@ -265,21 +260,20 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 	}
 
 	@Override
-	public void insertColumn(int col, @NotNull Collection<E> data) {
+	public void insertColumn(int col, @NonNull Collection<E> data) {
 		insertRow(col, data);
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public Collection<E> removeRow(int row) {
 		checkRow(row);
-		Collection<E> list = new ArrayList<>();
 		// Get index to start
 		int start = getIndex(row, 0);
 		// Remove r+1 elements
-		for (int i = 0; i < row + 1; i++) {
-			list.add(array.remove(start));
-		}
+		Collection<E> list = IntStream.range(0, row + 1)
+				.mapToObj(i -> array.remove(start))
+				.collect(Collectors.toList());
 		// While elements remain:
 		int i = 1;
 		while (list.size() < rows()) {
@@ -294,7 +288,7 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 		return list;
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public Collection<E> removeColumn(int col) {
 		return removeRow(col);
@@ -313,10 +307,10 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 
 		private final List<E> array;
 		private final int columns;
-		private int i = 0;
+		private int i;
 
 		private ColumnIterator(List<E> list, int columns) {
-			this.array = list;
+			array = list;
 			this.columns = columns;
 		}
 
@@ -330,10 +324,9 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 			if (i >= columns) {
 				throw new NoSuchElementException();
 			}
-			Collection<E> list = new ArrayList<>();
-			for (int j = 0; j < columns; j++) {
-				list.add(array.get(getIndex(i, j)));
-			}
+			Collection<E> list = IntStream.range(0, columns)
+					.mapToObj(j -> array.get(getIndex(i, j)))
+					.collect(Collectors.toList());
 			i++;
 			return list;
 		}

@@ -1,35 +1,27 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.structures.tables;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static java.util.Arrays.asList;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by samantha on 4/1/17.
@@ -41,10 +33,10 @@ class RectangularTableTest {
 	@BeforeEach
 	void init() {
 		List<List<String>> data = new ArrayList<>();
-		data.add(Arrays.asList( "0", "1", "2"));
-		data.add(Arrays.asList( "3", "4", "5"));
-		data.add(Arrays.asList( "6", "7", "8"));
-		data.add(Arrays.asList( "9", "A", "B"));
+		data.add(asList( "0", "1", "2"));
+		data.add(asList( "3", "4", "5"));
+		data.add(asList( "6", "7", "8"));
+		data.add(asList( "9", "A", "B"));
 
 		table = new RectangularTable<>(data, 4, 3);
 	}
@@ -59,7 +51,7 @@ class RectangularTableTest {
 	}
 
 	@Test
-	void constructor1_IndexOutOfBounds() {
+	void constructor1ThrowsIndexOutOfBounds() {
 		assertThrows(IndexOutOfBoundsException.class,
 				() -> new RectangularTable<>("", -1, -1));
 	}
@@ -126,7 +118,7 @@ class RectangularTableTest {
 	}
 
 	@Test
-	void set_IndexOutOfBounds() {
+	void setThrowIndexOutOfBounds() {
 		assertThrows(IndexOutOfBoundsException.class,
 		             () -> table.set(-1,0, ""));
 		assertThrows(IndexOutOfBoundsException.class,
@@ -177,14 +169,14 @@ class RectangularTableTest {
 
 	@Test
 	void getRow() {
-		assertEquals(Arrays.asList("0", "1", "2"), table.getRow(0));
-		assertEquals(Arrays.asList("3", "4", "5"), table.getRow(1));
-		assertEquals(Arrays.asList("6", "7", "8"), table.getRow(2));
-		assertEquals(Arrays.asList("9", "A", "B"), table.getRow(3));
+		assertEquals(asList("0", "1", "2"), table.getRow(0));
+		assertEquals(asList("3", "4", "5"), table.getRow(1));
+		assertEquals(asList("6", "7", "8"), table.getRow(2));
+		assertEquals(asList("9", "A", "B"), table.getRow(3));
 	}
 
 	@Test
-	void getRow_IndexOutOfBounds() {
+	void getRowThrowsIndexOutOfBounds() {
 		assertThrows(IndexOutOfBoundsException.class,
 		             () -> table.getRow(-1));
 		assertThrows(IndexOutOfBoundsException.class,
@@ -193,13 +185,13 @@ class RectangularTableTest {
 
 	@Test
 	void getColumn() {
-		assertEquals(Arrays.asList("0", "3", "6", "9"), table.getColumn(0));
-		assertEquals(Arrays.asList("1", "4", "7", "A"), table.getColumn(1));
-		assertEquals(Arrays.asList("2", "5", "8", "B"), table.getColumn(2));
+		assertEquals(asList("0", "3", "6", "9"), table.getColumn(0));
+		assertEquals(asList("1", "4", "7", "A"), table.getColumn(1));
+		assertEquals(asList("2", "5", "8", "B"), table.getColumn(2));
 	}
 
 	@Test
-	void getColumn_IndexOutOfBounds() {
+	void getColumnThrowsIndexOutOfBounds() {
 		assertThrows(IndexOutOfBoundsException.class,
 		             () -> table.getColumn(-1));
 		assertThrows(IndexOutOfBoundsException.class,
@@ -208,36 +200,45 @@ class RectangularTableTest {
 
 	@Test
 	void setRow() {
-		assertEquals(Arrays.asList("0", "1", "2"), table.setRow(0, Arrays.asList("!", "%", "W")));
-		assertEquals(Arrays.asList("3", "4", "5"), table.setRow(1, Arrays.asList("@", "^", "X")));
-		assertEquals(Arrays.asList("6", "7", "8"), table.setRow(2, Arrays.asList("#", "&", "Y")));
-		assertEquals(Arrays.asList("9", "A", "B"), table.setRow(3, Arrays.asList("$", "*", "Z")));
+		List<String> row0 = asList("!", "%", "W");
+		List<String> row1 = asList("@", "^", "X");
+		List<String> row2 = asList("#", "&", "Y");
+		List<String> row3 = asList("$", "*", "Z");
+		
+		assertEquals(asList("0", "1", "2"), table.setRow(0, row0));
+		assertEquals(asList("3", "4", "5"), table.setRow(1, row1));
+		assertEquals(asList("6", "7", "8"), table.setRow(2, row2));
+		assertEquals(asList("9", "A", "B"), table.setRow(3, row3));
 
-		assertEquals(Arrays.asList("!", "%", "W"), table.getRow(0)) ;
-		assertEquals(Arrays.asList("@", "^", "X"), table.getRow(1)) ;
-		assertEquals(Arrays.asList("#", "&", "Y"), table.getRow(2)) ;
-		assertEquals(Arrays.asList("$", "*", "Z"), table.getRow(3)) ;
+		assertEquals(row0, table.getRow(0)) ;
+		assertEquals(row1, table.getRow(1)) ;
+		assertEquals(row2, table.getRow(2)) ;
+		assertEquals(row3, table.getRow(3)) ;
 	}
 
 	@Test
-	void setRow_IllegalArgument() {
+	void setRowThrowsIllegalArgument() {
 		assertThrows(IllegalArgumentException.class,
 		             () -> table.setRow(0, new ArrayList<>()));
 	}
 
 	@Test
 	void setColumn() {
-		assertEquals(Arrays.asList("0", "3", "6", "9"), table.setColumn(0, Arrays.asList("X", "Y", "Z", "W")));
-		assertEquals(Arrays.asList("1", "4", "7", "A"), table.setColumn(1, Arrays.asList("!", "@", "#", "$")));
-		assertEquals(Arrays.asList("2", "5", "8", "B"), table.setColumn(2, Arrays.asList("%", "^", "&", "*")));
-
-		assertEquals(Arrays.asList("X", "Y", "Z", "W"), table.getColumn(0));
-		assertEquals(Arrays.asList("!", "@", "#", "$"), table.getColumn(1));
-		assertEquals(Arrays.asList("%", "^", "&", "*"), table.getColumn(2));
+		List<String> column0 = asList("X", "Y", "Z", "W");
+		List<String> column1 = asList("!", "@", "#", "$");
+		List<String> column2 = asList("%", "^", "&", "*");
+		
+		assertEquals(asList("0", "3", "6", "9"), table.setColumn(0, column0));
+		assertEquals(asList("1", "4", "7", "A"), table.setColumn(1, column1));
+		assertEquals(asList("2", "5", "8", "B"), table.setColumn(2, column2));
+		
+		assertEquals(column0, table.getColumn(0));
+		assertEquals(column1, table.getColumn(1));
+		assertEquals(column2, table.getColumn(2));
 	}
 
 	@Test
-	void setColumn_IllegalArgument() {
+	void setColumnThrowsIllegalArgument() {
 		assertThrows(IllegalArgumentException.class,
 		             () -> table.setColumn(0, new ArrayList<>()));
 	}
@@ -261,27 +262,27 @@ class RectangularTableTest {
 	}
 
 	@Test
-	void expand_2_1() {
+	void expand2By1() {
 		table.expand(2, 1, "");
 		assertEquals(6, table.rows());
 		assertEquals(4, table.columns());
 
-		assertEquals(Arrays.asList("0", "1", "2", ""), table.getRow(0));
-		assertEquals(Arrays.asList("3", "4", "5", ""), table.getRow(1));
-		assertEquals(Arrays.asList("", "", "", ""), table.getRow(5));
+		assertEquals(asList("0", "1", "2", ""), table.getRow(0));
+		assertEquals(asList("3", "4", "5", ""), table.getRow(1));
+		assertEquals(asList("", "", "", ""), table.getRow(5));
 
-		assertEquals(Arrays.asList("0", "3", "6", "9", "", ""), table.getColumn(0));
+		assertEquals(asList("0", "3", "6", "9", "", ""), table.getColumn(0));
 	}
 
 	@Test
-	void expand_0_0() {
+	void expand0By0() {
 		table.expand(0, 0,"");
 		assertEquals(4, table.rows());
 		assertEquals(3, table.columns());
 	}
 	
 	@Test
-	void expand_IllegalArgument() {
+	void expandThrowsIllegalArgument() {
 		assertThrows(IllegalArgumentException.class,
 				() -> table.expand(-1, 0, ""));
 		assertThrows(IllegalArgumentException.class,
@@ -289,28 +290,28 @@ class RectangularTableTest {
 	}
 
 	@Test
-	void shrink_1_1() {
-		table.shrink(1,1);
+	void shrink1By1() {
+		table.shrink(1, 1);
 		assertEquals(3, table.rows());
 		assertEquals(2, table.columns());
 
-		assertEquals(Arrays.asList("0", "1"), table.getRow(0));
-		assertEquals(Arrays.asList("3", "4"), table.getRow(1));
-		assertEquals(Arrays.asList("6", "7"), table.getRow(2));
+		assertEquals(asList("0", "1"), table.getRow(0));
+		assertEquals(asList("3", "4"), table.getRow(1));
+		assertEquals(asList("6", "7"), table.getRow(2));
 
-		assertEquals(Arrays.asList("0", "3", "6"), table.getColumn(0));
-		assertEquals(Arrays.asList("1", "4", "7"), table.getColumn(1));
+		assertEquals(asList("0", "3", "6"), table.getColumn(0));
+		assertEquals(asList("1", "4", "7"), table.getColumn(1));
 	}
 	
 	@Test
-	void shrink_0_0() {
+	void shrink0By0() {
 		table.shrink(0, 0);
 		assertEquals(4, table.rows());
 		assertEquals(3, table.columns());
 	}
 	
 	@Test
-	void shrink_IllegalArgument() {
+	void shrinkThrowsIllegalArgument() {
 		assertThrows(IllegalArgumentException.class,
 				() -> table.shrink(-1, 0));
 		assertThrows(IllegalArgumentException.class,
@@ -319,26 +320,26 @@ class RectangularTableTest {
 	
 	@Test
 	void insertRowIndex0() {
-		List<String> data = Arrays.asList("X", "Y", "Z");
+		List<String> data = asList("X", "Y", "Z");
 		table.insertRow(0, data);
 
 		assertEquals(data, table.getRow(0));
-		assertEquals(Arrays.asList("0", "1", "2"), table.getRow(1));
+		assertEquals(asList("0", "1", "2"), table.getRow(1));
 		assertEquals(5, table.rows());
 	}
 
 	@Test
 	void insertRowIndex1() {
-		List<String> data = Arrays.asList("X", "Y", "Z");
+		List<String> data = asList("X", "Y", "Z");
 		table.insertRow(1, data);
 
-		assertEquals(Arrays.asList("0", "1", "2"), table.getRow(0));
+		assertEquals(asList("0", "1", "2"), table.getRow(0));
 		assertEquals(data, table.getRow(1));
 		assertEquals(5, table.rows());
 	}
 
 	@Test
-	void insertRow_IndexOutOfBounds() {
+	void insertRowThrowsIndexOutOfBounds() {
 		assertThrows(IndexOutOfBoundsException.class,
 				() -> table.insertRow(-1, new ArrayList<>()));
 		assertThrows(IndexOutOfBoundsException.class,
@@ -348,33 +349,33 @@ class RectangularTableTest {
 	}
 
 	@Test
-	void insertRow_IllegalArgument() {
+	void insertRowThrowsIllegalArgument() {
 		assertThrows(IllegalArgumentException.class,
 				() -> table.insertRow(0, new ArrayList<>()));
 	}
 	
 	@Test
 	void insertColumnIndex0() {
-		List<String> data = Arrays.asList("W", "X", "Y", "Z");
+		List<String> data = asList("W", "X", "Y", "Z");
 		table.insertColumn(0, data);
 
 		assertEquals(4, table.columns());
 		assertEquals(data, table.getColumn(0));
-		assertEquals(Arrays.asList("0", "3", "6", "9"), table.getColumn(1));
+		assertEquals(asList("0", "3", "6", "9"), table.getColumn(1));
 	}
 
 	@Test
 	void insertColumnIndex1() {
-		List<String> data = Arrays.asList("W", "X", "Y", "Z");
+		List<String> data = asList("W", "X", "Y", "Z");
 		table.insertColumn(1, data);
 		assertEquals(4, table.columns());
-		assertEquals(Arrays.asList("0", "3", "6", "9"), table.getColumn(0));
+		assertEquals(asList("0", "3", "6", "9"), table.getColumn(0));
 		assertEquals(data, table.getColumn(1));
-		assertEquals(Arrays.asList("1", "4", "7", "A"), table.getColumn(2));
+		assertEquals(asList("1", "4", "7", "A"), table.getColumn(2));
 	}
 
 	@Test
-	void insertColumn_IndexOutOfBounds() {
+	void insertColumnThrowsIndexOutOfBounds() {
 		assertThrows(IndexOutOfBoundsException.class,
 				() -> table.insertColumn(-1, new ArrayList<>()));
 		assertThrows(IndexOutOfBoundsException.class,
@@ -385,37 +386,40 @@ class RectangularTableTest {
 
 	@Test
 	void removeRow() {
-		assertEquals(Arrays.asList("0", "1", "2"), table.removeRow(0));
+		assertEquals(asList("0", "1", "2"), table.removeRow(0));
 		assertEquals(3, table.rows());
-		assertEquals(Arrays.asList("6", "7", "8"), table.removeRow(1));
+		
+		assertEquals(asList("6", "7", "8"), table.removeRow(1));
 		assertEquals(2, table.rows());
 
-		assertEquals(Arrays.asList("3", "4", "5"), table.getRow(0));
+		assertEquals(asList("3", "4", "5"), table.getRow(0));
 	}
 
 	@Test
 	void removeColumnIndex0() {
-		assertEquals(Arrays.asList("0", "3", "6", "9"), table.removeColumn(0));
+		assertEquals(asList("0", "3", "6", "9"), table.removeColumn(0));
 		assertEquals(2, table.columns());
 	}
 
 	@Test
 	void removeColumnIndex1() {
-		assertEquals(Arrays.asList("1", "4", "7", "A"), table.removeColumn(1));
+		assertEquals(asList("1", "4", "7", "A"), table.removeColumn(1));
 		assertEquals(2, table.columns());
 	}
 
 	@Test
 	void removeColumnIndex2() {
-		assertEquals(Arrays.asList("2", "5", "8", "B"), table.removeColumn(2));
+		assertEquals(asList("2", "5", "8", "B"), table.removeColumn(2));
 		assertEquals(2, table.columns());
 	}
 
 	@Test
 	void getDelegate() {
-		assertEquals(
-				Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B"),
-		        table.getDelegate()
+		assertEquals(asList(
+				"0", "1", "2", "3", "4", "5",
+				"6", "7", "8", "9", "A", "B"
+				), 
+				table.getDelegate()
 		);
 	}
 
@@ -426,9 +430,9 @@ class RectangularTableTest {
 		while (iterator.hasNext()) {
 			received.add(iterator.next());
 		}
-		assertEquals(Arrays.asList("0", "3", "6", "9"), received.get(0));
-		assertEquals(Arrays.asList("1", "4", "7", "A"), received.get(1));
-		assertEquals(Arrays.asList("2", "5", "8", "B"), received.get(2));
+		assertEquals(asList("0", "3", "6", "9"), received.get(0));
+		assertEquals(asList("1", "4", "7", "A"), received.get(1));
+		assertEquals(asList("2", "5", "8", "B"), received.get(2));
 	}
 
 	@Test
@@ -438,16 +442,16 @@ class RectangularTableTest {
 		while (iterator.hasNext()) {
 			received.add(iterator.next());
 		}
-		assertEquals(Arrays.asList("0", "1", "2"), received.get(0));
-		assertEquals(Arrays.asList("3", "4", "5"), received.get(1));
-		assertEquals(Arrays.asList("6", "7", "8"), received.get(2));
-		assertEquals(Arrays.asList("9", "A", "B"), received.get(3));
+		assertEquals(asList("0", "1", "2"), received.get(0));
+		assertEquals(asList("3", "4", "5"), received.get(1));
+		assertEquals(asList("6", "7", "8"), received.get(2));
+		assertEquals(asList("9", "A", "B"), received.get(3));
 	}
 
 	@Test
 	void testStream() {
 		List<String> list = table.stream().collect(Collectors.toList());
-		assertEquals(Arrays.asList(
+		assertEquals(asList(
 				"0", "1", "2",
 				"3", "4", "5",
 				"6", "7", "8",

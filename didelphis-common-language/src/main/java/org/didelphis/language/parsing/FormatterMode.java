@@ -1,20 +1,21 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.language.parsing;
 
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
@@ -25,75 +26,92 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.didelphis.utilities.Split.parseParens;
-import static org.didelphis.utilities.Split.splitToList;
+import static org.didelphis.utilities.Split.toList;
 
 /**
- * This type is to succeed the earlier SegmentationMode and Normalizer mode
- * enums by merging their functionality. We originally supported types that
- * were entirely unnecessary and presented the user with an excess of options,
- * most of where were of no value (compatibility modes, or segmentation with
- * composition e.g.)
- * <p>
+ * Enum {@code FormatterMode}
+ *
+ * This type is to succeed the earlier {@code SegmentationMode} and {@code 
+ * Normalizer} mode enums by merging their functionality. We originally 
+ * supported types that were entirely unnecessary and presented the user with an
+ * excess of options, most of where were of no value (compatibility modes, or
+ * segmentation with composition e.g.)
+ *
  * @author Samantha Fiona McCabe
- * Date: 1/14/2015
+ * @date 2015-01-14
+ * @since 0.1.0
  */
 public enum FormatterMode implements Segmenter, Formatter {
-	
+
 	// No change to input strings
 	NONE(null) {
+		@NonNull
 		@Override
-		public List<String> split(String string) {
+		public List<String> split(@NonNull String string) {
 			return split(string, Collections.emptyList());
 		}
 
+		@NonNull
 		@Override
-		public List<String> split(String string, Iterable<String> special) {
-			return splitToList(string, special);
+		public List<String> split(
+				@NonNull String string, @NonNull Iterable<String> special
+		) {
+			return toList(string, special);
 		}
 	},
 
 	// Unicode Canonical Decomposition
 	DECOMPOSITION(Form.NFD) {
+		@NonNull
 		@Override
-		public List<String> split(@NotNull String string) {
+		public List<String> split(@NonNull String string) {
 			return split(string, Collections.emptyList());
 		}
 
+		@NonNull
 		@Override
-		public List<String> split(@NotNull String string, Iterable<String> special) {
-			return splitToList(normalize(string), special);
+		public List<String> split(
+				@NonNull String string, @NonNull Iterable<String> special
+		) {
+			return toList(normalize(string), special);
 		}
 	},
 
 	// Unicode Canonical Decomposition followed by Canonical Composition
 	COMPOSITION(Form.NFC) {
+		@NonNull
 		@Override
-		public List<String> split(@NotNull String string) {
+		public List<String> split(@NonNull String string) {
 			return split(string, Collections.emptyList());
 		}
 
+		@NonNull
 		@Override
-		public List<String> split(@NotNull String string, Iterable<String> special) {
-			return splitToList(normalize(string), special);
+		public List<String> split(
+				@NonNull String string, @NonNull Iterable<String> special
+		) {
+			return toList(normalize(string), special);
 		}
 	},
 
 	// Uses segmentation algorithm with Unicode Canonical Decomposition
 	INTELLIGENT(Form.NFD) {
 
-		private static final int BINDER_START       = 0x035C;
-		private static final int BINDER_END         = 0x0362;
-		private static final int SUPERSCRIPT_ZERO   = 0x2070;
-		private static final int SUBSCRIPT_SMALL_T  = 0x209C;
-		private static final int SUPERSCRIPT_TWO    = 0x00B2;
-		private static final int SUPERSCRIPT_THREE  = 0x00B3;
-		private static final int SUPERSCRIPT_ONE    = 0x00B9;
+		/* ------------------------------------------------------------------<*/
+		private static final int BINDER_START      = 0x035C;
+		private static final int BINDER_END        = 0x0362;
+		private static final int SUPERSCRIPT_ZERO  = 0x2070;
+		private static final int SUBSCRIPT_SMALL_T = 0x209C;
+		private static final int SUPERSCRIPT_TWO   = 0x00B2;
+		private static final int SUPERSCRIPT_THREE = 0x00B3;
+		private static final int SUPERSCRIPT_ONE   = 0x00B9;
+		/*>-------------------------------------------------------------------*/
 
 		private final Pattern pattern = Pattern.compile("(\\$[^$]*\\d+)");
 
-		@NotNull
-		@Override
-		public List<String> split(@NotNull String string, @NotNull Iterable<String> special) {
+		@NonNull @Override public List<String> split(
+				@NonNull String string, @NonNull Iterable<String> special
+		) {
 			String word = normalize(string);
 
 			List<String> strings = new ArrayList<>();
@@ -154,15 +172,18 @@ public enum FormatterMode implements Segmenter, Formatter {
 			return strings;
 		}
 
-		@NotNull
+		@NonNull
 		@Override
-		public List<String> split(@NotNull String string) {
+		public List<String> split(@NonNull String string) {
 			return split(string, Collections.emptyList());
 		}
 
 		// Finds longest item in keys which the provided string starts with
 		// Also can be used to grab index symbols
-		private String getBestMatch(@NotNull String word, @NotNull Iterable<String> keys) {
+		@NonNull
+		private String getBestMatch(
+				@NonNull String word, @NonNull Iterable<String> keys
+		) {
 
 			String bestMatch = "";
 			for (String key : keys) {
@@ -179,19 +200,19 @@ public enum FormatterMode implements Segmenter, Formatter {
 		}
 
 		private boolean isAttachable(char ch) {
-			return isSuperscriptAsciiDigit(ch) ||
-				         isMathematicalSubOrSuper(ch) ||
-				         isCombiningClass(ch);
+			return isSuperscriptAsciiDigit(ch)
+					|| isMathematicalSubOrSuper(ch)
+					|| isCombiningClass(ch);
 		}
 
 		private boolean isDoubleWidthBinder(char ch) {
 			return BINDER_START <= ch && ch <= BINDER_END;
 		}
-		
+
 		private boolean isSuperscriptAsciiDigit(char value) {
-			return value == SUPERSCRIPT_TWO || 
-				         value == SUPERSCRIPT_THREE ||
-				         value == SUPERSCRIPT_ONE;
+			return value == SUPERSCRIPT_TWO
+					|| value == SUPERSCRIPT_THREE
+					|| value == SUPERSCRIPT_ONE;
 		}
 
 		private boolean isMathematicalSubOrSuper(char value) {
@@ -200,22 +221,22 @@ public enum FormatterMode implements Segmenter, Formatter {
 
 		private boolean isCombiningClass(char ch) {
 			int type = Character.getType(ch);
-			return type == Character.MODIFIER_LETTER || // 4
-				         type == Character.MODIFIER_SYMBOL || // 27
-				         type == Character.COMBINING_SPACING_MARK || // 8
-				         type == Character.NON_SPACING_MARK; // 6
+			return type == Character.MODIFIER_LETTER
+					|| type == Character.MODIFIER_SYMBOL
+					|| type == Character.COMBINING_SPACING_MARK
+					|| type == Character.NON_SPACING_MARK;
 		}
 	};
 
 	private final Form form;
 
-	FormatterMode(Form param) {
+	FormatterMode(@Nullable Form param) {
 		form = param;
 	}
 
-	@NotNull
+	@NonNull
 	@Override
-	public String normalize(@NotNull String string) {
+	public String normalize(@NonNull String string) {
 		return (form == null) ? string : Normalizer.normalize(string, form);
 	}
 }

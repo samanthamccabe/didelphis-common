@@ -1,32 +1,28 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.structures.maps;
 
+import org.didelphis.structures.tuples.Tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -36,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class GeneralMultiMapTest {
 	
 	private GeneralMultiMap<String, String> map;
+	private GeneralMultiMap<String, String> map1;
 	
 	@BeforeEach
 	void init() {
@@ -46,6 +43,10 @@ class GeneralMultiMapTest {
 		map.add("Z", "d");
 		map.add("Z", "e");
 		map.add("Z", "f");
+		
+		map1 = new GeneralMultiMap<>(map);
+		map1.add("X", "1");
+		map1.add("X", "2");
 	}
 	
 	@Test
@@ -119,7 +120,7 @@ class GeneralMultiMapTest {
 	@Test
 	void getDelegate() {
 		Map<String, Collection<String>> delegate = new HashMap<>();
-		delegate.put("X", new HashSet<>(Arrays.asList("a")));
+		delegate.put("X", new HashSet<>(Collections.singletonList("a")));
 		delegate.put("Y", new HashSet<>(Arrays.asList("b", "c")));
 		delegate.put("Z", new HashSet<>(Arrays.asList("d", "e", "f")));
 		assertEquals(delegate, map.getDelegate());
@@ -127,31 +128,47 @@ class GeneralMultiMapTest {
 
 	@Test
 	void size() {
-		assertEquals(6, map.size());
+		assertEquals(3, map.size()); // 3 keys
 	}
 
 	@Test
 	void isEmpty() {
+		assertFalse(map.isEmpty());
+		assertTrue(new GeneralMultiMap<>().isEmpty());
 	}
 
 	@Test
 	void clear() {
+		assertFalse(map.isEmpty());
+		map.clear();
+		assertTrue(map.isEmpty());
 	}
 
 	@Test
 	void iterator() {
+		Iterator<Tuple<String, Collection<String>>> iterator = map.iterator();
+		assertTrue(iterator.hasNext());
 	}
 
 	@Test
 	void equals() {
+		assertEquals(map, new GeneralMultiMap<>(map));
+		assertNotEquals(map, new GeneralMultiMap<>());
+		assertNotEquals(map, map1);
 	}
 
 	@Test
 	void testHashCode() {
+		assertEquals(map.hashCode(), new GeneralMultiMap<>(map).hashCode());
+		assertNotEquals(map.hashCode(), new GeneralMultiMap<>().hashCode());
+		assertNotEquals(map.hashCode(), map1.hashCode());
 	}
 
 	@Test
 	void testToString() {
+		assertEquals(map.toString(), new GeneralMultiMap<>(map).toString());
+		assertNotEquals(map.toString(), new GeneralMultiMap<>().toString());
+		assertNotEquals(map.toString(), map1.toString());
 	}
 
 }

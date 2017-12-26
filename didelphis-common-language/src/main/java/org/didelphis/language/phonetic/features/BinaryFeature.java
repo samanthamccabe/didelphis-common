@@ -1,22 +1,22 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)                                  
- =                                                                              
- = Licensed under the Apache License, Version 2.0 (the "License");              
- = you may not use this file except in compliance with the License.             
- = You may obtain a copy of the License at                                      
- =     http://www.apache.org/licenses/LICENSE-2.0                               
- = Unless required by applicable law or agreed to in writing, software          
- = distributed under the License is distributed on an "AS IS" BASIS,            
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     
- = See the License for the specific language governing permissions and          
- = limitations under the License.                                               
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.language.phonetic.features;
 
 import org.didelphis.io.NullFileHandler;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -25,10 +25,11 @@ import static java.text.Normalizer.Form;
 import static java.text.Normalizer.normalize;
 
 /**
- * Class {@code BinaryFeatureType}
+ * Enum {@code BinaryFeatureType}
  *
  * @author Samantha Fiona McCabe
- * @since 0.1.0 Date: 2017-06-11
+ * @date 2017-06-11
+ * @since 0.1.0
  */
 public enum BinaryFeature implements FeatureType<Boolean> {
 	INSTANCE;
@@ -37,20 +38,21 @@ public enum BinaryFeature implements FeatureType<Boolean> {
 		return new FeatureModelLoader<>(INSTANCE, NullFileHandler.INSTANCE, "");
 	}
 
-	@NotNull
+	@NonNull
 	@Override
-	public Boolean parseValue(@NotNull String string) {
+	public Boolean parseValue(@NonNull String string) {
 		String normalized = normalize(string, Form.NFKC);
 		if (normalized.equals("-") || normalized.equals("0")) {
 			return Boolean.FALSE;
-		} else if (normalized.equals("+") || normalized.equals("1")) {
+		}
+		if (normalized.equals("+") || normalized.equals("1")) {
 			return Boolean.TRUE;
 		}
-		throw new NumberFormatException("Unrecognized boolean representation " +
-				string);
+		throw new NumberFormatException("Unrecognized boolean representation "
+				+ string);
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public Collection<Boolean> listUndefined() {
 		return Collections.singleton(null);
@@ -66,17 +68,17 @@ public enum BinaryFeature implements FeatureType<Boolean> {
 		return validate(v1) ^ validate(v2) ? 1.0 : 0.0;
 	}
 
-	private boolean validate(Boolean v) {
-		return isDefined(v) ? v : false;
-	}
-
 	@Override
 	public int intValue(Boolean value) {
-		return (value == null) ? 0 : (value ? 1 : 0);
+		return (validate(value) && value) ? 1 : 0;
 	}
 
 	@Override
 	public double doubleValue(Boolean value) {
 		return intValue(value);
+	}
+
+	private boolean validate(Boolean v) {
+		return isDefined(v) ? v : false;
 	}
 }

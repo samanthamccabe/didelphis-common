@@ -1,161 +1,110 @@
-/*=============================================================================
- = Copyright (c) 2017. Samantha Fiona McCabe (Didelphis)
- =
- = Licensed under the Apache License, Version 2.0 (the "License");
- = you may not use this file except in compliance with the License.
- = You may obtain a copy of the License at
- =     http://www.apache.org/licenses/LICENSE-2.0
- = Unless required by applicable law or agreed to in writing, software
- = distributed under the License is distributed on an "AS IS" BASIS,
- = WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- = See the License for the specific language governing permissions and
- = limitations under the License.
- =============================================================================*/
+/******************************************************************************
+ * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ *                                                                            *
+ * Licensed under the Apache License, Version 2.0 (the "License");            *
+ * you may not use this file except in compliance with the License.           *
+ * You may obtain a copy of the License at                                    *
+ *     http://www.apache.org/licenses/LICENSE-2.0                             *
+ * Unless required by applicable law or agreed to in writing, software        *
+ * distributed under the License is distributed on an "AS IS" BASIS,          *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+ * See the License for the specific language governing permissions and        *
+ * limitations under the License.                                             *
+ ******************************************************************************/
 
 package org.didelphis.structures.maps;
 
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+import org.didelphis.structures.Suppliers;
+import lombok.NonNull;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Created by samantha on 4/30/17.
+ * Utility Class {@code MapUtils}
+ *
+ * @author Samantha Fiona McCabe
+ * @date 2017-04-30
+ * @since 0.1.0
  */
-@SuppressWarnings("rawtypes")
+@Slf4j
+@UtilityClass
 public final class MapUtils {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(MapUtils.class);
-	
-	private MapUtils() {}
 
 	/**
 	 * Produces a copy of the input map using the provided suppliers to generate
 	 * objects of the types desired by the user.
+	 *
 	 * @param map the map whose contents are to be copied; not null
-	 * @param collectionType specifies the type of the collection; not null
+	 *
 	 * @return a copy of the input map; not null
 	 */
-	@NotNull
-	public static <K, V> Map<K, Collection<V>> copyMultiMap(
-			@NotNull Map<K, Collection<V>> map,
-			@NotNull Class<? extends Collection> collectionType
+	@NonNull
+	public <K, V> Map<K, Collection<V>> copyMultiMap(
+			@NonNull Map<K, Collection<V>> map
 	) {
-		@SuppressWarnings("unchecked")
-		Map<K, Collection<V>> map1 = newMap(map.getClass());
-		for (Entry<K, Collection<V>> e : map.entrySet()) {
-			K key = e.getKey();
-			map1.put(key, copyCollection(collectionType, e.getValue()));
+		Map<K, Collection<V>> outerCopy = Suppliers.copyMap(map);
+		for (Entry<K, Collection<V>> e1 : map.entrySet()) {
+			Collection<V> collection = e1.getValue();
+			Collection<V> collectionCopy = Suppliers.copyCollection(collection);
+			collectionCopy.addAll(collection);
+			outerCopy.put(e1.getKey(), collectionCopy);
 		}
-		return map1;
+		return outerCopy;
 	}
-	
+
 	/**
 	 * Produces a copy of the input map using the provided suppliers to generate
 	 * objects of the types desired by the user.
+	 *
 	 * @param map the map whose contents are to be copied; not null
-	 * @param type specifies the type of the collection; not null
+	 *
 	 * @return a copy of the input map; not null
 	 */
-	@NotNull
-	public static <T, U, V> Map<T, Map<U, Collection<V>>> copyTwoKeyMultiMap(
-			@NotNull Map<T, Map<U, Collection<V>>> map,
-			@NotNull Class<? extends Collection> type) {
-		@SuppressWarnings("unchecked")
-		Map<T, Map<U, Collection<V>>> map1 = newMap(map.getClass());
+	@NonNull
+	public <T, U, V> Map<T, Map<U, Collection<V>>> copyTwoKeyMultiMap(
+			@NonNull Map<T, Map<U, Collection<V>>> map
+	) {
+		Map<T, Map<U, Collection<V>>> outerCopy = Suppliers.copyMap(map);
 		for (Entry<T, Map<U, Collection<V>>> e1 : map.entrySet()) {
-			T key = e1.getKey();
-			@SuppressWarnings("unchecked") 
-			Map<U, Collection<V>> map2 = newMap(map.getClass());
-			for (Entry<U, Collection<V>> e2 : e1.getValue().entrySet()) {
-				map2.put(e2.getKey(), copyCollection(type, e2.getValue()));
+			Map<U, Collection<V>> value = e1.getValue();
+			Map<U, Collection<V>> innerCopy = Suppliers.copyMap(value);
+			for (Entry<U, Collection<V>> e2 : value.entrySet()) {
+				Collection<V> collection = e2.getValue();
+				Collection<V> collectionCopy = Suppliers.copyCollection(
+						collection);
+				collectionCopy.addAll(collection);
+				innerCopy.put(e2.getKey(), collectionCopy);
 			}
-			map1.put(key, map2);
+			outerCopy.put(e1.getKey(), innerCopy);
 		}
-		return map1;
+		return outerCopy;
 	}
 
 	/**
 	 * Produces a copy of the input map using the provided suppliers to generate
 	 * objects of the types desired by the user.
+	 *
 	 * @param map the map whose contents are to be copied; not null
-	 * @param type supplies a new map of the specified type; not null
+	 *
 	 * @return a copy of the input map; not null
 	 */
-	@NotNull
-	public static <T, U, V> Map<T, Map<U, V>> copyTwoKeyMap(
-			@NotNull Map<T, Map<U, V>> map,
-			@NotNull Class<? extends Map> type
+	@NonNull
+	public <T, U, V> Map<T, Map<U, V>> copyTwoKeyMap(
+			@NonNull Map<T, Map<U, V>> map
 	) {
-		@SuppressWarnings("unchecked")
-		Map<T, Map<U, V>> map1 = newMap(map.getClass());
-		for (Entry<T, Map<U, V>> entry : map.entrySet()) {
-			map1.put(entry.getKey(), copyMap(type, entry.getValue()));
+		Map<T, Map<U, V>> outerCopy = Suppliers.copyMap(map);
+		for (Entry<T, Map<U, V>> e1 : map.entrySet()) {
+			Map<U, V> value = e1.getValue();
+			Map<U, V> innerCopy = Suppliers.copyMap(value);
+			for (Entry<U, V> e2 : value.entrySet()) {
+				innerCopy.put(e2.getKey(), e2.getValue());
+			}
+			outerCopy.put(e1.getKey(), innerCopy);
 		}
-		return map1;
+		return outerCopy;
 	}
-
-	@NotNull
-	public static <K, V> Map<K,V> newMap(@NotNull Class<? extends Map> type) {
-		try {
-			//noinspection unchecked
-			return (Map<K, V>) type.getConstructor().newInstance();
-		} catch (@NotNull InstantiationException | IllegalAccessException
-				| NoSuchMethodException | InvocationTargetException e) {
-			LOG.warn("Unable to create instance of {}. Defaulting to {}", type,
-					HashMap.class, e);
-		}
-		return new HashMap<>();
-	}
-
-	@NotNull
-	public static <K, V> Map<K,V> copyMap(@NotNull Class<? extends Map> type,
-			@NotNull Map<K,V> map) {
-		try {
-			//noinspection unchecked
-			return (Map<K, V>) type.getConstructor(map.getClass()).newInstance(map);
-		} catch (@NotNull InstantiationException | IllegalAccessException
-				| NoSuchMethodException | InvocationTargetException e) {
-			LOG.warn("Unable to create instance of {}. Defaulting to {}", type,
-					HashMap.class, e);
-		}
-		return new HashMap<>(map);
-	}
-	
-	@NotNull
-	public static <E> Collection<E> newCollection(
-			@NotNull Class<? extends Collection> type) {
-		try {
-			//noinspection unchecked
-			return (Collection<E>) type.getConstructor().newInstance();
-		} catch (@NotNull InstantiationException | IllegalAccessException
-				| NoSuchMethodException | InvocationTargetException e) {
-			LOG.warn("Unable to create instance of {}. Defaulting to {}", type,
-					HashSet.class, e);
-		}
-		return new HashSet<>();
-	}
-
-	@NotNull
-	public static <E> Collection<E> copyCollection(
-			@NotNull Class<? extends Collection> type,
-			@NotNull Collection<E> collection) {
-		try {
-			//noinspection unchecked
-			return (Collection<E>) type.getConstructor(collection.getClass())
-					.newInstance(collection);
-		} catch (@NotNull InstantiationException | IllegalAccessException
-				| NoSuchMethodException | InvocationTargetException e) {
-			LOG.warn("Unable to create instance of {}. Defaulting to {}", type,
-					HashSet.class, e);
-		}
-		return new HashSet<>(collection);
-	}
-
 }
