@@ -27,9 +27,13 @@ import org.didelphis.language.phonetic.model.FeatureSpecification;
 import java.util.Objects;
 
 /**
+ * Class {@code StandardSegment}
+ * 
+ * @param <T> the type of feature data used by the segment's model
+ * 
  * @author Samantha Fiona McCabe
  * @since 0.1.0
-	 * @date 2017-03-16
+ * @date 2017-03-16
  */
 public class StandardSegment<T> implements Segment<T> {
 
@@ -69,23 +73,6 @@ public class StandardSegment<T> implements Segment<T> {
 		return features.alter(segment.getFeatures());
 	}
 
-	/**
-	 * Determines if a segment is consistent with this segment. Two segments are
-	 * consistent with each other if all corresponding features are equal OR if
-	 * one is NaN
-	 *
-	 * @param segment another segment to compare to this one
-	 * @return true if all specified (non NaN) features in either segment are
-	 * 		equal
-	 */
-	@Override
-	public boolean matches(@NonNull Segment<T> segment) {
-		if (features.size() == 0 && segment.getFeatures().size() == 0) {
-			return symbol.equals(segment.getSymbol());
-		}
-		return features.matches(segment.getFeatures());
-	}
-
 	@NonNull
 	@Override
 	public String getSymbol() {
@@ -96,6 +83,11 @@ public class StandardSegment<T> implements Segment<T> {
 	@Override
 	public FeatureArray<T> getFeatures() {
 		return features;
+	}
+
+	@Override
+	public boolean isDefinedInModel() {
+		return true;
 	}
 
 	@NonNull

@@ -14,52 +14,40 @@
 
 package org.didelphis.language.phonetic.model;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
 import lombok.NonNull;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
- * Created by samantha on 2/16/17.
- * 
- * Reference implementation of the {@code FeatureSpecification} interface
+ * Enum Singleton {@code EmptyFeatureSpecification}
+ *
+ * @author Samantha Fiona McCabe
+ * @date 1/1/18
  */
-@EqualsAndHashCode
-@ToString
-public final class DefaultFeatureSpecification implements FeatureSpecification {
-
-	private final int size;
-
-	@Getter private final List<String> featureNames;
-	@Getter private final Map<String, Integer> featureIndices;
-
-	public DefaultFeatureSpecification() {
-		this(new ArrayList<>(), new HashMap<>());
-	}
-
-	/**
-	 * @param names
-	 * @param indices
-	 */
-	public DefaultFeatureSpecification(
-			@NonNull List<String> names, @NonNull Map<String, Integer> indices
-	) {
-		size = names.size();
-		featureNames = Collections.unmodifiableList(names);
-		featureIndices = Collections.unmodifiableMap(indices);
-	}
-
+public enum EmptyFeatureSpecification implements FeatureSpecification {
+	INSTANCE;
+	
 	@Override
 	public int size() {
-		return size;
+		return 0;
+	}
+
+	@NonNull
+	@Override
+	public Map<String, Integer> getFeatureIndices() {
+		return Collections.emptyMap();
 	}
 
 	@Override
 	public int getIndex(@NonNull String featureName) {
-		Integer index = featureIndices.get(featureName);
-		return index == null ? -1 : index;
+		return -1;
 	}
 
+	@NonNull
+	@Override
+	public List<String> getFeatureNames() {
+		return Collections.emptyList();
+	}
 }

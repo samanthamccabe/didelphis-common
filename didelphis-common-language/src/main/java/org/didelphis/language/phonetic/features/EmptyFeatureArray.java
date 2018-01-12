@@ -63,7 +63,7 @@ public final class EmptyFeatureArray<T> implements FeatureArray<T> {
 
 	@Override
 	public boolean matches(@NonNull FeatureArray<T> array) {
-		return true;
+		return array instanceof EmptyFeatureArray;
 	}
 
 	@Override

@@ -15,10 +15,10 @@
 package org.didelphis.language.phonetic;
 
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.ToString;
 import lombok.Value;
 import org.didelphis.language.parsing.FormatterMode;
-import org.didelphis.language.phonetic.features.EmptyFeatureArray;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.model.FeatureMapping;
 import org.didelphis.language.phonetic.model.FeatureModel;
@@ -26,10 +26,10 @@ import org.didelphis.language.phonetic.model.FeatureSpecification;
 import org.didelphis.language.phonetic.segments.ImmutableSegment;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.segments.StandardSegment;
+import org.didelphis.language.phonetic.segments.UndefinedSegment;
 import org.didelphis.language.phonetic.sequences.BasicSequence;
 import org.didelphis.language.phonetic.sequences.ImmutableSequence;
 import org.didelphis.language.phonetic.sequences.Sequence;
-import lombok.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -78,11 +78,10 @@ public class SequenceFactory<T> implements Function<String, Sequence<T>> {
 		this.reservedStrings = reservedStrings;
 		this.formatterMode   = formatterMode;
 
-		FeatureModel<T> model  = this.featureMapping.getFeatureModel();
-		FeatureArray<T> sparse = new EmptyFeatureArray<>(model);
+		FeatureModel<T> model = this.featureMapping.getFeatureModel();
 
-		dotSegment     = new ImmutableSegment<>(".", sparse);
-		borderSegment  = new ImmutableSegment<>("#", sparse);
+		dotSegment     = new ImmutableSegment<>(".", model);
+		borderSegment  = new UndefinedSegment<>("#", model);
 		dotSequence    = new ImmutableSequence<>(dotSegment);
 		borderSequence = new ImmutableSequence<>(borderSegment);
 		/*> ----------------------------------------------------------------- */

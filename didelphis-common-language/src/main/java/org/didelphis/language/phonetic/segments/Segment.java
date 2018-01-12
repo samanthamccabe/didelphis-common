@@ -21,7 +21,7 @@ import lombok.NonNull;
 /**
  * Interface {@code Segment}
  *
- * @param <T> the type of feature used by the segment
+ * @param <T> the type of feature data used by the segment's model
  *
  * @author Samantha Fiona McCabe
  * @date 2017-02-15
@@ -45,16 +45,26 @@ public interface Segment<T> extends ModelBearer<T>, Comparable<Segment<T>> {
 
 	/**
 	 * Determines if a segment is consistent with this segment. Two segments are
-	 * consistent with each other if all corresponding features are equal one is
-	 * undefined; usually this means null, but for numerical values of parameter
-	 * {@code <T>} this could mean {@code NaN}
+	 * consistent with each other if all corresponding features are equal OR if
+	 * one is NaN
 	 *
 	 * @param segment another segment to compare to this one
-	 *
-	 * @return true if all features in either segment are equal or undefined
+	 * @return true if all specified (non NaN) features in either segment are
+	 * 		equal
 	 */
-	boolean matches(@NonNull Segment<T> segment);
-
+	default boolean matches(@NonNull Segment<T> segment) {
+		if (getFeatureModel().getSpecification().size() == 0 && 
+				segment.getFeatureModel().getSpecification().size() == 0) {
+			return getSymbol().equals(segment.getSymbol());
+		}
+		if (isDefinedInModel() && segment.isDefinedInModel()) {
+			return getFeatures().matches(segment.getFeatures());
+		} else if (!isDefinedInModel() && !segment.isDefinedInModel()) {
+			return getSymbol().equals(segment.getSymbol());
+		} else {
+			return false;
+		}
+	}
 	/**
 	 * @return the symbol associated with this segment
 	 */
@@ -66,4 +76,28 @@ public interface Segment<T> extends ModelBearer<T>, Comparable<Segment<T>> {
 	 */
 	@NonNull
 	FeatureArray<T> getFeatures();
+
+	/**
+	 * Indicates whether a segment is properly defined it's {@link 
+	 * org.didelphis.language.phonetic.model.FeatureModel} of origin and has
+	 * an associated feature structure, or if it is defined only in terms of its
+	 * symbol.
+	 * @return
+	 */
+	boolean isDefinedInModel();
+	
+	@Override
+	default int compareTo(@NonNull Segment<T> o) {
+		if (equals(o)) {
+			return 0;
+		} else {
+			int value = getFeatures().compareTo(o.getFeatures());
+			if (value == 0) {
+				// If we get here, there is either no features, or feature
+				// arrays are equal so just compare the symbols
+				return getSymbol().compareTo(o.getSymbol());
+			}
+			return value;
+		}
+	}
 }

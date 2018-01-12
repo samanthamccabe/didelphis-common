@@ -16,13 +16,11 @@ package org.didelphis.language.phonetic.model;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.didelphis.language.phonetic.features.FeatureArray;
-import org.didelphis.language.phonetic.features.FeatureType;
-import org.didelphis.language.phonetic.features.SparseFeatureArray;
-import org.didelphis.language.phonetic.features.StandardFeatureArray;
+import org.didelphis.language.phonetic.features.*;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.segments.StandardSegment;
 import lombok.NonNull;
+import org.didelphis.language.phonetic.segments.UndefinedSegment;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -123,34 +121,37 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 				? new StandardFeatureArray<>(featureMap.get(key)) 
 				: new SparseFeatureArray<>(featureModel);
 	}
-	
+
 	@NonNull
 	@Override
 	public Segment<T> parseSegment(@NonNull String string) {
 		if (featureMap.isEmpty()) {
-			FeatureArray<T> featureArray = new StandardFeatureArray<>(
-					new ArrayList<>(),
-					featureModel
-			);
-			return new StandardSegment<>(string, featureArray);
+			FeatureArray<T> array = new EmptyFeatureArray<>(featureModel);
+			return new StandardSegment<>(string, array);
 		}
 		if (string.startsWith("[")) {
-			return new StandardSegment<>(string, featureModel.parseFeatureString(string));
+			FeatureArray<T> array = featureModel.parseFeatureString(string);
+			return new StandardSegment<>(string, array);
 		}
 		String best = "";
 		for (String key : orderedKeys) {
-				if (string.startsWith(key) && key.length() > best.length()) {
-					best = key;
-				}
+			if (string.startsWith(key) && key.length() > best.length()) {
+				best = key;
 			}
-			FeatureArray<T> featureArray = getFeatureArray(best);
-			for (String s : COMPILE.split(string.substring(best.length()))) {
-				if (modifiers.containsKey(s)) {
-					FeatureArray<T> array = modifiers.get(s);
-					featureArray.alter(array);
-				}
+		}
+		
+		if (best.isEmpty()) {
+			return new UndefinedSegment<>(string, featureModel);
+		}
+		
+		FeatureArray<T> featureArray = getFeatureArray(best);
+		for (String s : COMPILE.split(string.substring(best.length()))) {
+			if (modifiers.containsKey(s)) {
+				FeatureArray<T> array = modifiers.get(s);
+				featureArray.alter(array);
 			}
-			return new StandardSegment<>(string, featureArray);
+		}
+		return new StandardSegment<>(string, featureArray);
 	}
 
 	@NonNull

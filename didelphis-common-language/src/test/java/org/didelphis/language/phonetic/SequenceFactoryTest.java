@@ -19,6 +19,7 @@ import org.didelphis.language.phonetic.features.EmptyFeatureArray;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.segments.ImmutableSegment;
 import org.didelphis.language.phonetic.segments.Segment;
+import org.didelphis.language.phonetic.segments.UndefinedSegment;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,9 @@ import org.junit.jupiter.api.Test;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Samantha Fiona McCabe
@@ -102,7 +105,7 @@ class SequenceFactoryTest extends PhoneticTestBase {
 				.getFeatureModel();
 		EmptyFeatureArray<Integer> array = new EmptyFeatureArray<>(model);
 
-		assertEquals(segment, new ImmutableSegment<>("#", array));
+		assertEquals(segment, new UndefinedSegment<>("#", model));
 		assertSame(segment, factory.toSegment("#"));
 	}
 

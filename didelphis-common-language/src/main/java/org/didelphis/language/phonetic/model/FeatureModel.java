@@ -36,16 +36,16 @@ import java.util.List;
 public interface FeatureModel<T> extends SpecificationBearer {
 
 	/**
-	 * Retrieve this model's value {@code Constraint}s
+	 * Retrieve this model's value {@link Constraint}s
 	 * @return a list of feature value constraints; should be immutable
 	 */
 	@NonNull
 	List<Constraint<T>> getConstraints();
 
 	/**
-	 * Parses a well-formed feature {@code String} into the corresponding array
+	 * Parses a well-formed feature {@link String} into the corresponding array
 	 * @param string the bracketed feature string definition to parse
-	 * @return a parsed {@code FeatureArray}
+	 * @return a parsed {@link FeatureArray}
 	 *
 	 * @throws ParseException if the
 	 *

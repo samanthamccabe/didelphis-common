@@ -76,8 +76,7 @@ public final class GeneralFeatureModel<T> implements FeatureModel<T> {
 		this.constraints = constraints;
 		this.aliases = aliases;
 	}
-
-
+	
 	@NonNull
 	@Override
 	public List<Constraint<T>> getConstraints() {
