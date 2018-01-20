@@ -30,6 +30,7 @@ import org.didelphis.structures.maps.interfaces.MultiMap;
 import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.text.Normalizer;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
@@ -277,7 +278,8 @@ public final class FeatureModelLoader<T> {
 					i++;
 				}
 				String diacritic = DOTTED_CIRCLE.matcher(symbol).replaceAll("");
-				diacritics.put(diacritic, array);
+				String norm = Normalizer.normalize(diacritic, Normalizer.Form.NFD);
+				diacritics.put(norm, array);
 			} else {
 				log.error("Unrecognized diacritic definition {}", entry);
 			}
@@ -302,7 +304,8 @@ public final class FeatureModelLoader<T> {
 					features.set(i, featureType.parseValue(value));
 				}
 				checkFeatureCollisions(symbol, featureMap, features);
-				featureMap.put(symbol, features);
+				String norm = Normalizer.normalize(symbol, Normalizer.Form.NFD);
+				featureMap.put(norm, features);
 			} else {
 				log.error("Unrecognized symbol definition {}", entry);
 			}

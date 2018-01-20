@@ -122,8 +122,8 @@ public class SequenceFactory<T> implements Function<String, Sequence<T>> {
 			return dotSegment;
 		} else if (specification.size() > 0 && string.startsWith("[")) {
 			FeatureArray<T> array = featureModel.parseFeatureString(string);
-			String bestSymbol = featureMapping.findBestSymbol(array);
-			return new StandardSegment<>(bestSymbol, array);
+			// TODO:
+			return new StandardSegment<>(string, array);
 		} else {
 			return featureMapping.parseSegment(string);
 		}

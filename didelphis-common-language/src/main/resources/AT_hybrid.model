@@ -235,18 +235,18 @@ h	+	-	+	-	-	-	-	-	-	0	-	0	0	-	-	-	-	-	-	-
 
 MODIFIERS
 %	con	son	cnt	eje	rel	lat	nas	lab	rnd	cor	dor	frn	hgt	atr	glt	crk	brt	dst	lng	upr
-ː																			+	
+◌ː																			+	
 ◌̄																			+	
-ʲ												+	+							
-ʸ									+			+	+							
-ʷ									+				+							
-ʰ															-		+			
-ʱ															+		+			
-ʼ				-																
-ˀ				-																
-ʾ				-																
-ˁ													-	-						
-ʿ													-	-						
+◌ʲ												+	+							
+◌ʸ									+			+	+							
+◌ʷ									+				+							
+◌ʰ															-		+			
+◌ʱ															+		+			
+◌ʼ				-																
+◌ˀ				-																
+◌ʾ				-																
+◌ˁ													-	-						
+◌ʿ													-	-						
 ◌̤															+		+			
 ◌̰															+	+				
 ◌̥															-					
@@ -257,3 +257,14 @@ MODIFIERS
 ◌̺																		+		
 ◌́																				+
 ◌̂																			+	+
+◌̃							+													
+
+% Fallback diacritics for error diagnosis
+◌˙	+																			
+◌˟		+																		
+◌˃			+																	
+◌ˢ					+															
+◌ˡ						+														
+◌͚								+												
+◌͔												+								
+◌͕												-								
