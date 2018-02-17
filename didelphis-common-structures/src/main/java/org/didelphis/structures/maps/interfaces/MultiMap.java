@@ -14,10 +14,10 @@
 
 package org.didelphis.structures.maps.interfaces;
 
+import lombok.NonNull;
 import org.didelphis.structures.contracts.Streamable;
 import org.didelphis.structures.tuples.Tuple;
 import org.jetbrains.annotations.Contract;
-import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;

@@ -14,8 +14,8 @@
 
 package org.didelphis.structures.tables;
 
-import org.didelphis.structures.Structure;
 import lombok.NonNull;
+import org.didelphis.structures.Structure;
 
 import java.util.Collection;
 import java.util.Iterator;

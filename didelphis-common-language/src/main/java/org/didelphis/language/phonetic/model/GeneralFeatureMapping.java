@@ -15,15 +15,24 @@
 package org.didelphis.language.phonetic.model;
 
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.ToString;
-import org.didelphis.language.phonetic.features.*;
+import org.didelphis.language.phonetic.features.EmptyFeatureArray;
+import org.didelphis.language.phonetic.features.FeatureArray;
+import org.didelphis.language.phonetic.features.FeatureType;
+import org.didelphis.language.phonetic.features.SparseFeatureArray;
+import org.didelphis.language.phonetic.features.StandardFeatureArray;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.segments.StandardSegment;
-import lombok.NonNull;
 import org.didelphis.language.phonetic.segments.UndefinedSegment;
 
 import java.text.Normalizer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 

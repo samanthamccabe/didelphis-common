@@ -65,8 +65,6 @@ class EmptyStateMachineTest {
 		assertEquals(Collections.singleton(3), instance.getMatchIndices(3, "foo"));
 		assertEquals(Collections.singleton(5), instance.getMatchIndices(5, "foo"));
 		assertEquals(Collections.singleton(8), instance.getMatchIndices(8, "foo"));
-
-
 	}
 
 	@Test

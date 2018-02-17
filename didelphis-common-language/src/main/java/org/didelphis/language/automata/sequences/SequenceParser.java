@@ -27,19 +27,23 @@ import org.didelphis.language.automata.interfaces.LanguageParser;
 import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.SequenceFactory;
-import org.didelphis.language.phonetic.features.EmptyFeatureArray;
-import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.model.FeatureModel;
-import org.didelphis.language.phonetic.segments.Segment;
-import org.didelphis.language.phonetic.segments.StandardSegment;
+import org.didelphis.language.phonetic.segments.UndefinedSegment;
 import org.didelphis.language.phonetic.sequences.ImmutableSequence;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
-import org.didelphis.utilities.Split;
+import org.didelphis.utilities.Splitter;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -67,6 +71,7 @@ public class SequenceParser<T> implements LanguageParser<Sequence<T>> {
 	Sequence<T> wordStart;
 	Sequence<T> wordEnd;
 	Sequence<T> epsilon;
+	Sequence<T> dot;
 
 	public SequenceParser(@NonNull SequenceFactory<T> factory) {
 		this(factory, new GeneralMultiMap<>());
@@ -81,12 +86,18 @@ public class SequenceParser<T> implements LanguageParser<Sequence<T>> {
 		
 		// Generate epsilon / lambda symbol
 		FeatureModel<T> model = factory.getFeatureMapping().getFeatureModel();
-		FeatureArray<T> array = new EmptyFeatureArray<>(model);
-		Segment<T> segment = new StandardSegment<>("\uD835\uDF06", array);
-		
-		wordStart = new ImmutableSequence<>(new StandardSegment<>("#[", array));
-		wordEnd   = new ImmutableSequence<>(new StandardSegment<>("]#", array));
-		epsilon   = new ImmutableSequence<>(segment);
+		wordStart = immutable("#[", model);
+		wordEnd   = immutable("]#", model);
+		epsilon   = immutable("𝜆",  model);
+		dot       = immutable(".",  model);
+	}
+	
+	private static <T> Sequence<T> immutable(
+			@NonNull String symbol,
+			@NonNull FeatureModel<T> model
+	) {
+		// Undefined segments can only match when the symbol matches
+		return new ImmutableSequence<>(new UndefinedSegment<>(symbol, model));
 	}
 
 	static {
@@ -124,6 +135,7 @@ public class SequenceParser<T> implements LanguageParser<Sequence<T>> {
 	public Sequence<T> transform(String expression) {
 		if (expression.equals("#[")) return wordStart;
 		if (expression.equals("]#")) return wordEnd;
+		if (expression.equals(".")) return dot;
 		if (expression.isEmpty()) return epsilon;
 		return factory.toSequence(expression);
 	}
@@ -195,19 +207,14 @@ public class SequenceParser<T> implements LanguageParser<Sequence<T>> {
 	@NonNull
 	@Override
 	public Sequence<T> getDot() {
-		return factory.getDotSequence();
+		return dot;
 	}
 
 	@Override
 	public int lengthOf(@NonNull Sequence<T> segments) {
 		return segments.size();
 	}
-
-	@NonNull
-	public SequenceFactory<T> getSequenceFactory() {
-		return factory;
-	}
-
+	
 	private Expression parse(String rawExp, List<String> split) {
 		Collection<String> keys = specials.keys();
 		
@@ -235,7 +242,7 @@ public class SequenceParser<T> implements LanguageParser<Sequence<T>> {
 				String delimiter = s.substring(0, 1);
 				if (delimiter.equals("{")) {
 
-					List<String> elements = Split.whitespace(substring);
+					List<String> elements = Splitter.whitespace(substring);
 
 					List<Expression> children = elements.stream()
 							.map(element -> split(element))

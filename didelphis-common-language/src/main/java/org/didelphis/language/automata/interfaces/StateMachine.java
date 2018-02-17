@@ -14,8 +14,8 @@
 
 package org.didelphis.language.automata.interfaces;
 
-import org.didelphis.language.automata.Graph;
 import lombok.NonNull;
+import org.didelphis.language.automata.Graph;
 
 import java.util.Map;
 import java.util.Set;

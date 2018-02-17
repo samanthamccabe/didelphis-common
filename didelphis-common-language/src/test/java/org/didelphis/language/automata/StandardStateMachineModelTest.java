@@ -48,7 +48,7 @@ public class StandardStateMachineModelTest {
 	private static SequenceFactory<Integer> factory;
 
 	@BeforeAll
-	public static void loadModel() {
+	static void loadModel() {
 		String name = "AT_hybrid.model";
 
 		FormatterMode mode = FormatterMode.INTELLIGENT;
@@ -68,7 +68,7 @@ public class StandardStateMachineModelTest {
 	}
 
 	@Test
-	public void testDot() {
+	void testDot() {
 		StateMachine<Sequence<Integer>> machine = getMachine(".");
 
 		test(machine, "a");
@@ -79,7 +79,7 @@ public class StandardStateMachineModelTest {
 	}
 
 	@Test
-	public void testBasicStateMachine01() {
+	void testBasicStateMachine01() {
 		StateMachine<Sequence<Integer>> machine = getMachine("[-con, +son, -hgh, +frn, -atr, +voice]");
 
 		test(machine, "a");
@@ -90,7 +90,7 @@ public class StandardStateMachineModelTest {
 	}
 
 	@Test
-	public void testBasicStateMachine03() {
+	void testBasicStateMachine03() {
 		StateMachine<Sequence<Integer>> machine = getMachine("a[-con, +son, -hgh, +frn]+");
 
 		fail(machine, "a");
@@ -104,7 +104,7 @@ public class StandardStateMachineModelTest {
 	}
 
 	@Test
-	public void testBasicStateMachine02() {
+	void testBasicStateMachine02() {
 		StateMachine<Sequence<Integer>> machine = getMachine("aaa");
 
 		test(machine, "aaa");
@@ -116,7 +116,7 @@ public class StandardStateMachineModelTest {
 	}
 
 	@Test
-	public void testStateMachineStar() {
+	void testStateMachineStar() {
 		StateMachine<Sequence<Integer>> machine = getMachine("aa*");
 
 		test(machine, "a");
@@ -128,7 +128,7 @@ public class StandardStateMachineModelTest {
 	}
 
 	@Test
-	public void testComplex01() {
+	void testComplex01() {
 		StateMachine<Sequence<Integer>> machine = getMachine("{a e o ā ē ō}{n m l r}?{pʰ tʰ kʰ cʰ}us");
 
 		test(machine, "ācʰus");
@@ -149,7 +149,7 @@ public class StandardStateMachineModelTest {
 	}
 	
 	@Test
-	public void testComplex02() {
+	void testComplex02() {
 		StateMachine<Sequence<Integer>> machine = getMachine("{r l}?{a e o ā ē ō}{i u}?{n m l r}?{pʰ tʰ kʰ cʰ}us");
 
 		test(machine, "ācʰus");
@@ -186,7 +186,7 @@ public class StandardStateMachineModelTest {
 	}
 
 	@Test
-	public void testComplex03() {
+	void testComplex03() {
 		StateMachine<Sequence<Integer>> machine = getMachine("a?{pʰ tʰ kʰ cʰ}us");
 
 		test(machine, "pʰus");
@@ -197,7 +197,7 @@ public class StandardStateMachineModelTest {
 	}
 
 	@Test
-	public void testComplex04() {
+	void testComplex04() {
 		StateMachine<Sequence<Integer>> machine = getMachine("{a e o ā ē ō}{pʰ tʰ kʰ cʰ}us");
 
 		test(machine, "apʰus");
@@ -237,7 +237,7 @@ public class StandardStateMachineModelTest {
 	}
 
 	@Test
-	public void testComplex05() {
+	void testComplex05() {
 		StateMachine<Sequence<Integer>> machine = getMachine("[-con, +voice, -creaky][-son, -voice, +vot]us");
 
 		test(machine, "apʰus");

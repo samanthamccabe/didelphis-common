@@ -15,11 +15,11 @@
 package org.didelphis.language.automata.sequences;
 
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.ToString;
 import org.didelphis.language.automata.interfaces.MachineMatcher;
-import org.didelphis.language.phonetic.SequenceFactory;
+import org.didelphis.language.phonetic.sequences.BasicSequence;
 import org.didelphis.language.phonetic.sequences.Sequence;
-import lombok.NonNull;
 
 import java.util.Collection;
 import java.util.Map;
@@ -40,39 +40,41 @@ public class SequenceMatcher<T> implements MachineMatcher<Sequence<T>> {
 
 	@Override
 	public int match(
-			@NonNull Sequence<T> target, @NonNull Sequence<T> arc, int index
+			@NonNull Sequence<T> target, 
+			@NonNull Sequence<T> arc, 
+			int index
 	) {
-		SequenceFactory<T> factory = parser.getSequenceFactory();
 
-		Sequence<T> tail = target.subsequence(index);
-
-		if (arc.equals(parser.getWordStart())) {
-			return index == 0 ? index : -1;
+		if (Objects.equals(arc, parser.epsilon())) {
+			return index;
 		}
 		
-		if (arc.equals(parser.getWordEnd())) {
-			return tail.isEmpty() ? index : -1;
-		}
+		Sequence<T> sequence = new BasicSequence<>(target);
+
+		sequence.add(0, parser.getWordStart().get(0));
+		sequence.add(parser.getWordEnd());
+		
+		Sequence<T> tail = sequence.subsequence(index + 1);
+
+		Map<String, Collection<Sequence<T>>> specials = parser.getSpecials();
 
 		if (Objects.equals(arc, parser.epsilon())) {
 			return index;
 		}
 
-		Map<String, Collection<Sequence<T>>> specials = parser.getSpecials();
-
-		String value = arc.toString();
-		if (specials.containsKey(value)) {
-			return specials.get(value)
-					.stream()
-					.filter(tail::startsWith)
-					.findFirst()
-					.map(special -> index + special.size())
-					.orElse(-1);
+		if (specials.containsKey(arc.toString())) {
+			for (Sequence<T> special : specials.get(arc.toString())) {
+				if (tail.startsWith(special)) {
+					return index + special.size();
+				}
+			}
+			return -1;
 		}
 
-		if (arc.equals(factory.getDotSequence())) {
-			if (!tail.isEmpty()
-					&& !tail.startsWith(factory.getBorderSegment())) {
+		if (arc.equals(parser.getDot())) {
+			if (!tail.isEmpty() 
+					&& !tail.startsWith(parser.getWordStart()) 
+					&& !tail.startsWith(parser.getWordEnd())) {
 				return index + arc.size();
 			}
 		}

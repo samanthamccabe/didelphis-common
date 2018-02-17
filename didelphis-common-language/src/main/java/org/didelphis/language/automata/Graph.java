@@ -15,9 +15,9 @@
 package org.didelphis.language.automata;
 
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.ToString;
 import org.didelphis.structures.maps.GeneralTwoKeyMultiMap;
-import lombok.NonNull;
 
 /**
  * Class {@code Graph}

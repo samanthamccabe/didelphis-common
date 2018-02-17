@@ -14,10 +14,10 @@
 
 package org.didelphis.language.phonetic.features;
 
+import lombok.NonNull;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureSpecification;
 import org.didelphis.utilities.Exceptions;
-import lombok.NonNull;
 
 import java.util.Objects;
 

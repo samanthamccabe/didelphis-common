@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.didelphis.utilities.Split.parseParens;
-import static org.didelphis.utilities.Split.toList;
+import static org.didelphis.utilities.Splitter.parseParens;
+import static org.didelphis.utilities.Splitter.toList;
 
 /**
  * Enum {@code FormatterMode}

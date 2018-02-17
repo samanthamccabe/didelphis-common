@@ -25,7 +25,9 @@ import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.SequenceFactory;
 import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.model.FeatureMapping;
+import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
+import org.didelphis.language.phonetic.sequences.BasicSequence;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.junit.jupiter.api.Test;
 
@@ -114,7 +116,7 @@ class StandardStateMachineTest {
 	void testBoundaries1() {
 		StateMachine<Sequence<Integer>> machine = getMachine("#a#");
 		
-		assertMatches(machine, "a");
+		assertMatches(machine, "#a#");
 
 		assertNotMatches(machine, "");
 		assertNotMatches(machine, "aa");
@@ -125,12 +127,16 @@ class StandardStateMachineTest {
 	void testBoundaries2() {
 		StateMachine<Sequence<Integer>> machine = getMachine("#a");
 
-		assertMatches(machine, "a");
-		assertMatches(machine, "aa");
+		assertMatches(machine, "#a");
+		assertMatches(machine, "#aa");
 		
 		assertNotMatches(machine, "");
 		assertNotMatches(machine, "ba");
 		assertNotMatches(machine, "x");
+
+		assertNotMatches(machine, "a");
+		assertNotMatches(machine, "#ba");
+		assertNotMatches(machine, "#x");
 	}
 	
 	@Test
@@ -610,7 +616,12 @@ class StandardStateMachineTest {
 
 	private static Collection<Integer> testMachine(
 			StateMachine<Sequence<Integer>> machine, String target) {
-		Sequence<Integer> sequence = FACTORY.toSequence(target);
+		FeatureModel<Integer> model = FACTORY.getFeatureMapping().getFeatureModel();
+		Sequence<Integer> sequence = new BasicSequence<>(model);
+		SequenceParser<Integer> parser = new SequenceParser<>(FACTORY);
+		if (target.startsWith("#")) sequence.add(parser.transform("#["));
+		sequence.add(FACTORY.toSequence(target.replaceAll("#","")));
+		if (target.endsWith("#")) sequence.add(parser.transform("]#"));
 		return machine.getMatchIndices(0, sequence);
 	}
 }

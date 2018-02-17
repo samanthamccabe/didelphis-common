@@ -23,7 +23,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class SplitTest {
+class SplitterTest {
 
 	public static final Set<String> EMPTY_SET = Collections.emptySet();
 
@@ -31,14 +31,14 @@ class SplitTest {
 	void testWhitespace01() {
 		String string = "a b c";
 
-		assertEquals(Arrays.asList("a", "b", "c"), Split.whitespace(string));
+		assertEquals(Arrays.asList("a", "b", "c"), Splitter.whitespace(string));
 	}
 
 	@Test
 	void testWhitespace02() {
 		String string = "a     b  c";
 
-		assertEquals(Arrays.asList("a", "b", "c"), Split.whitespace(string));
+		assertEquals(Arrays.asList("a", "b", "c"), Splitter.whitespace(string));
 	}
 
 	@Test
@@ -46,7 +46,7 @@ class SplitTest {
 		String string = "a [b c]";
 
 		List<String> expected = Arrays.asList("a", "[b c]");
-		List<String> received = Split.whitespace(string);
+		List<String> received = Splitter.whitespace(string);
 		assertEquals(expected, received);
 	}
 
@@ -55,7 +55,7 @@ class SplitTest {
 		String string = "a [b   c]  d";
 
 		List<String> expected = Arrays.asList("a", "[b   c]", "d");
-		List<String> received = Split.whitespace(string);
+		List<String> received = Splitter.whitespace(string);
 		assertEquals(expected, received);
 	}
 
@@ -64,7 +64,7 @@ class SplitTest {
 		String string = "a [b   c]  d [e f]";
 
 		List<String> expected = Arrays.asList("a", "[b   c]", "d", "[e f]");
-		List<String> received = Split.whitespace(string);
+		List<String> received = Splitter.whitespace(string);
 		assertEquals(expected, received);
 	}
 
@@ -73,7 +73,7 @@ class SplitTest {
 		String string = "a [b   c]  [d [e f]]";
 
 		List<String> expected = Arrays.asList("a", "[b   c]", "[d [e f]]");
-		List<String> received = Split.whitespace(string);
+		List<String> received = Splitter.whitespace(string);
 		assertEquals(expected, received);
 	}
 	
@@ -82,34 +82,34 @@ class SplitTest {
 		String string = "ab* (cd?)+ ((ae)*f)+";
 
 		List<String> expected = Arrays.asList("ab*", "(cd?)+", "((ae)*f)+");
-		List<String> received = Split.whitespace(string);
+		List<String> received = Splitter.whitespace(string);
 		assertEquals(expected, received);
 	}
 	
 	@Test
 	void testWhiteSpaceWithSets01() {
-		List<String> list = Split.toList("{ab* (cd?)+ ((ae)*f)+}tr", EMPTY_SET);
+		List<String> list = Splitter.toList("{ab* (cd?)+ ((ae)*f)+}tr", EMPTY_SET);
 		assertEquals(3, list.size());
 	}
 
 	@Test
 	void testWhiteSpaceWithSets02() {
-		List<String> list = Split.toList("{ab {cd xy} ef}tr", EMPTY_SET);
+		List<String> list = Splitter.toList("{ab {cd xy} ef}tr", EMPTY_SET);
 		assertEquals(3, list.size());
 	}
 	
 	@Test
 	void testParseParens01() {
-		assertEquals(7, Split.parseParens("a [b c]", 2));
+		assertEquals(7, Splitter.parseParens("a [b c]", 2));
 	}
 
 	@Test
 	void testFindClosingBracketA01() {
-		assertEquals(7, Split.findClosingBracket("a [b c]", 2, '[', ']'));
+		assertEquals(7, Splitter.findClosingBracket("a [b c]", 2, '[', ']'));
 	}
 
 	@Test
 	void testFindClosingBracketB01() {
-		assertEquals(7, Split.findClosingBracket("a [b c]", "[", "]", 2));
+		assertEquals(7, Splitter.findClosingBracket("a [b c]", "[", "]", 2));
 	}
 }

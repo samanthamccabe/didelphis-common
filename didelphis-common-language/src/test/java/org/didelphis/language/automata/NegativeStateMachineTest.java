@@ -17,7 +17,6 @@ package org.didelphis.language.automata;
 import lombok.NonNull;
 import org.didelphis.io.ClassPathFileHandler;
 import org.didelphis.language.automata.expressions.Expression;
-import org.didelphis.language.automata.interfaces.LanguageParser;
 import org.didelphis.language.automata.interfaces.StateMachine;
 import org.didelphis.language.automata.sequences.SequenceMatcher;
 import org.didelphis.language.automata.sequences.SequenceParser;
@@ -25,7 +24,9 @@ import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.phonetic.SequenceFactory;
 import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.model.FeatureMapping;
+import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
+import org.didelphis.language.phonetic.sequences.BasicSequence;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.maps.GeneralMultiMap;
@@ -33,7 +34,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -183,13 +189,13 @@ public class NegativeStateMachineTest {
 	@Test
 	void testSet02() {
 		StateMachine<Sequence<Integer>> machine = getMachine("#!{a b c}#");
-		fail(machine, "a");
-		fail(machine, "b");
-		fail(machine, "c");
+		fail(machine, "#a#");
+		fail(machine, "#b#");
+		fail(machine, "#c#");
 
-		test(machine, "x");
-		test(machine, "y");
-		test(machine, "z");
+		test(machine, "#x#");
+		test(machine, "#y#");
+		test(machine, "#z#");
 	}
 
 	@Test
@@ -346,12 +352,7 @@ public class NegativeStateMachineTest {
 	}
 
 	private static StateMachine<Sequence<Integer>> getMachine(String exp) {
-		SequenceFactory<Integer> factory = new SequenceFactory<>(MAPPING,
-				new HashSet<>(),
-				FormatterMode.NONE
-		);
-
-		SequenceParser<Integer> parser = new SequenceParser<>(factory);
+		SequenceParser<Integer> parser = new SequenceParser<>(FACTORY);
 		SequenceMatcher<Integer> matcher = new SequenceMatcher<>(parser);
 		Expression expression = parser.parseExpression(exp);
 		return StandardStateMachine.create("M0", expression, parser, matcher, FORWARD);
@@ -367,8 +368,8 @@ public class NegativeStateMachineTest {
 		return StandardStateMachine.create("M0", parser.parseExpression(exp), parser, matcher, FORWARD);
 	}
 
-	private static <T> void test(
-			StateMachine<T> stateMachine, String target
+	private static void test(
+			StateMachine<Sequence<Integer>> stateMachine, String target
 	) {
 		Assertions.assertTimeoutPreemptively(Duration.ofSeconds(1), () -> {
 
@@ -379,11 +380,10 @@ public class NegativeStateMachineTest {
 		});
 	}
 
-	private static <T> void fail(
-			StateMachine<T> stateMachine, 
+	private static void fail(
+			StateMachine<Sequence<Integer>> stateMachine, 
 			String target
 	) {
-		
 		Assertions.assertTimeoutPreemptively(Duration.ofSeconds(1), () -> {
 			Collection<Integer> matchIndices = testMachine(stateMachine, target);
 			Assertions.assertTrue(
@@ -393,11 +393,15 @@ public class NegativeStateMachineTest {
 		});
 	}
 
-	private static <T> Collection<Integer> testMachine(
-			StateMachine<T> stateMachine, String target
+	private static Collection<Integer> testMachine(
+			StateMachine<Sequence<Integer>> stateMachine, String target
 	) {
-		LanguageParser<T> parser = stateMachine.getParser();
-		T sequence = parser.transform(target);
+		FeatureModel<Integer> model = FACTORY.getFeatureMapping().getFeatureModel();
+		Sequence<Integer> sequence = new BasicSequence<>(model);
+		SequenceParser<Integer> parser = new SequenceParser<>(FACTORY);
+		if (target.startsWith("#")) sequence.add(parser.transform("#["));
+		sequence.add(FACTORY.toSequence(target.replaceAll("#","")));
+		if (target.endsWith("#")) sequence.add(parser.transform("]#"));
 		return stateMachine.getMatchIndices(0, sequence);
 	}
 }

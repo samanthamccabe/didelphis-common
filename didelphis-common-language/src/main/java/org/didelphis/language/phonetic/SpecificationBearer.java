@@ -14,8 +14,8 @@
 
 package org.didelphis.language.phonetic;
 
-import org.didelphis.language.phonetic.model.FeatureSpecification;
 import lombok.NonNull;
+import org.didelphis.language.phonetic.model.FeatureSpecification;
 
 /**
  * @author Samantha Fiona McCabe 
