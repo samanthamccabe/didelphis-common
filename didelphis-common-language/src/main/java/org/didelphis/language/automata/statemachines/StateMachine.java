@@ -17,8 +17,8 @@ package org.didelphis.language.automata.statemachines;
 import lombok.NonNull;
 import org.didelphis.language.automata.Graph;
 import org.didelphis.language.automata.interfaces.Automaton;
-import org.didelphis.language.automata.matchers.LanguageMatcher;
 import org.didelphis.language.automata.interfaces.LanguageParser;
+import org.didelphis.language.automata.matchers.LanguageMatcher;
 
 import java.util.Map;
 
