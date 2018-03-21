@@ -12,27 +12,33 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata;
+package org.didelphis.language.automata.matchers;
+
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import lombok.ToString;
+import org.didelphis.language.automata.sequences.SequenceParser;
+import org.didelphis.language.phonetic.sequences.Sequence;
 
 /**
- * Interface {@code Automaton}
- *
- * Represents an automaton for accepting formal languages.
- * 
- * @author Samantha Fiona McCabe
- * @date 10/17/17
- * @see java.util.regex.Pattern
+ * Class {@code SequenceMatcher}
  */
-@FunctionalInterface
-public interface Automaton<T> {
+@ToString
+@EqualsAndHashCode
+public class SequenceMatcher<T> implements LanguageMatcher<Sequence<T>> {
 
-	Match<T> match(T input, int start);
+	private final SequenceParser<T> parser;
 
-	default boolean matches(T input) {
-		return match(input).start() > -1;
+	public SequenceMatcher(SequenceParser<T> parser) {
+		this.parser = parser;
 	}
-	
-	default Match<T> match(T input) {
-		return match(input, 0);
+
+	@Override
+	public boolean matches(
+			@NonNull Sequence<T> input, 
+			@NonNull Sequence<T> target,
+			int index
+	) {
+			return input.subsequence(index).startsWith(target);
 	}
 }

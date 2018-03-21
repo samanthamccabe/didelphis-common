@@ -12,23 +12,22 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata;
+package org.didelphis.language.automata.statemachines;
 
 import lombok.NonNull;
+import org.didelphis.language.automata.Graph;
 import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.interfaces.LanguageParser;
-import org.didelphis.language.automata.interfaces.MachineMatcher;
-import org.didelphis.language.automata.interfaces.StateMachine;
+import org.didelphis.language.automata.matchers.LanguageMatcher;
+import org.didelphis.language.automata.matches.BasicMatch;
+import org.didelphis.language.automata.matches.Match;
 import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.structures.tuples.Triple;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -57,7 +56,7 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 			@NonNull String id,
 			@NonNull Expression expression,
 			@NonNull LanguageParser<T> parser,
-			@NonNull MachineMatcher<T> matcher,
+			@NonNull LanguageMatcher<T> matcher,
 			@NonNull ParseDirection direction
 	) {
 		// Create the actual branch, the one we don't want to match
@@ -93,7 +92,7 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 
 	@NonNull
 	@Override
-	public MachineMatcher<T> getMatcher() {
+	public LanguageMatcher<T> getMatcher() {
 		return positive.getMatcher();
 	}
 
@@ -112,32 +111,6 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 		return map;
 	}
 
-	@NonNull
-	@Override
-	public Set<Integer> getMatchIndices(int start, @NonNull T target) {
-
-		Set<Integer> posIndices = positive.getMatchIndices(start, target);
-		Set<Integer> negIndices = negative.getMatchIndices(start, target);
-
-		if (!negIndices.isEmpty() && !posIndices.isEmpty()) {
-			// Machine has matched both branches
-			int pos = new TreeSet<>(posIndices).last();
-			int neg = new TreeSet<>(negIndices).last();
-			return pos == neg ? Collections.emptySet() : posIndices;
-		} else if (!posIndices.isEmpty()) {
-			return posIndices;
-		} else {
-			return Collections.emptySet();
-		}
-
-		/* This is left here as reference; not used because this method
-		 * is not greedy - this was the first attempt, but does not work
-		 * */
-		// Complement --- remove negatives from positives
-		//posIndices.removeAll(negIndices);
-		//return posIndices;
-	}
-
 	@Override
 	public String toString() {
 		return "NegativeStateMachine{"
@@ -147,6 +120,31 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 				+ "positive="
 				+ positive
 				+ '}';
+	}
+
+	@NonNull
+	@Override
+	public Match<T> match(@NonNull T input, int start) {
+
+		Match<T> pMatch = positive.match(input, start);
+		Match<T> nMatch = negative.match(input, start);
+		
+		// TODO: what if start and end are different??
+		if (pMatch.end() == nMatch.end()) {
+			return new BasicMatch<>(input, -1, -1);
+//		if (!negIndices.isEmpty() && !posIndices.isEmpty()) {
+			// Machine has matched both branches
+//			int pos = new TreeSet<>(posIndices).last();
+//			int neg = new TreeSet<>(negIndices).last();
+//			return pos == neg ? Collections.emptySet() : posIndices;
+//		} else if (!posIndices.isEmpty()) {
+//			return posIndices;
+//		} else {
+//			return Collections.emptySet();
+		} else {
+			return pMatch;
+		}
+//		return new BasicMatch<>(input, -1, -1);
 	}
 
 	private static <T> void buildPositiveBranch(

@@ -15,8 +15,8 @@
 package org.didelphis.structures.tuples;
 
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import org.didelphis.utilities.Exceptions;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.AbstractList;
 
@@ -30,10 +30,10 @@ import java.util.AbstractList;
 @EqualsAndHashCode(callSuper = true)
 public class Twin<E> extends AbstractList<E> implements Tuple<E, E> {
 
-	private final E left;
-	private final E right;
+	@NonNull private final E left;
+	@NonNull private final E right;
 
-	public Twin(@Nullable E left, @Nullable E right) {
+	public Twin(@NonNull E left, @NonNull E right) {
 		this.left = left;
 		this.right = right;
 	}
@@ -48,8 +48,9 @@ public class Twin<E> extends AbstractList<E> implements Tuple<E, E> {
 		return "(" + left + ',' + right + ')';
 	}
 
+	@NonNull
 	@Override
-	public @Nullable E get(int index) {
+	public E get(int index) {
 		if (index == 0) return left;
 		if (index == 1) return right;
 		throw Exceptions.indexOutOfBounds()
@@ -60,13 +61,15 @@ public class Twin<E> extends AbstractList<E> implements Tuple<E, E> {
 				.build();
 	}
 
+	@NonNull
 	@Override
-	public @Nullable E getLeft() {
+	public E getLeft() {
 		return left;
 	}
 
+	@NonNull
 	@Override
-	public @Nullable E getRight() {
+	public E getRight() {
 		return right;
 	}
 }

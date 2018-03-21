@@ -12,15 +12,17 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata;
+package org.didelphis.language.automata.statemachines;
 
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
+import org.didelphis.language.automata.Graph;
 import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.interfaces.LanguageParser;
-import org.didelphis.language.automata.interfaces.MachineMatcher;
-import org.didelphis.language.automata.interfaces.StateMachine;
+import org.didelphis.language.automata.matchers.LanguageMatcher;
+import org.didelphis.language.automata.matches.BasicMatch;
+import org.didelphis.language.automata.matches.Match;
 import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Tuple;
@@ -28,10 +30,12 @@ import org.didelphis.structures.tuples.Tuple;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -44,7 +48,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 	static int A_ASCII = 0x41; // dec 65 / 0x41
 
 	LanguageParser<T> parser;
-	MachineMatcher<T> matcher;
+	LanguageMatcher<T> matcher;
 	ParseDirection direction;
 	String id;
 	String startStateId;
@@ -57,7 +61,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 	private StandardStateMachine(
 			String id,
 			LanguageParser<T> parser,
-			MachineMatcher<T> matcher,
+			LanguageMatcher<T> matcher,
 			ParseDirection direction
 	) {
 		this.parser = parser;
@@ -77,7 +81,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 			String id,
 			@NonNull Expression expression,
 			@NonNull LanguageParser<T> parser,
-			MachineMatcher<T> matcher,
+			LanguageMatcher<T> matcher,
 			ParseDirection direction) {
 
 		StandardStateMachine<T> machine = new StandardStateMachine<>(id,
@@ -106,7 +110,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 
 	@NonNull
 	@Override
-	public MachineMatcher<T> getMatcher() {
+	public LanguageMatcher<T> getMatcher() {
 		return matcher;
 	}
 
@@ -125,12 +129,10 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 
 	@NonNull
 	@Override
-	public Set<Integer> getMatchIndices(int start, @NonNull T target) {
-		Set<Integer> indices = new HashSet<>();
+	public Match<T> match(@NonNull T input, int start) {
 
 		if (graph.isEmpty()) {
-			indices.add(0);
-			return indices;
+			return new BasicMatch<>(input, 0, 0);
 		}
 
 		Collection<Tuple<Integer,String>> states = new ArrayList<>();
@@ -141,18 +143,21 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 
 		// if the condition is empty, it will always match
 		Collection<Tuple<Integer,String>> swap = new ArrayList<>();
+		Set<Integer> indices = new HashSet<>();
 		while (!states.isEmpty()) {
-			for (Tuple<Integer,String> state : states) {
+			for (Tuple<Integer, String> state : states) {
+				
 				String currentNode = state.getRight();
 				int index = state.getLeft();
 
 				// Check internal state automata
-				Collection<Integer> indicesToCheck;
+				Set<Integer> indicesToCheck = new HashSet<>();
+
 				if (machinesMap.containsKey(currentNode)) {
-					indicesToCheck = machinesMap.get(currentNode)
-							.getMatchIndices(index, target);
+					StateMachine<T> machine = machinesMap.get(currentNode);
+					Match<T> match = machine.match(input, index);
+					indicesToCheck.add(match.end());
 				} else {
-					indicesToCheck = new HashSet<>();
 					indicesToCheck.add(index);
 				}
 
@@ -162,14 +167,31 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 
 				if (graph.containsKey(currentNode)) {
 					for (Integer mIndex : indicesToCheck) {
-						// ----------------------------------------------------
-						Map<T, Collection<String>> map = graph.getDelegate().get(currentNode);
+						
+						if (mIndex > parser.lengthOf(input)) {
+							continue;
+						}
+						
+						Map<T, Collection<String>> map = graph.get(currentNode);
 						for (Entry<T, Collection<String>> entry : map.entrySet()) {
 							T arc = entry.getKey();
-							for (String node : entry.getValue()) {
-								int match = matcher.match(target, arc, mIndex);
-								if (match >= 0) {
-									swap.add(new Couple<>(match, node));
+							Collection<String> value = entry.getValue();
+							for (String node : value) {
+								
+								if (Objects.equals(arc, parser.epsilon())) {
+									swap.add(new Couple<>(mIndex, node));
+								} else if (Objects.equals(arc, parser.getDot())) {
+									swap.add(new Couple<>(mIndex + 1, node));
+								} else if (Objects.equals(arc, parser.getWordStart()) && mIndex == 0) {
+									swap.add(new Couple<>(0, node));
+								} else if (Objects.equals(arc, parser.getWordEnd()) && mIndex == parser.lengthOf(input)) {
+									swap.add(new Couple<>(mIndex, node));
+								} else {
+									
+									if (matcher.matches(input, arc, mIndex)) {
+										int i = parser.lengthOf(arc) + mIndex;
+										swap.add(new Couple<>(i, node));
+									}
 								}
 							}
 						}
@@ -179,7 +201,10 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 			states = swap;
 			swap = new ArrayList<>();
 		}
-		return indices;
+		Comparator<Integer> comparator = Comparator.naturalOrder();
+		int matchEnd = indices.stream().max(comparator).orElse(-1);
+		int matchStart = matchEnd == -1 ? -1 : start;
+		return new BasicMatch<>(input, matchStart, matchEnd);
 	}
 
 	@Override

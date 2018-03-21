@@ -14,9 +14,12 @@
 
 package org.didelphis.language.automata;
 
+import lombok.NonNull;
 import lombok.ToString;
 import lombok.Value;
 import lombok.experimental.Delegate;
+import org.didelphis.language.automata.interfaces.Automaton;
+import org.didelphis.language.automata.matches.Match;
 
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
@@ -35,16 +38,17 @@ public class JavaPatternAutomaton implements Automaton<String> {
 
 	private final Pattern pattern;
 
-	public JavaPatternAutomaton(String pattern) {
+	public JavaPatternAutomaton(@NonNull String pattern) {
 		this(pattern, 0);
 	}
 	
-	public JavaPatternAutomaton(String pattern, int flags) {
+	public JavaPatternAutomaton(@NonNull String pattern, int flags) {
 		this.pattern = Pattern.compile(pattern, flags);
 	}
 	
+	@NonNull
 	@Override
-	public Match<String> match(String input, int start) {
+	public Match<String> match(@NonNull String input, int start) {
 		Matcher matcher = pattern.matcher(input);
 		if (matcher.find(start)) {
 			return new PatternMatch(matcher.toMatchResult());

@@ -12,27 +12,36 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata;
+package org.didelphis.language.automata.matchers;
+
+import lombok.NonNull;
 
 /**
- * Interface {@code Match}
+ * Interface {@code MachineMatcher}
  *
- * {@link java.util.regex.MatchResult} but parameterized
+ * A helper interface used by finite state automata to determine define when
+ * a "match" has occurred; many implementations might 
  * 
+ * @param <T> The type of object which represents state transitions.
+ *
  * @author Samantha Fiona McCabe
- * @date 10/21/17
+ * @date 2017-02-23
+ * @since 0.1.0
  */
-public interface Match<T> {
-	
-	int start();
-	
-	int start(int group);
-	
-	int end();
-	
-	int end(int group);
-	
-	T group(int group);
-	
-	int groupCount();
+@FunctionalInterface
+public interface LanguageMatcher<T>  {
+
+	/**
+	 * Determines if the provided input matches the provided target in per the
+	 * semantics of the implementation. This may be an exact or approximate
+	 * match, or use operate like {@link String#startsWith(String)}
+	 *
+	 * @param input  the input to test
+	 * @param target the data to test the input against
+	 * @param index  the index of the input at which to evaluate the match
+	 *
+	 * @return true if the input "matches" the target per the documented
+	 * semantics of the implementation
+	 */
+	boolean matches(@NonNull T input, @NonNull T target, int index);
 }

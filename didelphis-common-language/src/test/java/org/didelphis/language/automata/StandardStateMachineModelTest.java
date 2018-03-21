@@ -15,9 +15,11 @@
 package org.didelphis.language.automata;
 
 import org.didelphis.io.ClassPathFileHandler;
-import org.didelphis.language.automata.interfaces.StateMachine;
-import org.didelphis.language.automata.sequences.SequenceMatcher;
+import org.didelphis.language.automata.matches.Match;
+import org.didelphis.language.automata.statemachines.StateMachine;
+import org.didelphis.language.automata.matchers.SequenceMatcher;
 import org.didelphis.language.automata.sequences.SequenceParser;
+import org.didelphis.language.automata.statemachines.StandardStateMachine;
 import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.language.parsing.ParseException;
@@ -32,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -311,6 +314,7 @@ public class StandardStateMachineModelTest {
 	private static Collection<Integer> testMachine(
 			StateMachine<Sequence<Integer>> stateMachine, String target) {
 		Sequence<Integer> sequence = factory.toSequence(target);
-		return stateMachine.getMatchIndices(0, sequence);
+		Match<Sequence<Integer>> match = stateMachine.match(sequence, 0);
+		return Collections.singleton(match.end());
 	}
 }

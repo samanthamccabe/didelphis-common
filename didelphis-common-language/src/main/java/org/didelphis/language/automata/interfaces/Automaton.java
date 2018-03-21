@@ -15,39 +15,40 @@
 package org.didelphis.language.automata.interfaces;
 
 import lombok.NonNull;
-import org.didelphis.language.automata.Graph;
-
-import java.util.Map;
-import java.util.Set;
+import org.didelphis.language.automata.matches.Match;
 
 /**
+ * Interface {@code Automaton}
+ *
+ * Represents an automaton for accepting formal languages, such as finite state
+ * automata.
+ * 
+ * @param <T> The (usually sequential) data type being matched, such as {@link
+ * String} or {@link org.didelphis.language.phonetic.sequences.Sequence}
+ * 
  * @author Samantha Fiona McCabe
- * @date 2015-04-07
+ * @date 10/17/17
+ * @see java.util.regex.Pattern
  */
-public interface StateMachine<T> {
-
-	@NonNull
-	LanguageParser<T> getParser();
-
-	@NonNull MachineMatcher<T> getMatcher();
-
-	String getId();
+@FunctionalInterface
+public interface Automaton<T> {
 
 	/**
-	 * Returns a map of {@link StateMachine} ids to its associated graph. This
-	 * ensures accessibility for automata which contain multiple embedded state
-	 * automata.
-	 * @return a {@link Map},  from {@link StateMachine} id → {@link Graph}
+	 * Return a{@link Match} object representing the output of the automaton's 
+	 * attempt to match the input.
+	 * @param input the input to be checked.
+	 * @param start if applicable, the index at which to start checking.
+	 * @return the resulting {@link Match} object
 	 */
-	@NonNull
-	Map<String, Graph<T>> getGraphs();
+	@NonNull 
+	Match<T> match(@NonNull T input, int start);
+
+	default boolean matches(@NonNull T input) {
+		return match(input).start() > -1;
+	}
 	
-	/**
-	 * Returns the indices
-	 * @param start
-	 * @param target
-	 * @return
-	 */
 	@NonNull
-	Set<Integer> getMatchIndices(int start, @NonNull T target);
+	default Match<T> match(@NonNull T input) {
+		return match(input, 0);
+	}
 }

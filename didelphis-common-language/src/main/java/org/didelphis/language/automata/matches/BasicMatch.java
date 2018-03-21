@@ -12,60 +12,82 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.structures.tuples;
+package org.didelphis.language.automata.matches;
 
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
-import lombok.NonNull;
+import lombok.ToString;
+import lombok.Value;
+import lombok.experimental.FieldDefaults;
 
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * {@code Tuple} is a class which should be used judiciously. It's main purpose
- * is to help provide views of key sets in two-key maps.
- * <p>
- * In many contexts, use of a class like this might indicate poor design. As it
- * is, {@code Tuple} is used to provide an {@code Iterator} for two-key maps.
+ * Class {@code BasicMatch}
  *
  * @author Samantha Fiona McCabe
- * @date 2017-07-22
- * @since 0.2.0
+ * @date 2/22/18
  */
+@ToString
 @EqualsAndHashCode
-public class Couple<L, R> implements Tuple<L, R> {
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+public class BasicMatch<T> implements Match<T> {
+	
+	int start;
+	int end;
+	
+	T input;
+	
+	List<MatchGroup<T>> groups;
 
-	@NonNull private final L left;
-	@NonNull private final R right;
-
-	public Couple(@NonNull L left, @NonNull R right) {
-		this.left = left;
-		this.right = right;
+	public BasicMatch(T input,int start, int end) {
+		this.start=start;
+		this.end=end;
+		this.input=input;
+		
+		groups = new ArrayList<>();
+		groups.add(new MatchGroup<>(start, end , input));
 	}
-
-	public Couple(@NonNull Tuple<L, R> tuple) {
-		left = tuple.getLeft();
-		right = tuple.getRight();
+	
+	public void addGroup(int start, int end, T input) {
+		groups.add(new MatchGroup<>(start, end , input));
 	}
-
-	@NonNull
+	
 	@Override
-	public L getLeft() {
-		return left;
-	}
-
-	@NonNull
-	@Override
-	public R getRight() {
-		return right;
+	public int start() {
+		return start;
 	}
 
 	@Override
-	public boolean contains(@NonNull Object entry) {
-		return Objects.equals(entry, left) || Objects.equals(entry, right);
+	public int start(int group) {
+		return groups.get(group).getStart();
 	}
 
-	@NonNull
 	@Override
-	public String toString() {
-		return "<" + left + ", " + right + '>';
+	public int end() {
+		return end;
+	}
+
+	@Override
+	public int end(int group) {
+		return groups.get(group).getEnd();
+	}
+
+	@Override
+	public T group(int group) {
+		return groups.get(group).getGroup();
+	}
+
+	@Override
+	public int groupCount() {
+		return groups.size();
+	}
+	
+	@Value
+	private static final class MatchGroup<T> {
+		int start;
+		int end;
+		T group;
 	}
 }

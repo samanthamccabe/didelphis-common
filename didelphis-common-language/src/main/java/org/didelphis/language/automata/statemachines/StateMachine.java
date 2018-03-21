@@ -12,28 +12,36 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata.interfaces;
+package org.didelphis.language.automata.statemachines;
 
 import lombok.NonNull;
+import org.didelphis.language.automata.Graph;
+import org.didelphis.language.automata.interfaces.Automaton;
+import org.didelphis.language.automata.matchers.LanguageMatcher;
+import org.didelphis.language.automata.interfaces.LanguageParser;
+
+import java.util.Map;
 
 /**
- * Interface {@code MachineMatcher}
- *
- * @param <T>
- *
  * @author Samantha Fiona McCabe
- * @date 2017-02-23
- * @since 0.1.0
+ * @date 2015-04-07
  */
-@Deprecated
-@FunctionalInterface
-public interface MachineMatcher<T> {
+public interface StateMachine<T> extends Automaton<T> {
+
+	@NonNull
+	LanguageParser<T> getParser();
+
+	@NonNull
+	LanguageMatcher<T> getMatcher();
+
+	String getId();
 
 	/**
-	 * @param target the input to the state machine
-	 * @param index
-	 *
-	 * @return
+	 * Returns a map of {@link StateMachine} ids to its associated graph. This
+	 * ensures accessibility for automata which contain multiple embedded state
+	 * automata.
+	 * @return a {@link Map},  from {@link StateMachine} id → {@link Graph}
 	 */
-	int match(@NonNull T target, @NonNull T arc, int index);
+	@NonNull
+	Map<String, Graph<T>> getGraphs();
 }

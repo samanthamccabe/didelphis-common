@@ -15,11 +15,14 @@
 package org.didelphis.language.automata;
 
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.didelphis.io.ClassPathFileHandler;
 import org.didelphis.language.automata.expressions.Expression;
-import org.didelphis.language.automata.interfaces.StateMachine;
-import org.didelphis.language.automata.sequences.SequenceMatcher;
+import org.didelphis.language.automata.matchers.SequenceMatcher;
+import org.didelphis.language.automata.matches.Match;
 import org.didelphis.language.automata.sequences.SequenceParser;
+import org.didelphis.language.automata.statemachines.StandardStateMachine;
+import org.didelphis.language.automata.statemachines.StateMachine;
 import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.phonetic.SequenceFactory;
 import org.didelphis.language.phonetic.features.IntegerFeature;
@@ -32,6 +35,7 @@ import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import java.time.Duration;
 import java.util.Arrays;
@@ -49,8 +53,12 @@ import static org.didelphis.language.parsing.ParseDirection.FORWARD;
  * @author Samantha Fiona McCabe
  * @date 1/31/2016
  */
-public class NegativeStateMachineTest {
-
+@Slf4j
+class NegativeStateMachineTest {
+	
+	private static final boolean  TIMEOUT  = false;
+	private static final Duration DURATION = Duration.ofSeconds(1);
+	
 	private static final FeatureMapping<Integer> MAPPING
 			= new FeatureModelLoader<>(IntegerFeature.INSTANCE,
 			ClassPathFileHandler.INSTANCE,
@@ -160,6 +168,11 @@ public class NegativeStateMachineTest {
 		test(machine, "acxy");
 		test(machine, "cbxy");
 		test(machine, "ccxy");
+
+		fail(machine, "aaxyZ");
+		fail(machine, "acxyZ");
+		fail(machine, "cbxyZ");
+		fail(machine, "ccxyZ");
 		
 		fail(machine, "abxy");
 		fail(machine, "ababxy");
@@ -189,13 +202,13 @@ public class NegativeStateMachineTest {
 	@Test
 	void testSet02() {
 		StateMachine<Sequence<Integer>> machine = getMachine("#!{a b c}#");
-		fail(machine, "#a#");
-		fail(machine, "#b#");
-		fail(machine, "#c#");
+		fail(machine, "a");
+		fail(machine, "b");
+		fail(machine, "c");
 
-		test(machine, "#x#");
-		test(machine, "#y#");
-		test(machine, "#z#");
+		test(machine, "x");
+		test(machine, "y");
+		test(machine, "z");
 	}
 
 	@Test
@@ -371,26 +384,45 @@ public class NegativeStateMachineTest {
 	private static void test(
 			StateMachine<Sequence<Integer>> stateMachine, String target
 	) {
-		Assertions.assertTimeoutPreemptively(Duration.ofSeconds(1), () -> {
-
-			Collection<Integer> matchIndices = testMachine(stateMachine, target);
-			Assertions.assertFalse(matchIndices.isEmpty(),
-					"Machine failed to accept input: " + target
-			);
-		});
+			Executable executable = () -> {
+				Collection<Integer> indices = testMachine(stateMachine, target);
+				Assertions.assertFalse(
+						indices.isEmpty(),
+						"Machine failed to accept input: " + target
+				);
+			};
+		if (TIMEOUT && DURATION != null) {
+			Assertions.assertTimeoutPreemptively(DURATION, executable);
+		} else {
+			try {
+				executable.execute();
+			} catch (Throwable throwable) {
+				log.error("Unexpected failure encountered: {}", throwable);
+			}
+		}
 	}
 
 	private static void fail(
 			StateMachine<Sequence<Integer>> stateMachine, 
 			String target
 	) {
-		Assertions.assertTimeoutPreemptively(Duration.ofSeconds(1), () -> {
-			Collection<Integer> matchIndices = testMachine(stateMachine, target);
+		Executable executable = () -> {
+			Collection<Integer> indices = testMachine(stateMachine, target);
 			Assertions.assertTrue(
-					matchIndices.isEmpty(),
+					indices.isEmpty(),
 					"Machine accepted input it should not have: " + target
-			);			
-		});
+			);
+		};
+
+		if (TIMEOUT && DURATION != null) {
+			Assertions.assertTimeoutPreemptively(DURATION, executable);
+		} else {
+			try {
+				executable.execute();
+			} catch (Throwable throwable) {
+				log.error("Unexpected failure encountered: {}", throwable);
+			}
+		}
 	}
 
 	private static Collection<Integer> testMachine(
@@ -402,6 +434,7 @@ public class NegativeStateMachineTest {
 		if (target.startsWith("#")) sequence.add(parser.transform("#["));
 		sequence.add(FACTORY.toSequence(target.replaceAll("#","")));
 		if (target.endsWith("#")) sequence.add(parser.transform("]#"));
-		return stateMachine.getMatchIndices(0, sequence);
-	}
+
+		Match<Sequence<Integer>> match = stateMachine.match(sequence, 0);
+		return Collections.singleton(match.end());	}
 }
