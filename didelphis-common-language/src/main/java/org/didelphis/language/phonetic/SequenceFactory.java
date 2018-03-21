@@ -15,21 +15,18 @@
 package org.didelphis.language.phonetic;
 
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.ToString;
 import lombok.Value;
 import org.didelphis.language.parsing.FormatterMode;
-import org.didelphis.language.phonetic.features.EmptyFeatureArray;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.model.FeatureMapping;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureSpecification;
-import org.didelphis.language.phonetic.segments.ImmutableSegment;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.segments.StandardSegment;
 import org.didelphis.language.phonetic.sequences.BasicSequence;
-import org.didelphis.language.phonetic.sequences.ImmutableSequence;
 import org.didelphis.language.phonetic.sequences.Sequence;
-import lombok.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,11 +51,6 @@ public class SequenceFactory<T> implements Function<String, Sequence<T>> {
 	FeatureMapping<T>  featureMapping;
 	FormatterMode      formatterMode;
 	Collection<String> reservedStrings;
-	
-	Segment<T>  dotSegment;
-	Segment<T>  borderSegment;
-	Sequence<T> dotSequence;
-	Sequence<T> borderSequence;
 	/*> --------------------------------------------------------------------- */
 
 	public SequenceFactory(
@@ -77,36 +69,21 @@ public class SequenceFactory<T> implements Function<String, Sequence<T>> {
 		this.featureMapping  = featureMapping;
 		this.reservedStrings = reservedStrings;
 		this.formatterMode   = formatterMode;
-
-		FeatureModel<T> model  = this.featureMapping.getFeatureModel();
-		FeatureArray<T> sparse = new EmptyFeatureArray<>(model);
-
-		dotSegment     = new ImmutableSegment<>(".", sparse);
-		borderSegment  = new ImmutableSegment<>("#", sparse);
-		dotSequence    = new ImmutableSequence<>(dotSegment);
-		borderSequence = new ImmutableSequence<>(borderSegment);
 		/*> ----------------------------------------------------------------- */
 	}
 
 	@Override
 	public Sequence<T> apply(String word) {
-		switch (word) {
-			case "#":
-				return borderSequence;
-			case ".":
-				return dotSequence;
-			default:
-				List<String> keys = new ArrayList<>();
-				keys.addAll(reservedStrings);
-				keys.addAll(featureMapping.getFeatureMap().keySet());
-				keys.sort(SequenceFactory::compare);
-				Collection<String> list = formatterMode.split(word, keys);
-				FeatureModel<T> featureModel = featureMapping.getFeatureModel();
-				List<Segment<T>> segments = list.stream()
-						.map(this::toSegment)
-						.collect(Collectors.toList());
-				return new BasicSequence<>(segments, featureModel);
-		}
+		List<String> keys = new ArrayList<>();
+		keys.addAll(reservedStrings);
+		keys.addAll(featureMapping.getFeatureMap().keySet());
+		keys.sort(SequenceFactory::compare);
+		Collection<String> list = formatterMode.split(word, keys);
+		FeatureModel<T> featureModel = featureMapping.getFeatureModel();
+		List<Segment<T>> segments = list.stream()
+				.map(this::toSegment)
+				.collect(Collectors.toList());
+		return new BasicSequence<>(segments, featureModel);
 	}
 
 	public void reserve(@NonNull String string) {
@@ -117,14 +94,10 @@ public class SequenceFactory<T> implements Function<String, Sequence<T>> {
 	public Segment<T> toSegment(@NonNull String string) {
 		FeatureSpecification specification = featureMapping.getSpecification();
 		FeatureModel<T> featureModel = featureMapping.getFeatureModel();
-		if (!featureMapping.containsKey("#") && string.equals("#")) {
-			return borderSegment;
-		} else if (string.equals(".")) {
-			return dotSegment;
-		} else if (specification.size() > 0 && string.startsWith("[")) {
+		if (specification.size() > 0 && string.startsWith("[")) {
 			FeatureArray<T> array = featureModel.parseFeatureString(string);
-			String bestSymbol = featureMapping.findBestSymbol(array);
-			return new StandardSegment<>(bestSymbol, array);
+			// TODO:
+			return new StandardSegment<>(string, array);
 		} else {
 			return featureMapping.parseSegment(string);
 		}

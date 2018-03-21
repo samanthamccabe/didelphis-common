@@ -16,14 +16,13 @@ package org.didelphis.structures.tuples;
 
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
 /**
  * {@code Tuple} is a class which should be used judiciously. It's main purpose
  * is to help provide views of key sets in two-key maps.
- *
+ * <p>
  * In many contexts, use of a class like this might indicate poor design. As it
  * is, {@code Tuple} is used to provide an {@code Iterator} for two-key maps.
  *
@@ -34,10 +33,10 @@ import java.util.Objects;
 @EqualsAndHashCode
 public class Couple<L, R> implements Tuple<L, R> {
 
-	private final L left;
-	private final R right;
+	@NonNull private final L left;
+	@NonNull private final R right;
 
-	public Couple(@Nullable L left, @Nullable R right) {
+	public Couple(@NonNull L left, @NonNull R right) {
 		this.left = left;
 		this.right = right;
 	}
@@ -47,18 +46,20 @@ public class Couple<L, R> implements Tuple<L, R> {
 		right = tuple.getRight();
 	}
 
+	@NonNull
 	@Override
-	public @Nullable L getLeft() {
+	public L getLeft() {
 		return left;
 	}
 
+	@NonNull
 	@Override
-	public @Nullable R getRight() {
+	public R getRight() {
 		return right;
 	}
 
 	@Override
-	public boolean contains(Object entry) {
+	public boolean contains(@NonNull Object entry) {
 		return Objects.equals(entry, left) || Objects.equals(entry, right);
 	}
 

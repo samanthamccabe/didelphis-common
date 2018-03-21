@@ -12,46 +12,82 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.phonetic.model;
+package org.didelphis.language.automata.matches;
 
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NonNull;
+import lombok.ToString;
+import lombok.Value;
 import lombok.experimental.FieldDefaults;
-import org.didelphis.language.phonetic.ModelBearer;
-import org.didelphis.language.phonetic.features.FeatureArray;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Class {@code Constraint}
- * 
+ * Class {@code BasicMatch}
+ *
  * @author Samantha Fiona McCabe
- * @date 2016-01-03
- * @since 0.1.0
+ * @date 2/22/18
  */
-@EqualsAndHashCode(exclude = "featureModel")
+@ToString
+@EqualsAndHashCode
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class Constraint<T> implements ModelBearer<T> {
+public class BasicMatch<T> implements Match<T> {
+	
+	int start;
+	int end;
+	
+	T input;
+	
+	List<MatchGroup<T>> groups;
 
-	@Getter FeatureModel<T> featureModel;
-	@Getter FeatureArray<T> source;
-	@Getter FeatureArray<T> target;
-
-	public Constraint(FeatureArray<T> source, FeatureArray<T> target) {
-		source.consistencyCheck(target);
-		featureModel = source.getFeatureModel();
-		this.source = source;
-		this.target = target;
+	public BasicMatch(T input,int start, int end) {
+		this.start=start;
+		this.end=end;
+		this.input=input;
+		
+		groups = new ArrayList<>();
+		groups.add(new MatchGroup<>(start, end , input));
 	}
-
-	public Constraint(@NonNull Constraint<T> constraint) {
-		source = constraint.source;
-		target = constraint.target;
-		featureModel = constraint.featureModel;
+	
+	public void addGroup(int start, int end, T input) {
+		groups.add(new MatchGroup<>(start, end , input));
 	}
 	
 	@Override
-	public String toString() {
-		return source + " -> " + target;
+	public int start() {
+		return start;
+	}
+
+	@Override
+	public int start(int group) {
+		return groups.get(group).getStart();
+	}
+
+	@Override
+	public int end() {
+		return end;
+	}
+
+	@Override
+	public int end(int group) {
+		return groups.get(group).getEnd();
+	}
+
+	@Override
+	public T group(int group) {
+		return groups.get(group).getGroup();
+	}
+
+	@Override
+	public int groupCount() {
+		return groups.size();
+	}
+	
+	@Value
+	private static final class MatchGroup<T> {
+		int start;
+		int end;
+		T group;
 	}
 }

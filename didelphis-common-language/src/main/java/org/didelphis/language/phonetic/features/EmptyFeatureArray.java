@@ -16,11 +16,11 @@ package org.didelphis.language.phonetic.features;
 
 
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.utilities.Exceptions;
-import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -63,7 +63,7 @@ public final class EmptyFeatureArray<T> implements FeatureArray<T> {
 
 	@Override
 	public boolean matches(@NonNull FeatureArray<T> array) {
-		return true;
+		return array instanceof EmptyFeatureArray;
 	}
 
 	@Override

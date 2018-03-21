@@ -12,21 +12,31 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata;
+package org.didelphis.language.automata.statemachines;
 
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
+import org.didelphis.language.automata.Graph;
 import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.interfaces.LanguageParser;
-import org.didelphis.language.automata.interfaces.MachineMatcher;
-import org.didelphis.language.automata.interfaces.StateMachine;
+import org.didelphis.language.automata.matchers.LanguageMatcher;
+import org.didelphis.language.automata.matches.BasicMatch;
+import org.didelphis.language.automata.matches.Match;
 import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Tuple;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author Samantha Fiona McCabe
@@ -38,7 +48,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 	static int A_ASCII = 0x41; // dec 65 / 0x41
 
 	LanguageParser<T> parser;
-	MachineMatcher<T> matcher;
+	LanguageMatcher<T> matcher;
 	ParseDirection direction;
 	String id;
 	String startStateId;
@@ -51,7 +61,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 	private StandardStateMachine(
 			String id,
 			LanguageParser<T> parser,
-			MachineMatcher<T> matcher,
+			LanguageMatcher<T> matcher,
 			ParseDirection direction
 	) {
 		this.parser = parser;
@@ -68,16 +78,19 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 
 	@NonNull
 	public static <T> StateMachine<T> create(
-			String id,
+			@NonNull String id,
 			@NonNull Expression expression,
 			@NonNull LanguageParser<T> parser,
-			MachineMatcher<T> matcher,
-			ParseDirection direction) {
+			@NonNull LanguageMatcher<T> matcher,
+			ParseDirection direction
+	) {
 
-		StandardStateMachine<T> machine = new StandardStateMachine<>(id,
+		StandardStateMachine<T> machine = new StandardStateMachine<>(
+				id,
 				parser,
 				matcher,
-				direction);
+				direction
+		);
 		
 		if (direction == ParseDirection.BACKWARD) {
 			expression = expression.reverse();
@@ -100,7 +113,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 
 	@NonNull
 	@Override
-	public MachineMatcher<T> getMatcher() {
+	public LanguageMatcher<T> getMatcher() {
 		return matcher;
 	}
 
@@ -119,12 +132,10 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 
 	@NonNull
 	@Override
-	public Set<Integer> getMatchIndices(int start, @NonNull T target) {
-		Set<Integer> indices = new HashSet<>();
+	public Match<T> match(@NonNull T input, int start) {
 
 		if (graph.isEmpty()) {
-			indices.add(0);
-			return indices;
+			return new BasicMatch<>(input, 0, 0);
 		}
 
 		Collection<Tuple<Integer,String>> states = new ArrayList<>();
@@ -135,18 +146,21 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 
 		// if the condition is empty, it will always match
 		Collection<Tuple<Integer,String>> swap = new ArrayList<>();
+		Set<Integer> indices = new HashSet<>();
 		while (!states.isEmpty()) {
-			for (Tuple<Integer,String> state : states) {
+			for (Tuple<Integer, String> state : states) {
+				
 				String currentNode = state.getRight();
 				int index = state.getLeft();
 
 				// Check internal state automata
-				Collection<Integer> indicesToCheck;
+				Set<Integer> indicesToCheck = new HashSet<>();
+
 				if (machinesMap.containsKey(currentNode)) {
-					indicesToCheck = machinesMap.get(currentNode)
-							.getMatchIndices(index, target);
+					StateMachine<T> machine = machinesMap.get(currentNode);
+					Match<T> match = machine.match(input, index);
+					indicesToCheck.add(match.end());
 				} else {
-					indicesToCheck = new HashSet<>();
 					indicesToCheck.add(index);
 				}
 
@@ -156,24 +170,21 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 
 				if (graph.containsKey(currentNode)) {
 					for (Integer mIndex : indicesToCheck) {
-						// ----------------------------------------------------
-						Map<T, Collection<String>> map = graph.getDelegate().get(currentNode);
-						for (Entry<T, Collection<String>> entry : map.entrySet()) {
-							T arc = entry.getKey();
-							for (String node : entry.getValue()) {
-								int match = matcher.match(target, arc, mIndex);
-								if (match >= 0) {
-									swap.add(new Couple<>(match, node));
-								}
-							}
+						if (mIndex > parser.lengthOf(input)) {
+							continue;
 						}
+						swap.addAll(checkNode(mIndex, input, currentNode));
 					}
 				}
 			}
 			states = swap;
 			swap = new ArrayList<>();
 		}
-		return indices;
+		
+		Comparator<Integer> comparator = Comparator.naturalOrder();
+		int matchEnd = indices.stream().max(comparator).orElse(-1);
+		int matchStart = matchEnd == -1 ? -1 : start;
+		return new BasicMatch<>(input, matchStart, matchEnd);
 	}
 
 	@Override
@@ -187,6 +198,48 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		// this needs to mutable:
 		// see NegativeStateMachine.create(..)
 		return machinesMap;
+	}
+
+	/**
+	 * Evaluates the inputs against the arcs leaving the current node and if
+	 * successful, will add to the output indices
+	 *
+	 * @param index       the current index within the input
+	 * @param input       the input data being consumed by this automaton
+	 * @param currentNode the current state machine node where evaluation is
+	 *                    taking place
+	 *
+	 * @return a collection of new states
+	 */
+	private Collection<Tuple<Integer, String>> checkNode(
+			int index,
+			@NonNull T input,
+			@NonNull String currentNode
+	) {
+		Collection<Tuple<Integer, String>> indices = new HashSet<>();
+		Map<T, Collection<String>> map = graph.get(currentNode);
+		for (Entry<T, Collection<String>> entry : map.entrySet()) {
+			T arc = entry.getKey();
+			Collection<String> value = entry.getValue();
+			for (String node : value) {
+				
+				if (Objects.equals(arc, parser.epsilon())) {
+					indices.add(new Couple<>(index, node));
+				} else if (Objects.equals(arc, parser.getDot()) && parser.lengthOf(input) > 0) {
+					indices.add(new Couple<>(index + 1, node));
+				} else if (Objects.equals(arc, parser.getWordStart()) && index == 0) {
+					indices.add(new Couple<>(0, node));
+				} else if (Objects.equals(arc, parser.getWordEnd()) && index == parser.lengthOf(input)) {
+					indices.add(new Couple<>(index, node));
+				} else {
+					if (matcher.matches(input, arc, index)) {
+						int i = parser.lengthOf(arc) + index;
+						indices.add(new Couple<>(i, node));
+					}
+				}
+			}
+		}
+		return indices;
 	}
 
 	@NonNull

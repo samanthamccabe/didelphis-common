@@ -57,7 +57,7 @@ public class StandardSegmentTest extends PhoneticTestBase {
 		Segment<Integer> alias = factory.toSegment("[high]");
 		Segment<Integer> segment = factory.toSegment("[+high]");
 
-		assertTrue(alias.matches(segment));
+		assertMatches(alias, segment);
 	}
 
 	@Test
@@ -65,7 +65,7 @@ public class StandardSegmentTest extends PhoneticTestBase {
 		Segment<Integer> alias = factory.toSegment("[mid]");
 		Segment<Integer> segment = factory.toSegment("[0:high]");
 
-		assertTrue(alias.matches(segment));
+		assertMatches(alias, segment);
 	}
 
 	@Test
@@ -73,7 +73,7 @@ public class StandardSegmentTest extends PhoneticTestBase {
 		Segment<Integer> alias = factory.toSegment("[low]");
 		Segment<Integer> segment = factory.toSegment("[-high]");
 
-		assertTrue(alias.matches(segment));
+		assertMatches(alias, segment);
 	}
 
 	@Test
@@ -81,7 +81,7 @@ public class StandardSegmentTest extends PhoneticTestBase {
 		Segment<Integer> alias = factory.toSegment("[retroflex]");
 		Segment<Integer> segment = factory.toSegment("[4:coronal, -distributed]");
 
-		assertTrue(alias.matches(segment));
+		assertMatches(alias, segment);
 	}
 
 	@Test
@@ -89,7 +89,7 @@ public class StandardSegmentTest extends PhoneticTestBase {
 		Segment<Integer> alias = factory.toSegment("[palatal]");
 		Segment<Integer> segment = factory.toSegment("[4:coronal, +distributed]");
 
-		assertTrue(alias.matches(segment));
+		assertMatches(alias, segment);
 	}
 
 	@Test
@@ -102,15 +102,15 @@ public class StandardSegmentTest extends PhoneticTestBase {
 
 		Segment<Integer> received = factory.toSegment("[-continuant, -son]");
 
-		assertTrue(segmentP.matches(received));
-		assertTrue(segmentT.matches(received));
-		assertTrue(segmentK.matches(received));
+		assertMatches(segmentP, received);
+		assertMatches(segmentT, received);
+		assertMatches(segmentK, received);
 
-		assertTrue(received.matches(segmentP));
-		assertTrue(received.matches(segmentT));
-		assertTrue(received.matches(segmentK));
+		assertMatches(received, segmentP);
+		assertMatches(received, segmentT);
+		assertMatches(received, segmentK);
 
-		assertFalse(segmentA.matches(received));
+		assertNotMatches(segmentA, received);
 		assertFalse(received.matches(segmentA));
 	}
 
@@ -124,16 +124,14 @@ public class StandardSegmentTest extends PhoneticTestBase {
 	}
 
 	@Test
-	void testMatch03() {
-		Segment<Integer> segment = factory.toSegment(
-				"[-con, -hgh, +frn, -atr, +voice]");
-
+	void testFeatureMatch() {
+		Segment<Integer> g = factory.toSegment("[-con -hgh +frn -atr +voice]");
 		Segment<Integer> a = factory.toSegment("a");
 
-		assertTrue(a.matches(segment));
-		assertTrue(segment.matches(a));
+		assertMatches(a, g);
+		assertMatches(g, a);
 	}
-
+	
 	@Test
 	void testMatch04() {
 		Segment<Integer> x = factory.toSegment("x");
@@ -142,7 +140,21 @@ public class StandardSegmentTest extends PhoneticTestBase {
 		assertFalse(e.matches(x));
 		assertFalse(x.matches(e));
 	}
+	
+	@Test
+	void testSegmentsNotInModel() {
+		Segment<Integer> z1 = factory.toSegment("ʓ");
+		Segment<Integer> z2 = factory.toSegment("ʓ");
+		Segment<Integer> a = factory.toSegment("a");
 
+		// Make sure that 
+		assertNotMatches(z2, a);
+		assertNotMatches(a, z2);
+		
+		assertMatches(z2, z1);
+		assertMatches(z1, z2);
+	}
+	
 	@Test
 	void testOrdering01() {
 		Segment<Integer> p = factory.toSegment("p");
@@ -150,7 +162,7 @@ public class StandardSegmentTest extends PhoneticTestBase {
 
 		assertEquals(-1, p.compareTo(b));
 	}
-
+	
 	@Test
 	void testOrdering02() {
 		Segment<Integer> p = factory.toSegment("p");
@@ -265,6 +277,14 @@ public class StandardSegmentTest extends PhoneticTestBase {
 		assertMatch(segment, pRel, pCon);
 	}
 
+	private static <T> void assertMatches(Segment<T> x, Segment<T> y) {
+		assertTrue(x.matches(y));
+	}
+
+	private static <T> void assertNotMatches(Segment<T> x, Segment<T> y) {
+		assertFalse(x.matches(y));
+	}
+
 	private static SequenceFactory<Integer> loadFactory() {
 		String path = "AT_hybrid.model";
 		FileHandler handler = ClassPathFileHandler.INSTANCE;
@@ -276,7 +296,11 @@ public class StandardSegmentTest extends PhoneticTestBase {
 				path).getFeatureMapping(), mode);
 	}
 
-	private static void assertMatch(Segment<Integer> segment, Segment<Integer> modifier, Segment<Integer> matching) {
+	private static void assertMatch(
+			Segment<Integer> segment,
+			Segment<Integer> modifier,
+			Segment<Integer> matching
+	) {
 		Segment<Integer> alter= new StandardSegment<>(segment);
 		alter.alter(modifier);
 		String message = "\n"

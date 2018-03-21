@@ -14,9 +14,9 @@
 
 package org.didelphis.language.phonetic.sequences;
 
+import lombok.NonNull;
 import org.didelphis.language.phonetic.ModelBearer;
 import org.didelphis.language.phonetic.segments.Segment;
-import lombok.NonNull;
 
 import java.util.List;
 

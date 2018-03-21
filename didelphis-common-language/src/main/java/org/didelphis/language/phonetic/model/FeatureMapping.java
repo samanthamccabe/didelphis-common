@@ -14,11 +14,11 @@
 
 package org.didelphis.language.phonetic.model;
 
+import lombok.NonNull;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.ModelBearer;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.segments.Segment;
-import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -95,10 +95,12 @@ public interface FeatureMapping<T> extends ModelBearer<T> {
 	 *
 	 * {@code findBestSymbol(parseSegment(string)) == string}
 	 *
-	 *
 	 * @param string a well formed {@link String} whose constituent characters
 	 *      are present in this mapping. Cannot be {@code null}.
-	 * @return a new {@link Segment} parsed from the provided {@link String}.
+	 * @return a new {@link Segment} parsed from the provided {@link String}. If
+	 * the mapping is non-empty but does not contain a valid representation,
+	 * then an {@link org.didelphis.language.phonetic.segments.UndefinedSegment}
+	 * should be returned.
 	 * @throws ParseException if the
 	 *      provided string is ill-formed or contains character not present in
 	 *      the mapping

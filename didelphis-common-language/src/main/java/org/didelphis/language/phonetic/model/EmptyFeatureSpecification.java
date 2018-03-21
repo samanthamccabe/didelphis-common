@@ -12,27 +12,42 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.matching;
+package org.didelphis.language.phonetic.model;
+
+import lombok.NonNull;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
- * Interface {@code Match}
+ * Enum Singleton {@code EmptyFeatureSpecification}
  *
- * {@link java.util.regex.MatchResult} but parameterized
- * 
  * @author Samantha Fiona McCabe
- * @date 10/21/17
+ * @date 1/1/18
  */
-public interface Match<T> {
+public enum EmptyFeatureSpecification implements FeatureSpecification {
+	INSTANCE;
 	
-	int start();
-	
-	int start(int group);
-	
-	int end();
-	
-	int end(int group);
-	
-	T group(int group);
-	
-	int groupCount();
+	@Override
+	public int size() {
+		return 0;
+	}
+
+	@NonNull
+	@Override
+	public Map<String, Integer> getFeatureIndices() {
+		return Collections.emptyMap();
+	}
+
+	@Override
+	public int getIndex(@NonNull String featureName) {
+		return -1;
+	}
+
+	@NonNull
+	@Override
+	public List<String> getFeatureNames() {
+		return Collections.emptyList();
+	}
 }

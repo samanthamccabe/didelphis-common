@@ -14,8 +14,8 @@
 
 package org.didelphis.language.automata.expressions;
 
-import lombok.Value;
 import lombok.NonNull;
+import lombok.Value;
 
 import java.util.List;
 import java.util.stream.Collectors;

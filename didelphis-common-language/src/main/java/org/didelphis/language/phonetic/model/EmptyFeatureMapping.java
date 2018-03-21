@@ -12,66 +12,72 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.phonetic.segments;
+package org.didelphis.language.phonetic.model;
 
 import lombok.NonNull;
-import org.didelphis.language.phonetic.features.EmptyFeatureArray;
+import lombok.ToString;
 import org.didelphis.language.phonetic.features.FeatureArray;
-import org.didelphis.language.phonetic.model.FeatureModel;
+import org.didelphis.language.phonetic.segments.Segment;
+import org.didelphis.language.phonetic.segments.UndefinedSegment;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
 /**
- * Class {@code ImmutableSegment}
+ * Class {@code EmptyFeatureMapping}
  *
  * @author Samantha Fiona McCabe
- * @since 0.1.0
-	 * @date 2017-06-21
+ * @date 1/1/18
  */
-public class ImmutableSegment<T> extends StandardSegment<T> {
-
-	/**
-	 * Copy constructor -
-	 *
-	 * @param segment the {@link Segment} to be copied
-	 */
-	public ImmutableSegment(@NonNull Segment<T> segment) {
-		super(segment);
-	}
-
-	/**
-	 * Standard constructor -
-	 *
-	 * @param symbol the phonetic symbol representing this segment
-	 * @param featureArray the feature array representing this segment
-	 */
-	public ImmutableSegment(String symbol, FeatureArray<T> featureArray) {
-		super(symbol, featureArray);
-	}
+@ToString
+public enum EmptyFeatureMapping implements FeatureMapping<Object> {
+	INSTANCE;
 	
-	public ImmutableSegment(String symbol, FeatureModel<T> model) {
-		this(symbol, new EmptyFeatureArray<>(model));
-	}
-
+	@NonNull
 	@Override
-	public boolean alter(@NonNull Segment<T> segment) {
-		return false;
+	public String findBestSymbol(@NonNull FeatureArray<Object> featureArray) {
+		return "?";
 	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof ImmutableSegment)) return false;
-		return super.equals(o);
-	}
-
-	@Override
-	public int hashCode() {
-		return 31 * ImmutableSegment.class.hashCode() * super.hashCode();
-	}
-
 
 	@NonNull
 	@Override
-	public String toString() {
-		return super.toString() + "(immutable)";
+	public Set<String> getSymbols() {
+		return Collections.emptySet();
+	}
+
+	@Override
+	public boolean containsKey(@NonNull String key) {
+		return false;
+	}
+
+	@NonNull
+	@Override
+	public Map<String, FeatureArray<Object>> getFeatureMap() {
+		return Collections.emptyMap();
+	}
+
+	@NonNull
+	@Override
+	public Map<String, FeatureArray<Object>> getModifiers() {
+		return Collections.emptyMap();
+	}
+
+	@Override
+	public @Nullable FeatureArray<Object> getFeatureArray(@NonNull String key) {
+		return null;
+	}
+
+	@NonNull
+	@Override
+	public Segment<Object> parseSegment(@NonNull String string) {
+		return new UndefinedSegment<>(string, EmptyFeatureModel.INSTANCE);
+	}
+
+	@NonNull
+	@Override
+	public FeatureModel<Object> getFeatureModel() {
+		return EmptyFeatureModel.INSTANCE;
 	}
 }

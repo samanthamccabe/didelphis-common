@@ -14,9 +14,9 @@
 
 package org.didelphis.language.phonetic.features;
 
+import lombok.NonNull;
 import org.didelphis.io.NullFileHandler;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
-import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;

@@ -15,6 +15,7 @@
 package org.didelphis.language.phonetic.model;
 
 import lombok.AccessLevel;
+import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -27,10 +28,18 @@ import org.didelphis.language.phonetic.features.SparseFeatureArray;
 import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
-import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,7 +47,7 @@ import java.util.regex.Pattern;
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static java.util.regex.Pattern.LITERAL;
 import static java.util.regex.Pattern.compile;
-import static org.didelphis.utilities.Split.lines;
+import static org.didelphis.utilities.Splitter.lines;
 
 /**
  * Class {@code FeatureModelLoader}
@@ -277,7 +286,8 @@ public final class FeatureModelLoader<T> {
 					i++;
 				}
 				String diacritic = DOTTED_CIRCLE.matcher(symbol).replaceAll("");
-				diacritics.put(diacritic, array);
+				String norm = Normalizer.normalize(diacritic, Normalizer.Form.NFD);
+				diacritics.put(norm, array);
 			} else {
 				log.error("Unrecognized diacritic definition {}", entry);
 			}
@@ -302,7 +312,8 @@ public final class FeatureModelLoader<T> {
 					features.set(i, featureType.parseValue(value));
 				}
 				checkFeatureCollisions(symbol, featureMap, features);
-				featureMap.put(symbol, features);
+				String norm = Normalizer.normalize(symbol, Normalizer.Form.NFD);
+				featureMap.put(norm, features);
 			} else {
 				log.error("Unrecognized symbol definition {}", entry);
 			}

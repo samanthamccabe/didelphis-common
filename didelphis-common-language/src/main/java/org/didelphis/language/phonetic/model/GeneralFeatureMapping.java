@@ -15,16 +15,24 @@
 package org.didelphis.language.phonetic.model;
 
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.ToString;
+import org.didelphis.language.phonetic.features.EmptyFeatureArray;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.FeatureType;
 import org.didelphis.language.phonetic.features.SparseFeatureArray;
 import org.didelphis.language.phonetic.features.StandardFeatureArray;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.segments.StandardSegment;
-import lombok.NonNull;
+import org.didelphis.language.phonetic.segments.UndefinedSegment;
 
-import java.util.*;
+import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -59,6 +67,8 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 	}
 
 	private static int compare(CharSequence s1, CharSequence s2) {
+		s1 = Normalizer.normalize(s1, Normalizer.Form.NFD);
+		s2 = Normalizer.normalize(s2, Normalizer.Form.NFD);
 		return -1 * Integer.compare(s1.length(), s2.length());
 	}
 
@@ -67,11 +77,11 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 	public String findBestSymbol(@NonNull FeatureArray<T> featureArray) {
 
 		FeatureType<T> type = featureModel.getFeatureType();
-
-		FeatureArray<T> bestFeatures = null;
+		
 		String bestSymbol = "";
 		double minimum = Double.MAX_VALUE;
 
+		FeatureArray<T> bestFeatures = null;
 		for (String key : orderedKeys) {
 			FeatureArray<T> features = featureMap.get(key);
 			double difference = type.difference(featureArray, features);
@@ -84,7 +94,11 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 
 		String sb = "";
 		if (minimum > 0.0) {
-			Collection<String> collection = getBestDiacritic(featureArray, bestFeatures, Double.MAX_VALUE);
+			Collection<String> collection = getBestDiacritic(
+					featureArray, 
+					bestFeatures, 
+					Double.MAX_VALUE
+			);
 			sb = modifiers.keySet()
 					.stream()
 					.filter(collection::contains)
@@ -101,6 +115,7 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 	
 	@Override
 	public boolean containsKey(@NonNull String key) {
+		key = Normalizer.normalize(key, Normalizer.Form.NFD);
 		return featureMap.containsKey(key);
 	}
 
@@ -119,38 +134,43 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 	@NonNull
 	@Override
 	public FeatureArray<T> getFeatureArray(@NonNull String key) {
+		key = Normalizer.normalize(key, Normalizer.Form.NFD);
 		return featureMap.containsKey(key) 
 				? new StandardFeatureArray<>(featureMap.get(key)) 
 				: new SparseFeatureArray<>(featureModel);
 	}
-	
+
 	@NonNull
 	@Override
 	public Segment<T> parseSegment(@NonNull String string) {
+		string = Normalizer.normalize(string, Normalizer.Form.NFD);
 		if (featureMap.isEmpty()) {
-			FeatureArray<T> featureArray = new StandardFeatureArray<>(
-					new ArrayList<>(),
-					featureModel
-			);
-			return new StandardSegment<>(string, featureArray);
+			FeatureArray<T> array = new EmptyFeatureArray<>(featureModel);
+			return new StandardSegment<>(string, array);
 		}
 		if (string.startsWith("[")) {
-			return new StandardSegment<>(string, featureModel.parseFeatureString(string));
+			FeatureArray<T> array = featureModel.parseFeatureString(string);
+			return new StandardSegment<>(string, array);
 		}
 		String best = "";
 		for (String key : orderedKeys) {
-				if (string.startsWith(key) && key.length() > best.length()) {
-					best = key;
-				}
+			if (string.startsWith(key) && key.length() > best.length()) {
+				best = key;
 			}
-			FeatureArray<T> featureArray = getFeatureArray(best);
-			for (String s : COMPILE.split(string.substring(best.length()))) {
-				if (modifiers.containsKey(s)) {
-					FeatureArray<T> array = modifiers.get(s);
-					featureArray.alter(array);
-				}
+		}
+		
+		if (best.isEmpty()) {
+			return new UndefinedSegment<>(string, featureModel);
+		}
+		
+		FeatureArray<T> featureArray = getFeatureArray(best);
+		for (String s : COMPILE.split(string.substring(best.length()))) {
+			if (modifiers.containsKey(s)) {
+				FeatureArray<T> array = modifiers.get(s);
+				featureArray.alter(array);
 			}
-			return new StandardSegment<>(string, featureArray);
+		}
+		return new StandardSegment<>(string, featureArray);
 	}
 
 	@NonNull
@@ -169,7 +189,8 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 	private Collection<String> getBestDiacritic(
 			@NonNull FeatureArray<T> featureArray,
 			@NonNull FeatureArray<T> bestFeatures,
-			double lastMinimum) {
+			double lastMinimum
+	) {
 
 		FeatureType<T> type = featureModel.getFeatureType();
 

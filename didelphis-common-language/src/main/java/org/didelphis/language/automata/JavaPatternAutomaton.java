@@ -12,42 +12,53 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata.interfaces;
+package org.didelphis.language.automata;
 
-import org.didelphis.language.automata.Graph;
 import lombok.NonNull;
+import lombok.ToString;
+import lombok.Value;
+import lombok.experimental.Delegate;
+import org.didelphis.language.automata.interfaces.Automaton;
+import org.didelphis.language.automata.matches.Match;
 
-import java.util.Map;
-import java.util.Set;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
+ * Class {@code JavaPatternAutomaton}
+ *
+ * A {@link Automaton} wrapper for the normal {@link Pattern} class.
+ * 
  * @author Samantha Fiona McCabe
- * @date 2015-04-07
+ * @date 10/17/17
  */
-public interface StateMachine<T> {
+@ToString
+public class JavaPatternAutomaton implements Automaton<String> {
 
-	@NonNull
-	LanguageParser<T> getParser();
+	private final Pattern pattern;
 
-	@NonNull MachineMatcher<T> getMatcher();
-
-	String getId();
-
-	/**
-	 * Returns a map of {@link StateMachine} ids to its associated graph. This
-	 * ensures accessibility for automata which contain multiple embedded state
-	 * automata.
-	 * @return a {@link Map},  from {@link StateMachine} id → {@link Graph}
-	 */
-	@NonNull
-	Map<String, Graph<T>> getGraphs();
+	public JavaPatternAutomaton(@NonNull String pattern) {
+		this(pattern, 0);
+	}
 	
-	/**
-	 * Returns the indices
-	 * @param start
-	 * @param target
-	 * @return
-	 */
+	public JavaPatternAutomaton(@NonNull String pattern, int flags) {
+		this.pattern = Pattern.compile(pattern, flags);
+	}
+	
 	@NonNull
-	Set<Integer> getMatchIndices(int start, @NonNull T target);
+	@Override
+	public Match<String> match(@NonNull String input, int start) {
+		Matcher matcher = pattern.matcher(input);
+		if (matcher.find(start)) {
+			return new PatternMatch(matcher.toMatchResult());
+		}
+		return null;
+	}
+
+	@Value
+	private static final class PatternMatch implements Match<String> {
+		@Delegate
+		MatchResult matchResult;
+	}
 }

@@ -15,12 +15,17 @@
 package org.didelphis.language.phonetic.features;
 
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import org.didelphis.language.phonetic.model.Constraint;
 import org.didelphis.language.phonetic.model.FeatureModel;
-import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**

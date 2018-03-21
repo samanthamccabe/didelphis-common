@@ -16,10 +16,14 @@ package org.didelphis.language.phonetic.model;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.ToString;
 import lombok.NonNull;
+import lombok.ToString;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by samantha on 2/16/17.
@@ -29,9 +33,6 @@ import java.util.*;
 @EqualsAndHashCode
 @ToString
 public final class DefaultFeatureSpecification implements FeatureSpecification {
-
-	public static final FeatureSpecification EMPTY
-			= new DefaultFeatureSpecification();
 
 	private final int size;
 

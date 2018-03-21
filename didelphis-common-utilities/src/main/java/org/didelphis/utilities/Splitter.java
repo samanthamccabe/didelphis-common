@@ -20,26 +20,31 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Utility class {@code Split}
+ * Utility class {@code Splitter}
  *
- * General collection of String segmentation tools, bracket matching, and
+ * General collection of String segmentation tools, including bracket matching
  * related tasks
  *
  * @date 2017-03-03
  */
 @UtilityClass
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class Split {
+public class Splitter {
 
 	Pattern NEWLINE = Pattern.compile("\r?\n|\r");
 	Pattern WHITESPACE = Pattern.compile("\\s+");
 
-	public Map<String, String> DELIMITERS = new HashMap<>();
+	Map<String, String> DELIMITERS = new HashMap<>();
+	
 	static {
 		DELIMITERS.put("[", "]");
 		DELIMITERS.put("(", ")");
@@ -47,9 +52,12 @@ public class Split {
 	}
 	
 	/**
-	 * @param lines
+	 * A simple utility method for splitting input at line breaks using the 
+	 * regular expression {@code "\r?\n|\r")}
 	 *
-	 * @return
+	 * @param lines the input to be split; must not be null
+	 *
+	 * @return a list containing each line found in the original input; not null
 	 */
 	@NonNull
 	public List<String> lines(@NonNull CharSequence lines) {
@@ -57,6 +65,12 @@ public class Split {
 	}
 
 	/**
+	 * Splits inputs such that each character in the input becomes an element
+	 * in the returned list of {@link String}s unless: a substring is found in
+	 * the parameter {@code special}, in which case it is preserved; or a chunk
+	 * is delimited parenthetically, in which case the contents of the delimited
+	 * chunk will also be preserved.
+	 * 
 	 * @param string
 	 * @param special
 	 *
@@ -95,7 +109,19 @@ public class Split {
 		}
 		return strings;
 	}
-	
+
+	/**
+	 * Splits inputs on the basis of whitespace only, while also preserving
+	 * parenthetically delimited chunks. Thus, a string:
+	 * 
+	 * {@code "a b (c d) e"}
+	 * 
+	 * will be split into four elements: {@code "a"}, {@code "b"}, {@code 
+	 * "(c d)"}, and {@code "e"}.
+	 * 
+	 * @param string
+	 * @return
+	 */
 	@NonNull
 	public List<String> whitespace(String string) {
 		List<String> list = new ArrayList<>();

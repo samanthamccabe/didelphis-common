@@ -14,18 +14,21 @@
 
 package org.didelphis.language.phonetic.sequences;
 
+import lombok.NonNull;
 import org.didelphis.language.phonetic.SpecificationBearer;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureSpecification;
 import org.didelphis.language.phonetic.segments.Segment;
-import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * @author Samantha Fiona McCabe
@@ -126,11 +129,16 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 
 	@Override
 	public boolean startsWith(@NonNull Sequence<T> sequence) {
-		if (isEmpty() || sequence.size() > size()) {
+		if (sequence.size() > size()) {
 			return false;
 		}
-		return IntStream.range(0, sequence.size())
-				.allMatch(i -> get(i).matches(sequence.get(i)));
+		int bound = sequence.size();
+		for (int i = 0; i < bound; i++) {
+			if (!get(i).matches(sequence.get(i))) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@NonNull

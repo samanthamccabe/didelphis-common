@@ -12,28 +12,36 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata.interfaces;
+package org.didelphis.language.automata.matchers;
 
 import lombok.NonNull;
 
 /**
  * Interface {@code MachineMatcher}
  *
- * @param <T>
+ * A helper interface used by finite state automata to determine define when
+ * a "match" has occurred; many implementations might 
+ * 
+ * @param <T> The type of object which represents state transitions.
  *
  * @author Samantha Fiona McCabe
  * @date 2017-02-23
  * @since 0.1.0
  */
-@Deprecated
 @FunctionalInterface
-public interface MachineMatcher<T> {
+public interface LanguageMatcher<T>  {
 
 	/**
-	 * @param target the input to the state machine
-	 * @param index
+	 * Determines if the provided input matches the provided target in per the
+	 * semantics of the implementation. This may be an exact or approximate
+	 * match, or use operate like {@link String#startsWith(String)}
 	 *
-	 * @return
+	 * @param input  the input to test
+	 * @param target the data to test the input against
+	 * @param index  the index of the input at which to evaluate the match
+	 *
+	 * @return true if the input "matches" the target per the documented
+	 * semantics of the implementation
 	 */
-	int match(@NonNull T target, @NonNull T arc, int index);
+	boolean matches(@NonNull T input, @NonNull T target, int index);
 }

@@ -12,20 +12,21 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata;
+package org.didelphis.language.automata.statemachines;
 
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import org.didelphis.language.automata.Graph;
 import org.didelphis.language.automata.interfaces.LanguageParser;
-import org.didelphis.language.automata.interfaces.MachineMatcher;
-import org.didelphis.language.automata.interfaces.StateMachine;
+import org.didelphis.language.automata.matchers.LanguageMatcher;
+import org.didelphis.language.automata.matches.BasicMatch;
+import org.didelphis.language.automata.matches.Match;
 import org.didelphis.utilities.Exceptions;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Class {@code EmptyStateMachine}
@@ -60,8 +61,8 @@ public final class EmptyStateMachine<T> implements StateMachine<T> {
 
 	@NonNull
 	@Override
-	public MachineMatcher<T> getMatcher() {
-		return (t1, t2, i) -> i;
+	public LanguageMatcher<T> getMatcher() {
+		return (x, y, i) -> true;
 	}
 
 	@Override
@@ -76,11 +77,10 @@ public final class EmptyStateMachine<T> implements StateMachine<T> {
 		return (Map<String, Graph<T>>) EMPTY_MAP;
 	}
 
+
 	@NonNull
 	@Override
-	public Set<Integer> getMatchIndices(
-			int start, @NonNull T target
-	) {
-		return Collections.singleton(start);
+	public Match<T> match(@NonNull T input, int start) {
+		return new BasicMatch<>(input, 0, start);
 	}
 }

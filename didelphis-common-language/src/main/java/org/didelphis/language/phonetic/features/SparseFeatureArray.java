@@ -14,12 +14,19 @@
 
 package org.didelphis.language.phonetic.features;
 
+import lombok.NonNull;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.utilities.Exceptions;
-import lombok.NonNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**

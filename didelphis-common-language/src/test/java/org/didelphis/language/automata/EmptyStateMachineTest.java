@@ -14,12 +14,12 @@
 
 package org.didelphis.language.automata;
 
-import org.didelphis.language.automata.interfaces.MachineMatcher;
-import org.didelphis.language.automata.interfaces.StateMachine;
+import org.didelphis.language.automata.matchers.LanguageMatcher;
+import org.didelphis.language.automata.matches.BasicMatch;
+import org.didelphis.language.automata.statemachines.EmptyStateMachine;
+import org.didelphis.language.automata.statemachines.StateMachine;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -44,7 +44,7 @@ class EmptyStateMachineTest {
 
 	@Test
 	void getMatcher() {
-		assertTrue(instance.getMatcher() instanceof MachineMatcher);
+		assertTrue(instance.getMatcher() instanceof LanguageMatcher);
 	}
 
 	@Test
@@ -59,14 +59,9 @@ class EmptyStateMachineTest {
 
 	@Test
 	void getMatchIndices() {
-		assertEquals(Collections.singleton(0), instance.getMatchIndices(0, "foo"));
-		assertEquals(Collections.singleton(1), instance.getMatchIndices(1, "foo"));
-		assertEquals(Collections.singleton(2), instance.getMatchIndices(2, "foo"));
-		assertEquals(Collections.singleton(3), instance.getMatchIndices(3, "foo"));
-		assertEquals(Collections.singleton(5), instance.getMatchIndices(5, "foo"));
-		assertEquals(Collections.singleton(8), instance.getMatchIndices(8, "foo"));
-
-
+		assertEquals(new BasicMatch<>("foo", 0, 0), instance.match("foo",0));
+		assertEquals(new BasicMatch<>("foo", 0, 1), instance.match("foo", 1));
+		assertEquals(new BasicMatch<>("foo", 0, 2), instance.match("foo", 2));
 	}
 
 	@Test

@@ -14,9 +14,9 @@
 
 package org.didelphis.language.automata.interfaces;
 
+import lombok.NonNull;
 import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.structures.maps.interfaces.MultiMap;
-import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -42,6 +42,11 @@ public interface LanguageParser<T> {
 	/**
 	 * Transform an expression string into a corresponding terminal symbol, the
 	 * same as is consumed from an input while searching for a match.
+	 * 
+	 * Used in the construction of state machines, specifically when translating
+	 * terminal symbols into sequences of type {@code <T>} which form the state
+	 * transitions .
+	 * 
 	 * @param expression
 	 * @return
 	 */

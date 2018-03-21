@@ -15,9 +15,6 @@
 package org.didelphis.language.phonetic;
 
 import org.didelphis.language.parsing.FormatterMode;
-import org.didelphis.language.phonetic.features.EmptyFeatureArray;
-import org.didelphis.language.phonetic.model.FeatureModel;
-import org.didelphis.language.phonetic.segments.ImmutableSegment;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +23,8 @@ import org.junit.jupiter.api.Test;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Samantha Fiona McCabe
@@ -83,37 +81,6 @@ class SequenceFactoryTest extends PhoneticTestBase {
 	@Test
 	void getReservedStrings() {
 		assertTrue(factory.getReservedStrings().isEmpty());
-	}
-
-	@Test
-	void getDotSegment() {
-		Segment<Integer> segment = factory.getDotSegment();
-		FeatureModel<Integer> model = factory.getFeatureMapping()
-				.getFeatureModel();
-		EmptyFeatureArray<Integer> array = new EmptyFeatureArray<>(model);
-		assertEquals(segment, new ImmutableSegment<>(".", array));
-		assertSame(segment, factory.toSegment("."));
-	}
-
-	@Test
-	void getBorderSegment() {
-		Segment<Integer> segment = factory.getBorderSegment();
-		FeatureModel<Integer> model = factory.getFeatureMapping()
-				.getFeatureModel();
-		EmptyFeatureArray<Integer> array = new EmptyFeatureArray<>(model);
-
-		assertEquals(segment, new ImmutableSegment<>("#", array));
-		assertSame(segment, factory.toSegment("#"));
-	}
-
-	@Test
-	void getDotSequence() {
-		assertEquals(factory.getDotSequence(), factory.toSequence("."));
-	}
-
-	@Test
-	void getBorderSequence() {
-		assertEquals(factory.getBorderSequence(), factory.toSequence("#"));
 	}
 
 	@Test

@@ -12,49 +12,33 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.matching;
+package org.didelphis.language.automata.matchers;
 
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.ToString;
-import lombok.Value;
-import lombok.experimental.Delegate;
-
-import java.util.regex.MatchResult;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.didelphis.language.automata.sequences.SequenceParser;
+import org.didelphis.language.phonetic.sequences.Sequence;
 
 /**
- * Class {@code JavaPatternAutomaton}
- *
- * A {@link Automaton} wrapper for the normal {@link Pattern} class.
- * 
- * @author Samantha Fiona McCabe
- * @date 10/17/17
+ * Class {@code SequenceMatcher}
  */
 @ToString
-public class JavaPatternAutomaton implements Automaton<String> {
+@EqualsAndHashCode
+public class SequenceMatcher<T> implements LanguageMatcher<Sequence<T>> {
 
-	private final Pattern pattern;
+	private final SequenceParser<T> parser;
 
-	public JavaPatternAutomaton(String pattern) {
-		this(pattern, 0);
+	public SequenceMatcher(SequenceParser<T> parser) {
+		this.parser = parser;
 	}
-	
-	public JavaPatternAutomaton(String pattern, int flags) {
-		this.pattern = Pattern.compile(pattern, flags);
-	}
-	
+
 	@Override
-	public Match<String> match(String input, int start) {
-		Matcher matcher = pattern.matcher(input);
-		if (matcher.find(start)) {
-			return new PatternMatch(matcher.toMatchResult());
-		}
-		return null;
-	}
-
-	@Value
-	private static final class PatternMatch implements Match<String> {
-		@Delegate
-		MatchResult matchResult;
+	public boolean matches(
+			@NonNull Sequence<T> input, 
+			@NonNull Sequence<T> target,
+			int index
+	) {
+			return input.subsequence(index).startsWith(target);
 	}
 }
