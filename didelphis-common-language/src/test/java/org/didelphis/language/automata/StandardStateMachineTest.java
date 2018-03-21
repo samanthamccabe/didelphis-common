@@ -14,6 +14,7 @@
 
 package org.didelphis.language.automata;
 
+import lombok.extern.slf4j.Slf4j;
 import org.didelphis.io.ClassPathFileHandler;
 import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.matchers.SequenceMatcher;
@@ -32,6 +33,7 @@ import org.didelphis.language.phonetic.model.FeatureModelLoader;
 import org.didelphis.language.phonetic.sequences.BasicSequence;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -47,8 +49,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author Samantha Fiona McCabe
  * @date 3/14/2015
  */
+@Slf4j
 class StandardStateMachineTest {
 
+	private static final boolean TIMEOUT = true;
+	
 	private static final SequenceFactory<Integer> FACTORY = factory();
 
 	@Test
@@ -577,14 +582,24 @@ class StandardStateMachineTest {
 	}
 
 	private static void assertMatches(StateMachine<Sequence<Integer>> machine, String target) {
-//		assertTimeoutPreemptively(Duration.ofSeconds(1), () -> {
+		Executable executable = () -> {
 			Collection<Integer> collection = testMachine(machine, target);
 			Collection<Integer> matchIndices = new ArrayList<>(collection);
 			assertFalse(
 					matchIndices.isEmpty(),
 					"Machine failed to accept input: " + target
 			);
-//		});
+		};
+		
+		if (TIMEOUT) {
+			assertTimeoutPreemptively(Duration.ofSeconds(1), executable);			
+		} else {
+			try {
+				executable.execute();
+			} catch (Throwable throwable) {
+				log.error("Unexpected failure encountered: {}", throwable);
+			}
+		}
 	}
 	
 	private static void assertThrowsParse(String expression) {
@@ -603,13 +618,24 @@ class StandardStateMachineTest {
 	}
 
 	private static void assertNotMatches(StateMachine<Sequence<Integer>> machine, String target) {
-//		assertTimeoutPreemptively(Duration.ofSeconds(5), () -> {
+		Executable executable = () -> {
 			Collection<Integer> matchIndices = testMachine(machine, target);
 			assertTrue(
 					matchIndices.isEmpty(),
 					"Machine accepted input it should not have: " + target
 			);
-//		});
+		};
+		
+		if (TIMEOUT) {
+			assertTimeoutPreemptively(Duration.ofSeconds(5), executable);			
+		} else {
+			try {
+				executable.execute();
+			} catch (Throwable throwable) {
+				log.error("Unexpected failure encountered: {}", throwable);
+			}
+		}
+
 	}
 
 	private static Collection<Integer> testMachine(

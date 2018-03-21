@@ -15,23 +15,23 @@
 package org.didelphis.language.automata;
 
 import org.didelphis.io.ClassPathFileHandler;
-import org.didelphis.language.automata.matches.Match;
-import org.didelphis.language.automata.statemachines.StateMachine;
 import org.didelphis.language.automata.matchers.SequenceMatcher;
+import org.didelphis.language.automata.matches.Match;
 import org.didelphis.language.automata.sequences.SequenceParser;
 import org.didelphis.language.automata.statemachines.StandardStateMachine;
+import org.didelphis.language.automata.statemachines.StateMachine;
 import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.SequenceFactory;
 import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.model.FeatureMapping;
+import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
+import org.didelphis.language.phonetic.sequences.BasicSequence;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -44,10 +44,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author Samantha Fiona McCabe
  * @date 2/28/2015
  */
-public class StandardStateMachineModelTest {
-
-	private static final Logger LOG = LoggerFactory.getLogger(StandardStateMachineModelTest.class);
-
+class StandardStateMachineModelTest {
+	
 	private static SequenceFactory<Integer> factory;
 
 	@BeforeAll
@@ -78,9 +76,17 @@ public class StandardStateMachineModelTest {
 		test(machine, "b");
 		test(machine, "c");
 
-		fail(machine, "");
+		test(machine, "g");
+		test(machine, "h");
+		test(machine, "y");
 	}
 
+	@Test
+	void testDotEmptyString() {
+		StateMachine<Sequence<Integer>> machine = getMachine(".");
+		fail(machine, "");
+	}
+	
 	@Test
 	void testBasicStateMachine01() {
 		StateMachine<Sequence<Integer>> machine = getMachine("[-con, +son, -hgh, +frn, -atr, +voice]");
@@ -110,7 +116,7 @@ public class StandardStateMachineModelTest {
 	void testBasicStateMachine02() {
 		StateMachine<Sequence<Integer>> machine = getMachine("aaa");
 
-		test(machine, "aaa");
+//		test(machine, "aaa");
 
 		fail(machine, "a");
 		fail(machine, "aa");
@@ -289,7 +295,6 @@ public class StandardStateMachineModelTest {
 		fail(machine, "a̰cʰus");
 	}
 
-
 	private static StateMachine<Sequence<Integer>> getMachine(String expression) {
 		SequenceParser<Integer> parser = new SequenceParser<>(factory);
 		SequenceMatcher<Integer> matcher = new SequenceMatcher<>(parser);
@@ -297,24 +302,36 @@ public class StandardStateMachineModelTest {
 		return StandardStateMachine.create("M0", parser.parseExpression(expression), parser, matcher, ParseDirection.FORWARD);
 	}
 
-	private static void test(StateMachine<Sequence<Integer>> stateMachine,
-			String target) {
+	private static void test(
+			StateMachine<Sequence<Integer>> stateMachine,
+			String target
+	) {
 		Collection<Integer> matchIndices = testMachine(stateMachine, target);
 		String message = "Machine failed to accept input: " + target;
 		assertFalse(matchIndices.isEmpty(),message);
 	}
 
-	private static void fail(StateMachine<Sequence<Integer>> stateMachine,
-			String target) {
+	private static void fail(
+			StateMachine<Sequence<Integer>> stateMachine,
+			String target
+	) {
 		Collection<Integer> matchIndices = testMachine(stateMachine, target);
 		String message = "Machine accepted input it should not have: " + target;
 		assertTrue(matchIndices.isEmpty(), message);
 	}
 
 	private static Collection<Integer> testMachine(
-			StateMachine<Sequence<Integer>> stateMachine, String target) {
-		Sequence<Integer> sequence = factory.toSequence(target);
-		Match<Sequence<Integer>> match = stateMachine.match(sequence, 0);
-		return Collections.singleton(match.end());
+			StateMachine<Sequence<Integer>> machine, String target) {
+		FeatureModel<Integer> model = factory.getFeatureMapping().getFeatureModel();
+		Sequence<Integer> sequence = new BasicSequence<>(model);
+		SequenceParser<Integer> parser = new SequenceParser<>(factory);
+		if (target.startsWith("#")) sequence.add(parser.transform("#["));
+		sequence.add(factory.toSequence(target.replaceAll("#","")));
+		if (target.endsWith("#")) sequence.add(parser.transform("]#"));
+
+		Match<Sequence<Integer>> match = machine.match(sequence, 0);
+		return match.end() >= 0
+				? Collections.singleton(match.end())
+				: Collections.emptyList();
 	}
 }

@@ -78,16 +78,19 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 
 	@NonNull
 	public static <T> StateMachine<T> create(
-			String id,
+			@NonNull String id,
 			@NonNull Expression expression,
 			@NonNull LanguageParser<T> parser,
-			LanguageMatcher<T> matcher,
-			ParseDirection direction) {
+			@NonNull LanguageMatcher<T> matcher,
+			ParseDirection direction
+	) {
 
-		StandardStateMachine<T> machine = new StandardStateMachine<>(id,
+		StandardStateMachine<T> machine = new StandardStateMachine<>(
+				id,
 				parser,
 				matcher,
-				direction);
+				direction
+		);
 		
 		if (direction == ParseDirection.BACKWARD) {
 			expression = expression.reverse();
@@ -167,40 +170,17 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 
 				if (graph.containsKey(currentNode)) {
 					for (Integer mIndex : indicesToCheck) {
-						
 						if (mIndex > parser.lengthOf(input)) {
 							continue;
 						}
-						
-						Map<T, Collection<String>> map = graph.get(currentNode);
-						for (Entry<T, Collection<String>> entry : map.entrySet()) {
-							T arc = entry.getKey();
-							Collection<String> value = entry.getValue();
-							for (String node : value) {
-								
-								if (Objects.equals(arc, parser.epsilon())) {
-									swap.add(new Couple<>(mIndex, node));
-								} else if (Objects.equals(arc, parser.getDot())) {
-									swap.add(new Couple<>(mIndex + 1, node));
-								} else if (Objects.equals(arc, parser.getWordStart()) && mIndex == 0) {
-									swap.add(new Couple<>(0, node));
-								} else if (Objects.equals(arc, parser.getWordEnd()) && mIndex == parser.lengthOf(input)) {
-									swap.add(new Couple<>(mIndex, node));
-								} else {
-									
-									if (matcher.matches(input, arc, mIndex)) {
-										int i = parser.lengthOf(arc) + mIndex;
-										swap.add(new Couple<>(i, node));
-									}
-								}
-							}
-						}
+						swap.addAll(checkNode(mIndex, input, currentNode));
 					}
 				}
 			}
 			states = swap;
 			swap = new ArrayList<>();
 		}
+		
 		Comparator<Integer> comparator = Comparator.naturalOrder();
 		int matchEnd = indices.stream().max(comparator).orElse(-1);
 		int matchStart = matchEnd == -1 ? -1 : start;
@@ -218,6 +198,48 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		// this needs to mutable:
 		// see NegativeStateMachine.create(..)
 		return machinesMap;
+	}
+
+	/**
+	 * Evaluates the inputs against the arcs leaving the current node and if
+	 * successful, will add to the output indices
+	 *
+	 * @param index       the current index within the input
+	 * @param input       the input data being consumed by this automaton
+	 * @param currentNode the current state machine node where evaluation is
+	 *                    taking place
+	 *
+	 * @return a collection of new states
+	 */
+	private Collection<Tuple<Integer, String>> checkNode(
+			int index,
+			@NonNull T input,
+			@NonNull String currentNode
+	) {
+		Collection<Tuple<Integer, String>> indices = new HashSet<>();
+		Map<T, Collection<String>> map = graph.get(currentNode);
+		for (Entry<T, Collection<String>> entry : map.entrySet()) {
+			T arc = entry.getKey();
+			Collection<String> value = entry.getValue();
+			for (String node : value) {
+				
+				if (Objects.equals(arc, parser.epsilon())) {
+					indices.add(new Couple<>(index, node));
+				} else if (Objects.equals(arc, parser.getDot()) && parser.lengthOf(input) > 0) {
+					indices.add(new Couple<>(index + 1, node));
+				} else if (Objects.equals(arc, parser.getWordStart()) && index == 0) {
+					indices.add(new Couple<>(0, node));
+				} else if (Objects.equals(arc, parser.getWordEnd()) && index == parser.lengthOf(input)) {
+					indices.add(new Couple<>(index, node));
+				} else {
+					if (matcher.matches(input, arc, index)) {
+						int i = parser.lengthOf(arc) + index;
+						indices.add(new Couple<>(i, node));
+					}
+				}
+			}
+		}
+		return indices;
 	}
 
 	@NonNull
