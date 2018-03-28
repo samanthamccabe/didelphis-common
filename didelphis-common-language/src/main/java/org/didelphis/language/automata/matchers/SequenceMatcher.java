@@ -34,11 +34,11 @@ public class SequenceMatcher<T> implements LanguageMatcher<Sequence<T>> {
 	}
 
 	@Override
-	public boolean matches(
+	public int matches(
 			@NonNull Sequence<T> input, 
 			@NonNull Sequence<T> target,
 			int index
 	) {
-			return input.subsequence(index).startsWith(target);
+		return input.subsequence(index).startsWith(target) ? target.size() : -1;
 	}
 }

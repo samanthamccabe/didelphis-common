@@ -222,7 +222,6 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 			T arc = entry.getKey();
 			Collection<String> value = entry.getValue();
 			for (String node : value) {
-				
 				if (Objects.equals(arc, parser.epsilon())) {
 					indices.add(new Couple<>(index, node));
 				} else if (Objects.equals(arc, parser.getDot()) && parser.lengthOf(input) > 0) {
@@ -232,9 +231,9 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 				} else if (Objects.equals(arc, parser.getWordEnd()) && index == parser.lengthOf(input)) {
 					indices.add(new Couple<>(index, node));
 				} else {
-					if (matcher.matches(input, arc, index)) {
-						int i = parser.lengthOf(arc) + index;
-						indices.add(new Couple<>(i, node));
+					int matchLength = matcher.matches(input, arc, index);
+					if (matchLength >= 0) {
+						indices.add(new Couple<>(index + matchLength, node));
 					}
 				}
 			}

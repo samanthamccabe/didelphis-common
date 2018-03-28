@@ -37,11 +37,13 @@ public interface LanguageMatcher<T>  {
 	 * match, or use operate like {@link String#startsWith(String)}
 	 *
 	 * @param input  the input to test
-	 * @param target the data to test the input against
+	 * @param target the data being checked for within the input
 	 * @param index  the index of the input at which to evaluate the match
 	 *
-	 * @return true if the input "matches" the target per the documented
-	 * semantics of the implementation
+	 * @return the length of the matched data; in many cases this will be the
+	 * length of the param {@code target}, but some implementations may permit
+	 * {@code target} to stand in for a set of items, in which case this method
+	 * should return the length of whichever element did match.
 	 */
-	boolean matches(@NonNull T input, @NonNull T target, int index);
+	int matches(@NonNull T input, @NonNull T target, int index);
 }
