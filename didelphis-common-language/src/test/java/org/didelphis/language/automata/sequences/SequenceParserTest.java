@@ -19,6 +19,9 @@ import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.phonetic.SequenceFactory;
 import org.didelphis.language.phonetic.features.BinaryFeature;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
+import org.didelphis.language.phonetic.sequences.Sequence;
+import org.didelphis.structures.maps.GeneralMultiMap;
+import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -30,13 +33,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SequenceParserTest {
 
-	private SequenceParser<?> parser;
+	private SequenceParser<Boolean> parser;
+	private SequenceFactory<Boolean> factory;
 
 	@BeforeEach
 	void init() {
-		FeatureModelLoader<?> loader
+		FeatureModelLoader<Boolean> loader
 				= new FeatureModelLoader<>(BinaryFeature.INSTANCE);
-		SequenceFactory<?> factory = new SequenceFactory<>(
+		factory = new SequenceFactory<>(
 				loader.getFeatureMapping(),
 				FormatterMode.NONE
 		);
@@ -99,7 +103,6 @@ class SequenceParserTest {
 		assertEquals(4, children.size());
 		Expression first = children.get(0);
 		assertTrue(first.isNegative());
-		
 	}
 	
 	@Test
@@ -139,5 +142,21 @@ class SequenceParserTest {
 		Expression ex2 = parser.parseExpression("rt{b*a (d?c)+ (f(ea)*)+}");
 		assertEquals(ex1, ex2.reverse());
 		assertEquals(ex1.reverse(), ex2);
+	}
+
+	@Test
+	void testSpecials01() {
+		MultiMap<String, Sequence<Boolean>> specials = new GeneralMultiMap<>();
+		specials.add("CH",  factory.toSequence("th"));
+		SequenceParser<Boolean> localParser = new SequenceParser<>(factory, specials);
+		Expression ex1 = localParser.parseExpression("ataCHam");
+		assertTrue(ex1.hasChildren());
+		List<Expression> children = ex1.getChildren();
+		assertEquals("a",  children.get(0).getTerminal());
+		assertEquals("t",  children.get(1).getTerminal());
+		assertEquals("a",  children.get(2).getTerminal());
+		assertEquals("CH", children.get(3).getTerminal());
+		assertEquals("a",  children.get(4).getTerminal());
+		assertEquals("m",  children.get(5).getTerminal());
 	}
 }

@@ -216,8 +216,6 @@ public class SequenceParser<T> implements LanguageParser<Sequence<T>> {
 	}
 	
 	private Expression parse(String rawExp, List<String> split) {
-		Collection<String> keys = specials.keys();
-		
 		Buffer buffer = new Buffer();
 		List<Expression> expressions = new ArrayList<>();
 		for (String s : split) {
@@ -229,7 +227,6 @@ public class SequenceParser<T> implements LanguageParser<Sequence<T>> {
 				buffer = update(rawExp, buffer, expressions);
 			} else if (DELIMITERS.containsKey(s.substring(0, 1))) {
 				buffer = update(rawExp, buffer, expressions);
-
 				if (s.length() <= 1) {
 					throw ParseException.builder()
 							.add("Unmatched group delimiter {}")
@@ -237,18 +234,14 @@ public class SequenceParser<T> implements LanguageParser<Sequence<T>> {
 							.data(rawExp)
 							.build();
 				}
-
 				String substring = s.substring(1, s.length() - 1).trim();
 				String delimiter = s.substring(0, 1);
 				if (delimiter.equals("{")) {
-
 					List<String> elements = Splitter.whitespace(substring);
-
 					List<Expression> children = elements.stream()
 							.map(element -> split(element))
 							.map(list -> parse(rawExp, list))
 							.collect(Collectors.toList());
-
 					buffer.setChildren(children);
 					buffer.setParallel(true);
 				} else {
@@ -261,7 +254,6 @@ public class SequenceParser<T> implements LanguageParser<Sequence<T>> {
 				buffer.setTerminal(s);
 			}
 		}
-
 		update(rawExp, buffer, expressions);
 		return expressions.size() == 1
 				? expressions.get(0)
@@ -271,8 +263,10 @@ public class SequenceParser<T> implements LanguageParser<Sequence<T>> {
 	@NonNull
 	private List<String> split(String substring) {
 		FormatterMode formatter = factory.getFormatterMode();
-		Collection<String> special = factory.getSpecialStrings();
-		return formatter.split(substring, special);
+		Set<String> set = new HashSet<>();
+		set.addAll(factory.getSpecialStrings());
+		set.addAll(specials.keys());
+		return formatter.split(substring, set);
 	}
 	
 	private static void replaceFirst(Expression expression) {

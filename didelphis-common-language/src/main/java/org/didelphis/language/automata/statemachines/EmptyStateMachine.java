@@ -62,7 +62,7 @@ public final class EmptyStateMachine<T> implements StateMachine<T> {
 	@NonNull
 	@Override
 	public LanguageMatcher<T> getMatcher() {
-		return (x, y, i) -> true;
+		return (x, y, i) -> 0;
 	}
 
 	@Override
