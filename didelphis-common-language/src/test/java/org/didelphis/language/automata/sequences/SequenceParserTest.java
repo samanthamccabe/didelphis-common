@@ -145,6 +145,30 @@ class SequenceParserTest {
 	}
 
 	@Test
+	void testSetWithBoundary01() {
+		Expression ex = parser.parseExpression("{x #}a");
+		List<Expression> children = ex.getChildren();
+		assertEquals(2, children.size());
+		Expression child1 = children.get(0);
+		List<Expression> child2 = child1.getChildren();
+		assertEquals(2, child2.size());
+
+		assertEquals("#[", child2.get(1).getTerminal());
+	}
+	
+	@Test
+	void testSetWithBoundary02() {
+		Expression ex = parser.parseExpression("a{x #}");
+		List<Expression> children = ex.getChildren();
+		assertEquals(2, children.size());
+		Expression child1 = children.get(1);
+		List<Expression> child2 = child1.getChildren();
+		assertEquals(2, child2.size());
+
+		assertEquals("]#", child2.get(1).getTerminal());
+	}
+
+	@Test
 	void testSpecials01() {
 		MultiMap<String, Sequence<Boolean>> specials = new GeneralMultiMap<>();
 		specials.add("CH",  factory.toSequence("th"));

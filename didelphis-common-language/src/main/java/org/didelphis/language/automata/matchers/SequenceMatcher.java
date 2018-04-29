@@ -19,6 +19,12 @@ import lombok.NonNull;
 import lombok.ToString;
 import org.didelphis.language.automata.sequences.SequenceParser;
 import org.didelphis.language.phonetic.sequences.Sequence;
+import org.didelphis.structures.maps.GeneralMultiMap;
+import org.didelphis.structures.maps.interfaces.MultiMap;
+import org.didelphis.structures.tuples.Tuple;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Class {@code SequenceMatcher}
@@ -28,9 +34,18 @@ import org.didelphis.language.phonetic.sequences.Sequence;
 public class SequenceMatcher<T> implements LanguageMatcher<Sequence<T>> {
 
 	private final SequenceParser<T> parser;
-
+	private final MultiMap<Sequence<T>, Sequence<T>> specials;
+	
 	public SequenceMatcher(SequenceParser<T> parser) {
 		this.parser = parser;
+		specials = new GeneralMultiMap<>();
+		
+		for (Tuple<String, Collection<Sequence<T>>> tuple : parser.getSpecials()) {
+			Sequence<T> key = parser.transform(tuple.getLeft());
+			Collection<Sequence<T>> collection = tuple.getRight();
+			specials.put(key, collection);
+		}
+
 	}
 
 	@Override
@@ -39,6 +54,15 @@ public class SequenceMatcher<T> implements LanguageMatcher<Sequence<T>> {
 			@NonNull Sequence<T> target,
 			int index
 	) {
+		if (specials.containsKey(target)) {
+			return specials.get(target)
+					.stream()
+					.filter(value -> input.subsequence(index).startsWith(value))
+					.findFirst()
+					.map(List::size)
+					.orElse(-1);
+		}
+		
 		return input.subsequence(index).startsWith(target) ? target.size() : -1;
 	}
 }

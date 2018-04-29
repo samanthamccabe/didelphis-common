@@ -95,7 +95,7 @@ class NegativeStateMachineTest {
 		test(machine, "bb");
 		test(machine, "b");
 	}
-
+	
 	@Test
 	void testBasic03() {
 		StateMachine<Sequence<Integer>> machine = getMachine("!a*b#");
