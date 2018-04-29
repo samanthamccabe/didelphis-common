@@ -28,10 +28,10 @@ import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.SequenceFactory;
 import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.model.FeatureMapping;
-import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
-import org.didelphis.language.phonetic.sequences.BasicSequence;
 import org.didelphis.language.phonetic.sequences.Sequence;
+import org.didelphis.structures.maps.GeneralMultiMap;
+import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
@@ -51,8 +51,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 @Slf4j
 class StandardStateMachineTest {
-
-	private static final boolean TIMEOUT = true;
+	
+	private static final Duration DURATION = Duration.ofSeconds(1);
+	private static final boolean TIMEOUT = false;
 	
 	private static final SequenceFactory<Integer> FACTORY = factory();
 
@@ -167,14 +168,14 @@ class StandardStateMachineTest {
 	@Test
 	void testBasic02() {
 		StateMachine<Sequence<Integer>> machine = getMachine("aaa");
-//		assertMatches(machine, "aaa");
-//		assertNotMatches(machine, "a");
-//		assertNotMatches(machine, "aa");
-//		assertNotMatches(machine, "b");
-//		assertNotMatches(machine, "bb");
-//		assertNotMatches(machine, "bbb");
-//		assertNotMatches(machine, "c");
-//		assertNotMatches(machine, "ab");
+		assertMatches(machine, "aaa");
+		assertNotMatches(machine, "a");
+		assertNotMatches(machine, "aa");
+		assertNotMatches(machine, "b");
+		assertNotMatches(machine, "bb");
+		assertNotMatches(machine, "bbb");
+		assertNotMatches(machine, "c");
+		assertNotMatches(machine, "ab");
 		
 		assertNotMatches(machine, "abb");
 	}
@@ -265,7 +266,7 @@ class StandardStateMachineTest {
 
 	@Test
 	void testGroupStar02() {
-		assertTimeoutPreemptively(Duration.ofSeconds(1), ()->{
+		assertTimeoutPreemptively(DURATION, ()->{
 			StateMachine<Sequence<Integer>> machine = getMachine("d(eo*)*b");
 
 			assertMatches(machine, "db");
@@ -279,7 +280,7 @@ class StandardStateMachineTest {
 			assertNotMatches(machine, "abcd");
 			assertNotMatches(machine, "ab");
 			assertNotMatches(machine, "bcdef");
-			assertNotMatches(machine, "abbcdef");			
+			assertNotMatches(machine, "abbcdef");
 		});
 	}
 
@@ -395,6 +396,25 @@ class StandardStateMachineTest {
 	}
 
 	@Test
+	void testComplex08() {
+		StateMachine<Sequence<Integer>> machine = getMachine("{r #}{i u}?s");
+
+		assertMatches(machine, "s");
+
+		assertMatches(machine, "is");
+		assertMatches(machine, "us");
+
+		assertMatches(machine, "rs");
+		assertMatches(machine, "ls");
+
+		assertMatches(machine, "ris");
+		assertMatches(machine, "rus");
+
+		assertNotMatches(machine, "lis");
+		assertNotMatches(machine, "lus");
+	}
+
+	@Test
 	void testComplex02() {
 		StateMachine<Sequence<Integer>> machine = getMachine(
 				"{r l}?{a e o ā ē ō}{i u}?{n m l r}?{pʰ tʰ kʰ cʰ}us");
@@ -443,7 +463,7 @@ class StandardStateMachineTest {
 
 	@Test
 	void testComplex05() {
-		assertTimeoutPreemptively(Duration.ofSeconds(1), () ->{
+		assertTimeoutPreemptively(DURATION, () ->{
 
 			StateMachine<Sequence<Integer>> machine = getMachine(
 					"{ab* (cd?)+ ((ae)*f)+}tr");
@@ -572,6 +592,26 @@ class StandardStateMachineTest {
 		assertNotMatches(machine, "xab");
 	}
 
+	@Test
+	void testSpecials01() {
+
+		MultiMap<String, Sequence<Integer>> multiMap = new GeneralMultiMap<>();
+		multiMap.add("CH", FACTORY.toSequence("ph"));
+		multiMap.add("CH", FACTORY.toSequence("th"));
+		multiMap.add("CH", FACTORY.toSequence("kh"));
+		
+		StateMachine<Sequence<Integer>> machine = getMachine("aCHa", multiMap);
+
+		assertMatches(machine, "apha");
+		assertMatches(machine, "atha");
+		assertMatches(machine, "akha");
+
+		assertNotMatches(machine, "aCHa");
+		assertNotMatches(machine, "apa");
+		assertNotMatches(machine, "ata");
+		assertNotMatches(machine, "aka");
+	}
+	
 	private static SequenceFactory<Integer> factory() {
 		FeatureModelLoader<Integer> loader = new FeatureModelLoader<>(
 				IntegerFeature.INSTANCE,
@@ -592,7 +632,7 @@ class StandardStateMachineTest {
 		};
 		
 		if (TIMEOUT) {
-			assertTimeoutPreemptively(Duration.ofSeconds(1), executable);			
+			assertTimeoutPreemptively(DURATION, executable);
 		} else {
 			try {
 				executable.execute();
@@ -607,7 +647,16 @@ class StandardStateMachineTest {
 	}
 
 	private static StateMachine<Sequence<Integer>> getMachine(String expression) {
-		SequenceParser<Integer> parser = new SequenceParser<>(FACTORY);
+		return getMachine(expression, null);
+	}
+
+	private static StateMachine<Sequence<Integer>> getMachine(
+			String expression,
+			MultiMap<String, Sequence<Integer>> specials
+	) {
+		SequenceParser<Integer> parser = specials == null 
+				? new SequenceParser<>(FACTORY)
+				: new SequenceParser<>(FACTORY, specials);
 		SequenceMatcher<Integer> matcher = new SequenceMatcher<>(parser);
 		Expression parseExpression = parser.parseExpression(expression);
 		return StandardStateMachine.create("M0",
@@ -627,7 +676,7 @@ class StandardStateMachineTest {
 		};
 		
 		if (TIMEOUT) {
-			assertTimeoutPreemptively(Duration.ofSeconds(5), executable);			
+			assertTimeoutPreemptively(DURATION, executable);
 		} else {
 			try {
 				executable.execute();
@@ -635,18 +684,11 @@ class StandardStateMachineTest {
 				log.error("Unexpected failure encountered: {}", throwable);
 			}
 		}
-
 	}
 
 	private static Collection<Integer> testMachine(
 			StateMachine<Sequence<Integer>> machine, String target) {
-		FeatureModel<Integer> model = FACTORY.getFeatureMapping().getFeatureModel();
-		Sequence<Integer> sequence = new BasicSequence<>(model);
-		SequenceParser<Integer> parser = new SequenceParser<>(FACTORY);
-		if (target.startsWith("#")) sequence.add(parser.transform("#["));
-		sequence.add(FACTORY.toSequence(target.replaceAll("#","")));
-		if (target.endsWith("#")) sequence.add(parser.transform("]#"));
-
+		Sequence<Integer> sequence = FACTORY.toSequence(target);
 		Match<Sequence<Integer>> match = machine.match(sequence, 0);
 		return match.end() >= 0
 				? Collections.singleton(match.end())

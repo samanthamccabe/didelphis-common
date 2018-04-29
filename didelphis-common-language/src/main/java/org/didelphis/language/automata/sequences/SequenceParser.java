@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -268,16 +269,28 @@ public class SequenceParser<T> implements LanguageParser<Sequence<T>> {
 		set.addAll(specials.keys());
 		return formatter.split(substring, set);
 	}
-	
+
 	private static void replaceFirst(Expression expression) {
 		if (expression.hasChildren()) {
 			List<Expression> children = expression.getChildren();
 			if (!children.isEmpty()) {
-				Expression first = children.get(0);
-				if (first.getTerminal().equals("#")) {
-					children.set(0, WORD_START);
+				if (expression.isParallel()) {
+					for (int i = 0; i < children.size(); i++) {
+						Expression child = children.get(i);
+						String terminal = child.getTerminal();
+						if (Objects.equals(terminal, "#")) {
+							children.set(i, WORD_START);
+						} else {
+							replaceFirst(child);
+						}
+					}
 				} else {
-					replaceFirst(first);
+					Expression first = children.get(0);
+					if (first.getTerminal().equals("#")) {
+						children.set(0, WORD_START);
+					} else {
+						replaceFirst(first);
+					}
 				}
 			}
 		}
@@ -287,17 +300,29 @@ public class SequenceParser<T> implements LanguageParser<Sequence<T>> {
 		if (expression.hasChildren()) {
 			List<Expression> children = expression.getChildren();
 			if (!children.isEmpty()) {
-				int index = children.size() - 1;
-				Expression last = children.get(index);
-				if (last.getTerminal().equals("#")) {
-					children.set(index, WORD_END);
+				if (expression.isParallel()) {
+					for (int i = 0; i < children.size(); i++) {
+						Expression child = children.get(i);
+						String terminal = child.getTerminal();
+						if (Objects.equals(terminal, "#")) {
+							children.set(i, WORD_END);
+						} else {
+							replaceLast(child);
+						}
+					}
 				} else {
-					replaceLast(last);
+					int index = children.size() - 1;
+					Expression last = children.get(index);
+					if (last.getTerminal().equals("#")) {
+						children.set(index, WORD_END);
+					} else {
+						replaceLast(last);
+					}
 				}
 			}
 		}
 	}
-
+	
 	@NonNull
 	private static Buffer update(
 			String expression, 

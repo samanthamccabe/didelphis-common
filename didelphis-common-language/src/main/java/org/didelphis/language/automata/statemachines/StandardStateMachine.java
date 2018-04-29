@@ -156,10 +156,13 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 				// Check internal state automata
 				Set<Integer> indicesToCheck = new HashSet<>();
 
-				if (machinesMap.containsKey(currentNode)) {
+				if (machinesMap.containsKey(currentNode) && index >=0) {
 					StateMachine<T> machine = machinesMap.get(currentNode);
 					Match<T> match = machine.match(input, index);
-					indicesToCheck.add(match.end());
+					int end = match.end();
+					if (end >= 0 ) {
+						indicesToCheck.add(end);
+					}
 				} else {
 					indicesToCheck.add(index);
 				}
