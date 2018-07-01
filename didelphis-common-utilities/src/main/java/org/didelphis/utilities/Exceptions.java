@@ -16,15 +16,9 @@ package org.didelphis.utilities;
 
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -38,7 +32,6 @@ import java.util.stream.Collectors;
  * @date 2017-08-26
  * @since 0.2.0
  */
-@Slf4j
 @UtilityClass
 public class Exceptions {
 

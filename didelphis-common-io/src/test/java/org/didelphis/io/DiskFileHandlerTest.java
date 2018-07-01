@@ -14,17 +14,10 @@
 
 package org.didelphis.io;
 
+import org.didelphis.utilities.Logger;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
  */
 class DiskFileHandlerTest {
 
-	private static final Logger LOG = LoggerFactory.getLogger(DiskFileHandlerTest.class);
+	private static final Logger LOG = Logger.create(DiskFileHandlerTest.class);
 
 	private final DiskFileHandler handler = new DiskFileHandler("UTF-8");
 	

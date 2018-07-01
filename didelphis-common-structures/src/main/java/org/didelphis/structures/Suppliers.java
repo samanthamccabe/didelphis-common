@@ -18,21 +18,9 @@ import lombok.AccessLevel;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableMap;
-import java.util.NavigableSet;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.function.Supplier;
 
 /**
@@ -46,7 +34,6 @@ import java.util.function.Supplier;
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @UtilityClass
-@Slf4j
 public final class Suppliers {
 
 	/* --------------------------------------------------------------------- <*/

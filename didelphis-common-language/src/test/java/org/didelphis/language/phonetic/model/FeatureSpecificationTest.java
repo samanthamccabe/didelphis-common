@@ -19,8 +19,6 @@ import org.didelphis.language.phonetic.PhoneticTestBase;
 import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -28,8 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author Samantha Fiona McCabe Created: 7/4/2016
  */
 public class FeatureSpecificationTest extends PhoneticTestBase {
-	private static final Logger LOG = LoggerFactory.getLogger(
-			FeatureSpecificationTest.class);
 	
 	private static FeatureSpecification specification;
 

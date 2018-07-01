@@ -18,7 +18,6 @@ import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 import org.didelphis.io.FileHandler;
 import org.didelphis.io.NullFileHandler;
 import org.didelphis.language.parsing.ParseException;
@@ -28,18 +27,11 @@ import org.didelphis.language.phonetic.features.SparseFeatureArray;
 import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
+import org.didelphis.utilities.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.Normalizer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,10 +49,11 @@ import static org.didelphis.utilities.Splitter.lines;
  * @since 0.1.0
  */
 @ToString
-@Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public final class FeatureModelLoader<T> {
 
+	private static final Logger LOG = Logger.create(FeatureModelLoader.class);
+	
 	/**
 	 * Enum {@code ParseZone}
 	 */
@@ -289,7 +282,7 @@ public final class FeatureModelLoader<T> {
 				String norm = Normalizer.normalize(diacritic, Normalizer.Form.NFD);
 				diacritics.put(norm, array);
 			} else {
-				log.error("Unrecognized diacritic definition {}", entry);
+				LOG.error("Unrecognized diacritic definition {}", entry);
 			}
 		}
 		return diacritics;
@@ -315,7 +308,7 @@ public final class FeatureModelLoader<T> {
 				String norm = Normalizer.normalize(symbol, Normalizer.Form.NFD);
 				featureMap.put(norm, features);
 			} else {
-				log.error("Unrecognized symbol definition {}", entry);
+				LOG.error("Unrecognized symbol definition {}", entry);
 			}
 		}
 		return featureMap;
@@ -341,7 +334,7 @@ public final class FeatureModelLoader<T> {
 		if (featureMap.containsValue(features)) {
 			for (Entry<String, FeatureArray<T>> e : featureMap.entrySet()) {
 				if (features.equals(e.getValue())) {
-					log.warn("Collision between features {} and {} --- both "
+					LOG.warn("Collision between features {} and {} --- both "
 							+ "have value {}", symbol, e.getKey(), features);
 				}
 			}
