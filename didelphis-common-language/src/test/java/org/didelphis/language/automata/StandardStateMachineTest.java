@@ -14,7 +14,6 @@
 
 package org.didelphis.language.automata;
 
-import lombok.extern.slf4j.Slf4j;
 import org.didelphis.io.ClassPathFileHandler;
 import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.matchers.SequenceMatcher;
@@ -32,6 +31,7 @@ import org.didelphis.language.phonetic.model.FeatureModelLoader;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
+import org.didelphis.utilities.Logger;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
@@ -49,9 +49,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author Samantha Fiona McCabe
  * @date 3/14/2015
  */
-@Slf4j
 class StandardStateMachineTest {
-	
+
+	private static final Logger LOG = Logger.create(StandardStateMachineTest.class);
+
 	private static final Duration DURATION = Duration.ofSeconds(1);
 	private static final boolean TIMEOUT = false;
 	
@@ -637,7 +638,7 @@ class StandardStateMachineTest {
 			try {
 				executable.execute();
 			} catch (Throwable throwable) {
-				log.error("Unexpected failure encountered: {}", throwable);
+				LOG.error("Unexpected failure encountered: {}", throwable);
 			}
 		}
 	}
@@ -681,7 +682,7 @@ class StandardStateMachineTest {
 			try {
 				executable.execute();
 			} catch (Throwable throwable) {
-				log.error("Unexpected failure encountered: {}", throwable);
+				LOG.error("Unexpected failure encountered: {}", throwable);
 			}
 		}
 	}

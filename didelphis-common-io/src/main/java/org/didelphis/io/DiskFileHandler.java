@@ -17,24 +17,22 @@ package org.didelphis.io;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
+import org.didelphis.utilities.Logger;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 
 /**
  * @author Samantha Fiona McCabe
  * @date 10/11/2014
  */
-@Slf4j
+
 @ToString
 @EqualsAndHashCode
 public final class DiskFileHandler implements FileHandler {
 
+	private static final Logger LOG = Logger.create(DiskFileHandler.class);
+	
 	private final String encoding;
 
 	public DiskFileHandler(String encoding) {
@@ -55,7 +53,7 @@ public final class DiskFileHandler implements FileHandler {
 			writer.write(data.toString());
 			return true;
 		} catch (IOException e) {
-			log.error("Failed to write to path {}", path, e);
+			LOG.error("Failed to write to path {}", path, e);
 		}
 		return false;
 	}

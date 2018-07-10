@@ -22,10 +22,7 @@ import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.segments.StandardSegment;
-import org.didelphis.language.phonetic.sequences.BasicSequenceTest;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.regex.Pattern;
 
@@ -38,9 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @date 2/14/2015
  */
 public class StandardSegmentTest extends PhoneticTestBase {
-
-	private static final Logger LOG = LoggerFactory.getLogger(BasicSequenceTest.class);
-
+	
 	private static final Pattern INFINITY_PATTERN = Pattern.compile("([-+])?Infinity");
 	private static final Pattern DECIMAL_PATTERN = Pattern.compile("([^\\-])(\\d\\.\\d)");
 

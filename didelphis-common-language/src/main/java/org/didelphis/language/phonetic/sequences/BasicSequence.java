@@ -19,15 +19,10 @@ import org.didelphis.language.phonetic.SpecificationBearer;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureSpecification;
 import org.didelphis.language.phonetic.segments.Segment;
+import org.didelphis.utilities.Logger;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -35,8 +30,7 @@ import java.util.stream.Collectors;
  */
 public class BasicSequence<T> extends AbstractSequence<T> {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(BasicSequence.class);
+	private static final Logger LOG = Logger.create(BasicSequence.class);
 
 	public BasicSequence(Sequence<T> sequence) {
 		super(sequence);

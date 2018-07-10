@@ -15,7 +15,6 @@
 package org.didelphis.language.automata;
 
 import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import org.didelphis.io.ClassPathFileHandler;
 import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.matchers.SequenceMatcher;
@@ -33,17 +32,13 @@ import org.didelphis.language.phonetic.sequences.BasicSequence;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.maps.GeneralMultiMap;
+import org.didelphis.utilities.Logger;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -53,8 +48,9 @@ import static org.didelphis.language.parsing.ParseDirection.FORWARD;
  * @author Samantha Fiona McCabe
  * @date 1/31/2016
  */
-@Slf4j
 class NegativeStateMachineTest {
+
+	private static final Logger LOG = Logger.create(NegativeStateMachineTest.class);
 	
 	private static final boolean  TIMEOUT  = false;
 	private static final Duration DURATION = Duration.ofSeconds(1);
@@ -397,7 +393,7 @@ class NegativeStateMachineTest {
 			try {
 				executable.execute();
 			} catch (Throwable throwable) {
-				log.error("Unexpected failure encountered: {}", throwable);
+				LOG.error("Unexpected failure encountered: {}", throwable);
 			}
 		}
 	}
@@ -420,7 +416,7 @@ class NegativeStateMachineTest {
 			try {
 				executable.execute();
 			} catch (Throwable throwable) {
-				log.error("Unexpected failure encountered: {}", throwable);
+				LOG.error("Unexpected failure encountered: {}", throwable);
 			}
 		}
 	}

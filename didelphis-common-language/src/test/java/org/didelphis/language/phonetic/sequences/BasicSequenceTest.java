@@ -22,8 +22,6 @@ import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.model.FeatureMapping;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,9 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BasicSequenceTest extends PhoneticTestBase {
-
-	private static final Logger LOG = LoggerFactory.getLogger(
-			BasicSequenceTest.class);
+	
 	@Test
 	void testMatches01() {
 		Sequence<Integer> sequence = factory.toSequence("an");

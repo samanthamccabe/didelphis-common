@@ -16,31 +16,26 @@ package org.didelphis.io;
 
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
+import org.didelphis.utilities.Logger;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 
 /**
  * Created by samantha on 1/21/17.
  */
-@Slf4j
 @UtilityClass
 public final class IOUtil {
 
+	private static final Logger LOG = Logger.create(IOUtil.class);
+	
 	public @Nullable String readPath(@NonNull String path) {
 		File file = new File(path);
 		try (InputStream stream = new FileInputStream(file)) {
 			return readStream(stream);
 		} catch (IOException e) {
-			log.error("Failed to read from path {}", path, e);
+			LOG.error("Failed to read from path {}", path, e);
 		}
 		return null;
 	}
@@ -49,7 +44,7 @@ public final class IOUtil {
 		try (Reader reader = new BufferedReader(new InputStreamReader(stream))) {
 			return readString(reader);
 		} catch (IOException e) {
-			log.error("Failed to read from stream", e);
+			LOG.error("Failed to read from stream", e);
 		}
 		return null;
 	}
