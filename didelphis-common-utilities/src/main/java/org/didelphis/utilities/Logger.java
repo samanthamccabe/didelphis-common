@@ -14,9 +14,12 @@
 
 package org.didelphis.utilities;
 
+import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.PrintStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,18 +36,47 @@ import java.util.Set;
  * @date 6/7/18
  */
 @SuppressWarnings ("UseOfSystemOutOrSystemErr")
+@ToString
 public final class Logger {
 
-	private static final PrintStream SYSTEM = System.out;
+	private enum Level {
+		ERROR ("[ERROR] "),
+		WARN  ("[INFO]  "),
+		INFO  ("[WARN]  "),
+		DEBUG ("[DEBUG] "),
+		TRACE ("[TRACE] ");
+
+		private final String level;
+		
+		Level(String level) {
+			this.level = level;
+		}
+		
+		@Override
+		public @NotNull String toString() {
+			return level;
+		}
+	}
+
+	/* TODO: load a static configuration:
+	 * this can specify class and package patterns with different log levels and
+	 * patterns
+	 * 
+	 * these configurations can be referenced whenever a logger is created via 
+	 * the #create() method
+	 */
 	
 	// Is a static collection a good idea? Not generally.
-	private static final Set<PrintStream> APPENDERS = new HashSet<>();
+	private static final Set<OutputStream> APPENDERS = new HashSet<>();
+	private static final Level DEFAULT_LEVEL = Level.INFO;
 	
-	private static Level logLevel;
-	
+	private final Level logLevel;
 	private final Class<?> targetClass;
+	private final Set<OutputStream> appenders;
 
 	private Logger(Class<?> targetClass) {
+		logLevel = DEFAULT_LEVEL;
+		appenders = new HashSet<>(APPENDERS);
 		this.targetClass = targetClass;
 	}
 
@@ -52,7 +84,7 @@ public final class Logger {
 		return new Logger(targetClass);
 	}
 
-	public static void addAppender(PrintStream stream) {
+	public static void addAppender(OutputStream stream) {
 		APPENDERS.add(stream);
 	}
 
@@ -86,10 +118,14 @@ public final class Logger {
 
 		int i = 0;
 		String[] split = template.split("\\{}");
-		while (i<split.length && i < data.length) {
-			sb.append(split[i]);
-			sb.append(getString(data[i]));
-			i++;
+		if (split.length != 1) {
+			while (i < split.length && i < data.length) {
+				sb.append(split[i]);
+				sb.append(getString(data[i]));
+				i++;
+			}
+		} else {
+			sb.append(template);
 		}
 
 		while (i < data.length) {
@@ -102,35 +138,20 @@ public final class Logger {
 	}
 
 	private void print(Level level, String template, Object... data) {
-		
 		if (level.ordinal() <= logLevel.ordinal()) {
 			String string = generate(level, template, data);
-			for (PrintStream appender: APPENDERS) {
-				appender.println(string);
+			for (OutputStream appender: APPENDERS) {
+				try {
+					appender.write(string.getBytes(Charset.forName("UTF-8")));
+				} catch (IOException e) {
+					System.err.println("Failed to write message to output" +
+							" stream for appender " + appender + ' ' + e);
+				}
 			}
 		}
 	}
-
+	
 	private static String getString(Object datum) {
 		return datum == null ? "NULL" : datum.toString();
-	}
-	
-	private enum Level {
-		ERROR ("[ERROR] "),
-		WARN  ("[INFO]  "),
-		INFO  ("[WARN]  "),
-		DEBUG ("[DEBUG] "),
-		TRACE ("[TRACE] ");
-
-		private final String level;
-		
-		Level(String level) {
-			this.level = level;
-		}
-		
-		@Override
-		public @NotNull String toString() {
-			return level;
-		}
 	}
 }
