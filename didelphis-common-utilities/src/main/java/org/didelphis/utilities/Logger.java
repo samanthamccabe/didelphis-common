@@ -14,8 +14,9 @@
 
 package org.didelphis.utilities;
 
+import lombok.NonNull;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -39,10 +40,10 @@ import java.util.Set;
 @ToString
 public final class Logger {
 
-	private enum Level {
+	public enum Level {
 		ERROR ("[ERROR] "),
-		WARN  ("[INFO]  "),
-		INFO  ("[WARN]  "),
+		WARN  ("[WARN]  "),
+		INFO  ("[INFO]  "),
 		DEBUG ("[DEBUG] "),
 		TRACE ("[TRACE] ");
 
@@ -52,8 +53,9 @@ public final class Logger {
 			this.level = level;
 		}
 		
+		@NonNull
 		@Override
-		public @NotNull String toString() {
+		public String toString() {
 			return level;
 		}
 	}
@@ -76,6 +78,13 @@ public final class Logger {
 
 	private Logger(Class<?> targetClass) {
 		logLevel = DEFAULT_LEVEL;
+		appenders = new HashSet<>(APPENDERS);
+		this.targetClass = targetClass;
+	}
+
+	@TestOnly
+	Logger(Class<?> targetClass, Level level) {
+		logLevel = level;
 		appenders = new HashSet<>(APPENDERS);
 		this.targetClass = targetClass;
 	}
@@ -117,15 +126,21 @@ public final class Logger {
 		sb.append(": ");
 
 		int i = 0;
-		String[] split = template.split("\\{}");
-		if (split.length != 1) {
-			while (i < split.length && i < data.length) {
-				sb.append(split[i]);
-				sb.append(getString(data[i]));
+		String[] split = template.split("\\{}", -1);
+		if (split.length == 1) {
+			// there are no braces for the template
+			sb.append(template);
+		} else {
+			while (i < split.length) {
+				String str = split[i];
+				sb.append(str);
+				if (i < data.length && !str.isEmpty()) {
+					sb.append(getString(data[i]));
+				} else {
+					sb.append("{}");
+				}
 				i++;
 			}
-		} else {
-			sb.append(template);
 		}
 
 		while (i < data.length) {
