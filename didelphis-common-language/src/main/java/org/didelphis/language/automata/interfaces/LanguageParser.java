@@ -16,6 +16,7 @@ package org.didelphis.language.automata.interfaces;
 
 import lombok.NonNull;
 import org.didelphis.language.automata.expressions.Expression;
+import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,11 +56,11 @@ public interface LanguageParser<T> {
 
 	/**
 	 * Parse an expression string to a list of sub-expressions
-	 * @param rawExpression
+	 * @param exp
 	 * @return
 	 */
 	@NonNull
-	Expression parseExpression(String rawExpression);
+	Expression parseExpression(String exp, ParseDirection direction);
 
 	/**
 	 * Provides a uniform value for epsilon transitions 
@@ -93,4 +94,7 @@ public interface LanguageParser<T> {
 	 */
 	int lengthOf(@NonNull T t);
 	
+	default Expression parseExpression(String exp) {
+		return parseExpression(exp, ParseDirection.FORWARD);
+	}
 }

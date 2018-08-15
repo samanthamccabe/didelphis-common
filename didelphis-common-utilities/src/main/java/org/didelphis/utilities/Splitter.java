@@ -92,9 +92,8 @@ public class Splitter {
 				String matchedSpecial = "";
 				if (special != null) {
 					for (String s : special) {
-						if (substring.startsWith(s)) {
+						if (substring.startsWith(s) && s.length() > matchedSpecial.length()) {
 							matchedSpecial = s;
-							break;
 						}
 					}
 				}
@@ -146,7 +145,7 @@ public class Splitter {
 		}
 		
 		if (cursor < string.length()) {
-			list.add(string.substring(cursor, string.length()));
+			list.add(string.substring(cursor));
 		}
 		
 		return list;
@@ -229,7 +228,10 @@ public class Splitter {
 	 * @return
 	 */
 	public int findClosingBracket(
-			@NonNull String string, @NonNull String left, @NonNull String right, int startIndex
+			@NonNull String string,
+			@NonNull String left, 
+			@NonNull String right, 
+			int startIndex
 	) {
 		int count = 1;
 		int endIndex = startIndex;

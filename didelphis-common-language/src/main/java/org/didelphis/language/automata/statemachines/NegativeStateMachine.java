@@ -21,7 +21,6 @@ import org.didelphis.language.automata.interfaces.LanguageParser;
 import org.didelphis.language.automata.matchers.LanguageMatcher;
 import org.didelphis.language.automata.matches.BasicMatch;
 import org.didelphis.language.automata.matches.Match;
-import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.structures.tuples.Triple;
 
 import java.util.Collection;
@@ -56,23 +55,20 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 			@NonNull String id,
 			@NonNull Expression expression,
 			@NonNull LanguageParser<T> parser,
-			@NonNull LanguageMatcher<T> matcher,
-			@NonNull ParseDirection direction
+			@NonNull LanguageMatcher<T> matcher
 	) {
 		// Create the actual branch, the one we don't want to match
 		StateMachine<T> negative = StandardStateMachine.create(
 				id + 'N',
 				expression,
 				parser,
-				matcher,
-				direction
+				matcher
 		);
 		StateMachine<T> positive = StandardStateMachine.create(
 				id + 'P',
 				expression,
 				parser,
-				matcher,
-				direction
+				matcher
 		);
 
 		// This is less elegant that I'd prefer, but bear with me:

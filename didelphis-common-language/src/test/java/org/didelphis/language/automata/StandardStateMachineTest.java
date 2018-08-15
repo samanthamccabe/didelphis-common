@@ -22,7 +22,6 @@ import org.didelphis.language.automata.sequences.SequenceParser;
 import org.didelphis.language.automata.statemachines.StandardStateMachine;
 import org.didelphis.language.automata.statemachines.StateMachine;
 import org.didelphis.language.parsing.FormatterMode;
-import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.SequenceFactory;
 import org.didelphis.language.phonetic.features.IntegerFeature;
@@ -40,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
+import static org.didelphis.language.parsing.ParseDirection.FORWARD;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
@@ -652,19 +652,18 @@ class StandardStateMachineTest {
 	}
 
 	private static StateMachine<Sequence<Integer>> getMachine(
-			String expression,
+			String exp,
 			MultiMap<String, Sequence<Integer>> specials
 	) {
 		SequenceParser<Integer> parser = specials == null 
 				? new SequenceParser<>(FACTORY)
 				: new SequenceParser<>(FACTORY, specials);
 		SequenceMatcher<Integer> matcher = new SequenceMatcher<>(parser);
-		Expression parseExpression = parser.parseExpression(expression);
+		Expression expression = parser.parseExpression(exp, FORWARD);
 		return StandardStateMachine.create("M0",
-				parseExpression,
+				expression,
 				parser,
-				matcher,
-				ParseDirection.FORWARD);
+				matcher);
 	}
 
 	private static void assertNotMatches(StateMachine<Sequence<Integer>> machine, String target) {

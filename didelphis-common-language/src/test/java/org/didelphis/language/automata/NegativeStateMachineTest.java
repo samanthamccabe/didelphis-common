@@ -32,13 +32,19 @@ import org.didelphis.language.phonetic.sequences.BasicSequence;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.maps.GeneralMultiMap;
+import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.didelphis.utilities.Logger;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -363,18 +369,26 @@ class NegativeStateMachineTest {
 	private static StateMachine<Sequence<Integer>> getMachine(String exp) {
 		SequenceParser<Integer> parser = new SequenceParser<>(FACTORY);
 		SequenceMatcher<Integer> matcher = new SequenceMatcher<>(parser);
-		Expression expression = parser.parseExpression(exp);
-		return StandardStateMachine.create("M0", expression, parser, matcher, FORWARD);
+		Expression expression = parser.parseExpression(exp, FORWARD);
+		return StandardStateMachine.create("M0", expression, parser, matcher);
 	}
 
 	private static StateMachine<Sequence<Integer>> getMachine(
-			Map<String, Collection<Sequence<Integer>>> map, String exp
+			Map<String, Collection<Sequence<Integer>>> map,
+			String exp
 	) {
-		SequenceParser<Integer> parser = new SequenceParser<>(FACTORY,
-				new GeneralMultiMap<>(map, Suppliers.ofHashSet())
+		MultiMap<String, Sequence<Integer>> mMap = new GeneralMultiMap<>(
+				map,
+				Suppliers.ofHashSet()
 		);
+		SequenceParser<Integer> parser = new SequenceParser<>(FACTORY, mMap);
 		SequenceMatcher<Integer> matcher = new SequenceMatcher<>(parser);
-		return StandardStateMachine.create("M0", parser.parseExpression(exp), parser, matcher, FORWARD);
+		return StandardStateMachine.create(
+				"M0",
+				parser.parseExpression(exp, FORWARD),
+				parser,
+				matcher
+		);
 	}
 
 	private static void test(

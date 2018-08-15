@@ -25,6 +25,7 @@ import org.didelphis.language.automata.expressions.ParallelNode;
 import org.didelphis.language.automata.expressions.TerminalNode;
 import org.didelphis.language.automata.interfaces.LanguageParser;
 import org.didelphis.language.parsing.FormatterMode;
+import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.SequenceFactory;
 import org.didelphis.language.phonetic.model.FeatureModel;
@@ -143,11 +144,14 @@ public class SequenceParser<T> implements LanguageParser<Sequence<T>> {
 
 	@NonNull
 	@Override
-	public Expression parseExpression(String rawExpression) {
+	public Expression parseExpression(String exp, ParseDirection direction) {
 
-		validate(rawExpression);
+		validate(exp);
 		
-		Expression expression = parse(rawExpression, split(rawExpression));
+		Expression expression = parse(exp, split(exp));
+		if (direction == ParseDirection.BACKWARD) {
+			expression = expression.reverse();
+		}
 		
 		replaceLast(expression);
 		replaceFirst(expression);
