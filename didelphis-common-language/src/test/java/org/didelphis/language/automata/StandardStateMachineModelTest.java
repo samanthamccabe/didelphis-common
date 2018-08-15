@@ -295,11 +295,16 @@ class StandardStateMachineModelTest {
 		fail(machine, "a̰cʰus");
 	}
 
-	private static StateMachine<Sequence<Integer>> getMachine(String expression) {
+	private static StateMachine<Sequence<Integer>> getMachine(String exp) {
 		SequenceParser<Integer> parser = new SequenceParser<>(factory);
 		SequenceMatcher<Integer> matcher = new SequenceMatcher<>(parser);
-		
-		return StandardStateMachine.create("M0", parser.parseExpression(expression), parser, matcher, ParseDirection.FORWARD);
+
+		return StandardStateMachine.create(
+				"M0",
+				parser.parseExpression(exp, ParseDirection.FORWARD),
+				parser,
+				matcher
+		);
 	}
 
 	private static void test(

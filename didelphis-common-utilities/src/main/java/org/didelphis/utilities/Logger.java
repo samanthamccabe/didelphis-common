@@ -14,9 +14,7 @@
 
 package org.didelphis.utilities;
 
-import lombok.NonNull;
 import lombok.ToString;
-import org.jetbrains.annotations.TestOnly;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -39,24 +37,30 @@ import java.util.Set;
 @SuppressWarnings ("UseOfSystemOutOrSystemErr")
 @ToString
 public final class Logger {
-
+	
+	@ToString
 	public enum Level {
-		ERROR ("[ERROR] "),
-		WARN  ("[WARN]  "),
-		INFO  ("[INFO]  "),
-		DEBUG ("[DEBUG] "),
-		TRACE ("[TRACE] ");
+		ERROR ("[ERROR] ",  2),
+		WARN  ("[WARN]  ",  1),
+		INFO  ("[INFO]  ",  0),
+		DEBUG ("[DEBUG] ", -1),
+		TRACE ("[TRACE] ", -2),
+		NONE  ("[*****] ", Integer.MIN_VALUE);
 
 		private final String level;
+		private final int priority;
 		
-		Level(String level) {
+		Level(String level, int priority) {
 			this.level = level;
+			this.priority = priority;
 		}
 		
-		@NonNull
-		@Override
-		public String toString() {
+		private String level() {
 			return level;
+		}
+		
+		private int priority() {
+			return priority;
 		}
 	}
 
@@ -70,20 +74,19 @@ public final class Logger {
 	
 	// Is a static collection a good idea? Not generally.
 	private static final Set<OutputStream> APPENDERS = new HashSet<>();
-	private static final Level DEFAULT_LEVEL = Level.INFO;
+	private static Level globalLevel = Level.INFO;
 	
 	private final Level logLevel;
 	private final Class<?> targetClass;
 	private final Set<OutputStream> appenders;
 
 	private Logger(Class<?> targetClass) {
-		logLevel = DEFAULT_LEVEL;
+		logLevel = Level.NONE;
 		appenders = new HashSet<>(APPENDERS);
 		this.targetClass = targetClass;
 	}
-
-	@TestOnly
-	Logger(Class<?> targetClass, Level level) {
+	
+	private Logger(Class<?> targetClass, Level level) {
 		logLevel = level;
 		appenders = new HashSet<>(APPENDERS);
 		this.targetClass = targetClass;
@@ -92,7 +95,19 @@ public final class Logger {
 	public static Logger create(Class<?> targetClass) {
 		return new Logger(targetClass);
 	}
+	public static Logger create(Class<?> targetClass, Level level) {
+		return new Logger(targetClass, level);
+	}
 
+	/**
+	 * Sets the global logger level; this method should be used with caution and
+	 * called only from a program entry point (main method or init)
+	 * @param level the new default logger level for new loggers
+	 */
+	public static void setGlobalLevel(Level level) {
+		globalLevel = level;
+	}
+	
 	public static void addAppender(OutputStream stream) {
 		APPENDERS.add(stream);
 	}
@@ -120,7 +135,7 @@ public final class Logger {
 	private String generate(Level level, String template, Object... data) {
 
 		StringBuilder sb = new StringBuilder();
-		sb.append(level);
+		sb.append(level.level());
 
 		sb.append(targetClass.getSimpleName());
 		sb.append(": ");
@@ -153,15 +168,18 @@ public final class Logger {
 	}
 
 	private void print(Level level, String template, Object... data) {
-		if (level.ordinal() <= logLevel.ordinal()) {
-			String string = generate(level, template, data);
-			for (OutputStream appender: APPENDERS) {
-				try {
-					appender.write(string.getBytes(Charset.forName("UTF-8")));
-				} catch (IOException e) {
-					System.err.println("Failed to write message to output" +
-							" stream for appender " + appender + ' ' + e);
-				}
+		if (logLevel == Level.NONE 
+				&& level.priority() < globalLevel.priority()
+				|| level.priority() < logLevel.priority()) {
+			return;
+		}
+		String string = generate(level, template, data);
+		for (OutputStream appender : APPENDERS) {
+			try {
+				appender.write(string.getBytes(Charset.forName("UTF-8")));
+			} catch (IOException e) {
+				System.err.println("Failed to write message to output" +
+						" stream for appender " + appender + ' ' + e);
 			}
 		}
 	}

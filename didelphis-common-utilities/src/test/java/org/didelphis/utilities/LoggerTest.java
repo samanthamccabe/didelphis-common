@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LoggerTest {
@@ -73,12 +74,21 @@ class LoggerTest {
 
 	@Test
 	void testSuppressed() {
-		// Uses the default level, INFO
 		Logger logger = Logger.create(LoggerTest.class);
 		logger.debug("debug message");
 		logger.trace("trace message");
 		String buffer = getBuffer();
 		assertTrue(buffer.isEmpty(), buffer);
+	}
+
+	@Test
+	void testSuppressedTrace() {
+		Logger logger = Logger.create(LoggerTest.class, Logger.Level.DEBUG);
+		logger.trace("trace message");
+		logger.debug("debug message");
+		String buffer = getBuffer();
+		assertFalse(buffer.isEmpty(), buffer);
+		assertTrue(buffer.startsWith("[DEBUG]"), buffer);
 	}
 
 	@Test
@@ -128,7 +138,7 @@ class LoggerTest {
 
 	@NonNull
 	private static Logger getLogger() {
-		return new Logger(LoggerTest.class, Logger.Level.TRACE);
+		return Logger.create(LoggerTest.class, Logger.Level.TRACE);
 	}
 
 	@NonNull

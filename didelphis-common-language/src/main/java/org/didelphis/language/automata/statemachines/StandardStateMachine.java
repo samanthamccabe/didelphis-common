@@ -23,7 +23,6 @@ import org.didelphis.language.automata.interfaces.LanguageParser;
 import org.didelphis.language.automata.matchers.LanguageMatcher;
 import org.didelphis.language.automata.matches.BasicMatch;
 import org.didelphis.language.automata.matches.Match;
-import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Tuple;
 
@@ -49,7 +48,6 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 
 	LanguageParser<T> parser;
 	LanguageMatcher<T> matcher;
-	ParseDirection direction;
 	String id;
 	String startStateId;
 	Collection<String> acceptingStates;
@@ -61,13 +59,11 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 	private StandardStateMachine(
 			String id,
 			LanguageParser<T> parser,
-			LanguageMatcher<T> matcher,
-			ParseDirection direction
+			LanguageMatcher<T> matcher
 	) {
 		this.parser = parser;
 		this.id = id;
 		this.matcher = matcher;
-		this.direction = direction;
 
 		startStateId = this.id + "-S";
 	
@@ -81,20 +77,15 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 			@NonNull String id,
 			@NonNull Expression expression,
 			@NonNull LanguageParser<T> parser,
-			@NonNull LanguageMatcher<T> matcher,
-			ParseDirection direction
+			@NonNull LanguageMatcher<T> matcher
 	) {
 
 		StandardStateMachine<T> machine = new StandardStateMachine<>(
 				id,
 				parser,
-				matcher,
-				direction
+				matcher
 		);
 		
-		if (direction == ParseDirection.BACKWARD) {
-			expression = expression.reverse();
-		}
 
 		String accepting = machine.parseExpression(
 				machine.startStateId, 
@@ -316,8 +307,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		StateMachine<T> machine = NegativeStateMachine.create(current,
 				negated,
 				parser,
-				matcher,
-				direction);
+				matcher);
 		machinesMap.put(current, machine);
 	}
 
