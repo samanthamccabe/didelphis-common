@@ -141,7 +141,7 @@ public final class SparseFeatureArray<T> extends AbstractFeatureArray<T> {
 		for (int i = 0; i < size(); i++) {
 			T v = array.get(i);
 			if (featureType.isDefined(v)) {
-				changed |= true;
+				changed = true;
 				features.put(i, v);
 			}
 		}

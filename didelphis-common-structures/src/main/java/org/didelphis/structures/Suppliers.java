@@ -19,8 +19,17 @@ import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.UtilityClass;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.NavigableMap;
+import java.util.NavigableSet;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.function.Supplier;
 
 /**
@@ -69,51 +78,5 @@ public final class Suppliers {
 
 	public <K, V> Supplier<NavigableMap<K, V>> ofTreeMap() {
 		return (Supplier<NavigableMap<K, V>>) TREE_MAP;
-	}
-	
-	public <K, V, C extends Map<K, V>> Supplier<C> mapOfType(Class<C> type) {
-		return () -> instantiate(type);
-	}
-
-	public <T, C extends Collection<T>> Supplier<C> setOfType(Class<C> type) {
-		return () -> instantiate(type);
-	}
-
-	public <T, C extends Collection<T>> Supplier<C> listOfType(Class<C> type) {
-		return () -> instantiate(type);
-	}
-
-	/**
-	 * Reflectively creates a new instance of the same type as the provided map.
-	 * Note that the new instance will be empty.
-	 * @param map
-	 * @param <K>
-	 * @param <V>
-	 * @param <M>
-	 * @return
-	 */
-	public <K, V, M extends Map<K, V>> M copyMap(M map) {
-		return instantiate((Class<M>) map.getClass());
-	}
-
-	public <T, C extends Collection<T>> C copyCollection(C collection) {
-		return instantiate((Class<C>) collection.getClass());
-	}
-
-	private <C> C instantiate(Class<C> type) {
-		try {
-			return type.getConstructor().newInstance();
-		} catch (NoSuchMethodException e) {
-			throw new IllegalArgumentException("No-arg constructor unavailable "
-					+ "for type", e);
-		} catch (IllegalAccessException e) {
-			throw new IllegalArgumentException("The no-arg constructor for this"
-					+ " type is not accessible to the calling method.", e);
-		} catch (InstantiationException e) {
-			throw new IllegalArgumentException("This class may not be "
-					+ "instantiated", e);
-		} catch (InvocationTargetException e) {
-			throw new IllegalArgumentException(e);
-		}
 	}
 }

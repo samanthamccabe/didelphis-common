@@ -19,9 +19,12 @@ import lombok.NonNull;
 import lombok.ToString;
 import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.maps.interfaces.TwoKeyMultiMap;
+import org.didelphis.structures.tuples.Triple;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -40,23 +43,54 @@ public class SymmetricalTwoKeyMultiMap<K, V>
 
 	private final Supplier<? extends Collection<V>> collectionSupplier;
 
+	/**
+	 * Default constructor which uses {@link HashMap} and {@link HashSet}
+	 */
 	public SymmetricalTwoKeyMultiMap() {
 		collectionSupplier = Suppliers.ofHashSet();
 	}
-	
-	public SymmetricalTwoKeyMultiMap(@NonNull SymmetricalTwoKeyMultiMap<K, V> map) {
-		this(MapUtils.copyTwoKeyMultiMap(map.getDelegate()),
-				map.getMapSupplier() , 
-				map.collectionSupplier);
+
+	/**
+	 * Copy-constructor; creates a deep copy of the map using the provided
+	 * delegate and suppliers.
+	 *
+	 * @param twoKeyMultiMap a symmetric two key map whose data is to be copied
+	 * @param delegate a delegate map to be used by the new instance
+	 * @param mSupplier a {@link Supplier} to provide the inner map instances
+	 * @param cSupplier a {@link Supplier} to provide the inner collections
+	 */
+	public SymmetricalTwoKeyMultiMap(
+			@NonNull SymmetricalTwoKeyMultiMap<K, V> twoKeyMultiMap,
+			@NonNull Map<K, Map<K, Collection<V>>> delegate,
+			@NonNull Supplier<? extends Map<K, Collection<V>>> mSupplier,
+			@NonNull Supplier<? extends Collection<V>> cSupplier
+	) {
+		this(delegate,mSupplier,cSupplier);
+
+		for (Triple<K, K, Collection<V>> triple : twoKeyMultiMap) {
+			K k1 = triple.getFirstElement();
+			K k2 = triple.getSecondElement();
+
+			Collection<V> values = cSupplier.get();
+			values.addAll(triple.getThirdElement());
+
+			if (delegate.containsKey(k1)) {
+				delegate.get(k1).put(k2, values);
+			} else {
+				Map<K, Collection<V>> map = mSupplier.get();
+				map.put(k2, values);
+				delegate.put(k1, map);
+			}
+		}
 	}
 
 	public SymmetricalTwoKeyMultiMap(
-			@NonNull Map<K, Map<K, Collection<V>>> delegateMap,
-			@NonNull Supplier<Map<K, Collection<V>>> mapSupplier,
-			@NonNull Supplier<? extends Collection<V>> collectionSupplier
+			@NonNull Map<K, Map<K, Collection<V>>> delegate,
+			@NonNull Supplier<? extends Map<K, Collection<V>>> mSupplier,
+			@NonNull Supplier<? extends Collection<V>> cSupplier
 	) {
-		super(delegateMap, mapSupplier);
-		this.collectionSupplier = collectionSupplier;
+		super(delegate, mSupplier);
+		collectionSupplier = cSupplier;
 	}
 
 	@Override

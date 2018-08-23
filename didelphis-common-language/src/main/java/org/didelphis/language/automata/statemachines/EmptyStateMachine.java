@@ -42,6 +42,9 @@ public final class EmptyStateMachine<T> implements StateMachine<T> {
 	private static final EmptyStateMachine<?> MACHINE
 			= new EmptyStateMachine<>();
 
+	// The wildcard-extends is necessary to avoid an incompatible type error
+	// even though Graph itself cannot be extended
+	@SuppressWarnings ("TypeParameterExtendsFinalClass") 
 	private static final Map<String, ? extends Graph<?>> EMPTY_MAP = Collections
 			.emptyMap();
 

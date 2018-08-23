@@ -19,6 +19,11 @@ import lombok.NonNull;
 import lombok.ToString;
 import org.didelphis.structures.maps.GeneralTwoKeyMultiMap;
 
+import java.util.HashMap;
+
+import static org.didelphis.structures.Suppliers.ofHashMap;
+import static org.didelphis.structures.Suppliers.ofHashSet;
+
 /**
  * Class {@code Graph}
  *
@@ -34,6 +39,6 @@ public final class Graph<T> extends GeneralTwoKeyMultiMap<String, T, String> {
 	}
 	
 	public Graph(@NonNull GeneralTwoKeyMultiMap<String, T, String> graph) {
-		super(graph);
+		super(graph, new HashMap<>(), ofHashMap(), ofHashSet());
 	}
 }

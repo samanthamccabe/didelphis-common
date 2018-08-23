@@ -22,6 +22,7 @@ import org.didelphis.structures.tuples.Tuple;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -35,18 +36,39 @@ import java.util.stream.Collectors;
 public class SymmetricalTwoKeyMap<K, V> extends GeneralTwoKeyMap<K, K, V>
 		implements SymmetricallyAccessible<K> {
 
+	/**
+	 * Default constructor which uses a {@link HashMap} delegate
+	 */
 	public SymmetricalTwoKeyMap() {
 	}
 
+	/**
+	 * Standard non-copying constructor which uses the provided delegate map and
+	 * creates new entries using the provided supplier.
+	 * @param delegate a delegate map to be used by the new multimap
+	 * @param mapSupplier a {@link Supplier} to provide the inner map instances
+	 */
 	public SymmetricalTwoKeyMap(
-			@NonNull Map<K, Map<K, V>> twoKeyMap,
-			@NonNull Supplier<Map<K, V>> mapSupplier
+			@NonNull Map<K, Map<K, V>> delegate,
+			@NonNull Supplier<? extends Map<K, V>> mapSupplier
 	) {
-		super(twoKeyMap, mapSupplier);
+		super(delegate, mapSupplier);
 	}
 
-	public SymmetricalTwoKeyMap(@NonNull SymmetricalTwoKeyMap<K, V> twoKeyMap) {
-		super(twoKeyMap);
+	/**
+	 * Copy-constructor; creates a deep copy of the provided multi-map using
+	 * the provided suppliers
+	 *
+	 * @param twoKeyMap a symmetric two key map whose data is to be copied
+	 * @param delegate a (typically empty) delegate map
+	 * @param mapSupplier a {@link Supplier} to provide the inner map
+	 */
+	public SymmetricalTwoKeyMap(
+			@NonNull SymmetricalTwoKeyMap<K, V> twoKeyMap,
+			@NonNull Map<K, Map<K, V>> delegate,
+			@NonNull Supplier<? extends Map<K, V>> mapSupplier
+	) {
+		super(twoKeyMap, delegate, mapSupplier);
 	}
 
 	@Override
