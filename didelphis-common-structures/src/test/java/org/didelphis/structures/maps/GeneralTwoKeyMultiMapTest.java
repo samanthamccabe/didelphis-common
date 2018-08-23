@@ -14,9 +14,12 @@
 
 package org.didelphis.structures.maps;
 
+import org.didelphis.structures.Suppliers;
+import org.didelphis.structures.maps.interfaces.TwoKeyMultiMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,9 +31,9 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
  */
 class GeneralTwoKeyMultiMapTest extends TwoKeyMapTestBase {
 	
-	private GeneralTwoKeyMultiMap<String, String, String> map;
-	private GeneralTwoKeyMultiMap<String, String, String> map1;
-	private GeneralTwoKeyMultiMap<String, String, String> map2;
+	private TwoKeyMultiMap<String, String, String> map;
+	private TwoKeyMultiMap<String, String, String> map1;
+	private TwoKeyMultiMap<String, String, String> map2;
 	
 	@BeforeEach
 	void init() {
@@ -46,8 +49,8 @@ class GeneralTwoKeyMultiMapTest extends TwoKeyMapTestBase {
 		map.add("a", "c", "v1");
 		map.add("a", "c", "v2");
 
-		map1 = new GeneralTwoKeyMultiMap<>(map);
-		map2 = new GeneralTwoKeyMultiMap<>(map);
+		map1 = new GeneralTwoKeyMultiMap<>(map, new HashMap<>(), Suppliers.ofHashMap(), Suppliers.ofHashSet());
+		map2 = new GeneralTwoKeyMultiMap<>(map, new HashMap<>(), Suppliers.ofHashMap(), Suppliers.ofHashSet());
 		map2.add("x", "y", "z");
 	}
 	

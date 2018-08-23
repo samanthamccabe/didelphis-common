@@ -14,6 +14,7 @@
 
 package org.didelphis.structures.maps;
 
+import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.tuples.Tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,7 +52,7 @@ class GeneralMultiMapTest {
 		map.add("Z", "e");
 		map.add("Z", "f");
 		
-		map1 = new GeneralMultiMap<>(map);
+		map1 = new GeneralMultiMap<>(map, new HashMap<>(), Suppliers.ofHashSet());
 		map1.add("X", "1");
 		map1.add("X", "2");
 	}
@@ -159,21 +160,21 @@ class GeneralMultiMapTest {
 
 	@Test
 	void equals() {
-		assertEquals(map, new GeneralMultiMap<>(map));
+		assertEquals(map, new GeneralMultiMap<>(map, new HashMap<>(), Suppliers.ofHashSet()));
 		assertNotEquals(map, new GeneralMultiMap<>());
 		assertNotEquals(map, map1);
 	}
 
 	@Test
 	void testHashCode() {
-		assertEquals(map.hashCode(), new GeneralMultiMap<>(map).hashCode());
+		assertEquals(map.hashCode(), new GeneralMultiMap<>(map, new HashMap<>(), Suppliers.ofHashSet()).hashCode());
 		assertNotEquals(map.hashCode(), new GeneralMultiMap<>().hashCode());
 		assertNotEquals(map.hashCode(), map1.hashCode());
 	}
 
 	@Test
 	void testToString() {
-		assertEquals(map.toString(), new GeneralMultiMap<>(map).toString());
+		assertEquals(map.toString(), new GeneralMultiMap<>(map, new HashMap<>(), Suppliers.ofHashSet()).toString());
 		assertNotEquals(map.toString(), new GeneralMultiMap<>().toString());
 		assertNotEquals(map.toString(), map1.toString());
 	}

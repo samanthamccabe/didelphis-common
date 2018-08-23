@@ -153,7 +153,6 @@ public interface TwoKeyMap<T, U, V>
 	 */
 	@NonNull
 	default V getOrDefault(@Nullable T k1, @Nullable U k2, @NonNull V value) {
-		//noinspection ConstantConditions
 		return containsNotNull(k1, k2) ? get(k1, k2) : value;
 	}
 }

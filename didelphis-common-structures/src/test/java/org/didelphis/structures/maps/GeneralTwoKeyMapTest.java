@@ -14,6 +14,7 @@
 
 package org.didelphis.structures.maps;
 
+import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.maps.interfaces.TwoKeyMap;
 import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Triple;
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -161,6 +163,6 @@ class GeneralTwoKeyMapTest extends TwoKeyMapTestBase {
 
 	private static GeneralTwoKeyMap<String, String, String> copy(
 			GeneralTwoKeyMap<String, String, String> map) {
-		return new GeneralTwoKeyMap<>(map);
+		return new GeneralTwoKeyMap<>(map, new HashMap<>(), Suppliers.ofHashMap());
 	}
 }

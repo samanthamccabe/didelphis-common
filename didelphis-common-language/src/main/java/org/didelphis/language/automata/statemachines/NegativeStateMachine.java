@@ -124,23 +124,10 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 
 		Match<T> pMatch = positive.match(input, start);
 		Match<T> nMatch = negative.match(input, start);
-		
-		// TODO: what if start and end are different??
-		if (pMatch.end() == nMatch.end()) {
-			return new BasicMatch<>(input, -1, -1);
-//		if (!negIndices.isEmpty() && !posIndices.isEmpty()) {
-			// Machine has matched both branches
-//			int pos = new TreeSet<>(posIndices).last();
-//			int neg = new TreeSet<>(negIndices).last();
-//			return pos == neg ? Collections.emptySet() : posIndices;
-//		} else if (!posIndices.isEmpty()) {
-//			return posIndices;
-//		} else {
-//			return Collections.emptySet();
-		} else {
-			return pMatch;
-		}
-//		return new BasicMatch<>(input, -1, -1);
+
+		return pMatch.end() == nMatch.end()
+				? new BasicMatch<>(input, -1, -1)
+				: pMatch;
 	}
 
 	private static <T> void buildPositiveBranch(

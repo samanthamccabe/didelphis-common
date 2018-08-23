@@ -328,8 +328,9 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 		@Override
 		public Collection<E> next() {
 			if (i >= columns) {
-				throw new NoSuchElementException();
-			}
+				throw new NoSuchElementException(
+						"No element exists at column index " + i
+				);			}
 			Collection<E> list = IntStream.range(0, columns)
 					.mapToObj(j -> array.get(getIndex(i, j)))
 					.collect(Collectors.toList());

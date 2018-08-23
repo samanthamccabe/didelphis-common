@@ -48,13 +48,13 @@ public class PatternUtils {
 		for (int i = 0; i < vars.length; i++) {
 			regex = regex.replace("$" + (i + 1), vars[i]);
 		}
-		return Pattern.compile(regex, Pattern.UNICODE_CHARACTER_CLASS);
+		return Pattern.compile(regex);
 	}
 
 	@NonNull
 	public Pattern compile(@NonNull String head, @NonNull String... tail) {
 		String regex = concat(head, tail);
-		return Pattern.compile(regex, Pattern.UNICODE_CHARACTER_CLASS);
+		return Pattern.compile(regex);
 	}
 
 	@NonNull

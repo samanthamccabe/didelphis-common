@@ -14,8 +14,12 @@
 
 package org.didelphis.structures.maps;
 
+import lombok.NonNull;
+import org.didelphis.structures.Suppliers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -39,8 +43,8 @@ class SymmetricalTwoKeyMultiMapTest {
 		map.add("a", "c", "x2");
 		map.add("d", "e", "y");
 		
-		map1 = new SymmetricalTwoKeyMultiMap<>(map);
-		map2 = new SymmetricalTwoKeyMultiMap<>(map);
+		map1 = copy(map);
+		map2 = copy(map);
 		map2.removeKeys("d", "e");
 	}
 	
@@ -70,4 +74,13 @@ class SymmetricalTwoKeyMultiMapTest {
 		assertNotEquals(map.toString(), map2.toString());
 	}
 
+	@NonNull
+	private static <K,V> SymmetricalTwoKeyMultiMap<K, V> copy(
+			SymmetricalTwoKeyMultiMap<K, V> map) {
+		return new SymmetricalTwoKeyMultiMap<>(map,
+				new HashMap<>(),
+				Suppliers.ofHashMap(),
+				Suppliers.ofHashSet()
+		);
+	}
 }

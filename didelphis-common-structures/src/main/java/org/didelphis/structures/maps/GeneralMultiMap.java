@@ -29,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -70,21 +71,48 @@ public class GeneralMultiMap<K, V>
 	private final Map<K, Collection<V>> delegate;
 	private final Supplier<? extends Collection<V>> supplier;
 
+	/**
+	 * Default constructor which uses {@link HashMap} and {@link HashSet}   
+	 */
 	public GeneralMultiMap() {
 		delegate = new HashMap<>();
 		supplier = Suppliers.ofHashSet();
 	}
 
-	public GeneralMultiMap(@NonNull GeneralMultiMap<K, V> multiMap) {
-		this(MapUtils.copyMultiMap(multiMap.getDelegate()), multiMap.supplier);
-	}
-	
+	/**
+	 * Standard non-copying constructor which uses the provided delegate map and
+	 * creates new entries using the provided supplier.
+	 * @param delegate a delegate map to be used by the new multimap
+	 * @param supplier a {@link Supplier} to provide the inner collections
+	 */
 	public GeneralMultiMap(
 			@NonNull Map<K, Collection<V>> delegate,
 			@NonNull Supplier<? extends Collection<V>> supplier
 	) {
-		this.delegate = new HashMap<>(delegate);
+		this.delegate = delegate;
 		this.supplier = supplier;
+	}
+
+	/**
+	 * Copy-constructor; creates a deep copy of the provided multi-map using
+	 * the provided suppliers
+	 *
+	 * @param multiMap a {@link MultiMap} instance whose data is to be copied
+	 * @param delegate a new (typically empty) delegate map
+	 * @param supplier a {@link Supplier} to provide the inner collections
+	 */
+	public GeneralMultiMap(
+			@NonNull MultiMap<K, V> multiMap,
+			@NonNull Map<K, Collection<V>> delegate,
+			@NonNull Supplier<? extends Collection<V>> supplier
+	) {
+		this.delegate = delegate;
+		this.supplier = supplier;
+		for (Tuple<K, Collection<V>> tuple : multiMap) {
+			Collection<V> collection = supplier.get();
+			collection.addAll(tuple.getRight());
+			delegate.put(tuple.getLeft(), collection);
+		}
 	}
 
 	@NonNull

@@ -130,7 +130,7 @@ public class RectangularTable<E> extends AbstractTable<E>
 	public List<E> getColumn(int col) {
 		checkCol(col);
 		return IntStream.range(0, rows())
-				.mapToObj((int i) -> get(i, col))
+				.mapToObj(i -> get(i, col))
 				.collect(Collectors.toList());
 	}
 
@@ -354,7 +354,9 @@ public class RectangularTable<E> extends AbstractTable<E>
 		@Override
 		public Collection<E> next() {
 			if (i >= rows) {
-				throw new NoSuchElementException();
+				throw new NoSuchElementException(
+						"No element exists at row index " + i
+				);
 			}
 			int index1 = getIndex(i, 0, columns);
 			int index2 = getIndex(i + 1, 0, columns);
@@ -385,7 +387,9 @@ public class RectangularTable<E> extends AbstractTable<E>
 		@Override
 		public Collection<E> next() {
 			if (i >= columns) {
-				throw new NoSuchElementException();
+				throw new NoSuchElementException(
+						"No element exists at column index " + i
+				);
 			}
 			Collection<E> list = IntStream.range(0, rows)
 					.mapToObj(r -> array.get(getIndex(r, i, columns)))

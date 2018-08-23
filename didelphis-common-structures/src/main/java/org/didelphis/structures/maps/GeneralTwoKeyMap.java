@@ -52,24 +52,58 @@ public class GeneralTwoKeyMap<T, U, V>
 
 	@Delegate(excludes = Size.class)
 	private final Map<T, Map<U, V>> delegate;
-	private final Supplier<Map<U, V>> mapSupplier;
+	private final Supplier<? extends Map<U, V>> mapSupplier;
 
+	/**
+	 * Default constructor which uses a {@link HashMap} delegate
+	 */
 	public GeneralTwoKeyMap() {
 		delegate = new HashMap<>();
 		mapSupplier = Suppliers.ofHashMap();
 	}
 
+	/**
+	 * Standard non-copying constructor which uses the provided delegate map and
+	 * creates new entries using the provided supplier.
+	 * @param delegate a delegate map to be used by the new multimap
+	 * @param mapSupplier a {@link Supplier} to provide the inner map instances
+	 */
 	public GeneralTwoKeyMap(
 			@NonNull Map<T, Map<U, V>> delegate,
-			@NonNull Supplier<Map<U, V>> mapSupplier
+			@NonNull Supplier<? extends Map<U, V>> mapSupplier
 	) {
 		this.delegate = delegate;
 		this.mapSupplier = mapSupplier;
 	}
 
-	public GeneralTwoKeyMap(@NonNull GeneralTwoKeyMap<T, U, V> twoKeyMap) {
-		delegate = MapUtils.copyTwoKeyMap(twoKeyMap.delegate);
-		mapSupplier = twoKeyMap.mapSupplier;
+	/**
+	 * Copy-constructor; creates a deep copy of the provided multi-map using
+	 * the provided suppliers
+	 *
+	 * @param twoKeyMap a {@link TwoKeyMap} instance whose data is to be copied
+	 * @param delegate a new (typically empty) delegate map
+	 * @param mapSupplier a {@link Supplier} to provide the inner collections
+	 */
+	public GeneralTwoKeyMap(
+			@NonNull TwoKeyMap<T, U, V> twoKeyMap,
+			@NonNull Map<T, Map<U, V>> delegate,
+			@NonNull Supplier<? extends Map<U, V>> mapSupplier
+	) {
+		this(delegate, mapSupplier);
+
+		for (Triple<T, U, V> triple : twoKeyMap) {
+			T k1 = triple.getFirstElement();
+			U k2 = triple.getSecondElement();
+			V value = triple.getThirdElement();
+			if (delegate.containsKey(k1)) {
+				Map<U, V> map = delegate.get(k1);
+				map.put(k2, value);
+			} else {
+				Map<U, V> map = mapSupplier.get();
+				map.put(k2, value);
+				delegate.put(k1, map);
+			}
+		}
 	}
 	
 	@Override
@@ -132,10 +166,14 @@ public class GeneralTwoKeyMap<T, U, V>
 		return delegate;
 	}
 
-	protected Supplier<Map<U, V>> getMapSupplier() {
+	protected Supplier<? extends Map<U, V>> getMapSupplier() {
 		return mapSupplier;
 	}
 	
+	// A weird but necessary way of ensuring @Delegate works correctly; the
+	// delegated .size() call from Map will only return the size of the outer
+	// Map, but the designed behavior for a two-key map is that the size is the
+	// total number of entries
 	@SuppressWarnings({
 			"InterfaceNeverImplemented",
 			"InterfaceMayBeAnnotatedFunctional"
