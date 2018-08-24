@@ -16,7 +16,6 @@ package org.didelphis.language.phonetic.sequences;
 
 import lombok.NonNull;
 import org.didelphis.language.phonetic.segments.Segment;
-import org.didelphis.utilities.Exceptions;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -152,7 +151,6 @@ public class ImmutableSequence<T> extends BasicSequence<T> {
 	}
 
 	private static RuntimeException unsupported() {
-		return Exceptions.unsupportedOperation().add("Sequence is immutable.").
-				build();
+		return new UnsupportedOperationException("Sequence is immutable.");
 	}
 }

@@ -32,12 +32,6 @@ class ClassPathFileHandlerTest {
 	}
 
 	@Test
-	void readWithException() {
-		assertThrows(IllegalArgumentException.class,
-				() -> ClassPathFileHandler.INSTANCE.readOrThrow("will fail", IllegalArgumentException.class));
-	}
-
-	@Test
 	void write() {
 		assertThrows(UnsupportedOperationException.class,
 				() -> ClassPathFileHandler.INSTANCE.writeString("",""));

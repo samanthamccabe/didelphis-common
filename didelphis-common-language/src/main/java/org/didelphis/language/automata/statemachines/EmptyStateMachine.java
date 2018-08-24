@@ -23,7 +23,7 @@ import org.didelphis.language.automata.interfaces.LanguageParser;
 import org.didelphis.language.automata.matchers.LanguageMatcher;
 import org.didelphis.language.automata.matches.BasicMatch;
 import org.didelphis.language.automata.matches.Match;
-import org.didelphis.utilities.Exceptions;
+import org.didelphis.utilities.Templates;
 
 import java.util.Collections;
 import java.util.Map;
@@ -57,9 +57,10 @@ public final class EmptyStateMachine<T> implements StateMachine<T> {
 	@NonNull
 	@Override
 	public LanguageParser<T> getParser() {
-		throw Exceptions.unsupportedOperation()
+		String message = Templates.create()
 				.add("Empty state machine has no associated parser")
 				.build();
+		throw new UnsupportedOperationException(message);
 	}
 
 	@NonNull

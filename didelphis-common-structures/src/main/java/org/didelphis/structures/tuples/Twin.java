@@ -16,7 +16,7 @@ package org.didelphis.structures.tuples;
 
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import org.didelphis.utilities.Exceptions;
+import org.didelphis.utilities.Templates;
 
 import java.util.AbstractList;
 
@@ -53,12 +53,13 @@ public class Twin<E> extends AbstractList<E> implements Tuple<E, E> {
 	public E get(int index) {
 		if (index == 0) return left;
 		if (index == 1) return right;
-		throw Exceptions.indexOutOfBounds()
+		String message = Templates.create()
 				.add("Index: {} is too large")
 				.with(index)
 				.add("{} does not support indices other than 0 and 1")
 				.with(Twin.class)
 				.build();
+		throw new IndexOutOfBoundsException(message);
 	}
 
 	@NonNull

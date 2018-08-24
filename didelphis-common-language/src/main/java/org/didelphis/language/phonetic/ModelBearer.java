@@ -17,7 +17,7 @@ package org.didelphis.language.phonetic;
 import lombok.NonNull;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureSpecification;
-import org.didelphis.utilities.Exceptions;
+import org.didelphis.utilities.Templates;
 
 /**
  * Interface {@code ModelBearer}
@@ -40,11 +40,12 @@ public interface ModelBearer<T> extends SpecificationBearer {
 
 	default void consistencyCheck(@NonNull ModelBearer<T> bearer) {
 		if (!getFeatureModel().equals(bearer.getFeatureModel())) {
-			throw Exceptions.illegalArgument()
+			String message = Templates.create()
 					.add("Mismatch between models")
 					.data(this)
 					.data(bearer)
 					.build();
+			throw new IllegalArgumentException(message);
 		}
 	}
 }

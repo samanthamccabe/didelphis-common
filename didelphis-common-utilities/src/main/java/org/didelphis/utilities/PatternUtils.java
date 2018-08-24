@@ -19,9 +19,7 @@ import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.UtilityClass;
 
-import java.util.Arrays;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Utility Class {@code PatternUtils}
@@ -59,6 +57,6 @@ public class PatternUtils {
 
 	@NonNull
 	private String concat(@NonNull String head, @NonNull String... tail) {
-		return Arrays.stream(tail).collect(Collectors.joining("", head, ""));
+		return head + String.join("", tail);
 	}
 }

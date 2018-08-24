@@ -15,7 +15,6 @@
 package org.didelphis.io;
 
 import lombok.NonNull;
-import org.didelphis.utilities.Exceptions;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -35,25 +34,7 @@ public interface FileHandler {
 	 * @return the data at the provided path; should be null on error
 	 */
 	@Nullable CharSequence read(@NonNull String path);
-
-	/**
-	 * @param path
-	 * @param type
-	 * @param <X>
-	 *
-	 * @return
-	 *
-	 * @throws X
-	 */
-	@NonNull
-	default <X extends RuntimeException> CharSequence readOrThrow(
-			@NonNull String path, @NonNull Class<X> type
-	) {
-		CharSequence result = read(path);
-		if (result == null) throw Exceptions.create(type).build();
-		return result;
-	}
-
+	
 	/**
 	 * Write data to a provided path, if supported
 	 *

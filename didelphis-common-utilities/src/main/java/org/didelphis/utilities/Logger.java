@@ -133,37 +133,11 @@ public final class Logger {
 	}
 
 	private String generate(Level level, String template, Object... data) {
-
 		StringBuilder sb = new StringBuilder();
 		sb.append(level.level());
-
 		sb.append(targetClass.getSimpleName());
 		sb.append(": ");
-
-		int i = 0;
-		String[] split = template.split("\\{}", -1);
-		if (split.length == 1) {
-			// there are no braces for the template
-			sb.append(template);
-		} else {
-			while (i < split.length) {
-				String str = split[i];
-				sb.append(str);
-				if (i < data.length && !str.isEmpty()) {
-					sb.append(getString(data[i]));
-				} else {
-					sb.append("{}");
-				}
-				i++;
-			}
-		}
-
-		while (i < data.length) {
-			Object datum = data[i];
-			sb.append(getString(datum));
-			i++;
-		}
-
+		sb.append(Templates.compile(template, data));
 		return sb.toString();
 	}
 
@@ -182,9 +156,5 @@ public final class Logger {
 						" stream for appender " + appender + ' ' + e);
 			}
 		}
-	}
-	
-	private static String getString(Object datum) {
-		return datum == null ? "NULL" : datum.toString();
 	}
 }
