@@ -20,7 +20,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.didelphis.language.phonetic.model.FeatureModel;
-import org.didelphis.utilities.Exceptions;
+import org.didelphis.utilities.Templates;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -49,11 +49,12 @@ public final class EmptyFeatureArray<T> implements FeatureArray<T> {
 	}
 
 	@Override
-	public void set(int index, @Nullable T value) {
-		throw Exceptions.create(UnsupportedOperationException.class)
+	public void set(int index, @Nullable T value) { 
+		String message = Templates.create()
 				.add("{} is immutable and does not support #set(...)")
 				.with(getClass())
 				.build();
+		throw new UnsupportedOperationException(message);
 	}
 
 	@Override
@@ -68,10 +69,11 @@ public final class EmptyFeatureArray<T> implements FeatureArray<T> {
 
 	@Override
 	public boolean alter(@NonNull FeatureArray<T> array) {
-		throw Exceptions.create(UnsupportedOperationException.class)
+		String message = Templates.create()
 				.add("{} is immutable and does not support #alter(...)")
 				.with(getClass())
 				.build();
+		throw new UnsupportedOperationException(message);
 	}
 
 	@Override

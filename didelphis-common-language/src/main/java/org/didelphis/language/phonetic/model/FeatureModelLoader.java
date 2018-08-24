@@ -28,6 +28,7 @@ import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.didelphis.utilities.Logger;
+import org.didelphis.utilities.Templates;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.Normalizer;
@@ -112,12 +113,7 @@ public final class FeatureModelLoader<T> {
 			@NonNull FileHandler fileHandler,
 			@NonNull String path
 	) {
-		this(featureType,
-				fileHandler,
-				lines(fileHandler.readOrThrow(path,
-						NullPointerException.class
-				))
-		);
+		this(featureType, fileHandler, lines(fileHandler.read(path)));
 	}
 
 	public FeatureModelLoader(
@@ -252,10 +248,11 @@ public final class FeatureModelLoader<T> {
 					featureIndices.put(code, i);
 				}
 			} else {
-				throw ParseException.builder()
+				String message = Templates.create()
 						.add("Unrecognized 'FEATURE' command.")
 						.data(entry)
 						.build();
+				throw new ParseException(message);
 			}
 			i++;
 		}

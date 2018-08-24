@@ -17,7 +17,7 @@ package org.didelphis.structures.tables;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
-import org.didelphis.utilities.Exceptions;
+import org.didelphis.utilities.Templates;
 
 import java.text.DecimalFormat;
 import java.util.Collection;
@@ -41,11 +41,12 @@ public abstract class AbstractTable<E> implements ResizeableTable<E> {
 
 	protected AbstractTable(int rows, int columns) {
 		if (rows < 0 || columns < 0) {
-			throw Exceptions.create(IndexOutOfBoundsException.class)
+			String message = Templates.create()
 					.add("Cannot create a table with negative dimensions!")
 					.add("Parameters provided: row {} / col {}")
 					.with(rows, columns)
 					.build();
+			throw new IndexOutOfBoundsException(message);
 		}
 		this.rows = rows;
 		this.columns = columns;
@@ -71,47 +72,51 @@ public abstract class AbstractTable<E> implements ResizeableTable<E> {
 
 	protected void checkRowEdge(int row) {
 		if (row > rows || row < 0) {
-			throw Exceptions.create(IndexOutOfBoundsException.class)
-					.add("Row parameter ({}) is out of bounds while trying "
-							+ "to expand table.")
+			String message = Templates.create()
+					.add("Row parameter ({}) is out of bounds while trying to",
+							"expand table.")
 					.with(row)
 					.add("Currently there are {} rows")
-					.with(row)
+					.with(rows)
 					.build();
+			throw new IndexOutOfBoundsException(message);
 		}
 	}
 
 	protected void checkRow(int row) {
 		if (row >= rows || row < 0) {
-			throw Exceptions.create(IndexOutOfBoundsException.class)
+			String message = Templates.create()
 					.add("Row parameter ({}) is out of bounds!")
 					.with(row)
 					.add("Currently there are {} rows")
 					.with(rows)
 					.build();
+			throw new IndexOutOfBoundsException(message);
 		}
 	}
 
 	protected void checkColEdge(int col) {
 		if (col > columns || col < 0) {
-			throw Exceptions.create(IndexOutOfBoundsException.class)
+			String message = Templates.create()
 					.add("Column parameter ({}) is out of bounds while trying " 
 							+ "to expand table.")
 					.with(col)
 					.add("Currently there are {} columns")
 					.with(columns)
 					.build();
+			throw new IndexOutOfBoundsException(message);
 		}
 	}
 
 	protected void checkCol(int col) {
 		if (col >= columns || col < 0) {
-			throw Exceptions.create(IndexOutOfBoundsException.class)
+			String message = Templates.create()
 					.add("Column parameter ({}) is out of bounds!")
 					.with(col)
 					.add("Currently there are {} columns")
 					.with(columns)
 					.build();
+			throw new IndexOutOfBoundsException(message);
 		}
 	}
 
@@ -122,34 +127,37 @@ public abstract class AbstractTable<E> implements ResizeableTable<E> {
 
 	protected void checkRowData(@NonNull Collection<E> data) {
 		if (data.size() != columns()) {
-			throw Exceptions.create(IllegalArgumentException.class)
+			String message = Templates.create()
 					.add("New row is the wrong size!")
 					.add("Has {} columns but needs {}.")
 					.with(data.size(), columns())
 					.data(data)
 					.build();
+			throw new IllegalArgumentException(message);
 		}
 	}
 
 	protected void checkColumnData(@NonNull Collection<E> data) {
 		if (data.size() != rows()) {
-			throw Exceptions.create(IllegalArgumentException.class)
+			String message = Templates.create()
 					.add("New column is the wrong size!")
 					.add("Has {} rows but needs {}.")
 					.with(data.size(), rows())
 					.data(data)
 					.build();
+			throw new IllegalArgumentException(message);
 		}
 	}
 
 	protected static void negativeCheck(int rows, int cols) {
 		if (rows < 0 || cols < 0) {
-			throw Exceptions.create(IllegalArgumentException.class)
+			String message = Templates.create()
 					.add("Operations to expand or shrink a table cannot")
 					.add("have negative arguments!")
 					.add("The arguments provided were row: {} and col: {}")
 					.with(rows, cols)
 					.build();
+			throw new IllegalArgumentException(message);
 		}
 	}
 }

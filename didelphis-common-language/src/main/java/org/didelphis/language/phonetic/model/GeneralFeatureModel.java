@@ -23,6 +23,7 @@ import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.FeatureType;
 import org.didelphis.language.phonetic.features.SparseFeatureArray;
+import org.didelphis.utilities.Templates;
 
 import java.text.Normalizer.Form;
 import java.util.List;
@@ -108,11 +109,12 @@ public final class GeneralFeatureModel<T> implements FeatureModel<T> {
 					int value = retrieveIndex(featureName, string, indices);
 					arr.set(value, featureType.parseValue(featureValue));
 				} else {
-					throw ParseException.builder()
+					String message = Templates.create()
 							.add("Unrecognized feature '{}' in definition")
 							.with(element)
 							.data(string)
 							.build();
+					throw new ParseException(message);
 				}
 			}
 		}
@@ -139,9 +141,11 @@ public final class GeneralFeatureModel<T> implements FeatureModel<T> {
 		if (names.containsKey(label)) {
 			return names.get(label);
 		}
-		throw ParseException.builder().add("Invalid feature label {}")
+		String message = Templates.create()
+				.add("Invalid feature label {}")
 				.with(label)
 				.data(string)
 				.build();
+		throw new ParseException(message);
 	}
 }

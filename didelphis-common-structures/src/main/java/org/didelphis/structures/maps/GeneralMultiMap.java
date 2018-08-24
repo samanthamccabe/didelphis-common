@@ -23,7 +23,7 @@ import org.didelphis.structures.contracts.Delegating;
 import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Tuple;
-import org.didelphis.utilities.Exceptions;
+import org.didelphis.utilities.Templates;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -55,11 +55,13 @@ public class GeneralMultiMap<K, V>
 
 	private static final GeneralMultiMap<?, ?> EMPTY = new GeneralMultiMap<>(
 			Collections.emptyMap(),
-			() -> { throw Exceptions.unsupportedOperation()
-					.add("Attempting to modify an immutable,",
-							"empty instance of class {}")
+			() -> { String message = Templates.create()
+					.add("Attempting to modify an immutable, empty instance of",
+							"class {}")
 					.with(GeneralMultiMap.class)
-					.build(); }
+					.build(); 
+			throw new UnsupportedOperationException(message);
+			}
 	);
 	
 	@SuppressWarnings("unchecked")

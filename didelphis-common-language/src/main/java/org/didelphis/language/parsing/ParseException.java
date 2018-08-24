@@ -14,9 +14,6 @@
 
 package org.didelphis.language.parsing;
 
-import org.didelphis.utilities.Exceptions;
-import org.jetbrains.annotations.Nullable;
-
 /**
  * Exception {@code ParseException}
  *
@@ -33,27 +30,12 @@ public class ParseException extends RuntimeException {
 		super(message);
 	}
 
-	@Deprecated
-	public ParseException(String message, String data) {
-		this(message + " --- Data: " + data);
-	}
-	
 	public ParseException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
 	public ParseException(Throwable cause) {
 		super(cause);
-	}
-
-	public static Exceptions.ExceptionBuilder<ParseException> builder() {
-		return builder(null);
-	}
-
-	public static Exceptions.ExceptionBuilder<ParseException> builder(
-			@Nullable Throwable cause
-	) {
-		return Exceptions.create(ParseException.class, cause);
 	}
 
 }

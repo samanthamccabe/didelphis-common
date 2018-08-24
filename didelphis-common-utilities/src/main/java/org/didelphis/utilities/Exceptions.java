@@ -18,7 +18,12 @@ import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -33,6 +38,7 @@ import java.util.stream.Collectors;
  * @since 0.2.0
  */
 @UtilityClass
+@Deprecated
 public class Exceptions {
 
 	private final Pattern COMPILE = Pattern.compile("\\{}");
@@ -98,6 +104,7 @@ public class Exceptions {
 		return new ExceptionBuilder<>(IllegalArgumentException.class);
 	}
 	
+	@Deprecated
 	public static final class ExceptionBuilder<X extends Exception> {
 
 		private final Class<X> type;

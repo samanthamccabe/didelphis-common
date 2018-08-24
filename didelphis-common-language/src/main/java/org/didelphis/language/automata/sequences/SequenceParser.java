@@ -35,6 +35,7 @@ import org.didelphis.language.phonetic.sequences.Sequence;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.didelphis.utilities.Splitter;
+import org.didelphis.utilities.Templates;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -188,11 +189,12 @@ public class SequenceParser<T> implements LanguageParser<Sequence<T>> {
 				message = "Illegal modification of boundary {}{}";
 			}
 			if (message!=null) {
-				throw ParseException.builder()
+				String template = Templates.create()
 						.add(message)
 						.with(p, s)
 						.data(chars)
 						.build();
+				throw new ParseException(template);
 			}
 		}
 	}
@@ -233,11 +235,12 @@ public class SequenceParser<T> implements LanguageParser<Sequence<T>> {
 			} else if (DELIMITERS.containsKey(s.substring(0, 1))) {
 				buffer = update(rawExp, buffer, expressions);
 				if (s.length() <= 1) {
-					throw ParseException.builder()
+					String message = Templates.create()
 							.add("Unmatched group delimiter {}")
 							.with(s)
 							.data(rawExp)
 							.build();
+					throw new ParseException(message);
 				}
 				String substring = s.substring(1, s.length() - 1).trim();
 				String delimiter = s.substring(0, 1);
@@ -336,10 +339,12 @@ public class SequenceParser<T> implements LanguageParser<Sequence<T>> {
 		if (!buffer.isEmpty()) {
 			Expression ex = buffer.toExpression();
 			if (ex == null) {
-				throw ParseException.builder()
-						.add("Unable to parse ", expression)
+				String message = Templates.create()
+						.add("Unable to parse {}")
+						.with(expression)
 						.data(buffer)
 						.build();
+				throw new ParseException(message);
 			}
 			children.add(ex);
 			return new Buffer();

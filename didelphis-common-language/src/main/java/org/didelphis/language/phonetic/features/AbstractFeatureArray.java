@@ -17,7 +17,7 @@ package org.didelphis.language.phonetic.features;
 import lombok.NonNull;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureSpecification;
-import org.didelphis.utilities.Exceptions;
+import org.didelphis.utilities.Templates;
 
 import java.util.Objects;
 
@@ -96,12 +96,12 @@ public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
 
 	@NonNull
 	private RuntimeException buildException(@NonNull FeatureArray<T> o) {
-		return Exceptions.illegalArgument()
+		String message = Templates.create()
 				.add("Attempting to compare objects with different specified")
 				.add("feature sizes. This: {} vs {}")
 				.with(size(), o.size())
-				.data(this)
-				.data(o)
+				.data(this, o)
 				.build();
+		return new IllegalArgumentException(message);
 	}
 }

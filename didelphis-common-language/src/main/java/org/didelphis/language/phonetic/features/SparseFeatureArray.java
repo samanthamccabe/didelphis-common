@@ -16,7 +16,7 @@ package org.didelphis.language.phonetic.features;
 
 import lombok.NonNull;
 import org.didelphis.language.phonetic.model.FeatureModel;
-import org.didelphis.utilities.Exceptions;
+import org.didelphis.utilities.Templates;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -173,11 +173,12 @@ public final class SparseFeatureArray<T> extends AbstractFeatureArray<T> {
 	private void indexCheck(int index) {
 		int size = getSpecification().size();
 		if (index >= size) {
-			throw Exceptions.indexOutOfBounds()
-					.add("Provided index {} is larger than the defined size {}"
-							+ " of the feature model.")
+			String message = Templates.create()
+					.add("Provided index {} is larger than the defined size {}",
+							"of the feature model.")
 					.with(index, size)
 					.build();
+			throw new IndexOutOfBoundsException(message);
 		}
 	}
 }
