@@ -147,12 +147,12 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 
 	/**
 	 * Determines if a sequence is consistent with this sequence. Sequences must
-	 * be of the same length  Two parsers are consistent if each other if
+	 * be of the same length. Two sequences are consistent if each other if
 	 * all corresponding segments are consistent; i.e. if, for every segment in
 	 * each sequence, all corresponding features are equal OR one is undefined.
 	 *
 	 * @param sequence a segments to check against this one
-	 * @return true if, for each segment in both parsers, all defined features
+	 * @return true if, for each segment in both sequences, all defined features
 	 * 		in either segment are equal
 	 */
 	@Override

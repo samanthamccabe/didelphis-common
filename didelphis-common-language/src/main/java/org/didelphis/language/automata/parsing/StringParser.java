@@ -12,7 +12,7 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata.parsers;
+package org.didelphis.language.automata.parsing;
 
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -51,16 +51,19 @@ public class StringParser extends AbstractDidelphisParser<String> {
 		this.specials = specials;
 	}
 
+	@NonNull
 	@Override
 	public String getWordStart() {
 		return WORD_START;
 	}
 
+	@NonNull
 	@Override
 	public String getWordEnd() {
 		return WORD_END;
 	}
 
+	@NonNull
 	@Override
 	public String transform(String expression) {
 		return expression;

@@ -19,12 +19,13 @@ import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import org.didelphis.language.automata.Graph;
 import org.didelphis.language.automata.expressions.Expression;
-import org.didelphis.language.automata.interfaces.LanguageParser;
-import org.didelphis.language.automata.matchers.LanguageMatcher;
-import org.didelphis.language.automata.matches.BasicMatch;
-import org.didelphis.language.automata.matches.Match;
+import org.didelphis.language.automata.parsing.LanguageParser;
+import org.didelphis.language.automata.matching.LanguageMatcher;
+import org.didelphis.language.automata.matching.BasicMatch;
+import org.didelphis.language.automata.matching.Match;
 import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Tuple;
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -85,7 +86,6 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 				parser,
 				matcher
 		);
-		
 
 		String accepting = machine.parseExpression(
 				machine.startStateId, 
@@ -123,6 +123,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 
 	@NonNull
 	@Override
+	@Contract("_,_ -> new")
 	public Match<T> match(@NonNull T input, int start) {
 
 		if (graph.isEmpty()) {
@@ -186,9 +187,8 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		return "StandardStateMachine{" + id + '}';
 	}
 
-	// package only access TODO: seems like a problem
 	@NonNull
-	Map<String, StateMachine<T>> getMachinesMap() {
+	public Map<String, StateMachine<T>> getMachinesMap() {
 		// this needs to mutable:
 		// see NegativeStateMachine.create(..)
 		return machinesMap;
@@ -236,7 +236,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 	}
 
 	@NonNull
-	private String createParallel(String start, int index, @NonNull Expression expression) {
+	private String makeParallel(String start, int index, @NonNull Expression expression) {
 		int i = A_ASCII; // A
 		String output = start + "-Out";
 		for (Expression child : expression.getChildren()) {
@@ -254,8 +254,16 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		return output;
 	}
 
+	/**
+	 * 
+	 * @param start
+	 * @param startingIndex
+	 * @param prefix
+	 * @param expressions
+	 * @return the current node id
+	 */
 	private String parseExpression(
-			String start, 
+			@NonNull String start, 
 			int startingIndex,
 			@NonNull String prefix, 
 			@NonNull Iterable<Expression> expressions) {
@@ -281,18 +289,18 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 				if (expression.hasChildren()) {
 					if (expression.isParallel()) {
 						graph.add(previous, parser.epsilon(), current);
-						String endNode = createParallel(current, nodeId, expression);
-						previous = constructRecursiveNode(endNode, current, meta);
+						String node = makeParallel(current, nodeId, expression);
+						previous = makeRecursiveNode(node, current, meta);
 					} else {
 						graph.add(previous, parser.epsilon(), current);
 						String endNode = parseExpression(current,
 								nodeId,
 								"G-" + current,
 								expression.getChildren());
-						previous = constructRecursiveNode(endNode, current, meta);
+						previous = makeRecursiveNode(endNode, current, meta);
 					}	
 				} else {
-					previous = constructTerminalNode(previous,
+					previous = makeTerminalNode(previous,
 							current,
 							expression.getTerminal(),
 							meta);
@@ -341,7 +349,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 	}
 
 	@NonNull
-	private String constructRecursiveNode(String machineNode, String startNode,
+	private String makeRecursiveNode(String machineNode, String startNode,
 			@NonNull String meta) {
 		String endNode = startNode + 'X';
 		addToGraph(startNode, endNode, machineNode, meta);
@@ -349,7 +357,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 	}
 
 	@NonNull
-	private String constructTerminalNode(
+	private String makeTerminalNode(
 			@NonNull String previousNode,
 			@NonNull String currentNode, 
 			@NonNull String exp, 

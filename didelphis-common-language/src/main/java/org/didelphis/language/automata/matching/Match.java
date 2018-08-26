@@ -12,7 +12,7 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata.matches;
+package org.didelphis.language.automata.matching;
 
 import org.jetbrains.annotations.Nullable;
 

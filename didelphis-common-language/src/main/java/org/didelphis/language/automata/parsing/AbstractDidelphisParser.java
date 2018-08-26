@@ -1,4 +1,4 @@
-package org.didelphis.language.automata.parsers;
+package org.didelphis.language.automata.parsing;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -9,7 +9,6 @@ import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.expressions.ExpressionNode;
 import org.didelphis.language.automata.expressions.ParallelNode;
 import org.didelphis.language.automata.expressions.TerminalNode;
-import org.didelphis.language.automata.interfaces.LanguageParser;
 import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.utilities.Splitter;
@@ -57,11 +56,13 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 		QUANTIFIERS.add("+");
 	}
 
+	@NonNull
 	@Override
 	public Map<String, String> supportedDelimiters() {
 		return Collections.unmodifiableMap(DELIMITERS);
 	}
 
+	@NonNull
 	@Override
 	public Set<String> supportedQuantifiers() {
 		return Collections.unmodifiableSet(QUANTIFIERS);
@@ -138,7 +139,7 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 	}
 
 	/**
-	 * Checks for the presence of illegal sub-parsers in the expression which
+	 * Checks for the presence of illegal sub-patterns in the expression which
 	 * are unambiguous errors.
 	 *
 	 * @param string an expression to be checked for basic errors

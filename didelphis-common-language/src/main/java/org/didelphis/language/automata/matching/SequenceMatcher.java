@@ -12,12 +12,12 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata.matchers;
+package org.didelphis.language.automata.matching;
 
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
-import org.didelphis.language.automata.parsers.SequenceParser;
+import org.didelphis.language.automata.parsing.SequenceParser;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;

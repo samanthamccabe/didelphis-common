@@ -19,10 +19,10 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.didelphis.language.automata.Graph;
-import org.didelphis.language.automata.interfaces.LanguageParser;
-import org.didelphis.language.automata.matchers.LanguageMatcher;
-import org.didelphis.language.automata.matches.BasicMatch;
-import org.didelphis.language.automata.matches.Match;
+import org.didelphis.language.automata.parsing.LanguageParser;
+import org.didelphis.language.automata.matching.LanguageMatcher;
+import org.didelphis.language.automata.matching.BasicMatch;
+import org.didelphis.language.automata.matching.Match;
 import org.didelphis.utilities.Templates;
 
 import java.util.Collections;

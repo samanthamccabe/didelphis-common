@@ -12,38 +12,49 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata.matchers;
+package org.didelphis.language.automata;
 
 import lombok.NonNull;
+import org.didelphis.language.automata.matching.Match;
+import org.didelphis.language.phonetic.sequences.Sequence;
 
 /**
- * Interface {@code MachineMatcher}
+ * Interface {@code Automaton}
+ * <p>
+ * Represents an automaton for accepting formal languages, such as finite state
+ * automata.
  *
- * A helper interface used by finite state automata to determine define when
- * a "match" has occurred; many implementations might 
+ * @param <T> Usually a sequential data type, such as {@link String} or {@link
+ * 		Sequence}; this is the type of object provided to the automaton to be
+ * 		checked
+ *
+ * @see org.didelphis.language.automata.statemachines.StateMachine
+ * @see org.didelphis.language.automata.JavaPatternAutomaton
  * 
- * @param <T> The type of object which represents state transitions.
- *
  * @author Samantha Fiona McCabe
- * @date 2017-02-23
- * @since 0.1.0
+ * @date 10/17/17
  */
 @FunctionalInterface
-public interface LanguageMatcher<T>  {
+public interface Automaton<T> {
 
 	/**
-	 * Determines if the provided input matches the provided target in per the
-	 * semantics of the implementation. This may be an exact or approximate
-	 * match, or use operate like {@link String#startsWith(String)}
+	 * Return a {@link Match} object representing the output of the automaton's
+	 * attempt to match the input.
 	 *
-	 * @param input  the input to test
-	 * @param target the data being checked for within the input
-	 * @param index  the index of the input at which to evaluate the match
+	 * @param input the input to be checked.
+	 * @param start if applicable, the index at which to start checking.
 	 *
-	 * @return the length of the matched data; in many cases this will be the
-	 * length of the param {@code target}, but some implementations may permit
-	 * {@code target} to stand in for a set of items, in which case this method
-	 * should return the length of whichever element did match.
+	 * @return the resulting {@link Match} object
 	 */
-	int matches(@NonNull T input, @NonNull T target, int index);
+	@NonNull 
+	Match<T> match(@NonNull T input, int start);
+
+	default boolean matches(@NonNull T input) {
+		return match(input).start() > -1;
+	}
+	
+	@NonNull
+	default Match<T> match(@NonNull T input) {
+		return match(input, 0);
+	}
 }

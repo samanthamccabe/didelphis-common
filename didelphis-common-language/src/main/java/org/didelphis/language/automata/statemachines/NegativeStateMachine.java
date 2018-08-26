@@ -17,10 +17,10 @@ package org.didelphis.language.automata.statemachines;
 import lombok.NonNull;
 import org.didelphis.language.automata.Graph;
 import org.didelphis.language.automata.expressions.Expression;
-import org.didelphis.language.automata.interfaces.LanguageParser;
-import org.didelphis.language.automata.matchers.LanguageMatcher;
-import org.didelphis.language.automata.matches.BasicMatch;
-import org.didelphis.language.automata.matches.Match;
+import org.didelphis.language.automata.parsing.LanguageParser;
+import org.didelphis.language.automata.matching.LanguageMatcher;
+import org.didelphis.language.automata.matching.BasicMatch;
+import org.didelphis.language.automata.matching.Match;
 import org.didelphis.structures.tuples.Triple;
 
 import java.util.Collection;

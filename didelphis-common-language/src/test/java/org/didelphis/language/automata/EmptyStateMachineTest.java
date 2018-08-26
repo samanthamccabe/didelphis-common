@@ -14,8 +14,8 @@
 
 package org.didelphis.language.automata;
 
-import org.didelphis.language.automata.matchers.LanguageMatcher;
-import org.didelphis.language.automata.matches.BasicMatch;
+import org.didelphis.language.automata.matching.LanguageMatcher;
+import org.didelphis.language.automata.matching.BasicMatch;
 import org.didelphis.language.automata.statemachines.EmptyStateMachine;
 import org.didelphis.language.automata.statemachines.StateMachine;
 import org.junit.jupiter.api.BeforeAll;

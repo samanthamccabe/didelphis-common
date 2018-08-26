@@ -12,7 +12,7 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata.parsers;
+package org.didelphis.language.automata.parsing;
 
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -73,16 +73,19 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 		dot       = immutable(".",  model);
 	}
 	
+	@NonNull
 	@Override
 	public Sequence<T> getWordStart() {
 		return wordStart;
 	}
 
+	@NonNull
 	@Override
 	public Sequence<T> getWordEnd() {
 		return wordEnd;
 	}
 
+	@NonNull
 	@Override
 	public Sequence<T> transform(String expression) {
 		if (expression.equals("#[")) return wordStart;

@@ -18,8 +18,7 @@ import lombok.NonNull;
 import lombok.ToString;
 import lombok.Value;
 import lombok.experimental.Delegate;
-import org.didelphis.language.automata.interfaces.Automaton;
-import org.didelphis.language.automata.matches.Match;
+import org.didelphis.language.automata.matching.Match;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.MatchResult;

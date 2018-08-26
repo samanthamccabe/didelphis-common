@@ -12,7 +12,7 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata.interfaces;
+package org.didelphis.language.automata.parsing;
 
 import lombok.NonNull;
 import org.didelphis.language.automata.expressions.Expression;
@@ -49,8 +49,8 @@ public interface LanguageParser<T> {
 	 * Transform an expression string into a corresponding terminal symbol, the
 	 * same as is consumed from an input while searching for a match.
 	 * 
-	 * Used in the construction of state machines, specifically when translating
-	 * terminal symbols into parsers of type {@code <T>} which form the state
+	 * Used in the construction of state machines, specifically when parsing
+	 * terminal symbols into objects of type {@code <T>} which form the state
 	 * transitions .
 	 * 
 	 * @param expression
