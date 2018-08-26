@@ -16,6 +16,7 @@ package org.didelphis.language.automata.utils;
 
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.UtilityClass;
@@ -44,14 +45,9 @@ import java.util.Set;
 @FieldDefaults (level = AccessLevel.PRIVATE, makeFinal = true)
 public class GraphUtils {
 
-	public static <T> String toGML(Graph<T> graph, boolean useRealId) {
-		StringBuilder sb = new StringBuilder();
-
-		sb.append("graph [\n");
-		sb.append("\thierarchic\t1\n");
-		sb.append("\tlabel\t\"\"\n");
-		sb.append("\tdirected\t1\n");
-
+	@NonNull
+	public static <T> String graphToGML(@NonNull Graph<T> graph, boolean useRealId) {
+		
 		Set<String> nodes = new HashSet<>();
 		Set<Triple<String, T, String>> edges = new HashSet<>();
 		for (Triple<String, T, Collection<String>> triple : graph) {
@@ -64,12 +60,29 @@ public class GraphUtils {
 			}
 		}
 
+		return buildGML(nodes, edges, useRealId);
+	}
+
+	@NonNull
+	private static <T> String buildGML(
+			@NonNull Set<String> nodes,
+			@NonNull Set<Triple<String, T, String>> edges,
+			boolean useRealId
+	) {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("graph [\n");
+		sb.append("\thierarchic\t1\n");
+		sb.append("\tlabel\t\"\"\n");
+		sb.append("\tdirected\t1\n");
+		
 		int index = 0;
 		Map<String, Integer> indices = new HashMap<>();
 		for (String node : nodes) {
 			sb.append("\tnode [\n");
 			sb.append("\t\tid\t").append(index).append('\n');
-			sb.append("\t\tlabel\t\"").append(useRealId?node:index).append("\"\n");
+			Object id = useRealId ? node : index;
+			sb.append("\t\tlabel\t\"").append(id).append("\"\n");
 			sb.append("\t]\n");
 			indices.put(node, index);
 			index++;

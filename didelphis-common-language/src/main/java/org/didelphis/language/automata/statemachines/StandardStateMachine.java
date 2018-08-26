@@ -25,7 +25,6 @@ import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.automata.parsing.LanguageParser;
 import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Tuple;
-import org.didelphis.structures.tuples.Twin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,6 +34,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -57,8 +58,9 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	Collection<String> acceptingStates;
 	Map<String, StateMachine<S>> machinesMap;
 	
-	List<Tuple<String, String>> groups;
-
+//	List<Tuple<String, String>> groups;
+	Map<String, String> groups;
+	
 	// {String (Node ID), Sequence (Arc)} --> String (Node ID)
 	Graph<S> graph;
 
@@ -76,7 +78,8 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		machinesMap = new HashMap<>();
 		acceptingStates = new HashSet<>();
 		graph = new Graph<>();
-		groups = new ArrayList<>();
+//		groups = new ArrayList<>();
+		groups = new LinkedHashMap<>();
 	}
 
 	@NonNull
@@ -92,10 +95,12 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 				parser,
 				matcher
 		);
+		
 		String startId = machine.startStateId;
+		machine.groups.put(startId, null);
 		String accepting = machine.parseExpression(0, startId, "O", list);
 		machine.acceptingStates.add(accepting);
-		machine.groups.add(0, new Twin<>(startId, accepting));
+		machine.groups.replace(startId, accepting);
 		return machine;
 	}
 
@@ -140,12 +145,14 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		Map<String, Integer> endNodes = new HashMap<>();
 		int[] groupStart = new int[groups.size()];
 		int[] groupEnd   = new int[groups.size()];
-		for (int i = 0; i < groups.size(); i++) {
-			Tuple<String, String> tuple = groups.get(i);
+
+		Iterator<String> iterator = groups.keySet().iterator();
+		for (int i = 0; iterator.hasNext(); i++) {
+			String nodeId = iterator.next();
 			groupStart[i] = -1;
 			groupEnd[i] = -1;
-			startNodes.put(tuple.getLeft(), i);
-			endNodes.put(tuple.getRight(), i);
+			startNodes.put(nodeId, i);
+			endNodes.put(groups.get(nodeId), i);
 		}
 		
 		// At the beginning of the addToGraph, we are in the start-state, so
@@ -188,7 +195,9 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 						// Add group start positions
 						if (startNodes.containsKey(currentNode)) {
 							int group = startNodes.get(currentNode);
-							groupStart[group] = mIndex;
+							if (groupStart[group] == -1) {
+								groupStart[group] = mIndex;
+							}
 						}
 						
 						Set<Tuple<Integer, String>> set = checkNode(
@@ -205,8 +214,6 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 								groupEnd[group] = cursor;
 							}
 						}
-
-
 						swap.addAll(set);
 					}
 				}
@@ -220,10 +227,14 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		int matchStart = matchEnd == -1 ? -1 : start;
 		BasicMatch<S> match = new BasicMatch<>(input, matchStart, matchEnd);
 
-		for (int i = 0; i < groups.size(); i++) {
+		for (int i = 0; i < groupStart.length; i++) {
 			int x = groupStart[i];
 			int y = groupEnd[i];
-			match.addGroup(x, y, parser.subSequence(input, x, y));
+			if (x < 0 || y < 0) {
+				match.addGroup(-1, -1, null);
+			} else {
+				match.addGroup(x, y, parser.subSequence(input, x, y));
+			}
 		}
 		return match;
 	}
@@ -305,6 +316,10 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 			
 			String current = prefix + '-' + nodeId;
 
+			if (expression.isCapturing()) {
+				groups.put(current, null);
+			}
+			
 			if (negative) {
 				createNegative(expression, current);
 				String nextNode = current + 'X';
@@ -327,7 +342,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 						previous = makeRecursiveNode(endNode, current, meta);
 						
 						if (expression.isCapturing()) {
-							groups.add(new Twin<>(current, endNode));
+							groups.replace(current, endNode);
 						}
 					}	
 				} else {
