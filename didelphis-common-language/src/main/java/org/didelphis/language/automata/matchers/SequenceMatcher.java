@@ -17,7 +17,7 @@ package org.didelphis.language.automata.matchers;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
-import org.didelphis.language.automata.sequences.SequenceParser;
+import org.didelphis.language.automata.parsers.SequenceParser;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
@@ -45,7 +45,6 @@ public class SequenceMatcher<T> implements LanguageMatcher<Sequence<T>> {
 			Collection<Sequence<T>> collection = tuple.getRight();
 			specials.put(key, collection);
 		}
-
 	}
 
 	@Override

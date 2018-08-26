@@ -16,28 +16,34 @@ package org.didelphis.language.automata.interfaces;
 
 import lombok.NonNull;
 import org.didelphis.language.automata.matches.Match;
+import org.didelphis.language.phonetic.sequences.Sequence;
 
 /**
  * Interface {@code Automaton}
- *
+ * <p>
  * Represents an automaton for accepting formal languages, such as finite state
  * automata.
- * 
- * @param <T> The (usually sequential) data type being matched, such as {@link
- * String} or {@link org.didelphis.language.phonetic.sequences.Sequence}
+ *
+ * @param <T> Usually a sequential data type, such as {@link String} or {@link
+ * 		Sequence}; this is the type of object provided to the automaton to be
+ * 		checked
+ *
+ * @see org.didelphis.language.automata.statemachines.StateMachine
+ * @see org.didelphis.language.automata.JavaPatternAutomaton
  * 
  * @author Samantha Fiona McCabe
  * @date 10/17/17
- * @see java.util.regex.Pattern
  */
 @FunctionalInterface
 public interface Automaton<T> {
 
 	/**
-	 * Return a{@link Match} object representing the output of the automaton's 
+	 * Return a {@link Match} object representing the output of the automaton's
 	 * attempt to match the input.
+	 *
 	 * @param input the input to be checked.
 	 * @param start if applicable, the index at which to start checking.
+	 *
 	 * @return the resulting {@link Match} object
 	 */
 	@NonNull 

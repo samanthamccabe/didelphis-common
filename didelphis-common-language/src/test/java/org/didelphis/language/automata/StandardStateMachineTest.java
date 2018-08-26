@@ -18,7 +18,7 @@ import org.didelphis.io.ClassPathFileHandler;
 import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.matchers.SequenceMatcher;
 import org.didelphis.language.automata.matches.Match;
-import org.didelphis.language.automata.sequences.SequenceParser;
+import org.didelphis.language.automata.parsers.SequenceParser;
 import org.didelphis.language.automata.statemachines.StandardStateMachine;
 import org.didelphis.language.automata.statemachines.StateMachine;
 import org.didelphis.language.parsing.FormatterMode;
@@ -40,6 +40,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import static org.didelphis.language.parsing.ParseDirection.FORWARD;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
@@ -238,6 +239,13 @@ class StandardStateMachineTest {
 		assertMatches(machine, "aaaaaa");
 
 		assertMatches(machine, "ab");
+	}
+
+	@Test
+	void testCapturingGroups() {
+		StateMachine<Sequence<Integer>> machine = getMachine("(ab)(cd)(ef)");
+		
+		assertMatchesGroup(machine, "abcdef", 1, "ab");
 	}
 
 	@Test
@@ -684,6 +692,17 @@ class StandardStateMachineTest {
 				LOG.error("Unexpected failure encountered: {}", throwable);
 			}
 		}
+	}
+
+	private static void assertMatchesGroup(
+			StateMachine<Sequence<Integer>> machine,
+			String input,
+			int group,
+			String exoected) {
+		Sequence<Integer> sequence = FACTORY.toSequence(input);
+		Match<Sequence<Integer>> match = machine.match(sequence, 0);
+		Sequence<Integer> matchedGroup = match.group(group);
+		assertEquals(FACTORY.toSequence(exoected), matchedGroup);
 	}
 
 	private static Collection<Integer> testMachine(

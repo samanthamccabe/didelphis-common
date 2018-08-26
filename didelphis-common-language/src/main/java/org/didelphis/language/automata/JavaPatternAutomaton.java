@@ -20,6 +20,7 @@ import lombok.Value;
 import lombok.experimental.Delegate;
 import org.didelphis.language.automata.interfaces.Automaton;
 import org.didelphis.language.automata.matches.Match;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
@@ -28,7 +29,7 @@ import java.util.regex.Pattern;
 /**
  * Class {@code JavaPatternAutomaton}
  *
- * A {@link Automaton} wrapper for the normal {@link Pattern} class.
+ * A {@link Automaton} wrapper for the standard {@link Pattern} class.
  * 
  * @author Samantha Fiona McCabe
  * @date 10/17/17
@@ -53,12 +54,45 @@ public class JavaPatternAutomaton implements Automaton<String> {
 		if (matcher.find(start)) {
 			return new PatternMatch(matcher.toMatchResult());
 		}
-		return null;
+		return new EmptyMatch();
 	}
 
 	@Value
 	private static final class PatternMatch implements Match<String> {
 		@Delegate
 		MatchResult matchResult;
+	}
+	
+	private static final class EmptyMatch implements Match<String> {
+
+		@Override
+		public int start() {
+			return -1;
+		}
+
+		@Override
+		public int start(int group) {
+			return -1;
+		}
+
+		@Override
+		public int end() {
+			return -1;
+		}
+
+		@Override
+		public int end(int group) {
+			return -1;
+		}
+
+		@Override
+		public @Nullable String group(int group) {
+			return null;
+		}
+
+		@Override
+		public int groupCount() {
+			return 0;
+		}
 	}
 }

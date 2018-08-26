@@ -23,6 +23,10 @@ import org.didelphis.language.automata.matchers.LanguageMatcher;
 import java.util.Map;
 
 /**
+ * Interface {@code StateMachine}
+ * 
+ * @param <T> the type of data matched by the state machine
+ * 
  * @author Samantha Fiona McCabe
  * @date 2015-04-07
  */
@@ -37,10 +41,10 @@ public interface StateMachine<T> extends Automaton<T> {
 	String getId();
 
 	/**
-	 * Returns a map of {@link StateMachine} ids to its associated graph. This
+	 * Returns a map of ids to its associated graph. This
 	 * ensures accessibility for automata which contain multiple embedded state
 	 * automata.
-	 * @return a {@link Map},  from {@link StateMachine} id → {@link Graph}
+	 * @return a {@link Map}, from id → {@link Graph}
 	 */
 	@NonNull
 	Map<String, Graph<T>> getGraphs();

@@ -14,6 +14,8 @@
 
 package org.didelphis.language.automata.matches;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Interface {@code Match}
  *
@@ -134,6 +136,7 @@ public interface Match<T> {
 	 *          If there is no capturing group in the pattern
 	 *          with the given index
 	 */
+	@Nullable
 	T group(int group);
 
 	/**

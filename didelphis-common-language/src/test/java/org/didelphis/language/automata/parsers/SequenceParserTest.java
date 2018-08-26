@@ -12,7 +12,7 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata.sequences;
+package org.didelphis.language.automata.parsers;
 
 import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.parsing.FormatterMode;

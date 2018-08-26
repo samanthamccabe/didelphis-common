@@ -317,10 +317,12 @@ public final class FeatureModelLoader<T> {
 	 * @return
 	 */
 	private static @Nullable ParseZone determineZone(@NonNull String string) {
-		return Arrays.stream(ParseZone.values())
-				.filter(zone -> zone.matches(string))
-				.findFirst()
-				.orElse(null);
+		for (ParseZone zone : ParseZone.values()) {
+			if (zone.matches(string)) {
+				return zone;
+			}
+		}
+		return null;
 	}
 
 	private static <T> void checkFeatureCollisions(

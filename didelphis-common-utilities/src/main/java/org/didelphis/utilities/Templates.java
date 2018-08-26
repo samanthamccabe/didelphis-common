@@ -5,9 +5,9 @@ import lombok.experimental.UtilityClass;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -83,10 +83,11 @@ public class Templates {
 		
 		public Builder add(String string, String... strings) {
 			if (strings.length > 0) {
-				Collection<String> list = new ArrayList<>();
+				List<String> list = new ArrayList<>();
 				list.add(string);
 				list.addAll(Arrays.asList(strings));
-				messages.add(String.join(" ", list));
+				String message = join(" ", list);
+				messages.add(message);
 			} else {
 				messages.add(string);
 			}
@@ -111,7 +112,7 @@ public class Templates {
 			StringBuilder sb = new StringBuilder();
 			String baseMessage = messages.isEmpty()
 					? "No message provided."
-					: String.join(" ", messages);
+					: join(" ", messages);
 			sb.append(baseMessage);
 			if (!data.isEmpty()) {
 				sb.append("\nWith Data:\n");
@@ -126,7 +127,20 @@ public class Templates {
 			return sb.toString();
 		}
 	}
-	
+
+	@NonNull
+	private static String join(String delimiter, Iterable<String> list) {
+		String message = "";
+		Iterator<String> iterator = list.iterator();
+		while (iterator.hasNext()) {
+			message += iterator.next();
+			if (iterator.hasNext()) {
+				message += delimiter;
+			}
+		}
+		return message;
+	}
+
 	@NonNull
 	public String compile(String template, Object... data) {
 		StringBuilder sb = new StringBuilder();

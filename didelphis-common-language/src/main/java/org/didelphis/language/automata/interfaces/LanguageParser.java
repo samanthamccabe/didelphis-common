@@ -20,6 +20,7 @@ import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,12 +33,16 @@ import java.util.Set;
  */
 public interface LanguageParser<T> {
 
+	@NonNull 
 	Map<String, String> supportedDelimiters();
 
+	@NonNull
 	Set<String> supportedQuantifiers();
 	
+	@NonNull
 	T getWordStart();
 
+	@NonNull
 	T getWordEnd();
 
 	/**
@@ -45,13 +50,13 @@ public interface LanguageParser<T> {
 	 * same as is consumed from an input while searching for a match.
 	 * 
 	 * Used in the construction of state machines, specifically when translating
-	 * terminal symbols into sequences of type {@code <T>} which form the state
+	 * terminal symbols into parsers of type {@code <T>} which form the state
 	 * transitions .
 	 * 
 	 * @param expression
 	 * @return
 	 */
-	@Nullable
+	@NonNull
 	T transform(String expression);
 
 	/**
@@ -93,7 +98,10 @@ public interface LanguageParser<T> {
 	 * @return the length of the provided element
 	 */
 	int lengthOf(@NonNull T t);
-	
+
+	@NonNull
+	List<String> split(String substring);
+
 	default Expression parseExpression(String exp) {
 		return parseExpression(exp, ParseDirection.FORWARD);
 	}
