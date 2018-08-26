@@ -43,6 +43,11 @@ public class ParallelNode implements Expression {
 		return true;
 	}
 
+	@Override
+	public boolean isCapturing() {
+		return false;
+	}
+
 	@NonNull
 	@Override
 	public String getTerminal() {

@@ -25,18 +25,18 @@ import java.util.Map;
 /**
  * Interface {@code StateMachine}
  * 
- * @param <T> the type of data matched by the state machine
+ * @param <S> the type of data matched by the state machine
  * 
  * @author Samantha Fiona McCabe
  * @date 2015-04-07
  */
-public interface StateMachine<T> extends Automaton<T> {
+public interface StateMachine<S> extends Automaton<S> {
 
 	@NonNull
-	LanguageParser<T> getParser();
+	LanguageParser<S> getParser();
 
 	@NonNull
-	LanguageMatcher<T> getMatcher();
+	LanguageMatcher<S> getMatcher();
 
 	String getId();
 
@@ -47,5 +47,5 @@ public interface StateMachine<T> extends Automaton<T> {
 	 * @return a {@link Map}, from id → {@link Graph}
 	 */
 	@NonNull
-	Map<String, Graph<T>> getGraphs();
+	Map<String, Graph<S>> getGraphs();
 }

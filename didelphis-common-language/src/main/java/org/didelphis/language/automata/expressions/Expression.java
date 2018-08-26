@@ -35,6 +35,8 @@ public interface Expression {
 	boolean isNegative();
 	
 	boolean isParallel();
+
+	boolean isCapturing();
 	
 	@NonNull String getTerminal();
 

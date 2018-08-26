@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
  * @author Samantha Fiona McCabe
  * @date 10/21/17
  */
-public interface Match<T> {
+public interface Match<S> {
 
 	/**
 	 * Returns the start index of the match.
@@ -136,8 +136,7 @@ public interface Match<T> {
 	 *          If there is no capturing group in the pattern
 	 *          with the given index
 	 */
-	@Nullable
-	T group(int group);
+	@Nullable S group(int group);
 
 	/**
 	 * Returns the number of capturing groups in this match result's pattern.

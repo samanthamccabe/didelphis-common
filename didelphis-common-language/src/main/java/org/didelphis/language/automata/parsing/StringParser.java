@@ -97,4 +97,10 @@ public class StringParser extends AbstractDidelphisParser<String> {
 	public List<String> split(String substring) {
 		return Splitter.toList(substring, specials.keys());
 	}
+
+	@NonNull
+	@Override
+	public String subSequence(String sequence, int start, int end) {
+		return sequence.substring(start, end);
+	}
 }

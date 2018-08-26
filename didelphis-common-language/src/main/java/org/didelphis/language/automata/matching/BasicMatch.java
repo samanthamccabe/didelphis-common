@@ -32,25 +32,24 @@ import java.util.List;
 @ToString
 @EqualsAndHashCode
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class BasicMatch<T> implements Match<T> {
+public class BasicMatch<S> implements Match<S> {
 	
 	int start;
 	int end;
 	
-	T input;
+	S input;
 	
-	List<MatchGroup<T>> groups;
+	List<MatchGroup<S>> groups;
 
-	public BasicMatch(T input,int start, int end) {
-		this.start=start;
-		this.end=end;
-		this.input=input;
+	public BasicMatch(S input,int start, int end) {
+		this.start = start;
+		this.end = end;
+		this.input = input;
 		
 		groups = new ArrayList<>();
-		groups.add(new MatchGroup<>(start, end , input));
 	}
 	
-	public void addGroup(int start, int end, T input) {
+	public void addGroup(int start, int end, S input) {
 		groups.add(new MatchGroup<>(start, end , input));
 	}
 	
@@ -75,7 +74,7 @@ public class BasicMatch<T> implements Match<T> {
 	}
 
 	@Override
-	public T group(int group) {
+	public S group(int group) {
 		return groups.get(group).getGroup();
 	}
 

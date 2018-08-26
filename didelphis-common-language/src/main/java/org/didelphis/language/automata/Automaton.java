@@ -24,7 +24,7 @@ import org.didelphis.language.phonetic.sequences.Sequence;
  * Represents an automaton for accepting formal languages, such as finite state
  * automata.
  *
- * @param <T> Usually a sequential data type, such as {@link String} or {@link
+ * @param <S> Usually a sequential data type, such as {@link String} or {@link
  * 		Sequence}; this is the type of object provided to the automaton to be
  * 		checked
  *
@@ -35,7 +35,7 @@ import org.didelphis.language.phonetic.sequences.Sequence;
  * @date 10/17/17
  */
 @FunctionalInterface
-public interface Automaton<T> {
+public interface Automaton<S> {
 
 	/**
 	 * Return a {@link Match} object representing the output of the automaton's
@@ -47,14 +47,14 @@ public interface Automaton<T> {
 	 * @return the resulting {@link Match} object
 	 */
 	@NonNull 
-	Match<T> match(@NonNull T input, int start);
+	Match<S> match(@NonNull S input, int start);
 
-	default boolean matches(@NonNull T input) {
+	default boolean matches(@NonNull S input) {
 		return match(input).start() > -1;
 	}
 	
 	@NonNull
-	default Match<T> match(@NonNull T input) {
+	default Match<S> match(@NonNull S input) {
 		return match(input, 0);
 	}
 }

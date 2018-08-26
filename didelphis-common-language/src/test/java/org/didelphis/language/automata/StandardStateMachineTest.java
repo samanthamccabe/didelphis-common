@@ -244,8 +244,12 @@ class StandardStateMachineTest {
 	@Test
 	void testCapturingGroups() {
 		StateMachine<Sequence<Integer>> machine = getMachine("(ab)(cd)(ef)");
-		
+
+		assertMatchesGroup(machine, "abcdef", 0, "abcdef");
 		assertMatchesGroup(machine, "abcdef", 1, "ab");
+		assertMatchesGroup(machine, "abcdef", 2, "cd");
+		assertMatchesGroup(machine, "abcdef", 3, "ef");
+
 	}
 
 	@Test
@@ -698,11 +702,12 @@ class StandardStateMachineTest {
 			StateMachine<Sequence<Integer>> machine,
 			String input,
 			int group,
-			String exoected) {
+			String expected
+	) {
 		Sequence<Integer> sequence = FACTORY.toSequence(input);
 		Match<Sequence<Integer>> match = machine.match(sequence, 0);
 		Sequence<Integer> matchedGroup = match.group(group);
-		assertEquals(FACTORY.toSequence(exoected), matchedGroup);
+		assertEquals(FACTORY.toSequence(expected), matchedGroup);
 	}
 
 	private static Collection<Integer> testMachine(

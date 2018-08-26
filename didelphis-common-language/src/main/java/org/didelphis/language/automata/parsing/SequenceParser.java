@@ -129,6 +129,12 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 	}
 
 	@NonNull
+	@Override
+	public Sequence<T> subSequence(Sequence<T> sequence, int start, int end) {
+		return sequence.subsequence(start, end);
+	}
+
+	@NonNull
 	@Contract ("_, _ -> new")
 	private static <T> Sequence<T> immutable(
 			@NonNull String symbol,

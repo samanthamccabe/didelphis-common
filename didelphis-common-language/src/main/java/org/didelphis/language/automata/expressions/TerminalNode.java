@@ -57,6 +57,11 @@ public class TerminalNode implements Expression {
 		return false;
 	}
 
+	@Override
+	public boolean isCapturing() {
+		return false;
+	}
+
 	@NonNull
 	@Override
 	public String getTerminal() {

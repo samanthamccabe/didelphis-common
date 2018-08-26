@@ -37,7 +37,7 @@ import java.util.Map;
  */
 @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class EmptyStateMachine<T> implements StateMachine<T> {
+public final class EmptyStateMachine<S> implements StateMachine<S> {
 
 	private static final EmptyStateMachine<?> MACHINE
 			= new EmptyStateMachine<>();
@@ -50,13 +50,13 @@ public final class EmptyStateMachine<T> implements StateMachine<T> {
 
 	@NonNull
 	@SuppressWarnings("unchecked")
-	public static <T> StateMachine<T> getInstance() {
-		return (StateMachine<T>) MACHINE;
+	public static <S> StateMachine<S> getInstance() {
+		return (StateMachine<S>) MACHINE;
 	}
 
 	@NonNull
 	@Override
-	public LanguageParser<T> getParser() {
+	public LanguageParser<S> getParser() {
 		String message = Templates.create()
 				.add("Empty state machine has no associated parser")
 				.build();
@@ -65,7 +65,7 @@ public final class EmptyStateMachine<T> implements StateMachine<T> {
 
 	@NonNull
 	@Override
-	public LanguageMatcher<T> getMatcher() {
+	public LanguageMatcher<S> getMatcher() {
 		return (x, y, i) -> 0;
 	}
 
@@ -77,14 +77,14 @@ public final class EmptyStateMachine<T> implements StateMachine<T> {
 	@NonNull
 	@SuppressWarnings("unchecked")
 	@Override
-	public Map<String, Graph<T>> getGraphs() {
-		return (Map<String, Graph<T>>) EMPTY_MAP;
+	public Map<String, Graph<S>> getGraphs() {
+		return (Map<String, Graph<S>>) EMPTY_MAP;
 	}
 
 
 	@NonNull
 	@Override
-	public Match<T> match(@NonNull T input, int start) {
+	public Match<S> match(@NonNull S input, int start) {
 		return new BasicMatch<>(input, 0, start);
 	}
 }

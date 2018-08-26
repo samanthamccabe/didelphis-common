@@ -6,8 +6,8 @@ import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import org.didelphis.language.automata.expressions.Expression;
-import org.didelphis.language.automata.expressions.ExpressionNode;
 import org.didelphis.language.automata.expressions.ParallelNode;
+import org.didelphis.language.automata.expressions.ParentNode;
 import org.didelphis.language.automata.expressions.TerminalNode;
 import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.language.parsing.ParseException;
@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Class {@code DidelphisBaseParser}
@@ -47,6 +46,7 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 
 	static {
 		DELIMITERS = new HashMap<>();
+		DELIMITERS.put("(?:", ")");
 		DELIMITERS.put("(", ")");
 		DELIMITERS.put("{", "}");
 
@@ -71,44 +71,51 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 	@NonNull
 	@Override
 	@Contract ("_,_ -> new")
-	public Expression parseExpression(@NonNull String exp,
-			@NonNull ParseDirection direction) {
+	public Expression parseExpression(
+			@NonNull String expression, 
+			@NonNull ParseDirection direction
+	) {
+		validate(expression);
 
-		validate(exp);
-
-		Expression expression = parse(exp, split(exp));
-		if (direction == ParseDirection.BACKWARD) {
-			expression = expression.reverse();
+		Expression exp;
+		try {
+			exp = parse(split(expression));
+			if (direction == ParseDirection.BACKWARD) {
+				exp = exp.reverse();
+			}
+			replaceLast(exp);
+			replaceFirst(exp);
+		} catch (ParseException e) {
+			String message = Templates.create()
+					.add("Failed to parse expression {}")
+					.with(expression)
+					.build();
+			throw new ParseException(message, e);
 		}
-
-		replaceLast(expression);
-		replaceFirst(expression);
-
-		if (!expression.hasChildren() && "#".equals(expression.getTerminal())) {
+		
+		if (!exp.hasChildren() && "#".equals(exp.getTerminal())) {
 			return new TerminalNode("]#");
 		}
 
-		return expression;
+		return exp;
 	}
 
-	private Expression parse(@NonNull String rawExp,
-			@NonNull List<String> split) {
+	private Expression parse(@NonNull List<String> split) {
 		Buffer buffer = new Buffer();
 		List<Expression> expressions = new ArrayList<>();
 		for (String s : split) {
 			if (s.equals("!")) {
-				buffer = update(rawExp, buffer, expressions);
+				buffer = update(buffer, expressions);
 				buffer.setNegative(true);
 			} else if (QUANTIFIERS.contains(s)) {
 				buffer.setQuantifier(s);
-				buffer = update(rawExp, buffer, expressions);
+				buffer = update(buffer, expressions);
 			} else if (DELIMITERS.containsKey(s.substring(0, 1))) {
-				buffer = update(rawExp, buffer, expressions);
+				buffer = update(buffer, expressions);
 				if (s.length() <= 1) {
 					String message = Templates.create()
 							.add("Unmatched group delimiter {}")
 							.with(s)
-							.data(rawExp)
 							.build();
 					throw new ParseException(message);
 				}
@@ -116,26 +123,33 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 				String delimiter = s.substring(0, 1);
 				if (delimiter.equals("{")) {
 					List<String> elements = Splitter.whitespace(substring);
-					List<Expression> children = elements.stream()
-							.map(element -> split(element))
-							.map(list -> parse(rawExp, list))
-							.collect(Collectors.toList());
-					buffer.setChildren(children);
+					List<Expression> children = new ArrayList<>();
+					for (String element : elements) {
+						List<String> list = split(element);
+						Expression parse = parse(list);
+						children.add(parse);
+					}
+					buffer.setNodes(children);
 					buffer.setParallel(true);
+				} else if (delimiter.equals("(?:")) {
+					List<String> list = split(substring);
+					Expression exp = parse(list);
+					buffer.setNodes(exp.getChildren());
 				} else {
 					List<String> list = split(substring);
-					Expression exp = parse(rawExp, list);
-					buffer.setChildren(exp.getChildren());
+					Expression exp = parse(list);
+					buffer.setNodes(exp.getChildren());
+					buffer.setCapturing(true);
 				}
 			} else {
-				buffer = update(rawExp, buffer, expressions);
+				buffer = update(buffer, expressions);
 				buffer.setTerminal(s);
 			}
 		}
-		update(rawExp, buffer, expressions);
+		update(buffer, expressions);
 		return expressions.size() == 1
 				? expressions.get(0)
-				: new ExpressionNode(expressions);
+				: new ParentNode(expressions);
 	}
 
 	/**
@@ -238,15 +252,15 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 	}
 
 	@NonNull
-	private static Buffer update(@NonNull String expression,
+	private static Buffer update(
 			@NonNull Buffer buffer,
-			@NonNull Collection<Expression> children) {
+			@NonNull Collection<Expression> children
+	) {
 		if (!buffer.isEmpty()) {
 			Expression ex = buffer.toExpression();
 			if (ex == null) {
 				String message = Templates.create()
-						.add("Unable to parse {}")
-						.with(expression)
+						.add("Unable to convert buffer to expression")
 						.data(buffer)
 						.build();
 				throw new ParseException(message);
@@ -264,23 +278,24 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 
 		boolean negative;
 		boolean parallel;
+		boolean capturing;
 
 		String quantifier = "";
 		String terminal = "";
 
-		List<Expression> children = new ArrayList<>();
+		List<Expression> nodes = new ArrayList<>();
 
 		public boolean isEmpty() {
-			return children.isEmpty() && terminal.isEmpty();
+			return nodes.isEmpty() && terminal.isEmpty();
 		}
 
 		public @Nullable Expression toExpression() {
-			if (children.isEmpty()) {
+			if (nodes.isEmpty()) {
 				return new TerminalNode(terminal, quantifier, negative);
 			} else if (parallel) {
-				return new ParallelNode(children, quantifier, negative);
+				return new ParallelNode(nodes, quantifier, negative);
 			} else if (terminal == null || terminal.isEmpty()) {
-				return new ExpressionNode(children, quantifier, negative);
+				return new ParentNode(nodes, quantifier, negative, capturing);
 			} else {
 				return null;
 			}

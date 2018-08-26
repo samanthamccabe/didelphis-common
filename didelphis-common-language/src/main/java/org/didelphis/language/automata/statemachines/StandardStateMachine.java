@@ -19,13 +19,15 @@ import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import org.didelphis.language.automata.Graph;
 import org.didelphis.language.automata.expressions.Expression;
-import org.didelphis.language.automata.parsing.LanguageParser;
-import org.didelphis.language.automata.matching.LanguageMatcher;
 import org.didelphis.language.automata.matching.BasicMatch;
+import org.didelphis.language.automata.matching.LanguageMatcher;
 import org.didelphis.language.automata.matching.Match;
+import org.didelphis.language.automata.parsing.LanguageParser;
 import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Tuple;
+import org.didelphis.structures.tuples.Twin;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,6 +35,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -43,24 +46,26 @@ import java.util.Set;
  * @date 3/7/2015
  */
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public final class StandardStateMachine<T> implements StateMachine<T> {
+public final class StandardStateMachine<S> implements StateMachine<S> {
 	
 	static int A_ASCII = 0x41; // dec 65 / 0x41
 
-	LanguageParser<T> parser;
-	LanguageMatcher<T> matcher;
+	LanguageParser<S> parser;
+	LanguageMatcher<S> matcher;
 	String id;
 	String startStateId;
 	Collection<String> acceptingStates;
-	Map<String, StateMachine<T>> machinesMap;
+	Map<String, StateMachine<S>> machinesMap;
+	
+	List<Tuple<String, String>> groups;
 
 	// {String (Node ID), Sequence (Arc)} --> String (Node ID)
-	Graph<T> graph;
+	Graph<S> graph;
 
 	private StandardStateMachine(
 			String id,
-			LanguageParser<T> parser,
-			LanguageMatcher<T> matcher
+			LanguageParser<S> parser,
+			LanguageMatcher<S> matcher
 	) {
 		this.parser = parser;
 		this.id = id;
@@ -71,6 +76,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		machinesMap = new HashMap<>();
 		acceptingStates = new HashSet<>();
 		graph = new Graph<>();
+		groups = new ArrayList<>();
 	}
 
 	@NonNull
@@ -80,31 +86,28 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 			@NonNull LanguageParser<T> parser,
 			@NonNull LanguageMatcher<T> matcher
 	) {
-
+		List<Expression> list = Collections.singletonList(expression);
 		StandardStateMachine<T> machine = new StandardStateMachine<>(
 				id,
 				parser,
 				matcher
 		);
-
-		String accepting = machine.parseExpression(
-				machine.startStateId, 
-				0, 
-				"O", 
-				Collections.singletonList(expression));
+		String startId = machine.startStateId;
+		String accepting = machine.parseExpression(0, startId, "O", list);
 		machine.acceptingStates.add(accepting);
+		machine.groups.add(0, new Twin<>(startId, accepting));
 		return machine;
 	}
 
 	@NonNull
 	@Override
-	public LanguageParser<T> getParser() {
+	public LanguageParser<S> getParser() {
 		return parser;
 	}
 
 	@NonNull
 	@Override
-	public LanguageMatcher<T> getMatcher() {
+	public LanguageMatcher<S> getMatcher() {
 		return matcher;
 	}
 
@@ -115,8 +118,8 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 
 	@NonNull
 	@Override
-	public Map<String, Graph<T>> getGraphs() {
-		Map<String, Graph<T>> map = new HashMap<>();
+	public Map<String, Graph<S>> getGraphs() {
+		Map<String, Graph<S>> map = new HashMap<>();
 		map.put(id, graph);
 		return map;
 	}
@@ -124,7 +127,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 	@NonNull
 	@Override
 	@Contract("_,_ -> new")
-	public Match<T> match(@NonNull T input, int start) {
+	public Match<S> match(@NonNull S input, int start) {
 
 		if (graph.isEmpty()) {
 			return new BasicMatch<>(input, 0, 0);
@@ -132,6 +135,19 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 
 		Collection<Tuple<Integer,String>> states = new ArrayList<>();
 
+		// Variables for managing capture groups
+		Map<String, Integer> startNodes = new HashMap<>();
+		Map<String, Integer> endNodes = new HashMap<>();
+		int[] groupStart = new int[groups.size()];
+		int[] groupEnd   = new int[groups.size()];
+		for (int i = 0; i < groups.size(); i++) {
+			Tuple<String, String> tuple = groups.get(i);
+			groupStart[i] = -1;
+			groupEnd[i] = -1;
+			startNodes.put(tuple.getLeft(), i);
+			endNodes.put(tuple.getRight(), i);
+		}
+		
 		// At the beginning of the addToGraph, we are in the start-state, so
 		// add an initial state at the beginning of the sequence
 		states.add(new Couple<>(start, startStateId));
@@ -149,8 +165,8 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 				Set<Integer> indicesToCheck = new HashSet<>();
 
 				if (machinesMap.containsKey(currentNode) && index >=0) {
-					StateMachine<T> machine = machinesMap.get(currentNode);
-					Match<T> match = machine.match(input, index);
+					StateMachine<S> machine = machinesMap.get(currentNode);
+					Match<S> match = machine.match(input, index);
 					int end = match.end();
 					if (end >= 0 ) {
 						indicesToCheck.add(end);
@@ -168,7 +184,30 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 						if (mIndex > parser.lengthOf(input)) {
 							continue;
 						}
-						swap.addAll(checkNode(mIndex, input, currentNode));
+						
+						// Add group start positions
+						if (startNodes.containsKey(currentNode)) {
+							int group = startNodes.get(currentNode);
+							groupStart[group] = mIndex;
+						}
+						
+						Set<Tuple<Integer, String>> set = checkNode(
+								mIndex,
+								input,
+								currentNode
+						);
+
+						for (Tuple<Integer, String> tuple : set) {
+							int cursor = tuple.getLeft();
+							String node = tuple.getRight();
+							if (endNodes.containsKey(node)) {
+								int group = endNodes.get(node);
+								groupEnd[group] = cursor;
+							}
+						}
+
+
+						swap.addAll(set);
 					}
 				}
 			}
@@ -179,7 +218,14 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		Comparator<Integer> comparator = Comparator.naturalOrder();
 		int matchEnd = indices.stream().max(comparator).orElse(-1);
 		int matchStart = matchEnd == -1 ? -1 : start;
-		return new BasicMatch<>(input, matchStart, matchEnd);
+		BasicMatch<S> match = new BasicMatch<>(input, matchStart, matchEnd);
+
+		for (int i = 0; i < groups.size(); i++) {
+			int x = groupStart[i];
+			int y = groupEnd[i];
+			match.addGroup(x, y, parser.subSequence(input, x, y));
+		}
+		return match;
 	}
 
 	@Override
@@ -188,7 +234,7 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 	}
 
 	@NonNull
-	public Map<String, StateMachine<T>> getMachinesMap() {
+	public Map<String, StateMachine<S>> getMachinesMap() {
 		// this needs to mutable:
 		// see NegativeStateMachine.create(..)
 		return machinesMap;
@@ -205,15 +251,15 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 	 *
 	 * @return a collection of new states
 	 */
-	private Collection<Tuple<Integer, String>> checkNode(
+	private Set<Tuple<Integer, String>> checkNode(
 			int index,
-			@NonNull T input,
+			@NonNull S input,
 			@NonNull String currentNode
 	) {
-		Collection<Tuple<Integer, String>> indices = new HashSet<>();
-		Map<T, Collection<String>> map = graph.get(currentNode);
-		for (Entry<T, Collection<String>> entry : map.entrySet()) {
-			T arc = entry.getKey();
+		Set<Tuple<Integer, String>> indices = new HashSet<>();
+		Map<S, Collection<String>> map = graph.get(currentNode);
+		for (Entry<S, Collection<String>> entry : map.entrySet()) {
+			S arc = entry.getKey();
 			Collection<String> value = entry.getValue();
 			for (String node : value) {
 				if (Objects.equals(arc, parser.epsilon())) {
@@ -234,42 +280,23 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		}
 		return indices;
 	}
-
-	@NonNull
-	private String makeParallel(String start, int index, @NonNull Expression expression) {
-		int i = A_ASCII; // A
-		String output = start + "-Out";
-		for (Expression child : expression.getChildren()) {
-			String prefix = String.valueOf((char) i);
-			// Machine is built to have one shared start-state and one end-state
-			// for *each* individual branch
-			String closingState = parseExpression(start,
-					index,
-					prefix + '-' + start,
-					Collections.singletonList(child)
-			);
-			i++;
-			graph.add(closingState, parser.epsilon(), output);
-		}
-		return output;
-	}
-
+	
 	/**
 	 * 
-	 * @param start
 	 * @param startingIndex
+	 * @param startNode
 	 * @param prefix
 	 * @param expressions
 	 * @return the current node id
 	 */
 	private String parseExpression(
-			@NonNull String start, 
 			int startingIndex,
-			@NonNull String prefix, 
-			@NonNull Iterable<Expression> expressions) {
-
+			@NonNull String startNode,
+			@NonNull String prefix,
+			@NonNull Iterable<Expression> expressions
+	) {
 		int nodeId = startingIndex;
-		String previous = start;
+		String previous = startNode;
 		for (Expression expression : expressions) {
 			nodeId++;
 			
@@ -293,11 +320,15 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 						previous = makeRecursiveNode(node, current, meta);
 					} else {
 						graph.add(previous, parser.epsilon(), current);
-						String endNode = parseExpression(current,
-								nodeId,
+						String endNode = parseExpression(nodeId,
+								current,
 								"G-" + current,
 								expression.getChildren());
 						previous = makeRecursiveNode(endNode, current, meta);
+						
+						if (expression.isCapturing()) {
+							groups.add(new Twin<>(current, endNode));
+						}
 					}	
 				} else {
 					previous = makeTerminalNode(previous,
@@ -310,25 +341,58 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 		return previous;
 	}
 
-	private void createNegative(Expression expression, String current) {
+	@NonNull
+	private String makeParallel(
+			@NonNull String start, int index, @NonNull Expression expression
+	) {
+		int i = A_ASCII; // A
+		String output = start + "-Out";
+		for (Expression child : expression.getChildren()) {
+			String prefix = String.valueOf((char) i);
+			// Machine is built to have one shared start-state and one end-state
+			// for *each* individual branch
+			String closingState = parseExpression(index,
+					start,
+					prefix + '-' + start,
+					Collections.singletonList(child)
+			);
+			i++;
+			graph.add(closingState, parser.epsilon(), output);
+		}
+		return output;
+	}
+
+
+	private void createNegative(
+			@NonNull Expression expression,
+			@NonNull String current
+	) {
 		Expression negated = expression.withNegative(false).withQuantifier("");
-		StateMachine<T> machine = NegativeStateMachine.create(current,
+		StateMachine<S> machine = NegativeStateMachine.create(current,
 				negated,
 				parser,
 				matcher);
 		machinesMap.put(current, machine);
 	}
 
-	private String constructNegativeNode(String end, String start,
-			String machine, @NonNull String meta) {
-		// All automata contain this arc
+	private String constructNegativeNode(
+			@NonNull String end,
+			@NonNull String start, 
+			@NonNull String machine, 
+			@NonNull String meta
+	) {
 		graph.add(start, parser.epsilon(), machine);
 		addToGraph(start, end, machine, meta);
 		return end;
 	}
 
-	private void addToGraph(String start, String end, String machine, String meta) {
-		T e = parser.epsilon();
+	private void addToGraph(
+			@NotNull String start,
+			@NotNull String end,
+			@NotNull String machine,
+			@NotNull String meta
+	) {
+		S e = parser.epsilon();
 		switch (meta) {
 			case "?":
 				graph.add(machine, e, end);
@@ -349,8 +413,11 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 	}
 
 	@NonNull
-	private String makeRecursiveNode(String machineNode, String startNode,
-			@NonNull String meta) {
+	private String makeRecursiveNode(
+			@NonNull String machineNode, 
+			@NonNull String startNode, 
+			@NonNull String meta
+	) {
 		String endNode = startNode + 'X';
 		addToGraph(startNode, endNode, machineNode, meta);
 		return endNode;
@@ -362,8 +429,8 @@ public final class StandardStateMachine<T> implements StateMachine<T> {
 			@NonNull String currentNode, 
 			@NonNull String exp, 
 			@NonNull String meta) {
-		T t = parser.transform(exp);
-		T e = parser.epsilon();
+		S t = parser.transform(exp);
+		S e = parser.epsilon();
 		String referenceNode;
 		switch (meta) {
 			case "?":
