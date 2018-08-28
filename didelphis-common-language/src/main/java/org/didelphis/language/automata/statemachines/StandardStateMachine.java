@@ -15,6 +15,7 @@
 package org.didelphis.language.automata.statemachines;
 
 import lombok.AccessLevel;
+import lombok.Data;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import org.didelphis.language.automata.Graph;
@@ -23,8 +24,8 @@ import org.didelphis.language.automata.matching.BasicMatch;
 import org.didelphis.language.automata.matching.LanguageMatcher;
 import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.automata.parsing.LanguageParser;
-import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Tuple;
+import org.didelphis.structures.tuples.Twin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,12 +35,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -58,8 +58,8 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	Collection<String> acceptingStates;
 	Map<String, StateMachine<S>> machinesMap;
 	
-//	List<Tuple<String, String>> groups;
-	Map<String, String> groups;
+	List<Tuple<String, String>> groups;
+	List<String> groupOrdering;
 	
 	// {String (Node ID), Sequence (Arc)} --> String (Node ID)
 	Graph<S> graph;
@@ -78,8 +78,8 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		machinesMap = new HashMap<>();
 		acceptingStates = new HashSet<>();
 		graph = new Graph<>();
-//		groups = new ArrayList<>();
-		groups = new LinkedHashMap<>();
+		groups = new ArrayList<>();
+		groupOrdering = new ArrayList<>();
 	}
 
 	@NonNull
@@ -89,19 +89,35 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 			@NonNull LanguageParser<T> parser,
 			@NonNull LanguageMatcher<T> matcher
 	) {
-		List<Expression> list = Collections.singletonList(expression);
 		StandardStateMachine<T> machine = new StandardStateMachine<>(
 				id,
 				parser,
 				matcher
 		);
-		
-		String startId = machine.startStateId;
-		machine.groups.put(startId, null);
-		String accepting = machine.parseExpression(0, startId, "O", list);
-		machine.acceptingStates.add(accepting);
-		machine.groups.replace(startId, accepting);
+		machine.parse(expression);
 		return machine;
+	}
+
+	private void parse(@NonNull Expression expression) {
+		List<Expression> list = Collections.singletonList(expression);
+		String startId = startStateId;
+		groupOrdering.add(startId);
+		String accepting = parseExpression(0, startId, "O", list);
+		acceptingStates.add(accepting);
+		groups.add(new Twin<>(startId, accepting));
+
+		// Sort groups by the group-ordering
+		List<Tuple<String,String>> orderedGroups = new ArrayList<>();
+		for (String node : groupOrdering) {
+			for (Tuple<String, String> group : groups) {
+				if (node.equals(group.getLeft())) {
+					orderedGroups.add(group);
+				}
+			}
+		}
+
+		groups.clear();
+		groups.addAll(orderedGroups);
 	}
 
 	@NonNull
@@ -131,112 +147,99 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 
 	@NonNull
 	@Override
-	@Contract("_,_ -> new")
+	@Contract ("_,_ -> new")
 	public Match<S> match(@NonNull S input, int start) {
 
 		if (graph.isEmpty()) {
 			return new BasicMatch<>(input, 0, 0);
 		}
 
-		Collection<Tuple<Integer,String>> states = new ArrayList<>();
-
 		// Variables for managing capture groups
 		Map<String, Integer> startNodes = new HashMap<>();
 		Map<String, Integer> endNodes = new HashMap<>();
-		int[] groupStart = new int[groups.size()];
-		int[] groupEnd   = new int[groups.size()];
 
-		Iterator<String> iterator = groups.keySet().iterator();
-		for (int i = 0; iterator.hasNext(); i++) {
-			String nodeId = iterator.next();
-			groupStart[i] = -1;
-			groupEnd[i] = -1;
-			startNodes.put(nodeId, i);
-			endNodes.put(groups.get(nodeId), i);
+		for (int i = 0; i < groups.size(); i++) {
+			Tuple<String, String> tuple = groups.get(i);
+			startNodes.put(tuple.getLeft(), i);
+			endNodes.put(tuple.getRight(), i);
 		}
-		
-		// At the beginning of the addToGraph, we are in the start-state, so
-		// add an initial state at the beginning of the sequence
-		states.add(new Couple<>(start, startStateId));
 
-		// if the condition is empty, it will always match
-		Collection<Tuple<Integer,String>> swap = new ArrayList<>();
-		Set<Integer> indices = new HashSet<>();
-		while (!states.isEmpty()) {
-			for (Tuple<Integer, String> state : states) {
-				
-				String currentNode = state.getRight();
-				int index = state.getLeft();
+		List<Cursor> cursorSwap = new ArrayList<>();
+		List<Cursor> cursorList = new ArrayList<>();
+		// Start here
+		cursorList.add(new Cursor(start, startStateId));
 
-				// Check internal state automata
-				Set<Integer> indicesToCheck = new HashSet<>();
+		Set<Match<S>> matches = new HashSet<>();
+		while (!cursorList.isEmpty()) {
+			for (Cursor cursor : cursorList) {
 
-				if (machinesMap.containsKey(currentNode) && index >=0) {
+				String currentNode = cursor.getNode();
+				int index = cursor.getIndex();
+
+				if (machinesMap.containsKey(currentNode) && index >= 0) {
 					StateMachine<S> machine = machinesMap.get(currentNode);
 					Match<S> match = machine.match(input, index);
 					int end = match.end();
-					if (end >= 0 ) {
-						indicesToCheck.add(end);
+					if (end >= 0) {
+						cursor.setIndex(end);
+					} else {
+						continue;
 					}
-				} else {
-					indicesToCheck.add(index);
 				}
 
 				if (acceptingStates.contains(currentNode)) {
-					indices.addAll(indicesToCheck);
+					int end = cursor.getIndex();
+
+					S matchedInput = parser.subSequence(input, start, end);
+
+					BasicMatch<S> match = new BasicMatch<>(matchedInput,
+							start,
+							end
+					);
+
+					for (int i = 0; i < groups.size(); i++) {
+						int groupStart = cursor.getGroupStart(i);
+						int groupEnd = cursor.getGroupEnd(i);
+						S seq = parser.subSequence(input, groupStart, groupEnd);
+						match.addGroup(groupStart, groupEnd, seq);
+					}
+					matches.add(match);
 				}
 
 				if (graph.containsKey(currentNode)) {
-					for (Integer mIndex : indicesToCheck) {
-						if (mIndex > parser.lengthOf(input)) {
-							continue;
-						}
-						
-						// Add group start positions
-						if (startNodes.containsKey(currentNode)) {
-							int group = startNodes.get(currentNode);
-							if (groupStart[group] == -1) {
-								groupStart[group] = mIndex;
-							}
-						}
-						
-						Set<Tuple<Integer, String>> set = checkNode(
-								mIndex,
-								input,
-								currentNode
-						);
-
-						for (Tuple<Integer, String> tuple : set) {
-							int cursor = tuple.getLeft();
-							String node = tuple.getRight();
-							if (endNodes.containsKey(node)) {
-								int group = endNodes.get(node);
-								groupEnd[group] = cursor;
-							}
-						}
-						swap.addAll(set);
+					if (cursor.getIndex() > parser.lengthOf(input)) {
+						continue;
 					}
+
+					// update captures?
+					if (startNodes.containsKey(currentNode)) {
+						int group = startNodes.get(currentNode);
+						if (cursor.getGroupStart(group) == -1) {
+							cursor.setGroupStart(group, index);
+						}
+					}
+					
+					List<Cursor> cursors = checkNode(input, cursor);
+
+					for (Cursor cursor1 : cursors) {
+						String node = cursor1.getNode();
+						if (endNodes.containsKey(node)) {
+							int groupId = endNodes.get(node);
+							cursor1.setGroupEnd(groupId, cursor.getIndex());
+						}
+					}
+					
+					cursorSwap.addAll(cursors);
 				}
 			}
-			states = swap;
-			swap = new ArrayList<>();
+			cursorList = cursorSwap;
+			cursorSwap = new ArrayList<>();
 		}
-		
-		Comparator<Integer> comparator = Comparator.naturalOrder();
-		int matchEnd = indices.stream().max(comparator).orElse(-1);
-		int matchStart = matchEnd == -1 ? -1 : start;
-		BasicMatch<S> match = new BasicMatch<>(input, matchStart, matchEnd);
 
-		for (int i = 0; i < groupStart.length; i++) {
-			int x = groupStart[i];
-			int y = groupEnd[i];
-			if (x < 0 || y < 0) {
-				match.addGroup(-1, -1, null);
-			} else {
-				match.addGroup(x, y, parser.subSequence(input, x, y));
-			}
-		}
-		return match;
+		Optional<Match<S>> matchEnd = matches.stream()
+				.max(Comparator.comparingInt(Match::end));
+
+		return matchEnd.orElseGet(() -> new BasicMatch<>(input, -1, -1));
 	}
 
 	@Override
@@ -255,43 +258,55 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	 * Evaluates the inputs against the arcs leaving the current node and if
 	 * successful, will add to the output indices
 	 *
-	 * @param index       the current index within the input
 	 * @param input       the input data being consumed by this automaton
-	 * @param currentNode the current state machine node where evaluation is
-	 *                    taking place
+	 * @param cursor
 	 *
 	 * @return a collection of new states
 	 */
-	private Set<Tuple<Integer, String>> checkNode(
-			int index,
+	private List<Cursor> checkNode(
 			@NonNull S input,
-			@NonNull String currentNode
+			@NonNull Cursor cursor
 	) {
-		Set<Tuple<Integer, String>> indices = new HashSet<>();
+		String currentNode = cursor.getNode();
+		int index = cursor.getIndex();
+
+		List<Cursor> cursors = new ArrayList<>();
 		Map<S, Collection<String>> map = graph.get(currentNode);
 		for (Entry<S, Collection<String>> entry : map.entrySet()) {
 			S arc = entry.getKey();
 			Collection<String> value = entry.getValue();
 			for (String node : value) {
-				if (Objects.equals(arc, parser.epsilon())) {
-					indices.add(new Couple<>(index, node));
-				} else if (Objects.equals(arc, parser.getDot()) && parser.lengthOf(input) > 0) {
-					indices.add(new Couple<>(index + 1, node));
-				} else if (Objects.equals(arc, parser.getWordStart()) && index == 0) {
-					indices.add(new Couple<>(0, node));
-				} else if (Objects.equals(arc, parser.getWordEnd()) && index == parser.lengthOf(input)) {
-					indices.add(new Couple<>(index, node));
+				if (eq(arc, parser.epsilon())) {
+					cursors.add(new Cursor(index, node));
+				} else if (eq(arc, parser.getDot()) && parser.lengthOf(input) > 0) {
+					cursors.add(new Cursor(index + 1, node));
+				} else if (eq(arc, parser.getWordStart()) && index == 0) {
+					cursors.add(new Cursor(0, node));
+				} else if (eq(arc, parser.getWordEnd()) && index == parser.lengthOf(input)) {
+					cursors.add(new Cursor(index, node));
 				} else {
 					int matchLength = matcher.matches(input, arc, index);
 					if (matchLength >= 0) {
-						indices.add(new Couple<>(index + matchLength, node));
+						cursors.add(new Cursor(index + matchLength, node));
 					}
 				}
 			}
 		}
-		return indices;
+
+		for (Cursor cursor1 : cursors) {
+			for (int i = 0; i < groups.size(); i++) {
+				cursor1.setGroupStart(i, cursor.getGroupStart(i));
+				cursor1.setGroupEnd(i, cursor.getGroupEnd(i));
+			}
+		}
+		
+		return cursors;
 	}
-	
+
+	private boolean eq(S arc, S dot) {
+		return Objects.equals(arc, dot);
+	}
+
 	/**
 	 * 
 	 * @param startingIndex
@@ -317,7 +332,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 			String current = prefix + '-' + nodeId;
 
 			if (expression.isCapturing()) {
-				groups.put(current, null);
+				groupOrdering.add(current);
 			}
 			
 			if (negative) {
@@ -342,7 +357,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 						previous = makeRecursiveNode(endNode, current, meta);
 						
 						if (expression.isCapturing()) {
-							groups.replace(current, endNode);
+							groups.add(new Twin<>(current, endNode));
 						}
 					}	
 				} else {
@@ -469,5 +484,45 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 				break;
 		}
 		return referenceNode;
+	}
+
+	@Data
+	@FieldDefaults(level = AccessLevel.PRIVATE)
+	private final class Cursor {
+
+		int index;
+		String node;
+
+		final int[] groupStart;
+		final int[] groupEnd ;
+		
+		private Cursor(int index, String node) {
+			this.index = index;
+			this.node = node;
+			
+			groupStart = new int[groups.size()];
+			groupEnd   = new int[groups.size()];
+
+			for (int i = 0; i < groups.size(); i++) {
+				groupStart[i] = -1;
+				groupEnd[i]   = -1;
+			}
+		}
+		
+		private void setGroupStart(int group, int index) {
+			groupStart[group] = index;
+		}
+
+		private void setGroupEnd(int group, int index) {
+			groupEnd[group] = index;
+		}
+		
+		private int getGroupStart(int group) {
+			return groupStart[group];
+		}
+		
+		private int getGroupEnd(int group) {
+			return groupEnd[group];
+		}
 	}
 }
