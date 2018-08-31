@@ -107,6 +107,15 @@ public final class NegativeStateMachine<S> implements StateMachine<S> {
 		return map;
 	}
 
+	@NonNull
+	@Override
+	public Map<String, StateMachine<S>> getStateMachines() {
+		Map<String, StateMachine<S>> map = new HashMap<>();
+		map.put("POSITIVE", positive);
+		map.put("NEGATIVE", negative);
+		return map;
+	}
+
 	@Override
 	public String toString() {
 		return "NegativeStateMachine{"
@@ -159,7 +168,7 @@ public final class NegativeStateMachine<S> implements StateMachine<S> {
 		}
 		
 		if (positive instanceof StandardStateMachine) {
-			for (StateMachine<S> machine : ((StandardStateMachine<S>) positive).getMachinesMap()
+			for (StateMachine<S> machine : ((StandardStateMachine<S>) positive).getStateMachines()
 					.values()) {
 				if (machine instanceof NegativeStateMachine) {
 					// Unclear if this is allowed to happen

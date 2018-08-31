@@ -81,6 +81,12 @@ public final class EmptyStateMachine<S> implements StateMachine<S> {
 		return (Map<String, Graph<S>>) EMPTY_MAP;
 	}
 
+	@NonNull
+	@Override
+	public Map<String, StateMachine<S>> getStateMachines() {
+		return Collections.emptyMap();
+	}
+
 
 	@NonNull
 	@Override

@@ -32,14 +32,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -189,19 +187,18 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 
 				if (acceptingStates.contains(currentNode)) {
 					int end = cursor.getIndex();
-
-					S matchedInput = parser.subSequence(input, start, end);
-
-					BasicMatch<S> match = new BasicMatch<>(matchedInput,
-							start,
-							end
-					);
+					S seq = parser.subSequence(input, start, end);
+					BasicMatch<S> match = new BasicMatch<>(seq, start, end);
 
 					for (int i = 0; i < groups.size(); i++) {
-						int groupStart = cursor.getGroupStart(i);
-						int groupEnd = cursor.getGroupEnd(i);
-						S seq = parser.subSequence(input, groupStart, groupEnd);
-						match.addGroup(groupStart, groupEnd, seq);
+						int gStart = cursor.getGroupStart(i);
+						int gEnd = cursor.getGroupEnd(i);
+						if (gStart < 0 || gEnd < 0) {
+							match.addGroup(-1, -1, null);
+						} else {
+							S sub = parser.subSequence(input, gStart, gEnd);
+							match.addGroup(gStart, gEnd, sub);
+						}
 					}
 					matches.add(match);
 				}
@@ -225,7 +222,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 						String node = cursor1.getNode();
 						if (endNodes.containsKey(node)) {
 							int groupId = endNodes.get(node);
-							cursor1.setGroupEnd(groupId, cursor.getIndex());
+							cursor1.setGroupEnd(groupId, cursor1.getIndex());
 						}
 					}
 					
@@ -235,11 +232,14 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 			cursorList = cursorSwap;
 			cursorSwap = new ArrayList<>();
 		}
-
-		Optional<Match<S>> matchEnd = matches.stream()
-				.max(Comparator.comparingInt(Match::end));
-
-		return matchEnd.orElseGet(() -> new BasicMatch<>(input, -1, -1));
+		
+		Match<S> best = BasicMatch.empty(groups.size());
+		for (Match<S> match : matches) {
+			if (match.end() > best.end()) {
+				best = match;
+			}
+		}
+		return best;
 	}
 
 	@Override
@@ -247,8 +247,9 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		return "StandardStateMachine{" + id + '}';
 	}
 
+	@Override
 	@NonNull
-	public Map<String, StateMachine<S>> getMachinesMap() {
+	public Map<String, StateMachine<S>> getStateMachines() {
 		// this needs to mutable:
 		// see NegativeStateMachine.create(..)
 		return machinesMap;

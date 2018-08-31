@@ -48,4 +48,7 @@ public interface StateMachine<S> extends Automaton<S> {
 	 */
 	@NonNull
 	Map<String, Graph<S>> getGraphs();
+
+	@NonNull
+	Map<String, StateMachine<S>> getStateMachines();
 }

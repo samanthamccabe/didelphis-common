@@ -41,6 +41,14 @@ public class BasicMatch<S> implements Match<S> {
 	
 	List<MatchGroup<S>> groups;
 
+	public static <S> BasicMatch<S> empty(int size) {
+		BasicMatch<S> match = new BasicMatch<>(null, -1, -1);
+		for (int i = 0; i < size; i++) {
+			match.addGroup(-1, -1, null);
+		}
+		return match;
+	}
+	
 	public BasicMatch(S input,int start, int end) {
 		this.start = start;
 		this.end = end;
