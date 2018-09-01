@@ -62,24 +62,6 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	// {String (Node ID), Sequence (Arc)} --> String (Node ID)
 	Graph<S> graph;
 
-	private StandardStateMachine(
-			String id,
-			LanguageParser<S> parser,
-			LanguageMatcher<S> matcher
-	) {
-		this.parser = parser;
-		this.id = id;
-		this.matcher = matcher;
-
-		startStateId = this.id + "-S";
-	
-		machinesMap = new HashMap<>();
-		acceptingStates = new HashSet<>();
-		graph = new Graph<>();
-		groups = new ArrayList<>();
-		groupOrdering = new ArrayList<>();
-	}
-
 	@NonNull
 	public static <T> StateMachine<T> create(
 			@NonNull String id,
@@ -96,26 +78,22 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		return machine;
 	}
 
-	private void parse(@NonNull Expression expression) {
-		List<Expression> list = Collections.singletonList(expression);
-		String startId = startStateId;
-		groupOrdering.add(startId);
-		String accepting = parseExpression(0, startId, "O", list);
-		acceptingStates.add(accepting);
-		groups.add(new Twin<>(startId, accepting));
+	private StandardStateMachine(
+			String id,
+			LanguageParser<S> parser,
+			LanguageMatcher<S> matcher
+	) {
+		this.parser = parser;
+		this.id = id;
+		this.matcher = matcher;
 
-		// Sort groups by the group-ordering
-		List<Tuple<String,String>> orderedGroups = new ArrayList<>();
-		for (String node : groupOrdering) {
-			for (Tuple<String, String> group : groups) {
-				if (node.equals(group.getLeft())) {
-					orderedGroups.add(group);
-				}
-			}
-		}
-
-		groups.clear();
-		groups.addAll(orderedGroups);
+		startStateId = this.id + "-S";
+	
+		machinesMap = new HashMap<>();
+		acceptingStates = new HashSet<>();
+		graph = new Graph<>();
+		groups = new ArrayList<>();
+		groupOrdering = new ArrayList<>();
 	}
 
 	@NonNull
@@ -141,6 +119,14 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		Map<String, Graph<S>> map = new HashMap<>();
 		map.put(id, graph);
 		return map;
+	}
+
+	@Override
+	@NonNull
+	public Map<String, StateMachine<S>> getStateMachines() {
+		// this needs to mutable:
+		// see NegativeStateMachine.create(..)
+		return machinesMap;
 	}
 
 	@NonNull
@@ -189,11 +175,10 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 					int end = cursor.getIndex();
 					S seq = parser.subSequence(input, start, end);
 					BasicMatch<S> match = new BasicMatch<>(seq, start, end);
-
 					for (int i = 0; i < groups.size(); i++) {
 						int gStart = cursor.getGroupStart(i);
 						int gEnd = cursor.getGroupEnd(i);
-						if (gStart < 0 || gEnd < 0) {
+						if (gStart < 0 || gEnd < 0 || (gStart == gEnd)) {
 							match.addGroup(-1, -1, null);
 						} else {
 							S sub = parser.subSequence(input, gStart, gEnd);
@@ -217,15 +202,14 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 					}
 					
 					List<Cursor> cursors = checkNode(input, cursor);
-
-					for (Cursor cursor1 : cursors) {
-						String node = cursor1.getNode();
+					for (Cursor aCursor : cursors) {
+						String node = aCursor.getNode();
 						if (endNodes.containsKey(node)) {
 							int groupId = endNodes.get(node);
-							cursor1.setGroupEnd(groupId, cursor1.getIndex());
+							int end = aCursor.getIndex();
+							aCursor.setGroupEnd(groupId, end);
 						}
 					}
-					
 					cursorSwap.addAll(cursors);
 				}
 			}
@@ -247,12 +231,27 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		return "StandardStateMachine{" + id + '}';
 	}
 
-	@Override
-	@NonNull
-	public Map<String, StateMachine<S>> getStateMachines() {
-		// this needs to mutable:
-		// see NegativeStateMachine.create(..)
-		return machinesMap;
+	private void parse(@NonNull Expression expression) {
+		List<Expression> list = Collections.singletonList(expression);
+		
+		groupOrdering.add(startStateId);
+		
+		String accepting = parseExpression(0, startStateId, "", list);
+		acceptingStates.add(accepting);
+		groups.add(new Twin<>(startStateId, accepting));
+
+		// Sort groups by the group-ordering
+		List<Tuple<String,String>> orderedGroups = new ArrayList<>();
+		for (String node : groupOrdering) {
+			for (Tuple<String, String> group : groups) {
+				if (node.equals(group.getLeft())) {
+					orderedGroups.add(group);
+				}
+			}
+		}
+
+		groups.clear();
+		groups.addAll(orderedGroups);
 	}
 
 	/**
@@ -268,6 +267,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 			@NonNull S input,
 			@NonNull Cursor cursor
 	) {
+		int length = parser.lengthOf(input);
 		String currentNode = cursor.getNode();
 		int index = cursor.getIndex();
 
@@ -279,11 +279,14 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 			for (String node : value) {
 				if (eq(arc, parser.epsilon())) {
 					cursors.add(new Cursor(index, node));
-				} else if (eq(arc, parser.getDot()) && parser.lengthOf(input) > 0) {
+					continue;
+				}
+				
+				if (eq(arc, parser.getDot()) && length > 0) {
 					cursors.add(new Cursor(index + 1, node));
 				} else if (eq(arc, parser.getWordStart()) && index == 0) {
 					cursors.add(new Cursor(0, node));
-				} else if (eq(arc, parser.getWordEnd()) && index == parser.lengthOf(input)) {
+				} else if (eq(arc, parser.getWordEnd()) && index == length) {
 					cursors.add(new Cursor(index, node));
 				} else {
 					int matchLength = matcher.matches(input, arc, index);
@@ -294,22 +297,18 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 			}
 		}
 
-		for (Cursor cursor1 : cursors) {
+		for (Cursor aCursor : cursors) {
 			for (int i = 0; i < groups.size(); i++) {
-				cursor1.setGroupStart(i, cursor.getGroupStart(i));
-				cursor1.setGroupEnd(i, cursor.getGroupEnd(i));
+				aCursor.setGroupStart(i, cursor.getGroupStart(i));
+				aCursor.setGroupEnd(i, cursor.getGroupEnd(i));
 			}
 		}
 		
 		return cursors;
 	}
 
-	private boolean eq(S arc, S dot) {
-		return Objects.equals(arc, dot);
-	}
-
 	/**
-	 * 
+	 * The main parse function
 	 * @param startingIndex
 	 * @param startNode
 	 * @param prefix
@@ -393,7 +392,6 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		return output;
 	}
 
-
 	private void createNegative(
 			@NonNull Expression expression,
 			@NonNull String current
@@ -405,7 +403,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 				matcher);
 		machinesMap.put(current, machine);
 	}
-
+	
 	private String constructNegativeNode(
 			@NonNull String end,
 			@NonNull String start, 
@@ -457,45 +455,43 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	@NonNull
 	private String makeTerminalNode(
 			@NonNull String previousNode,
-			@NonNull String currentNode, 
-			@NonNull String exp, 
-			@NonNull String meta) {
+			@NonNull String currentNode,
+			@NonNull String exp,
+			@NonNull String meta
+	) {
 		S t = parser.transform(exp);
 		S e = parser.epsilon();
-		String referenceNode;
 		switch (meta) {
 			case "?":
 				graph.add(previousNode, t, currentNode);
 				graph.add(previousNode, e, currentNode);
-				referenceNode = currentNode;
-				break;
+				return currentNode;
 			case "*":
 				graph.add(previousNode, t, previousNode);
 				graph.add(previousNode, e, currentNode);
-				referenceNode = currentNode;
-				break;
+				return currentNode;
 			case "+":
 				graph.add(previousNode, t, currentNode);
 				graph.add(currentNode, e, previousNode);
-				referenceNode = currentNode;
-				break;
+				return currentNode;
 			default:
 				graph.add(previousNode, t, currentNode);
-				referenceNode = currentNode;
-				break;
+				return currentNode;
 		}
-		return referenceNode;
+	}
+
+	private static <S> boolean eq(S arc, S dot) {
+		return Objects.equals(arc, dot);
 	}
 
 	@Data
 	@FieldDefaults(level = AccessLevel.PRIVATE)
 	private final class Cursor {
 
-		int index;
-		String node;
-
 		final int[] groupStart;
 		final int[] groupEnd ;
+		int index;
+		String node;
 		
 		private Cursor(int index, String node) {
 			this.index = index;

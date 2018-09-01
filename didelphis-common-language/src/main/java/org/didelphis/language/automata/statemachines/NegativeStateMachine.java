@@ -168,7 +168,7 @@ public final class NegativeStateMachine<S> implements StateMachine<S> {
 		}
 		
 		if (positive instanceof StandardStateMachine) {
-			for (StateMachine<S> machine : ((StandardStateMachine<S>) positive).getStateMachines()
+			for (StateMachine<S> machine : positive.getStateMachines()
 					.values()) {
 				if (machine instanceof NegativeStateMachine) {
 					// Unclear if this is allowed to happen

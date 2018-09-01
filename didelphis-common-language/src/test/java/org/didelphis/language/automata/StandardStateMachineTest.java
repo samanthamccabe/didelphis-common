@@ -17,8 +17,8 @@ package org.didelphis.language.automata;
 import lombok.NonNull;
 import org.didelphis.io.ClassPathFileHandler;
 import org.didelphis.language.automata.expressions.Expression;
-import org.didelphis.language.automata.matching.SequenceMatcher;
 import org.didelphis.language.automata.matching.Match;
+import org.didelphis.language.automata.matching.SequenceMatcher;
 import org.didelphis.language.automata.parsing.SequenceParser;
 import org.didelphis.language.automata.statemachines.StandardStateMachine;
 import org.didelphis.language.automata.statemachines.StateMachine;
@@ -280,22 +280,20 @@ class StandardStateMachineTest {
 
 	@Test
 	void testGroupStar02() {
-		assertTimeoutPreemptively(DURATION, ()->{
-			StateMachine<Sequence<Integer>> machine = getMachine("d(eo*)*b");
+		StateMachine<Sequence<Integer>> machine = getMachine("d(eo*)*b");
 
-			assertMatches(machine, "db");
-			assertMatches(machine, "deb");
-			assertMatches(machine, "deeb");
-			assertMatches(machine, "deob");
-			assertMatches(machine, "deoob");
-			assertMatches(machine, "deoeob");
-			assertMatches(machine, "deoeoob");
+		assertMatches(machine, "db");
+		assertMatches(machine, "deb");
+		assertMatches(machine, "deeb");
+		assertMatches(machine, "deob");
+		assertMatches(machine, "deoob");
+		assertMatches(machine, "deoeob");
+		assertMatches(machine, "deoeoob");
 
-			assertNotMatches(machine, "abcd");
-			assertNotMatches(machine, "ab");
-			assertNotMatches(machine, "bcdef");
-			assertNotMatches(machine, "abbcdef");
-		});
+		assertNotMatches(machine, "abcd");
+		assertNotMatches(machine, "ab");
+		assertNotMatches(machine, "bcdef");
+		assertNotMatches(machine, "abbcdef");
 	}
 
 	@Test
@@ -511,29 +509,49 @@ class StandardStateMachineTest {
 	}
 
 	@Test
+	void testComplexCapture01() {
+		StateMachine<Sequence<Integer>> machine = getMachine("a?(b?c?)d?b");
+
+		assertMatchesGroup(machine, "b", 0, "b");
+		assertNoGroup(machine, "b", 1);
+
+		assertMatchesGroup(machine, "db", 0, "db");
+		assertNoGroup(machine, "db", 1);
+
+		assertMatchesGroup(machine, "bcdb", 0, "bcdb");
+		assertMatchesGroup(machine, "bcdb", 1, "bc");
+
+		assertMatchesGroup(machine, "acdb", 0, "acdb");
+		assertMatchesGroup(machine, "acdb", 1, "c");
+		
+		assertMatchesGroup(machine, "abdb", 0, "abdb");
+		assertMatchesGroup(machine, "abdb", 1, "b");
+
+		assertMatchesGroup(machine, "ab", 0, "ab");
+		assertNoGroup(machine, "ab", 1);
+	}
+
+	@Test
 	void testComplex05() {
-		assertTimeoutPreemptively(DURATION, () ->{
 
-			StateMachine<Sequence<Integer>> machine = getMachine(
-					"{ab* (cd?)+ ((ae)*f)+}tr");
+		StateMachine<Sequence<Integer>> machine = getMachine("{ab* (cd?)+ ((ae)*f)+}tr");
 
-			assertMatches(machine, "abtr");
-			assertMatches(machine, "cdtr");
-			assertMatches(machine, "ftr");
-			assertMatches(machine, "aeftr");
-			assertMatches(machine, "aeaeftr");
+		assertMatches(machine, "abtr");
+		assertMatches(machine, "cdtr");
+		assertMatches(machine, "ftr");
+		assertMatches(machine, "aeftr");
+		assertMatches(machine, "aeaeftr");
 
-			assertMatches(machine, "cctr");
-			assertMatches(machine, "ccctr");
-			assertMatches(machine, "fftr");
-			assertMatches(machine, "aefaeftr");
-			assertMatches(machine, "aefffffaeftr");
+		assertMatches(machine, "cctr");
+		assertMatches(machine, "ccctr");
+		assertMatches(machine, "fftr");
+		assertMatches(machine, "aefaeftr");
+		assertMatches(machine, "aefffffaeftr");
 
-			assertNotMatches(machine, "abcd");
-			assertNotMatches(machine, "tr");
+		assertNotMatches(machine, "abcd");
+		assertNotMatches(machine, "tr");
 
-			assertNotMatches(machine, "a");
-		} );
+		assertNotMatches(machine, "a");
 	}
 
 	@Test
