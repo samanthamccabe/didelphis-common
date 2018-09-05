@@ -17,8 +17,8 @@ package org.didelphis.language.automata;
 import lombok.NonNull;
 import org.didelphis.io.ClassPathFileHandler;
 import org.didelphis.language.automata.expressions.Expression;
-import org.didelphis.language.automata.matching.SequenceMatcher;
 import org.didelphis.language.automata.matching.Match;
+import org.didelphis.language.automata.matching.SequenceMatcher;
 import org.didelphis.language.automata.parsing.SequenceParser;
 import org.didelphis.language.automata.statemachines.StandardStateMachine;
 import org.didelphis.language.automata.statemachines.StateMachine;
@@ -45,10 +45,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static org.didelphis.language.parsing.ParseDirection.FORWARD;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * @author Samantha Fiona McCabe
@@ -130,20 +131,38 @@ class NegativeStateMachineTest {
 	}
 
 	@Test
-	void testGroup02() {
+	void testGroup01_With_Captures() {
 		StateMachine<Sequence<Integer>> machine = getMachine("!(ab)");
-		fail(machine, "ab");
-
-		test(machine, "aa");
-		test(machine, "ac");
-		test(machine, "aab");
-
-		// These are too short
-		fail(machine, "a");
-		fail(machine, "b");
-		fail(machine, "c");
+		
+		assertMatchesGroup(machine, "aa", 0, "aa");
+		assertMatchesGroup(machine, "aa", 1, "aa");
+		
+		assertMatchesGroup(machine, "ac", 0, "ac");
+		assertMatchesGroup(machine, "ac", 1, "ac");
+		
+		assertMatchesGroup(machine, "aab", 0, "aa");
+		assertMatchesGroup(machine, "aab", 1, "aa");
 	}
+	
+	@Test
+	void testGroup02_With_Captures() {
+		StateMachine<Sequence<Integer>> machine = getMachine("!(ab(xy)?)");
 
+		assertMatchesGroup(machine, "aa", 0, "aa");
+		assertMatchesGroup(machine, "aa", 1, "aa");
+
+		assertMatchesGroup(machine, "ac", 0, "ac");
+		assertMatchesGroup(machine, "ac", 1, "ac");
+		assertNoGroup(machine, "ac", 2);
+		
+		assertMatchesGroup(machine, "aab", 0, "aa");
+		assertMatchesGroup(machine, "aab", 1, "aa");
+
+		assertMatchesGroup(machine, "aazz", 0, "aazz");
+		assertMatchesGroup(machine, "aazz", 1, "aazz");
+		assertMatchesGroup(machine, "aaxz", 2, "xz");
+	}
+	
 	@Test
 	void testGroup03() {
 		StateMachine<Sequence<Integer>> machine = getMachine("!(ab)*xy#");
@@ -256,9 +275,6 @@ class NegativeStateMachineTest {
 
 	@Test
 	void testSet03Special() {
-
-		Pattern pattern = Pattern.compile("[^abc]+$");
-
 		StateMachine<Sequence<Integer>> machine = getMachine("!{a b c}+#");
 
 		test(machine, "xxx");
@@ -435,6 +451,28 @@ class NegativeStateMachineTest {
 		}
 	}
 
+	private static void assertMatchesGroup(
+			@NonNull StateMachine<Sequence<Integer>> machine,
+			@NonNull String input,
+			int group,
+			@NonNull String expected
+	) {
+		Sequence<Integer> sequence = FACTORY.toSequence(input);
+		Match<Sequence<Integer>> match = machine.match(sequence, 0);
+		Sequence<Integer> matchedGroup = match.group(group);
+		assertEquals(FACTORY.toSequence(expected), matchedGroup);
+	}
+
+	private static void assertNoGroup(
+			@NonNull StateMachine<Sequence<Integer>> machine,
+			@NonNull String input,
+			int group
+	) {
+		Sequence<Integer> sequence = FACTORY.toSequence(input);
+		Match<Sequence<Integer>> match = machine.match(sequence, 0);
+		assertNull(match.group(group));
+	}
+	
 	private static Collection<Integer> testMachine(
 			StateMachine<Sequence<Integer>> stateMachine, String target
 	) {

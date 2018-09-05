@@ -25,6 +25,7 @@ import org.didelphis.structures.tuples.Triple;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -55,26 +56,31 @@ public final class NegativeStateMachine<S> implements StateMachine<S> {
 			@NonNull String id,
 			@NonNull Expression expression,
 			@NonNull LanguageParser<S> parser,
-			@NonNull LanguageMatcher<S> matcher
+			@NonNull LanguageMatcher<S> matcher,
+			@NonNull List<Expression> captures
 	) {
 		// Create the actual branch, the one we don't want to match
 		StateMachine<S> negative = StandardStateMachine.create(
-				id + 'N',
+				'N' + id,
 				expression,
 				parser,
-				matcher
+				matcher,
+				captures
 		);
+		
 		StateMachine<S> positive = StandardStateMachine.create(
-				id + 'P',
+				'P' + id,
 				expression,
 				parser,
-				matcher
+				matcher,
+				captures
 		);
 
 		// This is less elegant that I'd prefer, but bear with me:
 		// We will extract the graph and id-machine maps and then the graph for
 		// *each* machine recursively, in order to replace each literal terminal
 		// symbol with the dot (. / "accept-all") character
+		// TODO: this can probably done by replacing all terminals in the expression tree
 		buildPositiveBranch(parser, positive);
 
 		return new NegativeStateMachine<>(id, negative, positive);
