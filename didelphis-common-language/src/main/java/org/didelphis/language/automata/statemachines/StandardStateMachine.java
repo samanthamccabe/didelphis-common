@@ -51,17 +51,18 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 
 	LanguageParser<S> parser;
 	LanguageMatcher<S> matcher;
+	
 	String id;
 	String startStateId;
 	Collection<String> acceptingStates;
 	Map<String, StateMachine<S>> machinesMap;
 	
 	List<Tuple<String, String>> groups;
-	List<String> groupOrdering;
 	
 	// {String (Node ID), Sequence (Arc)} --> String (Node ID)
 	Graph<S> graph;
 
+	@Deprecated
 	@NonNull
 	public static <T> StateMachine<T> create(
 			@NonNull String id,
@@ -69,22 +70,17 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 			@NonNull LanguageParser<T> parser,
 			@NonNull LanguageMatcher<T> matcher
 	) {
-		StandardStateMachine<T> machine = new StandardStateMachine<>(
-				id,
-				parser,
-				matcher
-		);
-		machine.parse(expression);
-		return machine;
+		return new StandardStateMachine<>(id, parser, matcher, expression);
 	}
 
 	private StandardStateMachine(
 			String id,
 			LanguageParser<S> parser,
-			LanguageMatcher<S> matcher
+			LanguageMatcher<S> matcher,
+			Expression expression
 	) {
-		this.parser = parser;
 		this.id = id;
+		this.parser = parser;
 		this.matcher = matcher;
 
 		startStateId = this.id + "-S";
@@ -92,8 +88,20 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		machinesMap = new HashMap<>();
 		acceptingStates = new HashSet<>();
 		graph = new Graph<>();
-		groups = new ArrayList<>();
-		groupOrdering = new ArrayList<>();
+		
+		// build machine
+		List<Expression> captures = new ArrayList<>();
+		captures.add(null); // null element is a placeholder for group zero
+		getCaptureGroups(expression, captures);
+
+		groups = new ArrayList<>(captures.size());
+		for (int i = 0; i < captures.size(); i++) {
+			groups.add(null);
+		}
+
+		List<Expression> list = Collections.singletonList(expression);
+		String accepting = parseExpression(0, startStateId, "", list, captures);
+		acceptingStates.add(accepting);
 	}
 
 	@NonNull
@@ -144,8 +152,10 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 
 		for (int i = 0; i < groups.size(); i++) {
 			Tuple<String, String> tuple = groups.get(i);
-			startNodes.put(tuple.getLeft(), i);
-			endNodes.put(tuple.getRight(), i);
+			if (tuple != null) {
+				startNodes.put(tuple.getLeft(), i);
+				endNodes.put(tuple.getRight(), i);
+			}
 		}
 
 		List<Cursor> cursorSwap = new ArrayList<>();
@@ -165,6 +175,8 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 					Match<S> match = machine.match(input, index);
 					int end = match.end();
 					if (end >= 0) {
+						// todo: will probably need to extract matched groups
+						// excluding zero, and add them to the cursor
 						cursor.setIndex(end);
 					} else {
 						continue;
@@ -175,7 +187,11 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 					int end = cursor.getIndex();
 					S seq = parser.subSequence(input, start, end);
 					BasicMatch<S> match = new BasicMatch<>(seq, start, end);
-					for (int i = 0; i < groups.size(); i++) {
+					
+					// Add special group zero
+					match.addGroup(0, end, seq);
+					
+					for (int i = 1; i < groups.size(); i++) {
 						int gStart = cursor.getGroupStart(i);
 						int gEnd = cursor.getGroupEnd(i);
 						if (gStart < 0 || gEnd < 0 || (gStart == gEnd)) {
@@ -229,29 +245,6 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	@Override
 	public String toString() {
 		return "StandardStateMachine{" + id + '}';
-	}
-
-	private void parse(@NonNull Expression expression) {
-		List<Expression> list = Collections.singletonList(expression);
-		
-		groupOrdering.add(startStateId);
-		
-		String accepting = parseExpression(0, startStateId, "", list);
-		acceptingStates.add(accepting);
-		groups.add(new Twin<>(startStateId, accepting));
-
-		// Sort groups by the group-ordering
-		List<Tuple<String,String>> orderedGroups = new ArrayList<>();
-		for (String node : groupOrdering) {
-			for (Tuple<String, String> group : groups) {
-				if (node.equals(group.getLeft())) {
-					orderedGroups.add(group);
-				}
-			}
-		}
-
-		groups.clear();
-		groups.addAll(orderedGroups);
 	}
 
 	/**
@@ -313,58 +306,69 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	 * @param startNode
 	 * @param prefix
 	 * @param expressions
+	 * @param captures
 	 * @return the current node id
 	 */
 	private String parseExpression(
 			int startingIndex,
 			@NonNull String startNode,
 			@NonNull String prefix,
-			@NonNull Iterable<Expression> expressions
+			@NonNull Iterable<Expression> expressions, 
+			@NonNull List<Expression> captures
 	) {
 		int nodeId = startingIndex;
 		String previous = startNode;
 		for (Expression expression : expressions) {
 			nodeId++;
-			
+
 			String meta = expression.getQuantifier();
 			boolean negative = expression.isNegative();
-			
+
 			String current = prefix + '-' + nodeId;
 
-			if (expression.isCapturing()) {
-				groupOrdering.add(current);
-			}
-			
 			if (negative) {
 				createNegative(expression, current);
 				String nextNode = current + 'X';
 				previous = constructNegativeNode(nextNode,
 						previous,
 						current,
-						meta);
+						meta
+				);
 			} else {
 				if (expression.hasChildren()) {
 					if (expression.isParallel()) {
 						graph.add(previous, parser.epsilon(), current);
-						String node = makeParallel(current, nodeId, expression);
+						String node = makeParallel(
+								current,
+								nodeId,
+								expression,
+								captures
+						);
 						previous = makeRecursiveNode(node, current, meta);
 					} else {
 						graph.add(previous, parser.epsilon(), current);
-						String endNode = parseExpression(nodeId,
+						String endNode = parseExpression(
+								nodeId,
 								current,
 								"G-" + current,
-								expression.getChildren());
+								expression.getChildren(),
+								captures
+						);
 						previous = makeRecursiveNode(endNode, current, meta);
-						
-						if (expression.isCapturing()) {
-							groups.add(new Twin<>(current, endNode));
+
+						if (captures.contains(expression)) {
+							groups.set(
+									captures.indexOf(expression),
+									new Twin<>(current, endNode)
+							);
 						}
-					}	
+					}
 				} else {
 					previous = makeTerminalNode(previous,
 							current,
 							expression.getTerminal(),
-							meta);
+							meta
+					);
 				}
 			}
 		}
@@ -373,7 +377,10 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 
 	@NonNull
 	private String makeParallel(
-			@NonNull String start, int index, @NonNull Expression expression
+			@NonNull String start,
+			int index,
+			@NonNull Expression expression,
+			@NonNull List<Expression> captures
 	) {
 		int i = A_ASCII; // A
 		String output = start + "-Out";
@@ -381,10 +388,12 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 			String prefix = String.valueOf((char) i);
 			// Machine is built to have one shared start-state and one end-state
 			// for *each* individual branch
-			String closingState = parseExpression(index,
+			String closingState = parseExpression(
+					index,
 					start,
 					prefix + '-' + start,
-					Collections.singletonList(child)
+					Collections.singletonList(child),
+					captures
 			);
 			i++;
 			graph.add(closingState, parser.epsilon(), output);
@@ -397,13 +406,14 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 			@NonNull String current
 	) {
 		Expression negated = expression.withNegative(false).withQuantifier("");
+		// todo: probably needs to have captures passed to it
 		StateMachine<S> machine = NegativeStateMachine.create(current,
 				negated,
 				parser,
 				matcher);
 		machinesMap.put(current, machine);
 	}
-	
+
 	private String constructNegativeNode(
 			@NonNull String end,
 			@NonNull String start, 
@@ -414,7 +424,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		addToGraph(start, end, machine, meta);
 		return end;
 	}
-
+	
 	private void addToGraph(
 			@NotNull String start,
 			@NotNull String end,
@@ -477,6 +487,20 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 			default:
 				graph.add(previousNode, t, currentNode);
 				return currentNode;
+		}
+	}
+
+	private static void getCaptureGroups(
+			@NonNull Expression expression, 
+			@NonNull List<Expression> captures
+	) {
+		if (expression.isCapturing()) {
+			captures.add(expression);
+		}
+		if (expression.hasChildren()) {
+			for (Expression child : expression.getChildren()) {
+				getCaptureGroups(child, captures);
+			}
 		}
 	}
 

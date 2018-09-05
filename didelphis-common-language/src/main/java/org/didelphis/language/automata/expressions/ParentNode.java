@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 @Value
 public class ParentNode implements Expression {
 
+	String id;
 	List<Expression> children;
 	String quantifier;
 	boolean negative;
@@ -38,17 +39,29 @@ public class ParentNode implements Expression {
 	public ParentNode(List<Expression> children) {
 		this(children, "", false);
 	}
-	
+
 	public ParentNode(List<Expression> children, String quantifier) {
 		this(children, quantifier, false);
 	}
 
 	public ParentNode(
-			List<Expression> children,
-			String quantifier,
-			boolean negative
+			List<Expression> children, String quantifier, boolean negative
 	) {
 		this(children, quantifier, negative, false);
+	}
+
+	public ParentNode(
+			String id,
+			List<Expression> children,
+			String quantifier,
+			boolean negative,
+			boolean capturing
+	) {
+		this.id = id;
+		this.children = children;
+		this.quantifier = quantifier;
+		this.negative = negative;
+		this.capturing = capturing;
 	}
 
 	@SuppressWarnings ("BooleanParameter")
@@ -62,6 +75,8 @@ public class ParentNode implements Expression {
 		this.quantifier = quantifier;
 		this.negative = negative;
 		this.capturing = capturing;
+
+		id = Expression.randomId(children, quantifier, negative, capturing);
 	}
 
 	@Override
@@ -87,19 +102,25 @@ public class ParentNode implements Expression {
 				.map(Expression::reverse)
 				.collect(Collectors.toList());
 		Collections.reverse(revChildren);
-		return new ParentNode(revChildren, quantifier, negative, capturing);
+		return new ParentNode(id, revChildren, quantifier, negative, capturing);
+	}
+
+	@NonNull
+	@Override
+	public Expression withId(String id) {
+		return new ParentNode(id, children, quantifier, negative, capturing);
 	}
 
 	@NonNull
 	@Override
 	public Expression withNegative(boolean isNegative) {
-		return new ParentNode(children, quantifier, isNegative, capturing);
+		return new ParentNode(id, children, quantifier, isNegative, capturing);
 	}
 
 	@NonNull
 	@Override
 	public Expression withQuantifier(String newQuantifier) {
-		return new ParentNode(children, newQuantifier, negative, capturing);
+		return new ParentNode(id, children, newQuantifier, negative, capturing);
 	}
 
 	@Override

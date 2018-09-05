@@ -96,8 +96,9 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 		if (!exp.hasChildren() && "#".equals(exp.getTerminal())) {
 			return new TerminalNode("]#");
 		}
-
-		return exp;
+		
+		// Fix the node IDs
+		return Expression.rewriteIds(exp, "0");
 	}
 
 	private Expression parse(@NonNull List<String> split) {
