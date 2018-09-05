@@ -15,9 +15,9 @@
 package org.didelphis.language.automata;
 
 import org.didelphis.io.ClassPathFileHandler;
-import org.didelphis.language.automata.matchers.SequenceMatcher;
-import org.didelphis.language.automata.matches.Match;
-import org.didelphis.language.automata.sequences.SequenceParser;
+import org.didelphis.language.automata.matching.SequenceMatcher;
+import org.didelphis.language.automata.matching.Match;
+import org.didelphis.language.automata.parsing.SequenceParser;
 import org.didelphis.language.automata.statemachines.StandardStateMachine;
 import org.didelphis.language.automata.statemachines.StateMachine;
 import org.didelphis.language.parsing.FormatterMode;

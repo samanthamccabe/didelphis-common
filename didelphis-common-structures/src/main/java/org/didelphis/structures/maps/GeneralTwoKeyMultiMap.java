@@ -95,9 +95,8 @@ public class GeneralTwoKeyMultiMap<T, U, V>
 		}
 	}
 
-
 	@Override
-	public void add(T k1, U k2, @Nullable V value) {
+	public void add(T k1, @Nullable U k2, @Nullable V value) {
 		Collection<V> collection = get(k1, k2);
 		if (collection == null) {
 			Collection<V> set = collectionSupplier.get();

@@ -12,12 +12,12 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata.matchers;
+package org.didelphis.language.automata.matching;
 
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
-import org.didelphis.language.automata.sequences.SequenceParser;
+import org.didelphis.language.automata.parsing.SequenceParser;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
@@ -31,27 +31,26 @@ import java.util.List;
  */
 @ToString
 @EqualsAndHashCode
-public class SequenceMatcher<T> implements LanguageMatcher<Sequence<T>> {
+public class SequenceMatcher<S> implements LanguageMatcher<Sequence<S>> {
 
-	private final SequenceParser<T> parser;
-	private final MultiMap<Sequence<T>, Sequence<T>> specials;
+	private final SequenceParser<S> parser;
+	private final MultiMap<Sequence<S>, Sequence<S>> specials;
 	
-	public SequenceMatcher(SequenceParser<T> parser) {
+	public SequenceMatcher(SequenceParser<S> parser) {
 		this.parser = parser;
 		specials = new GeneralMultiMap<>();
 		
-		for (Tuple<String, Collection<Sequence<T>>> tuple : parser.getSpecials()) {
-			Sequence<T> key = parser.transform(tuple.getLeft());
-			Collection<Sequence<T>> collection = tuple.getRight();
+		for (Tuple<String, Collection<Sequence<S>>> tuple : parser.getSpecials()) {
+			Sequence<S> key = parser.transform(tuple.getLeft());
+			Collection<Sequence<S>> collection = tuple.getRight();
 			specials.put(key, collection);
 		}
-
 	}
 
 	@Override
 	public int matches(
-			@NonNull Sequence<T> input, 
-			@NonNull Sequence<T> target,
+			@NonNull Sequence<S> input, 
+			@NonNull Sequence<S> target,
 			int index
 	) {
 		if (specials.containsKey(target)) {

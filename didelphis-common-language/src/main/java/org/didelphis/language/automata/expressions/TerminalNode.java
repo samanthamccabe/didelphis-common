@@ -29,20 +29,35 @@ import java.util.List;
 @Value
 public class TerminalNode implements Expression {
 
+	String id;
 	String terminal;
 	String quantifier;
 	boolean negative;
-	
-	public TerminalNode(String terminal, String quantifier, boolean negative) {
+
+	public TerminalNode(
+			String id,
+			String terminal,
+			String quantifier,
+			boolean negative
+	) {
+		this.id = id;
 		this.terminal = terminal;
 		this.quantifier = quantifier;
 		this.negative = negative;
 	}
 
+	public TerminalNode(String terminal, String quantifier, boolean negative) {
+		this.terminal = terminal;
+		this.quantifier = quantifier;
+		this.negative = negative;
+
+		id = Expression.randomId(terminal, quantifier, negative);
+	}
+
 	public TerminalNode(String terminal, String quantifier) {
 		this(terminal, quantifier, false);
 	}
-	
+
 	public TerminalNode(String terminal) {
 		this(terminal, "", false);
 	}
@@ -54,6 +69,11 @@ public class TerminalNode implements Expression {
 
 	@Override
 	public boolean isParallel() {
+		return false;
+	}
+
+	@Override
+	public boolean isCapturing() {
 		return false;
 	}
 
@@ -83,14 +103,20 @@ public class TerminalNode implements Expression {
 
 	@NonNull
 	@Override
+	public Expression withId(String id) {
+		return new TerminalNode(id, terminal, quantifier, negative);
+	}
+
+	@NonNull
+	@Override
 	public Expression withNegative(boolean isNegative) {
-		return new TerminalNode(terminal, quantifier, isNegative);
+		return new TerminalNode(id, terminal, quantifier, isNegative);
 	}
 
 	@NonNull
 	@Override
 	public Expression withQuantifier(String newQuantifier) {
-		return new TerminalNode(terminal, newQuantifier, negative);
+		return new TerminalNode(id, terminal, newQuantifier, negative);
 	}
 
 	@Override

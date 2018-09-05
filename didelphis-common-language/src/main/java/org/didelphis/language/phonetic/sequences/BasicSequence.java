@@ -147,7 +147,7 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 
 	/**
 	 * Determines if a sequence is consistent with this sequence. Sequences must
-	 * be of the same length  Two sequences are consistent if each other if
+	 * be of the same length. Two sequences are consistent if each other if
 	 * all corresponding segments are consistent; i.e. if, for every segment in
 	 * each sequence, all corresponding features are equal OR one is undefined.
 	 *

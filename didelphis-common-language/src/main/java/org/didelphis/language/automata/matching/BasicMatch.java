@@ -12,7 +12,7 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata.matches;
+package org.didelphis.language.automata.matching;
 
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -32,25 +32,32 @@ import java.util.List;
 @ToString
 @EqualsAndHashCode
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class BasicMatch<T> implements Match<T> {
+public class BasicMatch<S> implements Match<S> {
 	
 	int start;
 	int end;
 	
-	T input;
+	S input;
 	
-	List<MatchGroup<T>> groups;
+	List<MatchGroup<S>> groups;
 
-	public BasicMatch(T input,int start, int end) {
-		this.start=start;
-		this.end=end;
-		this.input=input;
-		
-		groups = new ArrayList<>();
-		groups.add(new MatchGroup<>(start, end , input));
+	public static <S> BasicMatch<S> empty(int size) {
+		BasicMatch<S> match = new BasicMatch<>(null, -1, -1);
+		for (int i = 0; i < size; i++) {
+			match.addGroup(-1, -1, null);
+		}
+		return match;
 	}
 	
-	public void addGroup(int start, int end, T input) {
+	public BasicMatch(S input,int start, int end) {
+		this.start = start;
+		this.end = end;
+		this.input = input;
+		
+		groups = new ArrayList<>();
+	}
+	
+	public void addGroup(int start, int end, S input) {
 		groups.add(new MatchGroup<>(start, end , input));
 	}
 	
@@ -75,7 +82,7 @@ public class BasicMatch<T> implements Match<T> {
 	}
 
 	@Override
-	public T group(int group) {
+	public S group(int group) {
 		return groups.get(group).getGroup();
 	}
 

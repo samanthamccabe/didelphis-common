@@ -16,32 +16,39 @@ package org.didelphis.language.automata.statemachines;
 
 import lombok.NonNull;
 import org.didelphis.language.automata.Graph;
-import org.didelphis.language.automata.interfaces.Automaton;
-import org.didelphis.language.automata.interfaces.LanguageParser;
-import org.didelphis.language.automata.matchers.LanguageMatcher;
+import org.didelphis.language.automata.Automaton;
+import org.didelphis.language.automata.parsing.LanguageParser;
+import org.didelphis.language.automata.matching.LanguageMatcher;
 
 import java.util.Map;
 
 /**
+ * Interface {@code StateMachine}
+ * 
+ * @param <S> the type of data matched by the state machine
+ * 
  * @author Samantha Fiona McCabe
  * @date 2015-04-07
  */
-public interface StateMachine<T> extends Automaton<T> {
+public interface StateMachine<S> extends Automaton<S> {
 
 	@NonNull
-	LanguageParser<T> getParser();
+	LanguageParser<S> getParser();
 
 	@NonNull
-	LanguageMatcher<T> getMatcher();
+	LanguageMatcher<S> getMatcher();
 
 	String getId();
 
 	/**
-	 * Returns a map of {@link StateMachine} ids to its associated graph. This
+	 * Returns a map of ids to its associated graph. This
 	 * ensures accessibility for automata which contain multiple embedded state
 	 * automata.
-	 * @return a {@link Map},  from {@link StateMachine} id → {@link Graph}
+	 * @return a {@link Map}, from id → {@link Graph}
 	 */
 	@NonNull
-	Map<String, Graph<T>> getGraphs();
+	Map<String, Graph<S>> getGraphs();
+
+	@NonNull
+	Map<String, StateMachine<S>> getStateMachines();
 }

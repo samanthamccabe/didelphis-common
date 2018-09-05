@@ -12,7 +12,7 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata.interfaces;
+package org.didelphis.language.automata.parsing;
 
 import lombok.NonNull;
 import org.didelphis.language.automata.expressions.Expression;
@@ -20,54 +20,60 @@ import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /**
  * Interface {@code Language Parser}
- * @param <T>
+ * @param <S>
  *     
  * @since 0.2.0
  * @date 2017-10-25
  */
-public interface LanguageParser<T> {
+public interface LanguageParser<S> {
 
+	@NonNull 
 	Map<String, String> supportedDelimiters();
 
+	@NonNull
 	Set<String> supportedQuantifiers();
 	
-	T getWordStart();
+	@NonNull
+	S getWordStart();
 
-	T getWordEnd();
+	@NonNull
+	S getWordEnd();
 
 	/**
 	 * Transform an expression string into a corresponding terminal symbol, the
 	 * same as is consumed from an input while searching for a match.
 	 * 
-	 * Used in the construction of state machines, specifically when translating
-	 * terminal symbols into sequences of type {@code <T>} which form the state
+	 * Used in the construction of state machines, specifically when parsing
+	 * terminal symbols into objects of type {@code <T>} which form the state
 	 * transitions .
 	 * 
 	 * @param expression
 	 * @return
 	 */
-	@Nullable
-	T transform(String expression);
+	@NonNull
+	S transform(String expression);
 
 	/**
 	 * Parse an expression string to a list of sub-expressions
-	 * @param exp
+	 * @param expression
 	 * @return
 	 */
 	@NonNull
-	Expression parseExpression(String exp, ParseDirection direction);
+	Expression parseExpression(
+			@NonNull String expression, 
+			@NonNull ParseDirection direction);
 
 	/**
 	 * Provides a uniform value for epsilon transitions 
 	 * @return a uniform value for epsilon transitions 
 	 */
-	@Nullable
-	T epsilon();
+	@Nullable S epsilon();
 
 	/**
 	 * Provides a collection of supported special symbols and their
@@ -76,7 +82,7 @@ public interface LanguageParser<T> {
 	 * corresponding literal values
 	 */
 	@NonNull
-	MultiMap<String, T> getSpecials();
+	MultiMap<String, S> getSpecials();
 
 	/**
 	 * Provides a uniform value for "dot" transitions, which accept any value,
@@ -84,7 +90,7 @@ public interface LanguageParser<T> {
 	 * @return a uniform value for "dot" transitions, which accept any value
 	 */
 	@NonNull
-	T getDot();
+	S getDot();
 
 	/**
 	 * Determines the length of the provided element, where applicable. In some
@@ -92,7 +98,26 @@ public interface LanguageParser<T> {
 	 * @param t the data element whose length is to be determined
 	 * @return the length of the provided element
 	 */
-	int lengthOf(@NonNull T t);
+	int lengthOf(@NonNull S t);
+
+	@NonNull
+	List<String> split(String substring);
+
+	/**
+	 * Allows type-agnostic retrieval of a subsequence
+	 *
+	 * @param sequence the sequence from which to take a subsequence
+	 * @param start the start index
+	 * @param end the end index
+	 *
+	 * @return a subsequence of the original sequence; not null
+	 *
+	 * @throws IndexOutOfBoundsException if either {@param start} or {@param
+	 * 		end} are negative, or greater than or equal to the length of the
+	 * 		provided sequence
+	 */
+	@NonNull
+	S subSequence(S sequence, int start, int end);
 	
 	default Expression parseExpression(String exp) {
 		return parseExpression(exp, ParseDirection.FORWARD);

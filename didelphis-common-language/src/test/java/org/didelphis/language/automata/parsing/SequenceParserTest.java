@@ -12,7 +12,7 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata.sequences;
+package org.didelphis.language.automata.parsing;
 
 import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.parsing.FormatterMode;
@@ -109,8 +109,10 @@ class SequenceParserTest {
 	void testReverse() {
 		Expression ex1 = parser.parseExpression("(a!(xy)?b)+");
 		Expression ex2 = parser.parseExpression("(b!(yx)?a)+");
-		assertEquals(ex1, ex2.reverse());
-		assertEquals(ex1.reverse(), ex2);
+		Expression rev1 = Expression.rewriteIds(ex1.reverse(), "0");
+		Expression rev2 = Expression.rewriteIds(ex2.reverse(), "0");
+		assertEquals(ex1, rev2);
+		assertEquals(rev1, ex2);
 	}
 
 	@Test
@@ -140,8 +142,11 @@ class SequenceParserTest {
 	void testComplex01Reverse() {
 		Expression ex1 = parser.parseExpression("{ab* (cd?)+ ((ae)*f)+}tr");
 		Expression ex2 = parser.parseExpression("rt{b*a (d?c)+ (f(ea)*)+}");
-		assertEquals(ex1, ex2.reverse());
-		assertEquals(ex1.reverse(), ex2);
+		Expression rev1 = Expression.rewriteIds(ex2.reverse(), "0");
+		Expression rev2 = Expression.rewriteIds(ex1.reverse(),"0");
+
+		assertEquals(ex1, rev1);
+		assertEquals(rev2, ex2);
 	}
 
 	@Test

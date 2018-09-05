@@ -12,43 +12,49 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata.interfaces;
+package org.didelphis.language.automata;
 
 import lombok.NonNull;
-import org.didelphis.language.automata.matches.Match;
+import org.didelphis.language.automata.matching.Match;
+import org.didelphis.language.phonetic.sequences.Sequence;
 
 /**
  * Interface {@code Automaton}
- *
+ * <p>
  * Represents an automaton for accepting formal languages, such as finite state
  * automata.
- * 
- * @param <T> The (usually sequential) data type being matched, such as {@link
- * String} or {@link org.didelphis.language.phonetic.sequences.Sequence}
+ *
+ * @param <S> Usually a sequential data type, such as {@link String} or {@link
+ * 		Sequence}; this is the type of object provided to the automaton to be
+ * 		checked
+ *
+ * @see org.didelphis.language.automata.statemachines.StateMachine
+ * @see org.didelphis.language.automata.JavaPatternAutomaton
  * 
  * @author Samantha Fiona McCabe
  * @date 10/17/17
- * @see java.util.regex.Pattern
  */
 @FunctionalInterface
-public interface Automaton<T> {
+public interface Automaton<S> {
 
 	/**
-	 * Return a{@link Match} object representing the output of the automaton's 
+	 * Return a {@link Match} object representing the output of the automaton's
 	 * attempt to match the input.
+	 *
 	 * @param input the input to be checked.
 	 * @param start if applicable, the index at which to start checking.
+	 *
 	 * @return the resulting {@link Match} object
 	 */
 	@NonNull 
-	Match<T> match(@NonNull T input, int start);
+	Match<S> match(@NonNull S input, int start);
 
-	default boolean matches(@NonNull T input) {
+	default boolean matches(@NonNull S input) {
 		return match(input).start() > -1;
 	}
 	
 	@NonNull
-	default Match<T> match(@NonNull T input) {
+	default Match<S> match(@NonNull S input) {
 		return match(input, 0);
 	}
 }

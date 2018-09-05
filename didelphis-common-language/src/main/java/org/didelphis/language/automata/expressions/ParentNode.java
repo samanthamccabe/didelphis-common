@@ -28,24 +28,55 @@ import java.util.stream.Collectors;
  * @date 10/13/17
  */
 @Value
-public class ExpressionNode implements Expression {
+public class ParentNode implements Expression {
 
+	String id;
 	List<Expression> children;
 	String quantifier;
 	boolean negative;
-	
-	public ExpressionNode(List<Expression> children, String quantifier) {
+	boolean capturing;
+
+	public ParentNode(List<Expression> children) {
+		this(children, "", false);
+	}
+
+	public ParentNode(List<Expression> children, String quantifier) {
 		this(children, quantifier, false);
 	}
-	
-	public ExpressionNode(List<Expression> children, String quantifier, boolean negative) {
+
+	public ParentNode(
+			List<Expression> children, String quantifier, boolean negative
+	) {
+		this(children, quantifier, negative, false);
+	}
+
+	public ParentNode(
+			String id,
+			List<Expression> children,
+			String quantifier,
+			boolean negative,
+			boolean capturing
+	) {
+		this.id = id;
 		this.children = children;
 		this.quantifier = quantifier;
 		this.negative = negative;
+		this.capturing = capturing;
 	}
 
-	public ExpressionNode(List<Expression> children) {
-		this(children, "",  false);
+	@SuppressWarnings ("BooleanParameter")
+	public ParentNode(
+			List<Expression> children,
+			String quantifier,
+			boolean negative,
+			boolean capturing
+	) {
+		this.children = children;
+		this.quantifier = quantifier;
+		this.negative = negative;
+		this.capturing = capturing;
+
+		id = Expression.randomId(children, quantifier, negative, capturing);
 	}
 
 	@Override
@@ -71,25 +102,36 @@ public class ExpressionNode implements Expression {
 				.map(Expression::reverse)
 				.collect(Collectors.toList());
 		Collections.reverse(revChildren);
-		return new ExpressionNode(revChildren, quantifier, negative);
+		return new ParentNode(id, revChildren, quantifier, negative, capturing);
+	}
+
+	@NonNull
+	@Override
+	public Expression withId(String id) {
+		return new ParentNode(id, children, quantifier, negative, capturing);
 	}
 
 	@NonNull
 	@Override
 	public Expression withNegative(boolean isNegative) {
-		return new ExpressionNode(children, quantifier, isNegative);
+		return new ParentNode(id, children, quantifier, isNegative, capturing);
 	}
 
 	@NonNull
 	@Override
 	public Expression withQuantifier(String newQuantifier) {
-		return new ExpressionNode(children, newQuantifier, negative);
+		return new ParentNode(id, children, newQuantifier, negative, capturing);
 	}
 
 	@Override
 	public String toString() {
-		return (negative ? "!" : "") + children.stream()
-				.map(Expression::toString)
-				.collect(Collectors.joining("", "(", ")")) + quantifier;
+		StringBuilder sb = new StringBuilder();
+		sb.append('(');
+		for (Expression child : children) {
+			String toString = child.toString();
+			sb.append(toString);
+		}
+		sb.append(')');
+		return (negative ? "!" : "") + sb + quantifier;
 	}
 }

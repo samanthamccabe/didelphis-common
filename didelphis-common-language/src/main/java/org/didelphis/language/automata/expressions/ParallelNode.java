@@ -29,10 +29,33 @@ import java.util.stream.Collectors;
 @Value
 public class ParallelNode implements Expression {
 
+	String id;
 	List<Expression> children;
 	String quantifier;
 	boolean negative;
-	
+
+	public ParallelNode(
+			String id,
+			List<Expression> children,
+			String quantifier,
+			boolean negative
+	) {
+		this.id = id;
+		this.children = children;
+		this.quantifier = quantifier;
+		this.negative = negative;
+	}
+
+	public ParallelNode(
+			List<Expression> children, String quantifier, boolean negative
+	) {
+		this.children = children;
+		this.quantifier = quantifier;
+		this.negative = negative;
+
+		id = Expression.randomId(children, quantifier, negative);
+	}
+
 	@Override
 	public boolean hasChildren() {
 		return !children.isEmpty();
@@ -41,6 +64,11 @@ public class ParallelNode implements Expression {
 	@Override
 	public boolean isParallel() {
 		return true;
+	}
+
+	@Override
+	public boolean isCapturing() {
+		return false;
 	}
 
 	@NonNull
@@ -55,19 +83,25 @@ public class ParallelNode implements Expression {
 		List<Expression> revChildren = children.stream()
 				.map(Expression::reverse)
 				.collect(Collectors.toList());
-		return new ParallelNode(revChildren, quantifier, negative);
+		return new ParallelNode(id, revChildren, quantifier, negative);
+	}
+
+	@NonNull
+	@Override
+	public Expression withId(String id) {
+		return new ParallelNode(id, children, quantifier, negative);
 	}
 
 	@NonNull
 	@Override
 	public Expression withNegative(boolean isNegative) {
-		return new ParallelNode(children, quantifier, isNegative);
+		return new ParallelNode(id, children, quantifier, isNegative);
 	}
 
 	@NonNull
 	@Override
 	public Expression withQuantifier(String newQuantifier) {
-		return new ParallelNode(children, newQuantifier, negative);
+		return new ParallelNode(id, children, newQuantifier, negative);
 	}
 
 	@Override

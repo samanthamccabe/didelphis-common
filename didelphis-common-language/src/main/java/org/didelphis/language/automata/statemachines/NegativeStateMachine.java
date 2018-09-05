@@ -17,14 +17,15 @@ package org.didelphis.language.automata.statemachines;
 import lombok.NonNull;
 import org.didelphis.language.automata.Graph;
 import org.didelphis.language.automata.expressions.Expression;
-import org.didelphis.language.automata.interfaces.LanguageParser;
-import org.didelphis.language.automata.matchers.LanguageMatcher;
-import org.didelphis.language.automata.matches.BasicMatch;
-import org.didelphis.language.automata.matches.Match;
+import org.didelphis.language.automata.parsing.LanguageParser;
+import org.didelphis.language.automata.matching.LanguageMatcher;
+import org.didelphis.language.automata.matching.BasicMatch;
+import org.didelphis.language.automata.matching.Match;
 import org.didelphis.structures.tuples.Triple;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -33,17 +34,17 @@ import java.util.stream.Collectors;
  * @author Samantha Fiona McCabe
  * @date 1/30/2016
  */
-public final class NegativeStateMachine<T> implements StateMachine<T> {
+public final class NegativeStateMachine<S> implements StateMachine<S> {
 
 	private final String id;
 
-	private final StateMachine<T> negative;
-	private final StateMachine<T> positive;
+	private final StateMachine<S> negative;
+	private final StateMachine<S> positive;
 
 	private NegativeStateMachine(
 			@NonNull String id,
-			@NonNull StateMachine<T> negative,
-			@NonNull StateMachine<T> positive
+			@NonNull StateMachine<S> negative,
+			@NonNull StateMachine<S> positive
 	) {
 		this.id = id;
 		this.positive = positive;
@@ -51,30 +52,35 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 	}
 
 	@NonNull
-	public static <T> StateMachine<T> create(
+	public static <S> StateMachine<S> create(
 			@NonNull String id,
 			@NonNull Expression expression,
-			@NonNull LanguageParser<T> parser,
-			@NonNull LanguageMatcher<T> matcher
+			@NonNull LanguageParser<S> parser,
+			@NonNull LanguageMatcher<S> matcher,
+			@NonNull List<Expression> captures
 	) {
 		// Create the actual branch, the one we don't want to match
-		StateMachine<T> negative = StandardStateMachine.create(
-				id + 'N',
+		StateMachine<S> negative = StandardStateMachine.create(
+				'N' + id,
 				expression,
 				parser,
-				matcher
+				matcher,
+				captures
 		);
-		StateMachine<T> positive = StandardStateMachine.create(
-				id + 'P',
+		
+		StateMachine<S> positive = StandardStateMachine.create(
+				'P' + id,
 				expression,
 				parser,
-				matcher
+				matcher,
+				captures
 		);
 
 		// This is less elegant that I'd prefer, but bear with me:
 		// We will extract the graph and id-machine maps and then the graph for
 		// *each* machine recursively, in order to replace each literal terminal
 		// symbol with the dot (. / "accept-all") character
+		// TODO: this can probably done by replacing all terminals in the expression tree
 		buildPositiveBranch(parser, positive);
 
 		return new NegativeStateMachine<>(id, negative, positive);
@@ -82,13 +88,13 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 
 	@NonNull
 	@Override
-	public LanguageParser<T> getParser() {
+	public LanguageParser<S> getParser() {
 		return positive.getParser();
 	}
 
 	@NonNull
 	@Override
-	public LanguageMatcher<T> getMatcher() {
+	public LanguageMatcher<S> getMatcher() {
 		return positive.getMatcher();
 	}
 
@@ -100,10 +106,19 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 
 	@NonNull
 	@Override
-	public Map<String, Graph<T>> getGraphs() {
-		Map<String, Graph<T>> map = new HashMap<>();
+	public Map<String, Graph<S>> getGraphs() {
+		Map<String, Graph<S>> map = new HashMap<>();
 		map.putAll(positive.getGraphs());
 		map.putAll(negative.getGraphs());
+		return map;
+	}
+
+	@NonNull
+	@Override
+	public Map<String, StateMachine<S>> getStateMachines() {
+		Map<String, StateMachine<S>> map = new HashMap<>();
+		map.put("POSITIVE", positive);
+		map.put("NEGATIVE", negative);
 		return map;
 	}
 
@@ -120,36 +135,36 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 
 	@NonNull
 	@Override
-	public Match<T> match(@NonNull T input, int start) {
+	public Match<S> match(@NonNull S input, int start) {
 
-		Match<T> pMatch = positive.match(input, start);
-		Match<T> nMatch = negative.match(input, start);
+		Match<S> pMatch = positive.match(input, start);
+		Match<S> nMatch = negative.match(input, start);
 
 		return pMatch.end() == nMatch.end()
 				? new BasicMatch<>(input, -1, -1)
 				: pMatch;
 	}
 
-	private static <T> void buildPositiveBranch(
-			@NonNull LanguageParser<T> parser,
-			@NonNull StateMachine<T> positive
+	private static <S> void buildPositiveBranch(
+			@NonNull LanguageParser<S> parser,
+			@NonNull StateMachine<S> positive
 	) {
 
-		Graph<T> graph = positive.getGraphs().values().iterator().next();
-		Graph<T> copy = new Graph<>(graph);
+		Graph<S> graph = positive.getGraphs().values().iterator().next();
+		Graph<S> copy = new Graph<>(graph);
 
 		graph.clear();
 
-		for (Triple<String, T, Collection<String>> triple : copy) {
+		for (Triple<String, S, Collection<String>> triple : copy) {
 
-			T arc = triple.getSecondElement();
+			S arc = triple.getSecondElement();
 			Collection<String> targets = triple.getThirdElement();
 			// lambda / epsilon transition
 			String source = triple.getFirstElement();
 			if (Objects.equals(arc, parser.epsilon())) {
 				graph.put(source, parser.epsilon(), targets);
 			} else if (parser.getSpecials().containsKey(arc.toString())) {
-				T dot = parser.getDot();
+				S dot = parser.getDot();
 				for (Integer length : collectLengths(parser, arc)) {
 					buildDotChain(graph, source, targets, length, dot);
 				}
@@ -159,14 +174,14 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 		}
 		
 		if (positive instanceof StandardStateMachine) {
-			for (StateMachine<T> machine : ((StandardStateMachine<T>) positive).getMachinesMap()
+			for (StateMachine<S> machine : positive.getStateMachines()
 					.values()) {
 				if (machine instanceof NegativeStateMachine) {
 					// Unclear if this is allowed to happen
 					// or if this is the desired behavior
 					buildPositiveBranch(
 							parser,
-							((NegativeStateMachine<T>) machine).negative
+							((NegativeStateMachine<S>) machine).negative
 					);
 				} else {
 					buildPositiveBranch(parser, machine);
@@ -176,9 +191,9 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 	}
 
 	@NonNull
-	private static <T> Iterable<Integer> collectLengths(
-			@NonNull LanguageParser<T> parser,
-			@NonNull T arc
+	private static <S> Iterable<Integer> collectLengths(
+			@NonNull LanguageParser<S> parser,
+			@NonNull S arc
 	) {
 		return parser.getSpecials()
 				.get(arc.toString())
@@ -187,12 +202,12 @@ public final class NegativeStateMachine<T> implements StateMachine<T> {
 				.collect(Collectors.toSet());
 	}
 
-	private static <T> void buildDotChain(
-			@NonNull Graph<T> graph,
+	private static <S> void buildDotChain(
+			@NonNull Graph<S> graph,
 			String key,
 			Collection<String> endValues,
 			int length,
-			T dot
+			S dot
 	) {
 		String thisState = key;
 		for (int i = 0; i < length - 1; i++) {

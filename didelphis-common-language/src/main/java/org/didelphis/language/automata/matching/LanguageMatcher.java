@@ -12,7 +12,7 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata.matchers;
+package org.didelphis.language.automata.matching;
 
 import lombok.NonNull;
 
@@ -22,14 +22,14 @@ import lombok.NonNull;
  * A helper interface used by finite state automata to determine define when
  * a "match" has occurred; many implementations might 
  * 
- * @param <T> The type of object which represents state transitions.
+ * @param <S> The type of object which represents state transitions.
  *
  * @author Samantha Fiona McCabe
  * @date 2017-02-23
  * @since 0.1.0
  */
 @FunctionalInterface
-public interface LanguageMatcher<T>  {
+public interface LanguageMatcher<S>  {
 
 	/**
 	 * Determines if the provided input matches the provided target in per the
@@ -45,5 +45,5 @@ public interface LanguageMatcher<T>  {
 	 * {@code target} to stand in for a set of items, in which case this method
 	 * should return the length of whichever element did match.
 	 */
-	int matches(@NonNull T input, @NonNull T target, int index);
+	int matches(@NonNull S input, @NonNull S target, int index);
 }
