@@ -100,6 +100,11 @@ public interface LanguageParser<S> {
 	 */
 	int lengthOf(@NonNull S t);
 
+	/**
+	 * 
+	 * @param substring
+	 * @return
+	 */
 	@NonNull
 	List<String> split(String substring);
 

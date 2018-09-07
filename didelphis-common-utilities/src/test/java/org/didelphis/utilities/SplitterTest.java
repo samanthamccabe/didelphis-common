@@ -112,4 +112,53 @@ class SplitterTest {
 	void testFindClosingBracketB01() {
 		assertEquals(7, Splitter.findClosingBracket("a [b c]", "[", "]", 2));
 	}
+	
+	@Test
+	void testLineBreak01() {
+		String string = "a\nb\nc\nd";
+		List<String> expected = Arrays.asList("a", "b", "c", "d");
+		assertEquals(expected, Splitter.lines(string));
+	}
+
+	@Test
+	void testLineBreak02() {
+		String string = "\na\nb\nc\nd\n";
+		List<String> expected = Arrays.asList("","a", "b", "c", "d", "");
+		assertEquals(expected, Splitter.lines(string));
+	}
+
+	@Test
+	void testLineBreak03() {
+		String string = "\na\n\nb\nc\nd\n";
+		List<String> expected = Arrays.asList("", "a", "", "b", "c", "d", "");
+		assertEquals(expected, Splitter.lines(string));
+	}
+
+	@Test
+	void testLineBreak04() {
+		String string = "\na\r\nb\nc\nd\n";
+		List<String> expected = Arrays.asList("", "a", "b", "c", "d", "");
+		assertEquals(expected, Splitter.lines(string));
+	}
+
+	@Test
+	void testLineBreak05() {
+		String string = "\na\r\nb\nc\r\rd\n";
+		List<String> expected = Arrays.asList("", "a", "b", "c", "", "d", "");
+		assertEquals(expected, Splitter.lines(string));
+	}
+
+	@Test
+	void testLineBreak06() {
+		String string = "";
+		List<String> expected = Collections.singletonList("");
+		assertEquals(expected, Splitter.lines(string));
+	}
+
+	@Test
+	void testLineBreak07() {
+		String string = "\n\r\n\n";
+		List<String> expected = Arrays.asList("", "", "", "");
+		assertEquals(expected, Splitter.lines(string));
+	}
 }

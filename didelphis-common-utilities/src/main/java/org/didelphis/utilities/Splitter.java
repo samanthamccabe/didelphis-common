@@ -21,12 +21,9 @@ import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Utility class {@code Splitter}
@@ -34,15 +31,12 @@ import java.util.regex.Pattern;
  * General collection of String segmentation tools, including bracket matching
  * related tasks
  *
- * @date 2017-03-03
+ * @since 0.2.0
  */
 @UtilityClass
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class Splitter {
-
-	Pattern NEWLINE = Pattern.compile("\r?\n|\r");
-	Pattern WHITESPACE = Pattern.compile("\\s+");
-
+	
 	Map<String, String> DELIMITERS = new HashMap<>();
 	
 	static {
@@ -55,26 +49,53 @@ public class Splitter {
 	 * A simple utility method for splitting input at line breaks using the 
 	 * regular expression {@code "\r?\n|\r")}
 	 *
-	 * @param lines the input to be split; must not be null
+	 * @param string the input to be split; must not be null
 	 *
 	 * @return a list containing each line found in the original input; not null
 	 */
 	@NonNull
-	public List<String> lines(@NonNull CharSequence lines) {
-		return Arrays.asList(NEWLINE.split(lines));
+	public List<String> lines(@NonNull String string) {
+
+		List<String> lines = new ArrayList<>();
+		int index = 0;
+		int cursor = 0; // 
+		while (index < string.length()) {
+
+			if (string.startsWith("\r\n", index)) {
+				lines.add(string.substring(cursor, index));
+				index += 2;
+				cursor = index;
+			} else if (string.startsWith("\r", index)) {
+				lines.add(string.substring(cursor, index));
+				index++;
+				cursor = index;
+			} else if (string.startsWith("\n", index)) {
+				lines.add(string.substring(cursor, index));
+				index++;
+				cursor = index;
+			} else {
+				index++;
+			}
+		}
+
+		lines.add(string.substring(cursor));
+
+		return lines;
 	}
 
 	/**
-	 * Splits inputs such that each character in the input becomes an element
-	 * in the returned list of {@link String}s unless: a substring is found in
-	 * the parameter {@code special}, in which case it is preserved; or a chunk
-	 * is delimited parenthetically, in which case the contents of the delimited
+	 * Splits inputs such that each character in the input becomes an element in
+	 * the returned list of Strings unless: a substring is found in the
+	 * parameter {@code special}, in which case it is preserved; or a chunk is
+	 * delimited parenthetically, in which case the contents of the delimited
 	 * chunk will also be preserved.
-	 * 
-	 * @param string
-	 * @param special
 	 *
-	 * @return
+	 * @param string the string to be split
+	 * @param special a list of special strings which will not be split. This
+	 * 		may be null; if it is, the specials are ignored, giving the same
+ 	 *
+	 * @return a new list which, if joined with no delimiter, would return the
+	 * 		original string; not null
 	 */
 	@NonNull
 	public List<String> toList(
@@ -112,35 +133,37 @@ public class Splitter {
 	/**
 	 * Splits inputs on the basis of whitespace only, while also preserving
 	 * parenthetically delimited chunks. Thus, a string:
-	 * 
+	 * <p>
 	 * {@code "a b (c d) e"}
-	 * 
-	 * will be split into four elements: {@code "a"}, {@code "b"}, {@code 
-	 * "(c d)"}, and {@code "e"}.
-	 * 
-	 * @param string
-	 * @return
+	 * <p>
+	 * will be split into four elements: 
+	 * <ul>
+	 *     <li>{@code "a"}</li>
+	 *     <li>{@code "b"}</li>
+	 *     <li>{@code "(cd)"}</li>
+	 *     <li>{@code "e"}</li>
+	 * </ul>
+	 *
+	 * @param string the input that is to be split; cannot be {@code null}
+	 *
+	 * @return a new list containing elements from the provided input; will not
+	 * 		be {@code null}
 	 */
 	@NonNull
 	public List<String> whitespace(String string) {
 		List<String> list = new ArrayList<>();
 		int cursor = 0;
 		for (int i = 0; i < string.length();) {
-			String substring = string.substring(i);
-			Matcher matcher = WHITESPACE.matcher(substring);
-			if (matcher.lookingAt()) {
-				String chunk = string.substring(cursor, i);
-				list.add(chunk);
-				int end = matcher.end();
-				cursor = end + i;
-				i = cursor;
+			if (isWhitespace(string.charAt(i))) {
+				if (i != cursor) {
+					String chunk = string.substring(cursor, i);
+					list.add(chunk);
+				}
+				i++;
+				cursor = i;
 			} else {
 				int end = parseParens(string, i);
-				if (end > i) {
-					i = end;
-				} else {
-					i++;
-				}
+				i = (end > i) ? end : i + 1;
 			}
 		}
 		
@@ -149,6 +172,10 @@ public class Splitter {
 		}
 		
 		return list;
+	}
+	
+	private boolean isWhitespace(char c) {
+		return " \t\n\f\r".indexOf(c) >= 0;
 	}
 	
 	/**
@@ -183,9 +210,9 @@ public class Splitter {
 
 	/**
 	 *  Determines the index of the closing bracket which corresponds to the 
-	 *  opening bracket in {@param string}, located at {@param startIndex}
+	 *  opening bracket in {@param sequence}, located at {@param startIndex}
 	 *
-	 * @param string
+	 * @param sequence 
 	 * @param startIndex
 	 * @param left
 	 * @param right
@@ -193,12 +220,15 @@ public class Splitter {
 	 * @return
 	 */
 	public int findClosingBracket(
-			@NonNull CharSequence string, int startIndex, char left, char right
+			@NonNull CharSequence sequence, 
+			int startIndex, 
+			char left, 
+			char right
 	) {
 		int count = 1;
 		int endIndex = startIndex;
-		for (int i = startIndex + 1; i < string.length(); i++) {
-			char ch = string.charAt(i);
+		for (int i = startIndex + 1; i < sequence.length(); i++) {
+			char ch = sequence.charAt(i);
 			if (ch == right && count == 1) {
 				endIndex = i;
 				break;
