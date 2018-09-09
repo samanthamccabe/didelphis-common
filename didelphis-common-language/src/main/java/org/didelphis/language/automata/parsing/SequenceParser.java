@@ -125,7 +125,7 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 		Set<String> set = new HashSet<>();
 		set.addAll(factory.getSpecialStrings());
 		set.addAll(specials.keys());
-		return formatter.split(substring, set);
+		return formatter.split(substring, set, DELIMITERS);
 	}
 
 	@NonNull

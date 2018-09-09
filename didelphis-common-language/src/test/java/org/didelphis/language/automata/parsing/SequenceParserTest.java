@@ -82,6 +82,8 @@ class SequenceParserTest {
 	@Test
 	void testBasic05() {
 		Expression ex3 = parser.parseExpression("(a!(xy)?b)+");
+		assertTrue(ex3.isCapturing());
+		
 		List<Expression> children = ex3.getChildren();
 		assertEquals(3, children.size());
 		assertEquals("+", ex3.getQuantifier());
@@ -89,8 +91,12 @@ class SequenceParserTest {
 		
 		assertEquals("a", children.get(0).getTerminal());
 		assertEquals("b", children.get(2).getTerminal());
+		
+		assertFalse(children.get(0).isCapturing());
+		assertFalse(children.get(2).isCapturing());
 
 		Expression ch1 = children.get(1);
+		assertTrue(ch1.isCapturing());
 		assertEquals(2, ch1.getChildren().size());
 		assertEquals("?", ch1.getQuantifier());
 		assertTrue(ch1.isNegative());

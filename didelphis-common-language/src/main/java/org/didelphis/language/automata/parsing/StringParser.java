@@ -27,10 +27,10 @@ import java.util.List;
 /**
  * Class {@code StringParser}
  *
- * A {@link String}-only companion to {@link SequenceParser}
- * 
+ * A {@link String}-only companion to {@link SequenceParser} which uses the same
+ * linguistics-oriented regular expression syntax.
+ *
  * @author Samantha Fiona McCabe
- * @date 2018-08-25
  * @since 0.3.0
  */
 @ToString
@@ -95,7 +95,7 @@ public class StringParser extends AbstractDidelphisParser<String> {
 	@Override
 	@NonNull
 	public List<String> split(String substring) {
-		return Splitter.toList(substring, specials.keys());
+		return Splitter.toList(substring, DELIMITERS, specials.keys());
 	}
 
 	@NonNull

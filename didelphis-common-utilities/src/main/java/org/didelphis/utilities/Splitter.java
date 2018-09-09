@@ -37,8 +37,8 @@ import java.util.Map;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class Splitter {
 	
+	@Deprecated
 	Map<String, String> DELIMITERS = new HashMap<>();
-	
 	static {
 		DELIMITERS.put("[", "]");
 		DELIMITERS.put("(", ")");
@@ -91,20 +91,22 @@ public class Splitter {
 	 * chunk will also be preserved.
 	 *
 	 * @param string the string to be split
+	 * @param delimiters a map of parenthetical delimiters whose contents will
+	 * 		not be split
 	 * @param special a list of special strings which will not be split. This
 	 * 		may be null; if it is, the specials are ignored, giving the same
- 	 *
+	 *
 	 * @return a new list which, if joined with no delimiter, would return the
-	 * 		original string; not null
+	 * 		original string; not {@code null}
 	 */
 	@NonNull
 	public List<String> toList(
-			@NonNull String string, @Nullable Iterable<String> special
+			@NonNull String string, @NonNull Map<String, String> delimiters, @Nullable Iterable<String> special
 	) {
 		List<String> strings = new ArrayList<>();
 		for (int i = 0; i < string.length(); i++) {
 
-			int index = parseParens(string, i);
+			int index = parseParens(string, delimiters, i);
 			if (index >= 0) {
 				strings.add(string.substring(i, index));
 				i = index - 1;
@@ -146,11 +148,15 @@ public class Splitter {
 	 *
 	 * @param string the input that is to be split; cannot be {@code null}
 	 *
+	 * @param delimiters
 	 * @return a new list containing elements from the provided input; will not
 	 * 		be {@code null}
 	 */
 	@NonNull
-	public List<String> whitespace(String string) {
+	public List<String> whitespace(
+			@NonNull String string, 
+			@NonNull Map<String, String> delimiters
+	) {
 		List<String> list = new ArrayList<>();
 		int cursor = 0;
 		for (int i = 0; i < string.length();) {
@@ -162,7 +168,7 @@ public class Splitter {
 				i++;
 				cursor = i;
 			} else {
-				int end = parseParens(string, i);
+				int end = parseParens(string, delimiters, i);
 				i = (end > i) ? end : i + 1;
 			}
 		}
@@ -186,76 +192,52 @@ public class Splitter {
 	 * @param index of the opening bracket.
 	 *
 	 * @return the index of the corresponding closing bracket.
+	 *
+	 * @deprecated in order to function appropriate, the mapping of delimiters
+	 * 		cannot be assumed (as they are here) and must be provided by the
+	 * 		caller.
 	 */
+	@Deprecated
 	public int parseParens(@NonNull String string, int index) {
 		return parseParens(string, DELIMITERS, index);
 	}
-	
+
+	/**
+	 * Finds the index of the bracket matching the one at {@param index} within
+	 * the provided {@code String}.
+	 *
+	 * @param string the {@code CharSequence} to be matched for
+	 * @param parens a map of start to end characters for parentheses
+	 * @param index of the opening bracket.
+	 *
+	 * @return the index of the corresponding closing bracket, or -1 if one is
+	 * 		not found
+	 */
 	public int parseParens(
 			@NonNull String string, 
 			@NonNull Map<String, String> parens,
 			int index
 	) {
-		return parens.entrySet()
-				.stream()
-				.filter(entry -> string.startsWith(entry.getKey(), index))
-				.findFirst()
-				.map(entry -> findClosingBracket(string,
-						entry.getKey(),
-						entry.getValue(),
-						index
-				))
-				.orElse(-1);
-	}
-
-	/**
-	 *  Determines the index of the closing bracket which corresponds to the 
-	 *  opening bracket in {@param sequence}, located at {@param startIndex}
-	 *
-	 * @param sequence 
-	 * @param startIndex
-	 * @param left
-	 * @param right
-	 *
-	 * @return
-	 */
-	public int findClosingBracket(
-			@NonNull CharSequence sequence, 
-			int startIndex, 
-			char left, 
-			char right
-	) {
-		int count = 1;
-		int endIndex = startIndex;
-		for (int i = startIndex + 1; i < sequence.length(); i++) {
-			char ch = sequence.charAt(i);
-			if (ch == right && count == 1) {
-				endIndex = i;
-				break;
-			} else if (ch == right) {
-				count++;
-			} else if (ch == left) {
-				count--;
+		for (Map.Entry<String, String> stringStringEntry : parens.entrySet()) {
+			String key = stringStringEntry.getKey();
+			if (string.startsWith(key, index)) {
+				String value = stringStringEntry.getValue();
+				return findClosingBracket(string, key, value, index);
 			}
 		}
-		/* 'endIndex' is the index of the closing bracket; we advance by 1 to 
-		 * because we always need the next index for a substring that includes
-		 * the closing bracket, or we need to continue operations after the
-		 * bracketed expression is closed. 
-		 */
-		return endIndex + 1;
+		return -1;
 	}
 
 	/**
 	 * Determines the index of the closing bracket which corresponds to the
 	 * opening bracket in {@param string}, located at {@param startIndex}
 	 * 
-	 * @param string
-	 * @param left
-	 * @param right
-	 * @param startIndex
+	 * @param string the input to be examined for parentheses
+	 * @param left the opening parenthesis
+	 * @param right the closing parenthesis
+	 * @param startIndex the index in {@param string} where to start looking
 	 *
-	 * @return
+	 * @return the index of the closing bracket, if it was found; otherwise, -1
 	 */
 	public int findClosingBracket(
 			@NonNull String string,
@@ -280,7 +262,10 @@ public class Splitter {
 		 * because we always need the next index for a substring that includes
 		 * the closing bracket, or we need to continue operations after the
 		 * bracketed expression is closed.
+		 * 
+		 * However, if the start and end indices are the same, then the matching
+		 * parenthesis has not been found, thus we return -1
 		 */
-		return endIndex + 1;
+		return startIndex == endIndex ? -1 : endIndex + 1;
 	}
 }

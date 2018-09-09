@@ -5,11 +5,18 @@ import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import org.didelphis.language.automata.expressions.Expression;
+import org.didelphis.language.automata.expressions.ParentNode;
 import org.didelphis.language.parsing.ParseDirection;
+import org.didelphis.language.parsing.ParseException;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
+import org.didelphis.utilities.Splitter;
+import org.didelphis.utilities.Templates;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,7 +28,7 @@ import java.util.Set;
  * Class {@code RegexParser}
  *
  * @author Samantha Fiona McCabe
- * @date 9/5/18
+ * @since 0.3.0
  */
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -45,7 +52,7 @@ public class RegexParser implements LanguageParser<String> {
 
 	static MultiMap<String, String> SPECIALS = new GeneralMultiMap<>();
 	static {
-		SPECIALS.add("\\d", "[0-9]");
+		SPECIALS.addAll("\\d", Arrays.asList("0","1","2","3","4","5","6","7","8","9"));
 		//todo:
 	}
 
@@ -84,13 +91,105 @@ public class RegexParser implements LanguageParser<String> {
 	public Expression parseExpression(
 			@NonNull String expression, @NonNull ParseDirection direction
 	) {
-		// TODO: ---------------------------------------------------------------
-		return null;
+		Expression exp;
+		try {
+			exp = parse(split(expression));
+			if (direction == ParseDirection.BACKWARD) {
+				exp = exp.reverse();
+			}
+		} catch (ParseException e) {
+			String message = Templates.create()
+					.add("Failed to parse expression {}")
+					.with(expression)
+					.build();
+			throw new ParseException(message, e);
+		}
+		return Expression.rewriteIds(exp, "0");
 	}
 
-	@Nullable
+	private Expression parse(@NonNull List<String> split) {
+		Buffer buffer = new Buffer();
+		List<Expression> expressions = new ArrayList<>();
+		
+		if (split.contains("|")) {
+			buffer.setParallel(true);
+		}
+		
+		for (String s : split) {
+			
+			//  the bar has been accounted for, so skip the character
+			if (s.equals("|")) {
+				continue;
+			}
+			
+			if (QUANTIFIERS.contains(s)) {
+				buffer.setQuantifier(s);
+				buffer = update(buffer, expressions);
+			} else if (DELIMITERS.containsKey(s.substring(0, 1))) {
+				buffer = update(buffer, expressions);
+				if (s.length() <= 1) {
+					String message = Templates.create()
+							.add("Unmatched group delimiter {}")
+							.with(s)
+							.build();
+					throw new ParseException(message);
+				}
+				String substring = s.substring(1, s.length() - 1).trim();
+				String delimiter = s.substring(0, 1);
+				if (delimiter.equals("[")) {
+					List<String> elements = Splitter.whitespace(substring, DELIMITERS);
+					List<Expression> children = new ArrayList<>();
+					for (String element : elements) {
+						List<String> list = split(element);
+						Expression parse = parse(list);
+						children.add(parse);
+					}
+					buffer.setNodes(children);
+					buffer.setParallel(true);
+				} else if (delimiter.equals("(?:")) {
+					List<String> list = split(substring);
+					Expression exp = parse(list);
+					buffer.setNodes(exp.getChildren());
+				} else {
+					List<String> list = split(substring);
+					Expression exp = parse(list);
+					buffer.setNodes(exp.getChildren());
+					buffer.setCapturing(true);
+				}
+			} else {
+				buffer = update(buffer, expressions);
+				buffer.setTerminal(s);
+			}
+		}
+		update(buffer, expressions);
+		return expressions.size() == 1
+				? expressions.get(0)
+				: new ParentNode(expressions);
+	}
+
+	@NonNull
+	private static Buffer update(
+			@NonNull Buffer buffer,
+			@NonNull Collection<Expression> children
+	) {
+		if (!buffer.isEmpty()) {
+			Expression ex = buffer.toExpression();
+			if (ex == null) {
+				String message = Templates.create()
+						.add("Unable to convert buffer to expression")
+						.data(buffer)
+						.build();
+				throw new ParseException(message);
+			}
+			children.add(ex);
+			return new Buffer();
+		} else {
+			return buffer;
+		}
+	}
+	
 	@Override
-	public String epsilon() {
+	public @Nullable String epsilon() {
 		return "";
 	}
 
@@ -114,8 +213,8 @@ public class RegexParser implements LanguageParser<String> {
 	@NonNull
 	@Override
 	public List<String> split(String substring) {
-		// TODO: ---------------------------------------------------------------
-		return null;
+		return Splitter.toList(substring, DELIMITERS, SPECIALS.keys());
+
 	}
 
 	@NonNull

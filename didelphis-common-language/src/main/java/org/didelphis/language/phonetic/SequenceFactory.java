@@ -78,7 +78,9 @@ public class SequenceFactory<T> implements Function<String, Sequence<T>> {
 		keys.addAll(reservedStrings);
 		keys.addAll(featureMapping.getFeatureMap().keySet());
 		keys.sort(SequenceFactory::compare);
-		Collection<String> list = formatterMode.split(word, keys);
+		Collection<String> list = formatterMode.split(word, keys,
+				Collections.emptyMap()
+		);
 		FeatureModel<T> featureModel = featureMapping.getFeatureModel();
 		List<Segment<T>> segments = list.stream()
 				.map(this::toSegment)

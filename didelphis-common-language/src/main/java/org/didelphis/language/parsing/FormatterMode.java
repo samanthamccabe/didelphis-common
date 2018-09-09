@@ -22,6 +22,7 @@ import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,15 +49,18 @@ public enum FormatterMode implements Segmenter, Formatter {
 		@NonNull
 		@Override
 		public List<String> split(@NonNull String string) {
-			return split(string, Collections.emptyList());
+			return split(string, Collections.emptyList(),
+					Collections.emptyMap());
 		}
 
 		@NonNull
 		@Override
 		public List<String> split(
-				@NonNull String string, @NonNull Iterable<String> special
+				@NonNull String string,
+				@NonNull Iterable<String> special,
+				Map<String, String> delimiters
 		) {
-			return toList(string, special);
+			return toList(string, delimiters, special);
 		}
 	},
 
@@ -65,15 +69,18 @@ public enum FormatterMode implements Segmenter, Formatter {
 		@NonNull
 		@Override
 		public List<String> split(@NonNull String string) {
-			return split(string, Collections.emptyList());
+			return split(string, Collections.emptyList(),
+					Collections.emptyMap());
 		}
 
 		@NonNull
 		@Override
 		public List<String> split(
-				@NonNull String string, @NonNull Iterable<String> special
+				@NonNull String string,
+				@NonNull Iterable<String> special,
+				Map<String, String> delimiters
 		) {
-			return toList(normalize(string), special);
+			return toList(normalize(string), delimiters, special);
 		}
 	},
 
@@ -82,15 +89,18 @@ public enum FormatterMode implements Segmenter, Formatter {
 		@NonNull
 		@Override
 		public List<String> split(@NonNull String string) {
-			return split(string, Collections.emptyList());
+			return split(string, Collections.emptyList(),
+					Collections.emptyMap());
 		}
 
 		@NonNull
 		@Override
 		public List<String> split(
-				@NonNull String string, @NonNull Iterable<String> special
+				@NonNull String string,
+				@NonNull Iterable<String> special,
+				@NonNull Map<String, String> delimiters
 		) {
-			return toList(normalize(string), special);
+			return toList(normalize(string), delimiters, special);
 		}
 	},
 
@@ -110,7 +120,9 @@ public enum FormatterMode implements Segmenter, Formatter {
 		private final Pattern pattern = Pattern.compile("(\\$[^$]*\\d+)");
 
 		@NonNull @Override public List<String> split(
-				@NonNull String string, @NonNull Iterable<String> special
+				@NonNull String string,
+				@NonNull Iterable<String> special,
+				Map<String, String> delimiters
 		) {
 			String word = normalize(string);
 
@@ -175,7 +187,8 @@ public enum FormatterMode implements Segmenter, Formatter {
 		@NonNull
 		@Override
 		public List<String> split(@NonNull String string) {
-			return split(string, Collections.emptyList());
+			return split(string, Collections.emptyList(),
+					Collections.emptyMap());
 		}
 
 		// Finds longest item in keys which the provided string starts with

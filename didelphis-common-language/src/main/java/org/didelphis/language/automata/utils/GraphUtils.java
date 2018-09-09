@@ -63,6 +63,29 @@ public class GraphUtils {
 		return buildGML(nodes, edges, useRealId);
 	}
 
+	private static String buildGML(
+			@NonNull Set<Node> nodes,
+			@NonNull Set<Edge> edges
+	) {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("graph [\n");
+		sb.append("\thierarchic\t1\n");
+		sb.append("\tlabel\t\"\"\n");
+		sb.append("\tdirected\t1\n");
+
+		for (Node node : nodes) {
+			sb.append(node);
+		}
+		
+		for (Edge edge : edges) {
+			sb.append(edge);
+		}
+		
+		// Close and return
+		return sb.append(']').toString();
+	}
+	
 	@NonNull
 	private static <T> String buildGML(
 			@NonNull Set<String> nodes,

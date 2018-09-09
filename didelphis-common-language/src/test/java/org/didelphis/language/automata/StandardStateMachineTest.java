@@ -244,13 +244,22 @@ class StandardStateMachineTest {
 	}
 
 	@Test
-	void testCapturingGroups() {
+	void testCapturingGroups01() {
 		StateMachine<Sequence<Integer>> machine = getMachine("(ab)(cd)(ef)");
 
 		assertMatchesGroup(machine, "abcdef", 0, "abcdef");
 		assertMatchesGroup(machine, "abcdef", 1, "ab");
 		assertMatchesGroup(machine, "abcdef", 2, "cd");
 		assertMatchesGroup(machine, "abcdef", 3, "ef");
+	}
+
+	@Test
+	void testCapturingGroups02() {
+		StateMachine<Sequence<Integer>> machine = getMachine("(ab)(?:cd)(ef)");
+
+		assertMatchesGroup(machine, "abcdef", 0, "abcdef");
+		assertMatchesGroup(machine, "abcdef", 1, "ab");
+		assertMatchesGroup(machine, "abcdef", 2, "ef");
 	}
 
 	@Test

@@ -14,12 +14,19 @@
 
 package org.didelphis.language.automata.parsing;
 
+import lombok.AccessLevel;
+import lombok.Data;
 import lombok.NonNull;
+import lombok.experimental.FieldDefaults;
 import org.didelphis.language.automata.expressions.Expression;
+import org.didelphis.language.automata.expressions.ParallelNode;
+import org.didelphis.language.automata.expressions.ParentNode;
+import org.didelphis.language.automata.expressions.TerminalNode;
 import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -126,5 +133,35 @@ public interface LanguageParser<S> {
 	
 	default Expression parseExpression(String exp) {
 		return parseExpression(exp, ParseDirection.FORWARD);
+	}
+
+	@Data
+	@FieldDefaults (level = AccessLevel.PRIVATE)
+	final class Buffer {
+
+		boolean negative;
+		boolean parallel;
+		boolean capturing;
+
+		String quantifier = "";
+		String terminal = "";
+
+		List<Expression> nodes = new ArrayList<>();
+
+		public boolean isEmpty() {
+			return nodes.isEmpty() && terminal.isEmpty();
+		}
+
+		public @Nullable Expression toExpression() {
+			if (nodes.isEmpty()) {
+				return new TerminalNode(terminal, quantifier, negative);
+			} else if (parallel) {
+				return new ParallelNode(nodes, quantifier, negative);
+			} else if (terminal == null || terminal.isEmpty()) {
+				return new ParentNode(nodes, quantifier, negative, capturing);
+			} else {
+				return null;
+			}
+		}
 	}
 }

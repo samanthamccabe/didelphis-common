@@ -1,12 +1,10 @@
 package org.didelphis.language.automata.parsing;
 
 import lombok.AccessLevel;
-import lombok.Data;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import org.didelphis.language.automata.expressions.Expression;
-import org.didelphis.language.automata.expressions.ParallelNode;
 import org.didelphis.language.automata.expressions.ParentNode;
 import org.didelphis.language.automata.expressions.TerminalNode;
 import org.didelphis.language.parsing.ParseDirection;
@@ -14,23 +12,21 @@ import org.didelphis.language.parsing.ParseException;
 import org.didelphis.utilities.Splitter;
 import org.didelphis.utilities.Templates;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
 /**
- * Class {@code DidelphisBaseParser}
+ * Abstract Class {@code DidelphisBaseParser}
  *
  * @author Samantha Fiona McCabe
- * @date 8/25/18
  * @see StringParser
  * @see SequenceParser
  * @since 0.3.0
@@ -45,7 +41,7 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 	static Expression END_EXP = new TerminalNode("]#");
 
 	static {
-		DELIMITERS = new HashMap<>();
+		DELIMITERS = new LinkedHashMap<>();
 		DELIMITERS.put("(?:", ")");
 		DELIMITERS.put("(", ")");
 		DELIMITERS.put("{", "}");
@@ -111,7 +107,7 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 			} else if (QUANTIFIERS.contains(s)) {
 				buffer.setQuantifier(s);
 				buffer = update(buffer, expressions);
-			} else if (DELIMITERS.containsKey(s.substring(0, 1))) {
+			} else if (startsDelimiter(s)) {
 				buffer = update(buffer, expressions);
 				if (s.length() <= 1) {
 					String message = Templates.create()
@@ -121,9 +117,8 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 					throw new ParseException(message);
 				}
 				String substring = s.substring(1, s.length() - 1).trim();
-				String delimiter = s.substring(0, 1);
-				if (delimiter.equals("{")) {
-					List<String> elements = Splitter.whitespace(substring);
+				if (s.startsWith("{")) {
+					List<String> elements = Splitter.whitespace(substring, DELIMITERS);
 					List<Expression> children = new ArrayList<>();
 					for (String element : elements) {
 						List<String> list = split(element);
@@ -132,7 +127,7 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 					}
 					buffer.setNodes(children);
 					buffer.setParallel(true);
-				} else if (delimiter.equals("(?:")) {
+				} else if (s.startsWith("(?:")) {
 					List<String> list = split(substring);
 					Expression exp = parse(list);
 					buffer.setNodes(exp.getChildren());
@@ -151,6 +146,13 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 		return expressions.size() == 1
 				? expressions.get(0)
 				: new ParentNode(expressions);
+	}
+
+	private static boolean startsDelimiter(String string) {
+		for (String s : DELIMITERS.keySet()) {
+			if (string.startsWith(s)) return true;
+		}
+		return false;
 	}
 
 	/**
@@ -270,36 +272,6 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 			return new Buffer();
 		} else {
 			return buffer;
-		}
-	}
-
-	@Data
-	@FieldDefaults (level = AccessLevel.PRIVATE)
-	public static final class Buffer {
-
-		boolean negative;
-		boolean parallel;
-		boolean capturing;
-
-		String quantifier = "";
-		String terminal = "";
-
-		List<Expression> nodes = new ArrayList<>();
-
-		public boolean isEmpty() {
-			return nodes.isEmpty() && terminal.isEmpty();
-		}
-
-		public @Nullable Expression toExpression() {
-			if (nodes.isEmpty()) {
-				return new TerminalNode(terminal, quantifier, negative);
-			} else if (parallel) {
-				return new ParallelNode(nodes, quantifier, negative);
-			} else if (terminal == null || terminal.isEmpty()) {
-				return new ParentNode(nodes, quantifier, negative, capturing);
-			} else {
-				return null;
-			}
 		}
 	}
 }
