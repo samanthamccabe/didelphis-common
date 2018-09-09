@@ -33,7 +33,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -42,8 +41,6 @@ import java.util.stream.Collectors;
 @ToString
 @EqualsAndHashCode
 public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
-
-	private static final Pattern COMPILE = Pattern.compile("");
 	
 	private final FeatureSpecification specification;
 	private final FeatureModel<T> featureModel;
@@ -164,7 +161,9 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 		}
 		
 		FeatureArray<T> featureArray = getFeatureArray(best);
-		for (String s : COMPILE.split(string.substring(best.length()))) {
+		String substring = string.substring(best.length());
+		for (char c : substring.toCharArray()) {
+			String s = String.valueOf(c);
 			if (modifiers.containsKey(s)) {
 				FeatureArray<T> array = modifiers.get(s);
 				featureArray.alter(array);
