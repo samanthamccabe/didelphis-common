@@ -36,7 +36,6 @@ import java.util.Set;
  * @param <S>
  *     
  * @since 0.2.0
- * @date 2017-10-25
  */
 public interface LanguageParser<S> {
 
@@ -89,7 +88,7 @@ public interface LanguageParser<S> {
 	 * corresponding literal values
 	 */
 	@NonNull
-	MultiMap<String, S> getSpecials();
+	MultiMap<String, S> getSpecialsMap();
 
 	/**
 	 * Provides a uniform value for "dot" transitions, which accept any value,
@@ -106,14 +105,6 @@ public interface LanguageParser<S> {
 	 * @return the length of the provided element
 	 */
 	int lengthOf(@NonNull S t);
-
-	/**
-	 * 
-	 * @param substring
-	 * @return
-	 */
-	@NonNull
-	List<String> split(String substring);
 
 	/**
 	 * Allows type-agnostic retrieval of a subsequence

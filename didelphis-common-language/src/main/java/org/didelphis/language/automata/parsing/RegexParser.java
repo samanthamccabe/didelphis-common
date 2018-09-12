@@ -5,6 +5,7 @@ import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import org.didelphis.language.automata.expressions.Expression;
+import org.didelphis.language.automata.expressions.ParallelNode;
 import org.didelphis.language.automata.expressions.ParentNode;
 import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.language.parsing.ParseException;
@@ -15,7 +16,6 @@ import org.didelphis.utilities.Templates;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,7 +32,7 @@ import java.util.Set;
  */
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class RegexParser implements LanguageParser<String> {
+public class RegexParser implements LanguageParser<String> {    
 
 	static Map<String, String> DELIMITERS = new HashMap<>();
 	static {
@@ -47,15 +47,48 @@ public class RegexParser implements LanguageParser<String> {
 		QUANTIFIERS.add("?");
 		QUANTIFIERS.add("*");
 		QUANTIFIERS.add("+");
-		// todo:
 	}
 
-	static MultiMap<String, String> SPECIALS = new GeneralMultiMap<>();
+	static Map<String, String> CLASSES = new HashMap<>();
 	static {
-		SPECIALS.addAll("\\d", Arrays.asList("0","1","2","3","4","5","6","7","8","9"));
-		//todo:
+		CLASSES.put("\\d", "[0-9]");
+		CLASSES.put("\\D", "[^0-9]");
+		CLASSES.put("\\w", "[a-zA-Z0-9_]");
+		CLASSES.put("\\W", "[^a-zA-Z0-9_]");
+		CLASSES.put("\\s", "[ \t\f\r\n]");
+		CLASSES.put("\\S", "[^ \t\f\r\n]");
+		CLASSES.put("\\a", "[a-zA-Z]"); // custom
+		CLASSES.put("\\A", "[^a-zA-Z]"); // custom
 	}
 
+	static Set<String> ESCAPES = new HashSet<>();
+	static {
+		ESCAPES.add("\\$");
+		ESCAPES.add("\\\\");
+		ESCAPES.add("\\|");
+		ESCAPES.add("\\[");
+		ESCAPES.add("\\]");
+		ESCAPES.add("\\(");
+		ESCAPES.add("\\)");
+		ESCAPES.add("\\.");
+		ESCAPES.add("\\?");
+		ESCAPES.add("\\*");
+		ESCAPES.add("\\+");
+		ESCAPES.add("\\-");
+	}
+	
+	private final Set<String> specials;
+
+	public RegexParser() {
+		this(Collections.emptySet());
+	}
+	
+	public RegexParser(Set<String> specials) {
+		this.specials = new HashSet<>();
+		this.specials.addAll(specials);
+		this.specials.addAll(ESCAPES);
+	}
+	
 	@NonNull
 	@Override
 	public Map<String, String> supportedDelimiters() {
@@ -91,6 +124,7 @@ public class RegexParser implements LanguageParser<String> {
 	public Expression parseExpression(
 			@NonNull String expression, @NonNull ParseDirection direction
 	) {
+		validate(expression);
 		Expression exp;
 		try {
 			exp = parse(split(expression));
@@ -107,13 +141,62 @@ public class RegexParser implements LanguageParser<String> {
 		return Expression.rewriteIds(exp, "0");
 	}
 
+	/**
+	 * Checks for the presence of illegal sub-patterns in the expression which
+	 * are unambiguous errors.
+	 *
+	 * @param string an expression to be checked for basic errors
+	 *
+	 * @throws ParseException if basic structural errors are found in the
+	 * 		expression. Such errors include:
+	 * 		<ul>
+	 * 		<li>Expression consisting only of a word-start {@code ^} or -stop
+	 * 		{@code $} symbol</li>
+	 * 		<li>Multiple quantification ({@code *?}, {@code ?+}</li>
+	 * 		<li>Quantification of a boundary {@code ^?}</li>
+	 * 		</ul>
+	 */
+	private static void validate(@NonNull String string) {
+		
+		if (string.equals("^") || string.equals("$")) {
+			String template = Templates.create()
+					.add("An expression must not consist of only a",
+							" word-boundary {}")
+					.with(string)
+					.build();
+			throw new ParseException(template);
+		}
+		
+		for (int i = 0; i < string.length() - 1; i++) {
+			String p = String.valueOf(string.charAt(i));
+			String s = String.valueOf(string.charAt(i + 1));
+			String message = null;
+			
+			if (QUANTIFIERS.contains(p) && QUANTIFIERS.contains(s)) {
+				message = "Illegal multiple quantification {}{}";
+			}
+			if (p.equals("^") && QUANTIFIERS.contains(s)) {
+				message = "Illegal modification of boundary {}{}";
+			}
+			if ((p.equals("$") && QUANTIFIERS.contains(s))) {
+				message = "Illegal modification of boundary {}{}";
+			}
+			if (message != null) {
+				String template = Templates.create()
+						.add(message)
+						.with(p, s)
+						.data(string)
+						.build();
+				throw new ParseException(template);
+			}
+		}
+	}
+
 	private Expression parse(@NonNull List<String> split) {
 		Buffer buffer = new Buffer();
 		List<Expression> expressions = new ArrayList<>();
 		
-		if (split.contains("|")) {
-			buffer.setParallel(true);
-		}
+		boolean parallelParent = split.contains("|");
 		
 		for (String s : split) {
 			
@@ -125,7 +208,7 @@ public class RegexParser implements LanguageParser<String> {
 			if (QUANTIFIERS.contains(s)) {
 				buffer.setQuantifier(s);
 				buffer = update(buffer, expressions);
-			} else if (DELIMITERS.containsKey(s.substring(0, 1))) {
+			} else if (startsWithDelimiter(s)) {
 				buffer = update(buffer, expressions);
 				if (s.length() <= 1) {
 					String message = Templates.create()
@@ -134,23 +217,23 @@ public class RegexParser implements LanguageParser<String> {
 							.build();
 					throw new ParseException(message);
 				}
-				String substring = s.substring(1, s.length() - 1).trim();
-				String delimiter = s.substring(0, 1);
-				if (delimiter.equals("[")) {
-					List<String> elements = Splitter.whitespace(substring, DELIMITERS);
-					List<Expression> children = new ArrayList<>();
-					for (String element : elements) {
-						List<String> list = split(element);
-						Expression parse = parse(list);
-						children.add(parse);
-					}
-					buffer.setNodes(children);
+				int endIndex = s.length() - 1;
+				if (s.startsWith("[^")) {
+					String substring = s.substring(2, endIndex).trim();
+					buffer.setNodes(parseRanges(substring));
 					buffer.setParallel(true);
-				} else if (delimiter.equals("(?:")) {
+					buffer.setNegative(true);
+				} else if (s.startsWith("[")) {
+					String substring = s.substring(1, endIndex).trim();
+					buffer.setNodes(parseRanges(substring));
+					buffer.setParallel(true);
+				} else if (s.startsWith("(?:")) {
+					String substring = s.substring(3, endIndex).trim();
 					List<String> list = split(substring);
 					Expression exp = parse(list);
 					buffer.setNodes(exp.getChildren());
 				} else {
+					String substring = s.substring(1, endIndex).trim();
 					List<String> list = split(substring);
 					Expression exp = parse(list);
 					buffer.setNodes(exp.getChildren());
@@ -162,9 +245,72 @@ public class RegexParser implements LanguageParser<String> {
 			}
 		}
 		update(buffer, expressions);
-		return expressions.size() == 1
-				? expressions.get(0)
-				: new ParentNode(expressions);
+		if (expressions.size() == 1) {
+			return expressions.get(0);
+		} else if (parallelParent) {
+			return new ParallelNode(expressions);
+		} else {
+			return new ParentNode(expressions);
+		}
+	}
+
+	@NonNull
+	private List<Expression> parseRanges(String string) {
+		List<String> list1 = split(string);
+		List<String> list2 = new ArrayList<>();
+		for (int i = 0; i < list1.size();) {
+			String s1 = list1.get(i);
+			// check if there's an end range past the hyphen
+			if (i + 2 < list1.size()) {
+				if (list1.get(i + 1).equals("-")) {
+					String s2 = list1.get(i + 2);
+					if (s1.length() == 1 && s2.length() == 1) {
+						char c1 = s1.charAt(0);
+						char c2 = s2.charAt(0);
+						if (c1 > c2) {
+							String message = Templates.create()
+									.add("Unable to parse expression {}")
+									.with(string)
+									.add("Start {} is greater than end {}")
+									.with(c1, c2)
+									.build();
+							throw new ParseException(message);
+						}
+						
+						list2.add(String.valueOf(c1));
+						while (c1 < c2) {
+							c1++;
+							list2.add(String.valueOf(c1));
+						}
+						i+=2;
+					} else {
+						String message = Templates.create()
+								.add("Unable to parse expression {}")
+								.with(string)
+								.add("due to invalid range {}-{}")
+								.with(s1, s2)
+								.build();
+						throw new ParseException(message);
+					}
+				} else {
+					list2.add(s1);
+				}
+			} else {
+				list2.add(s1);
+			}
+			i++;
+		}
+		// will return a single non-parallel expression, so we get
+		// its children and re-assign them to the current expression
+		List<Expression> parsedChildren = parse(list2).getChildren();
+		return new ArrayList<>(parsedChildren);
+	}
+
+	private static boolean startsWithDelimiter(String s) {
+		for (String delimiter : DELIMITERS.keySet()) {
+			if (s.startsWith(delimiter)) return true;
+		}
+		return false;
 	}
 
 	@NonNull
@@ -195,8 +341,8 @@ public class RegexParser implements LanguageParser<String> {
 
 	@NonNull
 	@Override
-	public MultiMap<String, String> getSpecials() {
-		return SPECIALS;
+	public MultiMap<String, String> getSpecialsMap() {
+		return GeneralMultiMap.emptyMultiMap();
 	}
 
 	@NonNull
@@ -211,10 +357,15 @@ public class RegexParser implements LanguageParser<String> {
 	}
 	
 	@NonNull
-	@Override
-	public List<String> split(String substring) {
-		return Splitter.toList(substring, DELIMITERS, SPECIALS.keys());
-
+	private List<String> split(String string) {
+		List<String> list = Splitter.toList(string, DELIMITERS, CLASSES.keySet());
+		for (int i = 0; i < list.size(); i++) {
+			String s = list.get(i);
+			if (CLASSES.containsKey(s)) {
+				list.set(i, CLASSES.get(s));
+			}
+		}
+		return list;
 	}
 
 	@NonNull

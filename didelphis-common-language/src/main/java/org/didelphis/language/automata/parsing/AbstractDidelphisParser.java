@@ -64,6 +64,8 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 		return Collections.unmodifiableSet(QUANTIFIERS);
 	}
 
+	protected abstract List<String> split(String string);
+	
 	@NonNull
 	@Override
 	@Contract ("_,_ -> new")

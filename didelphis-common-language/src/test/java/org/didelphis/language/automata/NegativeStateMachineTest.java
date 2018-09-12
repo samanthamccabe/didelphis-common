@@ -36,7 +36,6 @@ import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.didelphis.utilities.Logger;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 
 import java.time.Duration;
 import java.util.Arrays;
@@ -53,7 +52,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * @author Samantha Fiona McCabe
- * @date 1/31/2016
  */
 class NegativeStateMachineTest {
 
@@ -106,9 +104,9 @@ class NegativeStateMachineTest {
 		fail(machine, "aab");
 		fail(machine, "aaab");
 		fail(machine, "c");
-
-		//		fail(machine, "bab"); // TODO: actually it is unclear if this should pass or fail
-		//		fail(machine, "bbab"); // TODO: actually it is unclear if this should pass or fail
+		
+		fail(machine, "bab");
+		fail(machine, "bbab");
 
 		test(machine, "b");
 		test(machine, "bb");
@@ -410,45 +408,19 @@ class NegativeStateMachineTest {
 	private static void test(
 			StateMachine<Sequence<Integer>> stateMachine, String target
 	) {
-			Executable executable = () -> {
-				Collection<Integer> indices = testMachine(stateMachine, target);
-				Assertions.assertFalse(
-						indices.isEmpty(),
-						"Machine failed to accept input: " + target
-				);
-			};
-		if (TIMEOUT && DURATION != null) {
-			Assertions.assertTimeoutPreemptively(DURATION, executable);
-		} else {
-			try {
-				executable.execute();
-			} catch (Throwable throwable) {
-				LOG.error("Unexpected failure encountered: {}", throwable);
-			}
-		}
+		int index = testMachine(stateMachine, target);
+		Assertions.assertTrue(index > 0,
+				"Machine failed to accept input: " + target
+		);
 	}
 
 	private static void fail(
-			StateMachine<Sequence<Integer>> stateMachine, 
-			String target
+			StateMachine<Sequence<Integer>> stateMachine, String target
 	) {
-		Executable executable = () -> {
-			Collection<Integer> indices = testMachine(stateMachine, target);
-			Assertions.assertTrue(
-					indices.isEmpty(),
-					"Machine accepted input it should not have: " + target
-			);
-		};
-
-		if (TIMEOUT && DURATION != null) {
-			Assertions.assertTimeoutPreemptively(DURATION, executable);
-		} else {
-			try {
-				executable.execute();
-			} catch (Throwable throwable) {
-				LOG.error("Unexpected failure encountered: {}", throwable);
-			}
-		}
+		int index = testMachine(stateMachine, target);
+		Assertions.assertFalse(index > 0,
+				"Machine accepted input it should not have: " + target
+		);
 	}
 
 	private static void assertMatchesGroup(
@@ -472,17 +444,22 @@ class NegativeStateMachineTest {
 		Match<Sequence<Integer>> match = machine.match(sequence, 0);
 		assertNull(match.group(group));
 	}
-	
-	private static Collection<Integer> testMachine(
+
+	private static int testMachine(
 			StateMachine<Sequence<Integer>> stateMachine, String target
 	) {
 		FeatureModel<Integer> model = FACTORY.getFeatureMapping().getFeatureModel();
 		Sequence<Integer> sequence = new BasicSequence<>(model);
 		SequenceParser<Integer> parser = new SequenceParser<>(FACTORY);
-		if (target.startsWith("#")) sequence.add(parser.transform("#["));
-		sequence.add(FACTORY.toSequence(target.replaceAll("#","")));
-		if (target.endsWith("#")) sequence.add(parser.transform("]#"));
+		if (target.startsWith("#")) {
+			sequence.add(parser.transform("#["));
+		}
+		sequence.add(FACTORY.toSequence(target.replaceAll("#", "")));
+		if (target.endsWith("#")) {
+			sequence.add(parser.transform("]#"));
+		}
 
 		Match<Sequence<Integer>> match = stateMachine.match(sequence, 0);
-		return Collections.singleton(match.end());	}
+		return match.end();
+	}
 }

@@ -103,7 +103,7 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 
 	@NonNull
 	@Override
-	public MultiMap<String, Sequence<T>> getSpecials() {
+	public MultiMap<String, Sequence<T>> getSpecialsMap() {
 		return specials;
 	}
 
@@ -120,7 +120,7 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 
 	@Override
 	@NonNull
-	public List<String> split(String substring) {
+	protected List<String> split(String substring) {
 		FormatterMode formatter = factory.getFormatterMode();
 		Set<String> set = new HashSet<>();
 		set.addAll(factory.getSpecialStrings());

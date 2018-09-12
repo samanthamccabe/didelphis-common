@@ -15,22 +15,12 @@
 package org.didelphis.language.automata;
 
 import lombok.NonNull;
-import org.didelphis.io.ClassPathFileHandler;
 import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.matching.Match;
-import org.didelphis.language.automata.matching.SequenceMatcher;
-import org.didelphis.language.automata.parsing.SequenceParser;
+import org.didelphis.language.automata.matching.RegexMatcher;
+import org.didelphis.language.automata.parsing.RegexParser;
 import org.didelphis.language.automata.statemachines.StandardStateMachine;
 import org.didelphis.language.automata.statemachines.StateMachine;
-import org.didelphis.language.parsing.FormatterMode;
-import org.didelphis.language.parsing.ParseException;
-import org.didelphis.language.phonetic.SequenceFactory;
-import org.didelphis.language.phonetic.features.IntegerFeature;
-import org.didelphis.language.phonetic.model.FeatureMapping;
-import org.didelphis.language.phonetic.model.FeatureModelLoader;
-import org.didelphis.language.phonetic.sequences.Sequence;
-import org.didelphis.structures.maps.GeneralMultiMap;
-import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.didelphis.utilities.Logger;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -44,43 +34,34 @@ import static org.didelphis.language.parsing.ParseDirection.FORWARD;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Samantha Fiona McCabe
  */
-class StandardStateMachineTest {
+class StandardStateMachineRegexTest {
 
-	private static final Logger LOG = Logger.create(StandardStateMachineTest.class);
+	private static final Logger LOG = Logger.create(StandardStateMachineRegexTest.class);
 
 	private static final Duration DURATION = Duration.ofSeconds(1);
 	private static final boolean TIMEOUT = false;
 	
-	private static final SequenceFactory<Integer> FACTORY = factory();
-
+	private static final RegexParser PARSER = new RegexParser();
+	private static final RegexMatcher MATCHER = new RegexMatcher();
+	
 	@Test
 	void testEmpty() {
-		StateMachine<Sequence<Integer>> machine = getMachine("");
+		StateMachine<String> machine = getMachine("");
 		assertMatches(machine, "");
 		assertMatches(machine, "a");
 		assertMatches(machine, "ab");
 		assertMatches(machine, "abc");
 	}
-
-	@Test
-	void testBoundaryOnly() {
-		StateMachine<Sequence<Integer>> machine = getMachine("#");
-		assertMatches(machine, "");
-		assertNotMatches(machine, "a");
-		assertNotMatches(machine, "ab");
-		assertNotMatches(machine, "abc");
-	}
-
+	
 	@Test
 	void testBoundaries1() {
-		StateMachine<Sequence<Integer>> machine = getMachine("#a#");
+		StateMachine<String> machine = getMachine("^a$");
 		
 		assertMatches(machine, "a");
 
@@ -91,7 +72,7 @@ class StandardStateMachineTest {
 
 	@Test
 	void testBoundaries2() {
-		StateMachine<Sequence<Integer>> machine = getMachine("#a");
+		StateMachine<String> machine = getMachine("^a");
 
 		assertMatches(machine, "a");
 		assertMatches(machine, "aa");
@@ -103,7 +84,7 @@ class StandardStateMachineTest {
 	
 	@Test
 	void testBoundaries3() {
-		StateMachine<Sequence<Integer>> machine = getMachine("a#");
+		StateMachine<String> machine = getMachine("a$");
 
 		assertMatches(machine, "a");
 
@@ -115,7 +96,7 @@ class StandardStateMachineTest {
 
 	@Test
 	void testBasic01() {
-		StateMachine<Sequence<Integer>> machine = getMachine("a");
+		StateMachine<String> machine = getMachine("a");
 		assertMatches(machine, "a");
 		assertMatches(machine, "aa");
 		
@@ -125,7 +106,7 @@ class StandardStateMachineTest {
 
 	@Test
 	void testBasic02() {
-		StateMachine<Sequence<Integer>> machine = getMachine("aaa");
+		StateMachine<String> machine = getMachine("aaa");
 		assertMatches(machine, "aaa");
 		assertNotMatches(machine, "a");
 		assertNotMatches(machine, "aa");
@@ -140,7 +121,7 @@ class StandardStateMachineTest {
 	
 	@Test
 	void testBasic03() {
-		StateMachine<Sequence<Integer>> machine = getMachine("aaa?");
+		StateMachine<String> machine = getMachine("aaa?");
 		assertMatches(machine, "aa");
 		assertMatches(machine, "aaa");
 		
@@ -151,7 +132,7 @@ class StandardStateMachineTest {
 
 	@Test
 	void testBasic04() {
-		StateMachine<Sequence<Integer>> machine = getMachine("ab*cd?ab");
+		StateMachine<String> machine = getMachine("ab*cd?ab");
 
 		assertMatches(machine, "acab");
 		assertMatches(machine, "abcab");
@@ -173,7 +154,7 @@ class StandardStateMachineTest {
 
 	@Test
 	void testStar() {
-		StateMachine<Sequence<Integer>> machine = getMachine("aa*");
+		StateMachine<String> machine = getMachine("aa*");
 
 		assertMatches(machine, "a");
 		assertMatches(machine, "aa");
@@ -185,7 +166,7 @@ class StandardStateMachineTest {
 
 	@Test
 	void testStateMachinePlus() {
-		StateMachine<Sequence<Integer>> machine = getMachine("a+");
+		StateMachine<String> machine = getMachine("a+");
 
 		assertMatches(machine, "a");
 		assertMatches(machine, "aa");
@@ -199,7 +180,7 @@ class StandardStateMachineTest {
 
 	@Test
 	void testCapturingGroups01() {
-		StateMachine<Sequence<Integer>> machine = getMachine("(ab)(cd)(ef)");
+		StateMachine<String> machine = getMachine("(ab)(cd)(ef)");
 
 		assertMatchesGroup(machine, "abcdef", 0, "abcdef");
 		assertMatchesGroup(machine, "abcdef", 1, "ab");
@@ -209,7 +190,7 @@ class StandardStateMachineTest {
 
 	@Test
 	void testCapturingGroups02() {
-		StateMachine<Sequence<Integer>> machine = getMachine("(ab)(?:cd)(ef)");
+		StateMachine<String> machine = getMachine("(ab)(?:cd)(ef)");
 
 		assertMatchesGroup(machine, "abcdef", 0, "abcdef");
 		assertMatchesGroup(machine, "abcdef", 1, "ab");
@@ -218,7 +199,7 @@ class StandardStateMachineTest {
 
 	@Test
 	void testGroups() {
-		StateMachine<Sequence<Integer>> machine = getMachine("(ab)(cd)(ef)");
+		StateMachine<String> machine = getMachine("(ab)(cd)(ef)");
 
 		assertMatches(machine, "abcdef");
 		assertNotMatches(machine, "abcd");
@@ -228,7 +209,7 @@ class StandardStateMachineTest {
 
 	@Test
 	void testGroupStar01() {
-		StateMachine<Sequence<Integer>> machine = getMachine("(ab)*(cd)(ef)");
+		StateMachine<String> machine = getMachine("(ab)*(cd)(ef)");
 
 		assertMatches(machine, "abababcdef");
 		assertMatches(machine, "ababcdef");
@@ -243,7 +224,7 @@ class StandardStateMachineTest {
 
 	@Test
 	void testGroupStar02() {
-		StateMachine<Sequence<Integer>> machine = getMachine("d(eo*)*b");
+		StateMachine<String> machine = getMachine("d(eo*)*b");
 
 		assertMatches(machine, "db");
 		assertMatches(machine, "deb");
@@ -261,7 +242,7 @@ class StandardStateMachineTest {
 
 	@Test
 	void testGroupOptional01() {
-		StateMachine<Sequence<Integer>> machine = getMachine("(ab)?(cd)(ef)");
+		StateMachine<String> machine = getMachine("(ab)?(cd)(ef)");
 
 		assertMatches(machine, "abcdef");
 		assertMatches(machine, "cdef");
@@ -269,7 +250,7 @@ class StandardStateMachineTest {
 
 	@Test
 	void testCapturingGroupsOptional() {
-		StateMachine<Sequence<Integer>> machine = getMachine("(ab)?(cd)(ef)");
+		StateMachine<String> machine = getMachine("(ab)?(cd)(ef)");
 
 		assertMatchesGroup(machine, "abcdef", 0, "abcdef");
 		assertMatchesGroup(machine, "abcdef", 1, "ab");
@@ -285,7 +266,7 @@ class StandardStateMachineTest {
 
 	@Test
 	void testSets01() {
-		StateMachine<Sequence<Integer>> machine = getMachine("{ x ɣ }");
+		StateMachine<String> machine = getMachine("[xɣ]");
 
 		assertMatches(machine, "x");
 		assertMatches(machine, "ɣ");
@@ -295,8 +276,7 @@ class StandardStateMachineTest {
 
 	@Test
 	void testSets02() {
-		String exp = "{ab {cd xy} ef}tr";
-		StateMachine<Sequence<Integer>> machine = getMachine(exp);
+		StateMachine<String> machine = getMachine("[(ab)(cd)(xy)(ef)]tr");
 
 		assertMatches(machine, "abtr");
 		assertMatches(machine, "cdtr");
@@ -308,18 +288,29 @@ class StandardStateMachineTest {
 	}
 	
 	@Test
-	void testSetsExtraSpace01() {
-		StateMachine<Sequence<Integer>> machine = getMachine("{cʰ  c  ɟ}");
+	void testSetsMultiCharacter() {
+		StateMachine<String> machine = getMachine("[cɟ]");
 
 		assertMatches(machine, "ɟ");
 		assertMatches(machine, "c");
-		assertMatches(machine, "cʰ");
 		assertNotMatches(machine, "a");
 	}
 
 	@Test
+	void testNestedSquareBrackets() {
+		StateMachine<String> machine = getMachine("[ab[cd]]");
+
+		assertMatches(machine, "a");
+		assertMatches(machine, "b");
+		assertMatches(machine, "c");
+		assertMatches(machine, "d");
+		
+		assertNotMatches(machine, "x");
+	}
+
+	@Test
 	void testGroupPlus01() {
-		StateMachine<Sequence<Integer>> machine = getMachine("(ab)+");
+		StateMachine<String> machine = getMachine("(ab)+");
 
 		assertMatches(machine, "ab");
 		assertMatches(machine, "abab");
@@ -328,7 +319,7 @@ class StandardStateMachineTest {
 
 	@Test
 	void testGroupStarEnd01() {
-		StateMachine<Sequence<Integer>> machine = getMachine("(ab)*#");
+		StateMachine<String> machine = getMachine("(ab)*$");
 
 		assertMatches(machine, "");
 		assertMatches(machine, "ab");
@@ -346,16 +337,14 @@ class StandardStateMachineTest {
 
 	@Test
 	void testComplexGroups01() {
-		String exp = "(a+l(ham+b)*ra)+";
-		StateMachine<Sequence<Integer>> machine = getMachine(exp);
+		StateMachine<String> machine = getMachine("(a+l(ham+b)*ra)+");
 
 		assertMatches(machine, "alhambra");
 	}
 
 	@Test
 	void testComplexCapturingGroups01() {
-		String exp = "(a+l(ham+b)*ra)+";
-		StateMachine<Sequence<Integer>> machine = getMachine(exp);
+		StateMachine<String> machine = getMachine("(a+l(ham+b)*ra)+");
 
 		assertMatchesGroup(machine, "alhambraalhambra", 0, "alhambraalhambra");
 		
@@ -374,7 +363,7 @@ class StandardStateMachineTest {
 
 	@Test
 	void testComplex06() {
-		StateMachine<Sequence<Integer>> machine = getMachine("{r l}{i u}s");
+		StateMachine<String> machine = getMachine("[rl][iu]s");
 
 		assertMatches(machine, "ris");
 		assertMatches(machine, "rus");
@@ -391,7 +380,7 @@ class StandardStateMachineTest {
 		
 	@Test
 	void testComplex07() {
-		StateMachine<Sequence<Integer>> machine = getMachine("{r l}?{i u}?s");
+		StateMachine<String> machine = getMachine("[rl]?[iu]?s");
 
 		assertMatches(machine, "s");
 
@@ -409,61 +398,41 @@ class StandardStateMachineTest {
 	}
 
 	@Test
-	void testComplex08() {
-		StateMachine<Sequence<Integer>> machine = getMachine("{r #}{i u}?s");
-
-		assertMatches(machine, "s");
-
-		assertMatches(machine, "is");
-		assertMatches(machine, "us");
-
-		assertMatches(machine, "rs");
-
-		assertMatches(machine, "ris");
-		assertMatches(machine, "rus");
-
-		assertNotMatches(machine, "ls");
-		assertNotMatches(machine, "lis");
-		assertNotMatches(machine, "lus");
-	}
-
-	@Test
 	void testComplex02() {
-		String exp = "{r l}?{a e o ā ē ō}{i u}?{n m l r}?{pʰ tʰ kʰ cʰ}us";
-		StateMachine<Sequence<Integer>> machine = getMachine(exp);
+		StateMachine<String> machine = getMachine(
+				"[rl]?[aeoāēō][iu]?[nmlr]?[ptkc]us");
 
-		assertMatches(machine, "ācʰus");
+		assertMatches(machine, "ācus");
 		assertNotMatches(machine, "a");
 	}
 
 	@Test
 	void testComplex03() {
-		String expression = "a?{pʰ tʰ kʰ cʰ}us";
-		StateMachine<Sequence<Integer>> machine = getMachine(expression);
+		StateMachine<String> machine = getMachine("a?[ptkc]us");
 
-		assertMatches(machine, "pʰus");
-		assertMatches(machine, "tʰus");
-		assertMatches(machine, "kʰus");
-		assertMatches(machine, "cʰus");
-		assertMatches(machine, "acʰus");
+		assertMatches(machine, "pus");
+		assertMatches(machine, "tus");
+		assertMatches(machine, "kus");
+		assertMatches(machine, "cus");
+		assertMatches(machine, "acus");
 		assertNotMatches(machine, "a");
 	}
 
 	@Test
 	void testComplex04() {
-		String exp = "{a e o ā ē ō}{pʰ tʰ kʰ cʰ}us";
-		StateMachine<Sequence<Integer>> machine = getMachine(exp);
+		StateMachine<String> machine = getMachine(
+				"[aeoāēō][ptkc]us");
 		
-		assertMatches(machine, "apʰus");
-		assertMatches(machine, "atʰus");
-		assertMatches(machine, "akʰus");
-		assertMatches(machine, "acʰus");
+		assertMatches(machine, "apus");
+		assertMatches(machine, "atus");
+		assertMatches(machine, "akus");
+		assertMatches(machine, "acus");
 		assertNotMatches(machine, "a");
 	}
 
 	@Test
 	void testComplex01() {
-		StateMachine<Sequence<Integer>> machine = getMachine("a?(b?c?)d?b");
+		StateMachine<String> machine = getMachine("a?(b?c?)d?b");
 
 		assertMatches(machine, "b");
 		assertMatches(machine, "db");
@@ -477,7 +446,7 @@ class StandardStateMachineTest {
 
 	@Test
 	void testComplexCapture01() {
-		StateMachine<Sequence<Integer>> machine = getMachine("a?(b?c?)d?b");
+		StateMachine<String> machine = getMachine("a?(b?c?)d?b");
 
 		assertMatchesGroup(machine, "b", 0, "b");
 		assertNoGroup(machine, "b", 1);
@@ -497,69 +466,10 @@ class StandardStateMachineTest {
 		assertMatchesGroup(machine, "ab", 0, "ab");
 		assertNoGroup(machine, "ab", 1);
 	}
-
-	@Test
-	void testComplex05() {
-
-		String exp = "{ab* (cd?)+ ((ae)*f)+}tr";
-		StateMachine<Sequence<Integer>> machine = getMachine(exp);
-
-		assertMatches(machine, "abtr");
-		assertMatches(machine, "cdtr");
-		assertMatches(machine, "ftr");
-		assertMatches(machine, "aeftr");
-		assertMatches(machine, "aeaeftr");
-
-		assertMatches(machine, "cctr");
-		assertMatches(machine, "ccctr");
-		assertMatches(machine, "fftr");
-		assertMatches(machine, "aefaeftr");
-		assertMatches(machine, "aefffffaeftr");
-
-		assertNotMatches(machine, "abcd");
-		assertNotMatches(machine, "tr");
-
-		assertNotMatches(machine, "a");
-	}
-
-	@Test
-	void testComplexCaptureGroup() {
-
-		String exp = "{ab* (cd?)+ ((ae)*f)+}tr";
-		StateMachine<Sequence<Integer>> machine = getMachine(exp);
-
-		assertMatchesGroup(machine, "abtr", 0, "abtr");
-		assertNoGroup(machine, "abtr", 1);
-		assertNoGroup(machine, "abtr", 2);
-		assertNoGroup(machine, "abtr", 3);
-
-		assertMatchesGroup(machine, "cdtr", 0, "cdtr");
-		assertMatchesGroup(machine, "cdtr", 1, "cd");
-		assertNoGroup(machine, "cdtr", 2);
-		assertNoGroup(machine, "cdtr", 3);
-
-		assertMatchesGroup(machine, "ctr", 0, "ctr");
-		assertMatchesGroup(machine, "ctr", 1, "c");
-
-		assertMatchesGroup(machine, "ftr", 0, "ftr");
-		assertMatchesGroup(machine, "ftr", 2, "f");
-		
-		assertNoGroup(machine, "ftr", 1);
-		assertNoGroup(machine, "ftr", 3);
-
-		assertMatchesGroup(machine, "aeftr", 0, "aeftr");
-		assertMatchesGroup(machine, "aeftr", 2, "aef");
-		assertNoGroup(machine, "aeftr", 1);
-
-		assertMatchesGroup(machine, "aeaeftr", 0, "aeaeftr");
-		assertMatchesGroup(machine, "aeaeftr", 2, "aeaef");
-		assertMatchesGroup(machine, "aeaeftr", 3, "aeae");
-		assertNoGroup(machine, "aeaeftr", 1);
-	}
 	
 	@Test
 	void testDot01() {
-		StateMachine<Sequence<Integer>> machine = getMachine("..");
+		StateMachine<String> machine = getMachine("..");
 
 		assertMatches(machine, "ab");
 		assertMatches(machine, "db");
@@ -579,7 +489,7 @@ class StandardStateMachineTest {
 
 	@Test
 	void testDot02() {
-		StateMachine<Sequence<Integer>> machine = getMachine("a..");
+		StateMachine<String> machine = getMachine("a..");
 
 		assertMatches(machine, "abb");
 		assertMatches(machine, "acdb");
@@ -600,7 +510,7 @@ class StandardStateMachineTest {
 
 	@Test
 	void testGroupsDot() {
-		StateMachine<Sequence<Integer>> machine = getMachine(".*(cd)(ef)");
+		StateMachine<String> machine = getMachine(".*(cd)(ef)");
 
 		assertMatches(machine, "cdef");
 		assertMatches(machine, "bcdef");
@@ -614,7 +524,7 @@ class StandardStateMachineTest {
 
 	@Test
 	void testGroupsDotPlus() {
-		StateMachine<Sequence<Integer>> machine = getMachine(".+(cd)(ef)");
+		StateMachine<String> machine = getMachine(".+(cd)(ef)");
 
 		assertMatches(machine, "bcdef");
 		assertMatches(machine, "abcdef");
@@ -628,14 +538,14 @@ class StandardStateMachineTest {
 
 	@Test
 	void testBoundary() {
-		StateMachine<Sequence<Integer>> machine = getMachine("a#");
+		StateMachine<String> machine = getMachine("a$");
 		assertMatches(machine, "a");
 		assertNotMatches(machine, "ab");
 	}
 
 	@Test
 	void testGroupsDotStar() {
-		StateMachine<Sequence<Integer>> machine = getMachine("(a.)*cd#");
+		StateMachine<String> machine = getMachine("(a.)*cd$");
 
 		assertMatches(machine, "cd");
 		assertMatches(machine, "aXcd");
@@ -648,50 +558,18 @@ class StandardStateMachineTest {
 	}
 
 	@Test
-	void testBoundaryInSet01() {
-		StateMachine<Sequence<Integer>> machine = getMachine("m{a b #}");
+	void testWordCharacters() {
+		StateMachine<String> machine = getMachine("\\w+");
 
-		assertMatches(machine, "mb");
-		assertMatches(machine, "ma");
-		assertMatches(machine, "m");
-
-		assertNotMatches(machine, "xa");
-		assertNotMatches(machine, "xb");
-
-		assertNotMatches(machine, "xaa");
-		assertNotMatches(machine, "xab");
-	}
-
-	@Test
-	void testSpecials01() {
-
-		MultiMap<String, Sequence<Integer>> multiMap = new GeneralMultiMap<>();
-		multiMap.add("CH", FACTORY.toSequence("ph"));
-		multiMap.add("CH", FACTORY.toSequence("th"));
-		multiMap.add("CH", FACTORY.toSequence("kh"));
-		
-		StateMachine<Sequence<Integer>> machine = getMachine("aCHa", multiMap);
-
-		assertMatches(machine, "apha");
-		assertMatches(machine, "atha");
-		assertMatches(machine, "akha");
-
-		assertNotMatches(machine, "aCHa");
-		assertNotMatches(machine, "apa");
-		assertNotMatches(machine, "ata");
-		assertNotMatches(machine, "aka");
+		assertMatches(machine, "c");
+		assertMatches(machine, "cc");
+		assertMatches(machine, "cD");
+		assertMatches(machine, "cD0");
+		assertMatches(machine, "cD_0");
+		assertMatches(machine, "cD_09_a");
 	}
 	
-	private static SequenceFactory<Integer> factory() {
-		FeatureModelLoader<Integer> loader = new FeatureModelLoader<>(
-				IntegerFeature.INSTANCE,
-				ClassPathFileHandler.INSTANCE,
-				Collections.emptyList());
-		FeatureMapping<Integer> mapping = loader.getFeatureMapping();
-		return new SequenceFactory<>(mapping, FormatterMode.INTELLIGENT);
-	}
-
-	private static void assertMatches(StateMachine<Sequence<Integer>> machine, String target) {
+	private static void assertMatches(StateMachine<String> machine, String target) {
 		Executable executable = () -> {
 			Collection<Integer> collection = testMachine(machine, target);
 			Collection<Integer> matchIndices = new ArrayList<>(collection);
@@ -712,31 +590,14 @@ class StandardStateMachineTest {
 			}
 		}
 	}
-	
-	private static void assertThrowsParse(String expression) {
-		assertThrows(ParseException.class, () -> getMachine(expression));
-	}
 
-	private static StateMachine<Sequence<Integer>> getMachine(String expression) {
-		return getMachine(expression, null);
-	}
-
-	private static StateMachine<Sequence<Integer>> getMachine(
-			String exp,
-			MultiMap<String, Sequence<Integer>> specials
-	) {
-		SequenceParser<Integer> parser = specials == null 
-				? new SequenceParser<>(FACTORY)
-				: new SequenceParser<>(FACTORY, specials);
-		SequenceMatcher<Integer> matcher = new SequenceMatcher<>(parser);
-		Expression expression = parser.parseExpression(exp, FORWARD);
-		return StandardStateMachine.create("M0",
-				expression,
-				parser,
-				matcher);
+	private static StateMachine<String> getMachine(String exp) {
+		RegexParser regexParser = new RegexParser();
+		Expression expression = regexParser.parseExpression(exp, FORWARD);
+		return StandardStateMachine.create("M0", expression, PARSER, MATCHER);
 	}
 	
-	private static void assertNotMatches(StateMachine<Sequence<Integer>> machine, String target) {
+	private static void assertNotMatches(StateMachine<String> machine, String target) {
 		Executable executable = () -> {
 			Collection<Integer> matchIndices = testMachine(machine, target);
 			assertTrue(
@@ -758,31 +619,28 @@ class StandardStateMachineTest {
 	}
 
 	private static void assertMatchesGroup(
-			@NonNull StateMachine<Sequence<Integer>> machine,
+			@NonNull StateMachine<String> machine,
 			@NonNull String input,
 			int group,
 			@NonNull String expected
 	) {
-		Sequence<Integer> sequence = FACTORY.toSequence(input);
-		Match<Sequence<Integer>> match = machine.match(sequence, 0);
-		Sequence<Integer> matchedGroup = match.group(group);
-		assertEquals(FACTORY.toSequence(expected), matchedGroup);
+		Match<String> match = machine.match(input, 0);
+		String matchedGroup = match.group(group);
+		assertEquals(expected, matchedGroup);
 	}
 
 	private static void assertNoGroup(
-			@NonNull StateMachine<Sequence<Integer>> machine,
+			@NonNull StateMachine<String> machine,
 			@NonNull String input,
 			int group
 	) {
-		Sequence<Integer> sequence = FACTORY.toSequence(input);
-		Match<Sequence<Integer>> match = machine.match(sequence, 0);
+		Match<String> match = machine.match(input, 0);
 		assertNull(match.group(group));
 	}
 	
 	private static Collection<Integer> testMachine(
-			StateMachine<Sequence<Integer>> machine, String target) {
-		Sequence<Integer> sequence = FACTORY.toSequence(target);
-		Match<Sequence<Integer>> match = machine.match(sequence, 0);
+			StateMachine<String> machine, String target) {
+		Match<String> match = machine.match(target, 0);
 		return match.end() >= 0
 				? Collections.singleton(match.end())
 				: Collections.emptyList();

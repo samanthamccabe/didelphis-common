@@ -42,7 +42,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Samantha Fiona McCabe
- * @date 2/28/2015
  */
 class StandardStateMachineModelTest {
 	
@@ -89,7 +88,8 @@ class StandardStateMachineModelTest {
 	
 	@Test
 	void testBasicStateMachine01() {
-		StateMachine<Sequence<Integer>> machine = getMachine("[-con, +son, -hgh, +frn, -atr, +voice]");
+		String exp = "[-con, +son, -hgh, +frn, -atr, +voice]";
+		StateMachine<Sequence<Integer>> machine = getMachine(exp);
 
 		test(machine, "a");
 		test(machine, "aa");
@@ -100,7 +100,8 @@ class StandardStateMachineModelTest {
 
 	@Test
 	void testBasicStateMachine03() {
-		StateMachine<Sequence<Integer>> machine = getMachine("a[-con, +son, -hgh, +frn]+");
+		String exp = "a[-con, +son, -hgh, +frn]+";
+		StateMachine<Sequence<Integer>> machine = getMachine(exp);
 
 		fail(machine, "a");
 		test(machine, "aa");
@@ -116,7 +117,7 @@ class StandardStateMachineModelTest {
 	void testBasicStateMachine02() {
 		StateMachine<Sequence<Integer>> machine = getMachine("aaa");
 
-//		test(machine, "aaa");
+		test(machine, "aaa");
 
 		fail(machine, "a");
 		fail(machine, "aa");
@@ -138,7 +139,8 @@ class StandardStateMachineModelTest {
 
 	@Test
 	void testComplex01() {
-		StateMachine<Sequence<Integer>> machine = getMachine("{a e o ā ē ō}{n m l r}?{pʰ tʰ kʰ cʰ}us");
+		String exp = "{a e o ā ē ō}{n m l r}?{pʰ tʰ kʰ cʰ}us";
+		StateMachine<Sequence<Integer>> machine = getMachine(exp);
 
 		test(machine, "ācʰus");
 		test(machine, "āncʰus");
@@ -159,7 +161,8 @@ class StandardStateMachineModelTest {
 	
 	@Test
 	void testComplex02() {
-		StateMachine<Sequence<Integer>> machine = getMachine("{r l}?{a e o ā ē ō}{i u}?{n m l r}?{pʰ tʰ kʰ cʰ}us");
+		String exp = "{r l}?{a e o ā ē ō}{i u}?{n m l r}?{pʰ tʰ kʰ cʰ}us";
+		StateMachine<Sequence<Integer>> machine = getMachine(exp);
 
 		test(machine, "ācʰus");
 		test(machine, "rācʰus");
@@ -196,7 +199,8 @@ class StandardStateMachineModelTest {
 
 	@Test
 	void testComplex03() {
-		StateMachine<Sequence<Integer>> machine = getMachine("a?{pʰ tʰ kʰ cʰ}us");
+		String exp = "a?{pʰ tʰ kʰ cʰ}us";
+		StateMachine<Sequence<Integer>> machine = getMachine(exp);
 
 		test(machine, "pʰus");
 		test(machine, "tʰus");
@@ -207,7 +211,8 @@ class StandardStateMachineModelTest {
 
 	@Test
 	void testComplex04() {
-		StateMachine<Sequence<Integer>> machine = getMachine("{a e o ā ē ō}{pʰ tʰ kʰ cʰ}us");
+		String exp = "{a e o ā ē ō}{pʰ tʰ kʰ cʰ}us";
+		StateMachine<Sequence<Integer>> machine = getMachine(exp);
 
 		test(machine, "apʰus");
 		test(machine, "atʰus");
@@ -247,7 +252,8 @@ class StandardStateMachineModelTest {
 
 	@Test
 	void testComplex05() {
-		StateMachine<Sequence<Integer>> machine = getMachine("[-con, +voice, -creaky][-son, -voice, +vot]us");
+		String exp = "[-con, +voice, -creaky][-son, -voice, +vot]us";
+		StateMachine<Sequence<Integer>> machine = getMachine(exp);
 
 		test(machine, "apʰus");
 		test(machine, "atʰus");

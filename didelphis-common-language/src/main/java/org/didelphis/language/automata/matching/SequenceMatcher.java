@@ -40,7 +40,7 @@ public class SequenceMatcher<S> implements LanguageMatcher<Sequence<S>> {
 		this.parser = parser;
 		specials = new GeneralMultiMap<>();
 		
-		for (Tuple<String, Collection<Sequence<S>>> tuple : parser.getSpecials()) {
+		for (Tuple<String, Collection<Sequence<S>>> tuple : parser.getSpecialsMap()) {
 			Sequence<S> key = parser.transform(tuple.getLeft());
 			Collection<Sequence<S>> collection = tuple.getRight();
 			specials.put(key, collection);
@@ -50,18 +50,18 @@ public class SequenceMatcher<S> implements LanguageMatcher<Sequence<S>> {
 	@Override
 	public int matches(
 			@NonNull Sequence<S> input, 
-			@NonNull Sequence<S> target,
+			@NonNull Sequence<S> arc,
 			int index
 	) {
-		if (specials.containsKey(target)) {
-			return specials.get(target)
+		Sequence<S> subsequence = input.subsequence(index);
+		if (specials.containsKey(arc)) {
+			return specials.get(arc)
 					.stream()
-					.filter(value -> input.subsequence(index).startsWith(value))
+					.filter(value -> subsequence.startsWith(value))
 					.findFirst()
 					.map(List::size)
 					.orElse(-1);
 		}
-		
-		return input.subsequence(index).startsWith(target) ? target.size() : -1;
+		return subsequence.startsWith(arc) ? arc.size() : -1;
 	}
 }

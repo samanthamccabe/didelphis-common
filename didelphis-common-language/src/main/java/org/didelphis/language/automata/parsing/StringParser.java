@@ -77,7 +77,7 @@ public class StringParser extends AbstractDidelphisParser<String> {
 
 	@NonNull
 	@Override
-	public MultiMap<String, String> getSpecials() {
+	public MultiMap<String, String> getSpecialsMap() {
 		return specials;
 	}
 
@@ -94,8 +94,8 @@ public class StringParser extends AbstractDidelphisParser<String> {
 
 	@Override
 	@NonNull
-	public List<String> split(String substring) {
-		return Splitter.toList(substring, DELIMITERS, specials.keys());
+	protected List<String> split(String string) {
+		return Splitter.toList(string, DELIMITERS, specials.keys());
 	}
 
 	@NonNull
