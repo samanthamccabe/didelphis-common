@@ -34,6 +34,10 @@ public class ParallelNode implements Expression {
 	String quantifier;
 	boolean negative;
 
+	public ParallelNode(List<Expression> children) {
+		this(children, "", false);
+	}
+	
 	public ParallelNode(
 			String id,
 			List<Expression> children,

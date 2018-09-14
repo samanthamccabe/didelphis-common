@@ -28,8 +28,11 @@ import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.jetbrains.annotations.Contract;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -46,6 +49,14 @@ import java.util.Set;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 
+	private static final Map<String, String> DELIMITERS = new LinkedHashMap<>();
+	static {
+		DELIMITERS.put("(?:", ")");
+		DELIMITERS.put("(", ")");
+		DELIMITERS.put("{", "}");
+		DELIMITERS.put("[", "]");
+	}
+	
 	SequenceFactory<T> factory;
 	MultiMap<String, Sequence<T>> specials;
 	
@@ -72,7 +83,13 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 		epsilon   = immutable("𝜆",  model);
 		dot       = immutable(".",  model);
 	}
-	
+
+	@NonNull
+	@Override
+	public Map<String, String> supportedDelimiters() {
+		return Collections.unmodifiableMap(DELIMITERS);
+	}
+
 	@NonNull
 	@Override
 	public Sequence<T> getWordStart() {
@@ -103,7 +120,7 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 
 	@NonNull
 	@Override
-	public MultiMap<String, Sequence<T>> getSpecials() {
+	public MultiMap<String, Sequence<T>> getSpecialsMap() {
 		return specials;
 	}
 
@@ -120,12 +137,12 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 
 	@Override
 	@NonNull
-	public List<String> split(String substring) {
+	protected List<String> split(String substring) {
 		FormatterMode formatter = factory.getFormatterMode();
 		Set<String> set = new HashSet<>();
 		set.addAll(factory.getSpecialStrings());
 		set.addAll(specials.keys());
-		return formatter.split(substring, set);
+		return formatter.split(substring, set, DELIMITERS);
 	}
 
 	@NonNull

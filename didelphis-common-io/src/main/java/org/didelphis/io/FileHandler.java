@@ -33,7 +33,7 @@ public interface FileHandler {
 	 *
 	 * @return the data at the provided path; should be null on error
 	 */
-	@Nullable CharSequence read(@NonNull String path);
+	@Nullable String read(@NonNull String path);
 	
 	/**
 	 * Write data to a provided path, if supported
@@ -43,6 +43,6 @@ public interface FileHandler {
 	 *
 	 * @return true if write is successful; false if an exception is thrown
 	 */
-	boolean writeString(@NonNull String path, @NonNull CharSequence data);
+	boolean writeString(@NonNull String path, @NonNull String data);
 
 }

@@ -107,8 +107,8 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		}
 
 		List<Expression> list = Collections.singletonList(expression);
-		String accepting = parseExpression(0, startStateId, "", list, captures);
-		acceptingStates.add(accepting);
+		String state = parseExpression(0, startStateId, "Z", list, captures);
+		acceptingStates.add(state);
 	}
 
 	private StandardStateMachine(
@@ -135,7 +135,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		}
 
 		List<Expression> list = Collections.singletonList(expression);
-		String accepting = parseExpression(0, startStateId, "", list, captures);
+		String accepting = parseExpression(0, startStateId, "Z", list, captures);
 		acceptingStates.add(accepting);
 	}
 
@@ -247,12 +247,15 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 					matches.add(match);
 				}
 
+				// This check is done because not all nodes are keys in the
+				// graph; if a node is terminal, with no outgoing arcs, then
+				// the node will not be a key in the graph
 				if (graph.containsKey(currentNode)) {
 					if (cursor.getIndex() > parser.lengthOf(input)) {
 						continue;
 					}
 
-					// update captures?
+					// update captures
 					if (startNodes.containsKey(currentNode)) {
 						int group = startNodes.get(currentNode);
 						if (cursor.getGroupStart(group) == -1) {
@@ -320,7 +323,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 					continue;
 				}
 				
-				if (eq(arc, parser.getDot()) && length > 0) {
+				if (eq(arc, parser.getDot()) && length > 0 && index < length) {
 					cursors.add(new Cursor(index + 1, node));
 				} else if (eq(arc, parser.getWordStart()) && index == 0) {
 					cursors.add(new Cursor(0, node));

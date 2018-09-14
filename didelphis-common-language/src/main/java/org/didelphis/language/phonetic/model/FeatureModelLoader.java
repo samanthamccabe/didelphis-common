@@ -67,7 +67,7 @@ public final class FeatureModelLoader<T> {
 	}
 
 	/*-----------------------------------------------------------------------<*/
-	static final Pattern FEATURES_PATTERN = compile("(?<name>\\w+)(\\s+(?<code>\\w*))?", CASE_INSENSITIVE);
+	static final Pattern FEATURES_PATTERN = compile("(\\w+)(\\s+(\\w*))?", CASE_INSENSITIVE);
 	static final Pattern TRANSFORM        = compile("\\s*>\\s*");
 	static final Pattern BRACKETS         = compile("[\\[\\]]");
 	static final Pattern EQUALS           = compile("\\s*=\\s*");
@@ -219,7 +219,7 @@ public final class FeatureModelLoader<T> {
 				Matcher matcher = IMPORT.matcher(line);
 				if (matcher.find()) {
 					String filePath = matcher.group(1);
-					CharSequence fileData = fileHandler.read(filePath);
+					String fileData = fileHandler.read(filePath);
 					Iterable<String> list = lines(fileData);
 					parse(list);
 					continue;
@@ -240,8 +240,8 @@ public final class FeatureModelLoader<T> {
 		for (String entry : zoneData.get(ParseZone.FEATURES)) {
 			Matcher matcher = FEATURES_PATTERN.matcher(entry);
 			if (matcher.find()) {
-				String name = matcher.group("name");
-				String code = matcher.group("code");
+				String name = matcher.group(1);
+				String code = matcher.group(3);
 				featureNames.add(name);
 				featureIndices.put(name, i);
 				if (!code.isEmpty()) {

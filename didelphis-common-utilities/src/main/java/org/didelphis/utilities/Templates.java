@@ -55,7 +55,6 @@ import java.util.Objects;
  * <i>etc.</i>
  * 
  * @author Samantha Fiona McCabe
- * @date 8/23/18
  */
 @UtilityClass
 public class Templates {
@@ -96,8 +95,8 @@ public class Templates {
 
 		@NonNull
 		public Builder with(Object... objects) {
-			String message = compile(messages.pop(), objects);
-			messages.push(message);
+			String message = compile(messages.removeLast(), objects);
+			messages.add(message);
 			return this;
 		}
 

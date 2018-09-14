@@ -49,7 +49,7 @@ public enum ClassPathFileHandler implements FileHandler {
 
 	@Override
 	public boolean writeString(
-			 @NonNull String path,  @NonNull CharSequence data
+			 @NonNull String path,  @NonNull String data
 	) {
 		throw new UnsupportedOperationException(
 				"Trying to write using an instance of "

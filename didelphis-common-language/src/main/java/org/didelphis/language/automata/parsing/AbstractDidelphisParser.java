@@ -1,12 +1,10 @@
 package org.didelphis.language.automata.parsing;
 
 import lombok.AccessLevel;
-import lombok.Data;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import org.didelphis.language.automata.expressions.Expression;
-import org.didelphis.language.automata.expressions.ParallelNode;
 import org.didelphis.language.automata.expressions.ParentNode;
 import org.didelphis.language.automata.expressions.TerminalNode;
 import org.didelphis.language.parsing.ParseDirection;
@@ -14,23 +12,21 @@ import org.didelphis.language.parsing.ParseException;
 import org.didelphis.utilities.Splitter;
 import org.didelphis.utilities.Templates;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import static org.didelphis.language.automata.parsing.LanguageParser.getChildrenOrExpression;
+import static org.didelphis.language.automata.parsing.LanguageParser.update;
+
 /**
- * Class {@code DidelphisBaseParser}
+ * Abstract Class {@code DidelphisBaseParser}
  *
  * @author Samantha Fiona McCabe
- * @date 8/25/18
  * @see StringParser
  * @see SequenceParser
  * @since 0.3.0
@@ -38,18 +34,12 @@ import java.util.Set;
 @ToString
 @FieldDefaults (makeFinal = true, level = AccessLevel.PROTECTED)
 public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
-
-	static Map<String, String> DELIMITERS;
+	
 	static Set<String> QUANTIFIERS;
 	static Expression START_EXP = new TerminalNode("#[");
 	static Expression END_EXP = new TerminalNode("]#");
 
 	static {
-		DELIMITERS = new HashMap<>();
-		DELIMITERS.put("(?:", ")");
-		DELIMITERS.put("(", ")");
-		DELIMITERS.put("{", "}");
-
 		QUANTIFIERS = new HashSet<>();
 		QUANTIFIERS.add("?");
 		QUANTIFIERS.add("*");
@@ -58,16 +48,12 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 
 	@NonNull
 	@Override
-	public Map<String, String> supportedDelimiters() {
-		return Collections.unmodifiableMap(DELIMITERS);
-	}
-
-	@NonNull
-	@Override
 	public Set<String> supportedQuantifiers() {
 		return Collections.unmodifiableSet(QUANTIFIERS);
 	}
 
+	protected abstract List<String> split(String string);
+	
 	@NonNull
 	@Override
 	@Contract ("_,_ -> new")
@@ -79,7 +65,8 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 
 		Expression exp;
 		try {
-			exp = parse(split(expression));
+			List<String> strings = split(expression);
+			exp = parse(strings);
 			if (direction == ParseDirection.BACKWARD) {
 				exp = exp.reverse();
 			}
@@ -111,19 +98,22 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 			} else if (QUANTIFIERS.contains(s)) {
 				buffer.setQuantifier(s);
 				buffer = update(buffer, expressions);
-			} else if (DELIMITERS.containsKey(s.substring(0, 1))) {
+			} else if (startsDelimiter(s)) {
 				buffer = update(buffer, expressions);
-				if (s.length() <= 1) {
+				if (s.length() <= 2) {
+					// TODO: there's a better way to do this if we want to cover all cases
 					String message = Templates.create()
-							.add("Unmatched group delimiter {}")
+							.add("Unmatched delimiter or empty group {}")
 							.with(s)
 							.build();
 					throw new ParseException(message);
 				}
 				String substring = s.substring(1, s.length() - 1).trim();
-				String delimiter = s.substring(0, 1);
-				if (delimiter.equals("{")) {
-					List<String> elements = Splitter.whitespace(substring);
+				if (s.startsWith("[")) {
+					buffer = update(buffer, expressions);
+					buffer.setTerminal(s);
+				} else if (s.startsWith("{")) {
+					List<String> elements = Splitter.whitespace(substring, supportedDelimiters());
 					List<Expression> children = new ArrayList<>();
 					for (String element : elements) {
 						List<String> list = split(element);
@@ -132,14 +122,16 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 					}
 					buffer.setNodes(children);
 					buffer.setParallel(true);
-				} else if (delimiter.equals("(?:")) {
+				} else if (s.startsWith("(?:")) {
 					List<String> list = split(substring);
 					Expression exp = parse(list);
-					buffer.setNodes(exp.getChildren());
+					List<Expression> exps = getChildrenOrExpression(exp);
+					buffer.setNodes(exps);
 				} else {
 					List<String> list = split(substring);
 					Expression exp = parse(list);
-					buffer.setNodes(exp.getChildren());
+					List<Expression> exps = getChildrenOrExpression(exp);
+					buffer.setNodes(exps);
 					buffer.setCapturing(true);
 				}
 			} else {
@@ -152,6 +144,13 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 				? expressions.get(0)
 				: new ParentNode(expressions);
 	}
+	
+	private boolean startsDelimiter(String string) {
+		for (String s : supportedDelimiters().keySet()) {
+			if (string.startsWith(s)) return true;
+		}
+		return false;
+	}
 
 	/**
 	 * Checks for the presence of illegal sub-patterns in the expression which
@@ -162,6 +161,7 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 	 * @throws ParseException if basic structural errors are found in the
 	 * 		expression. Such errors include:
 	 * 		<ul>
+	 * 		<li>Negation of the dot {@code . } character</li>
 	 * 		<li>Double negations ({@code !!}</li>
 	 * 		<li>Negation of a quantifier({@code !*}, {@code !?}</li>
 	 * 		<li>Multiple quantification ({@code *?}, {@code ?+}</li>
@@ -175,6 +175,9 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 			String s = String.valueOf(string.charAt(i + 1));
 			String message = null;
 
+			if(p.equals("!") && s.equals(".")) {
+				message = "Illegal negation of dot in expression {}{}";
+			}
 			if (p.equals("!") && s.equals("!")) {
 				message = "Illegal double negation in expression {}{}";
 			}
@@ -248,57 +251,6 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 						replaceLast(last);
 					}
 				}
-			}
-		}
-	}
-
-	@NonNull
-	private static Buffer update(
-			@NonNull Buffer buffer,
-			@NonNull Collection<Expression> children
-	) {
-		if (!buffer.isEmpty()) {
-			Expression ex = buffer.toExpression();
-			if (ex == null) {
-				String message = Templates.create()
-						.add("Unable to convert buffer to expression")
-						.data(buffer)
-						.build();
-				throw new ParseException(message);
-			}
-			children.add(ex);
-			return new Buffer();
-		} else {
-			return buffer;
-		}
-	}
-
-	@Data
-	@FieldDefaults (level = AccessLevel.PRIVATE)
-	public static final class Buffer {
-
-		boolean negative;
-		boolean parallel;
-		boolean capturing;
-
-		String quantifier = "";
-		String terminal = "";
-
-		List<Expression> nodes = new ArrayList<>();
-
-		public boolean isEmpty() {
-			return nodes.isEmpty() && terminal.isEmpty();
-		}
-
-		public @Nullable Expression toExpression() {
-			if (nodes.isEmpty()) {
-				return new TerminalNode(terminal, quantifier, negative);
-			} else if (parallel) {
-				return new ParallelNode(nodes, quantifier, negative);
-			} else if (terminal == null || terminal.isEmpty()) {
-				return new ParentNode(nodes, quantifier, negative, capturing);
-			} else {
-				return null;
 			}
 		}
 	}

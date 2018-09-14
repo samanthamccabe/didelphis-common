@@ -21,12 +21,10 @@ import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Utility class {@code Splitter}
@@ -34,56 +32,75 @@ import java.util.regex.Pattern;
  * General collection of String segmentation tools, including bracket matching
  * related tasks
  *
- * @date 2017-03-03
+ * @since 0.2.0
  */
 @UtilityClass
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class Splitter {
-
-	Pattern NEWLINE = Pattern.compile("\r?\n|\r");
-	Pattern WHITESPACE = Pattern.compile("\\s+");
-
-	Map<String, String> DELIMITERS = new HashMap<>();
-	
-	static {
-		DELIMITERS.put("[", "]");
-		DELIMITERS.put("(", ")");
-		DELIMITERS.put("{", "}");
-	}
 	
 	/**
 	 * A simple utility method for splitting input at line breaks using the 
 	 * regular expression {@code "\r?\n|\r")}
 	 *
-	 * @param lines the input to be split; must not be null
+	 * @param string the input to be split; must not be null
 	 *
 	 * @return a list containing each line found in the original input; not null
 	 */
 	@NonNull
-	public List<String> lines(@NonNull CharSequence lines) {
-		return Arrays.asList(NEWLINE.split(lines));
+	public List<String> lines(@NonNull String string) {
+
+		List<String> lines = new ArrayList<>();
+		int index = 0;
+		int cursor = 0; // 
+		while (index < string.length()) {
+
+			if (string.startsWith("\r\n", index)) {
+				lines.add(string.substring(cursor, index));
+				index += 2;
+				cursor = index;
+			} else if (string.startsWith("\r", index)) {
+				lines.add(string.substring(cursor, index));
+				index++;
+				cursor = index;
+			} else if (string.startsWith("\n", index)) {
+				lines.add(string.substring(cursor, index));
+				index++;
+				cursor = index;
+			} else {
+				index++;
+			}
+		}
+
+		lines.add(string.substring(cursor));
+		return lines;
 	}
 
 	/**
-	 * Splits inputs such that each character in the input becomes an element
-	 * in the returned list of {@link String}s unless: a substring is found in
-	 * the parameter {@code special}, in which case it is preserved; or a chunk
-	 * is delimited parenthetically, in which case the contents of the delimited
+	 * Splits inputs such that each character in the input becomes an element in
+	 * the returned list of Strings unless: a substring is found in the
+	 * parameter {@code special}, in which case it is preserved; or a chunk is
+	 * delimited parenthetically, in which case the contents of the delimited
 	 * chunk will also be preserved.
-	 * 
-	 * @param string
-	 * @param special
 	 *
-	 * @return
+	 * @param string the string to be split
+	 * @param delimiters a map of parenthetical delimiters whose contents will
+	 * 		not be split
+	 * @param special a list of special strings which will not be split. This
+	 * 		may be null; if it is, the specials are ignored, giving the same
+	 *
+	 * @return a new list which, if joined with no delimiter, would return the
+	 * 		original string; not {@code null}
 	 */
 	@NonNull
 	public List<String> toList(
-			@NonNull String string, @Nullable Iterable<String> special
+			@NonNull String string, 
+			@NonNull Map<String, String> delimiters, 
+			@Nullable Iterable<String> special
 	) {
 		List<String> strings = new ArrayList<>();
 		for (int i = 0; i < string.length(); i++) {
 
-			int index = parseParens(string, i);
+			int index = parseParens(string, delimiters, i);
 			if (index >= 0) {
 				strings.add(string.substring(i, index));
 				i = index - 1;
@@ -112,35 +129,41 @@ public class Splitter {
 	/**
 	 * Splits inputs on the basis of whitespace only, while also preserving
 	 * parenthetically delimited chunks. Thus, a string:
-	 * 
+	 * <p>
 	 * {@code "a b (c d) e"}
-	 * 
-	 * will be split into four elements: {@code "a"}, {@code "b"}, {@code 
-	 * "(c d)"}, and {@code "e"}.
-	 * 
-	 * @param string
-	 * @return
+	 * <p>
+	 * will be split into four elements: 
+	 * <ul>
+	 *     <li>{@code "a"}</li>
+	 *     <li>{@code "b"}</li>
+	 *     <li>{@code "(cd)"}</li>
+	 *     <li>{@code "e"}</li>
+	 * </ul>
+	 *
+	 * @param string the input that is to be split; cannot be {@code null}
+	 *
+	 * @param delimiters
+	 * @return a new list containing elements from the provided input; will not
+	 * 		be {@code null}
 	 */
 	@NonNull
-	public List<String> whitespace(String string) {
+	public List<String> whitespace(
+			@NonNull String string, 
+			@NonNull Map<String, String> delimiters
+	) {
 		List<String> list = new ArrayList<>();
 		int cursor = 0;
 		for (int i = 0; i < string.length();) {
-			String substring = string.substring(i);
-			Matcher matcher = WHITESPACE.matcher(substring);
-			if (matcher.lookingAt()) {
-				String chunk = string.substring(cursor, i);
-				list.add(chunk);
-				int end = matcher.end();
-				cursor = end + i;
-				i = cursor;
-			} else {
-				int end = parseParens(string, i);
-				if (end > i) {
-					i = end;
-				} else {
-					i++;
+			if (isWhitespace(string.charAt(i))) {
+				if (i != cursor) {
+					String chunk = string.substring(cursor, i);
+					list.add(chunk);
 				}
+				i++;
+				cursor = i;
+			} else {
+				int end = parseParens(string, delimiters, i);
+				i = (end > i) ? end : i + 1;
 			}
 		}
 		
@@ -151,106 +174,81 @@ public class Splitter {
 		return list;
 	}
 	
+	private boolean isWhitespace(char c) {
+		return " \t\n\f\r".indexOf(c) >= 0;
+	}
+
 	/**
-	 * Finds the index of the bracket matching the one at {@code index} within
+	 * Finds the index of the bracket matching the one at {@param index} within
 	 * the provided {@code String}.
 	 *
-	 * @param string the {@link CharSequence} to be matched for
+	 * @param string the {@code CharSequence} to be matched for
+	 * @param parens a map of start to end characters for parentheses
 	 * @param index of the opening bracket.
 	 *
-	 * @return the index of the corresponding closing bracket.
+	 * @return the index of the corresponding closing bracket, or -1 if one is
+	 * 		not found
 	 */
-	public int parseParens(@NonNull String string, int index) {
-		return parseParens(string, DELIMITERS, index);
-	}
-	
 	public int parseParens(
 			@NonNull String string, 
 			@NonNull Map<String, String> parens,
 			int index
 	) {
-		return parens.entrySet()
-				.stream()
-				.filter(entry -> string.startsWith(entry.getKey(), index))
-				.findFirst()
-				.map(entry -> findClosingBracket(string,
-						entry.getKey(),
-						entry.getValue(),
-						index
-				))
-				.orElse(-1);
-	}
-
-	/**
-	 *  Determines the index of the closing bracket which corresponds to the 
-	 *  opening bracket in {@param string}, located at {@param startIndex}
-	 *
-	 * @param string
-	 * @param startIndex
-	 * @param left
-	 * @param right
-	 *
-	 * @return
-	 */
-	public int findClosingBracket(
-			@NonNull CharSequence string, int startIndex, char left, char right
-	) {
-		int count = 1;
-		int endIndex = startIndex;
-		for (int i = startIndex + 1; i < string.length(); i++) {
-			char ch = string.charAt(i);
-			if (ch == right && count == 1) {
-				endIndex = i;
-				break;
-			} else if (ch == right) {
-				count++;
-			} else if (ch == left) {
-				count--;
+		for (String key: parens.keySet()) {
+			if (string.startsWith(key, index)) {
+				return findClosingBracket(string, key, parens, index);
 			}
 		}
-		/* 'endIndex' is the index of the closing bracket; we advance by 1 to 
-		 * because we always need the next index for a substring that includes
-		 * the closing bracket, or we need to continue operations after the
-		 * bracketed expression is closed. 
-		 */
-		return endIndex + 1;
+		return -1;
 	}
 
 	/**
 	 * Determines the index of the closing bracket which corresponds to the
 	 * opening bracket in {@param string}, located at {@param startIndex}
 	 * 
-	 * @param string
-	 * @param left
-	 * @param right
-	 * @param startIndex
+	 * @param string the input to be examined for parentheses
+	 * @param left the opening parenthesis
+	 * @param delimiters a map of opening and closing delimiters
+	 * @param startIndex the index in {@param string} where to start looking
 	 *
-	 * @return
+	 * @return the index of the closing bracket, if it was found; otherwise, -1
 	 */
 	public int findClosingBracket(
 			@NonNull String string,
 			@NonNull String left, 
-			@NonNull String right, 
+			@NonNull Map<String, String> delimiters, 
 			int startIndex
 	) {
-		int count = 1;
 		int endIndex = startIndex;
 
-		for (int i = startIndex + 1; i < string.length(); i++) {
-			if (string.startsWith(right, i) && count == 1) {
-				endIndex = i;
-				break;
-			} else if (string.startsWith(right, i)) {
-				count++;
-			} else if (string.startsWith(left, i)) {
-				count--;
+		Deque<String> stack = new LinkedList<>();
+		for (int i = startIndex + left.length(); i < string.length(); i++) {
+			String substring = string.substring(i);
+			for (Map.Entry<String, String> entry : delimiters.entrySet()) {
+				String key = entry.getKey();
+				String val = entry.getValue();
+				
+				if (substring.startsWith(key)) {
+					stack.add(key);
+				} else if (substring.startsWith(val)) {
+					if (stack.isEmpty()) {
+						endIndex = i;
+						break;
+					} else
+					if (stack.peekLast().equals(key)) {
+						stack.removeLast();
+					}
+				}
 			}
 		}
 		/* 'endIndex' is the index of the closing bracket; we advance by 1 to
 		 * because we always need the next index for a substring that includes
 		 * the closing bracket, or we need to continue operations after the
 		 * bracketed expression is closed.
+		 * 
+		 * However, if the start and end indices are the same, then the matching
+		 * parenthesis has not been found, thus we return -1
 		 */
-		return endIndex + 1;
+		return startIndex == endIndex ? -1 : endIndex + 1;
 	}
 }
