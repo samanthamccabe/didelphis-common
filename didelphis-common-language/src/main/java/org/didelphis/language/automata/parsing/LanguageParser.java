@@ -23,10 +23,13 @@ import org.didelphis.language.automata.expressions.ParallelNode;
 import org.didelphis.language.automata.expressions.ParentNode;
 import org.didelphis.language.automata.expressions.TerminalNode;
 import org.didelphis.language.parsing.ParseDirection;
+import org.didelphis.language.parsing.ParseException;
 import org.didelphis.structures.maps.interfaces.MultiMap;
+import org.didelphis.utilities.Templates;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -153,6 +156,38 @@ public interface LanguageParser<S> {
 			} else {
 				return null;
 			}
+		}
+	}
+
+	@NonNull
+	static List<Expression> getChildrenOrExpression(@NonNull Expression exp) {
+		if (exp.hasChildren()) {
+			return exp.getChildren();
+		} else {
+			List<Expression> list = new ArrayList<>();
+			list.add(exp);
+			return list;
+		}
+	}
+	
+	@NonNull
+	static Buffer update(
+			@NonNull Buffer buffer,
+			@NonNull Collection<Expression> children
+	) {
+		if (!buffer.isEmpty()) {
+			Expression ex = buffer.toExpression();
+			if (ex == null) {
+				String message = Templates.create()
+						.add("Unable to convert buffer to expression")
+						.data(buffer)
+						.build();
+				throw new ParseException(message);
+			}
+			children.add(ex);
+			return new Buffer();
+		} else {
+			return buffer;
 		}
 	}
 }

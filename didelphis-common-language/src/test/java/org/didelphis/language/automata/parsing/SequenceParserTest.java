@@ -50,6 +50,18 @@ class SequenceParserTest {
 	}
 
 	@Test
+	void testIllegalNegation01() {
+		assertThrowsParse("!!a");
+	}
+
+	@Test
+	void testIllegalNegation02() {
+		assertThrowsParse("!?a");
+		assertThrowsParse("!*a");
+		assertThrowsParse("!+a");
+	}
+	
+	@Test
 	void testIllegalBoundary01() {
 		assertThrowsParse("a#?");
 	}

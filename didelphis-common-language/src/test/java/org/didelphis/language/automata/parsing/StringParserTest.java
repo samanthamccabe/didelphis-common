@@ -32,6 +32,11 @@ class StringParserTest {
 	private final StringParser parser = new StringParser();
 
 	@Test
+	void testNegatedDot01() {
+		assertThrowsParse("!.");
+	}
+	
+	@Test
 	void testIllegalBoundary01() {
 		assertThrowsParse("a#?");
 	}
@@ -74,6 +79,14 @@ class StringParserTest {
 	@Test
 	void testUnmatchedParen() {
 		assertThrowsParse("(a");
+	}
+	
+	@Test
+	void tesTransform01() {
+		assertEquals("a", parser.transform("a"));
+		assertEquals("b", parser.transform("b"));
+		assertEquals("c", parser.transform("c"));
+		assertEquals("d", parser.transform("d"));
 	}
 	
 	@Test
@@ -182,6 +195,22 @@ class StringParserTest {
 
 		assertEquals(ex1, rev1);
 		assertEquals(rev2, ex2);
+	}
+
+	@Test
+	void testNestedGroups01() {
+		String string = "a(b)";
+		Expression expression = parser.parseExpression(string);
+		assertTrue(expression.hasChildren());
+		assertEquals(2, expression.getChildren().size());
+	}
+	
+	@Test
+	void testNestedGroups02() {
+		String string = "(a(b))";
+		Expression expression = parser.parseExpression(string);
+		assertTrue(expression.hasChildren());
+		assertEquals(2, expression.getChildren().size());
 	}
 
 	@Test

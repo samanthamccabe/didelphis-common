@@ -14,12 +14,14 @@ import org.didelphis.utilities.Templates;
 import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+
+import static org.didelphis.language.automata.parsing.LanguageParser.getChildrenOrExpression;
+import static org.didelphis.language.automata.parsing.LanguageParser.update;
 
 /**
  * Abstract Class {@code DidelphisBaseParser}
@@ -109,7 +111,7 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 				String substring = s.substring(1, s.length() - 1).trim();
 				if (s.startsWith("[")) {
 					buffer = update(buffer, expressions);
-					buffer.setTerminal(s);					
+					buffer.setTerminal(s);
 				} else if (s.startsWith("{")) {
 					List<String> elements = Splitter.whitespace(substring, supportedDelimiters());
 					List<Expression> children = new ArrayList<>();
@@ -123,11 +125,13 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 				} else if (s.startsWith("(?:")) {
 					List<String> list = split(substring);
 					Expression exp = parse(list);
-					buffer.setNodes(exp.getChildren());
+					List<Expression> exps = getChildrenOrExpression(exp);
+					buffer.setNodes(exps);
 				} else {
 					List<String> list = split(substring);
 					Expression exp = parse(list);
-					buffer.setNodes(exp.getChildren());
+					List<Expression> exps = getChildrenOrExpression(exp);
+					buffer.setNodes(exps);
 					buffer.setCapturing(true);
 				}
 			} else {
@@ -140,7 +144,7 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 				? expressions.get(0)
 				: new ParentNode(expressions);
 	}
-
+	
 	private boolean startsDelimiter(String string) {
 		for (String s : supportedDelimiters().keySet()) {
 			if (string.startsWith(s)) return true;
@@ -157,6 +161,7 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 	 * @throws ParseException if basic structural errors are found in the
 	 * 		expression. Such errors include:
 	 * 		<ul>
+	 * 		<li>Negation of the dot {@code . } character</li>
 	 * 		<li>Double negations ({@code !!}</li>
 	 * 		<li>Negation of a quantifier({@code !*}, {@code !?}</li>
 	 * 		<li>Multiple quantification ({@code *?}, {@code ?+}</li>
@@ -170,6 +175,9 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 			String s = String.valueOf(string.charAt(i + 1));
 			String message = null;
 
+			if(p.equals("!") && s.equals(".")) {
+				message = "Illegal negation of dot in expression {}{}";
+			}
 			if (p.equals("!") && s.equals("!")) {
 				message = "Illegal double negation in expression {}{}";
 			}
@@ -244,27 +252,6 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 					}
 				}
 			}
-		}
-	}
-
-	@NonNull
-	private static Buffer update(
-			@NonNull Buffer buffer,
-			@NonNull Collection<Expression> children
-	) {
-		if (!buffer.isEmpty()) {
-			Expression ex = buffer.toExpression();
-			if (ex == null) {
-				String message = Templates.create()
-						.add("Unable to convert buffer to expression")
-						.data(buffer)
-						.build();
-				throw new ParseException(message);
-			}
-			children.add(ex);
-			return new Buffer();
-		} else {
-			return buffer;
 		}
 	}
 }

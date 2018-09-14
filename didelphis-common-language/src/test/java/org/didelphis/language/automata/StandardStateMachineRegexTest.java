@@ -14,40 +14,37 @@
 
 package org.didelphis.language.automata;
 
-import lombok.NonNull;
 import org.didelphis.language.automata.expressions.Expression;
-import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.automata.matching.RegexMatcher;
 import org.didelphis.language.automata.parsing.RegexParser;
 import org.didelphis.language.automata.statemachines.StandardStateMachine;
 import org.didelphis.language.automata.statemachines.StateMachine;
 import org.didelphis.utilities.Logger;
 import org.didelphis.utilities.Templates;
+import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.Test;
 
-import java.time.Duration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.didelphis.language.parsing.ParseDirection.FORWARD;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Samantha Fiona McCabe
  */
-class StandardStateMachineRegexTest {
+class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 
 	private static final Logger LOG = Logger.create(StandardStateMachineRegexTest.class);
-
-	private static final Duration DURATION = Duration.ofSeconds(1);
-	private static final boolean TIMEOUT = false;
 	
 	private static final RegexParser PARSER = new RegexParser();
 	private static final RegexMatcher MATCHER = new RegexMatcher();
 	public static final String CONSIST_MESSAGE = "Java regex returned {} but Didelphis regex returned {}";
+
+	@Override
+	protected String transform(String input) {
+		return PARSER.transform(input);
+	}
 
 	@Test
 	void testEmpty() {
@@ -181,19 +178,19 @@ class StandardStateMachineRegexTest {
 	void testCapturingGroups01() {
 		StateMachine<String> machine = getMachine("(ab)(cd)(ef)");
 
-		assertMatchesGroup(machine, "abcdef", 0, "abcdef");
-		assertMatchesGroup(machine, "abcdef", 1, "ab");
-		assertMatchesGroup(machine, "abcdef", 2, "cd");
-		assertMatchesGroup(machine, "abcdef", 3, "ef");
+		assertMatchesGroup(machine, "abcdef", "abcdef", 0);
+		assertMatchesGroup(machine, "abcdef", "ab", 1);
+		assertMatchesGroup(machine, "abcdef", "cd", 2);
+		assertMatchesGroup(machine, "abcdef", "ef", 3);
 	}
 
 	@Test
 	void testCapturingGroups02() {
 		StateMachine<String> machine = getMachine("(ab)(?:cd)(ef)");
 
-		assertMatchesGroup(machine, "abcdef", 0, "abcdef");
-		assertMatchesGroup(machine, "abcdef", 1, "ab");
-		assertMatchesGroup(machine, "abcdef", 2, "ef");
+		assertMatchesGroup(machine, "abcdef", "abcdef", 0);
+		assertMatchesGroup(machine, "abcdef", "ab", 1);
+		assertMatchesGroup(machine, "abcdef", "ef", 2);
 	}
 
 	@Test
@@ -251,14 +248,14 @@ class StandardStateMachineRegexTest {
 	void testCapturingGroupsOptional() {
 		StateMachine<String> machine = getMachine("(ab)?(cd)(ef)");
 
-		assertMatchesGroup(machine, "abcdef", 0, "abcdef");
-		assertMatchesGroup(machine, "abcdef", 1, "ab");
-		assertMatchesGroup(machine, "abcdef", 2, "cd");
-		assertMatchesGroup(machine, "abcdef", 3, "ef");
+		assertMatchesGroup(machine, "abcdef", "abcdef", 0);
+		assertMatchesGroup(machine, "abcdef", "ab", 1);
+		assertMatchesGroup(machine, "abcdef", "cd", 2);
+		assertMatchesGroup(machine, "abcdef", "ef", 3);
 
-		assertMatchesGroup(machine, "cdef", 0, "cdef");
-		assertMatchesGroup(machine, "cdef", 2, "cd");
-		assertMatchesGroup(machine, "cdef", 3, "ef");
+		assertMatchesGroup(machine, "cdef", "cdef", 0);
+		assertMatchesGroup(machine, "cdef", "cd", 2);
+		assertMatchesGroup(machine, "cdef", "ef", 3);
 
 		assertNoGroup(machine, "cdef", 1);
 	}
@@ -345,18 +342,18 @@ class StandardStateMachineRegexTest {
 	void testComplexCapturingGroups01() {
 		StateMachine<String> machine = getMachine("(a+l(ham+b)*ra)+");
 
-		assertMatchesGroup(machine, "alhambraalhambra", 0, "alhambraalhambra");
+		assertMatchesGroup(machine, "alhambraalhambra", "alhambraalhambra", 0);
 		
-		assertMatchesGroup(machine, "alhambra", 0, "alhambra");
-		assertMatchesGroup(machine, "alhambra", 1, "alhambra");
-		assertMatchesGroup(machine, "alhambra", 2, "hamb");
+		assertMatchesGroup(machine, "alhambra", "alhambra", 0);
+		assertMatchesGroup(machine, "alhambra", "alhambra", 1);
+		assertMatchesGroup(machine, "alhambra", "hamb", 2);
 
-		assertMatchesGroup(machine, "aalhammbhambra", 0, "aalhammbhambra");
-		assertMatchesGroup(machine, "aalhammbhambra", 1, "aalhammbhambra");
-		assertMatchesGroup(machine, "aalhammbhambra", 2, "hammbhamb");
+		assertMatchesGroup(machine, "aalhammbhambra", "aalhammbhambra", 0);
+		assertMatchesGroup(machine, "aalhammbhambra", "aalhammbhambra", 1);
+		assertMatchesGroup(machine, "aalhammbhambra", "hammbhamb", 2);
 		
-		assertMatchesGroup(machine, "alra", 0, "alra");
-		assertMatchesGroup(machine, "alra", 1, "alra");
+		assertMatchesGroup(machine, "alra", "alra", 0);
+		assertMatchesGroup(machine, "alra", "alra", 1);
 		assertNoGroup(machine, "alra", 2);
 	}
 
@@ -448,22 +445,22 @@ class StandardStateMachineRegexTest {
 	void testComplexCapture01() {
 		StateMachine<String> machine = getMachine("a?(b?c?)d?b");
 
-		assertMatchesGroup(machine, "b", 0, "b");
+		assertMatchesGroup(machine, "b", "b", 0);
 		assertNoGroup(machine, "b", 1);
 
-		assertMatchesGroup(machine, "db", 0, "db");
+		assertMatchesGroup(machine, "db", "db", 0);
 		assertNoGroup(machine, "db", 1);
 
-		assertMatchesGroup(machine, "bcdb", 0, "bcdb");
-		assertMatchesGroup(machine, "bcdb", 1, "bc");
+		assertMatchesGroup(machine, "bcdb", "bcdb", 0);
+		assertMatchesGroup(machine, "bcdb", "bc", 1);
 
-		assertMatchesGroup(machine, "acdb", 0, "acdb");
-		assertMatchesGroup(machine, "acdb", 1, "c");
+		assertMatchesGroup(machine, "acdb", "acdb", 0);
+		assertMatchesGroup(machine, "acdb", "c", 1);
 		
-		assertMatchesGroup(machine, "abdb", 0, "abdb");
-		assertMatchesGroup(machine, "abdb", 1, "b");
+		assertMatchesGroup(machine, "abdb", "abdb", 0);
+		assertMatchesGroup(machine, "abdb", "b", 1);
 
-		assertMatchesGroup(machine, "ab", 0, "ab");
+		assertMatchesGroup(machine, "ab", "ab", 0);
 		assertNoGroup(machine, "ab", 1);
 	}
 	
@@ -632,15 +629,134 @@ class StandardStateMachineRegexTest {
 		// at least show that the behavior is the same as Pattern
 		assertMatches(machine, "d");
 	}
-	
-	private static void assertMatches(StateMachine<String> machine, String target) {
-		assertTrue(
-				test(machine, target) >= 0,
-				"Machine failed to accept an input it should have: " + target
-		);
+
+	@Test
+	void testCase01() {
+		assertMatches(getMachine("^(a)?a"), "a");
 	}
 
-	private static void assertConsistant(
+	@Test
+	void testCase02() {
+		assertMatches(getMachine("^(aa(bb)?)+$"), "aabbaa");
+	}
+
+	@Test
+	void testCase03() {
+		assertMatches(getMachine("((a|b)?b)+"), "b");
+	}
+
+	@Test
+	void testCase04() {
+		assertMatches(getMachine("(aaa)?aaa"), "aaa");
+	}
+	
+	@Test
+	void testCase05() {
+		assertMatches(getMachine("^(a(b)?)+$"), "aba");
+	}
+
+	@Test
+	void testCase06() {
+		assertMatches(getMachine("^(a(b(c)?)?)?abc"), "abc");
+	}
+
+	@Test
+	void testCase07() {
+		assertMatches(getMachine("^(a(b(c))).*"), "abc");
+	}
+
+	@Test
+	void testCase08() {
+		assertMatches(getMachine("[abc]+[def]+[ghi]+"), "aaddggzzz");
+	}
+
+	@Test
+	void testCase09() {
+		StateMachine<String> machine = getMachine("[abc^b]");
+		assertMatches(machine, "b");
+		assertMatches(machine, "^");
+	}
+
+	@Test
+	void testCase10() {
+		StateMachine<String> machine = getMachine("[abc[def]]");
+		assertMatches(machine, "b");
+		assertMatches(machine, "e");
+	}
+
+	@Test
+	void testCase11() {
+		StateMachine<String> machine = getMachine("[a-d[0-9][m-p]]");
+		assertMatches(machine, "a");
+		assertMatches(machine, "o");
+		assertMatches(machine, "4");
+		assertNotMatches(machine, "e");
+		assertNotMatches(machine, "u");
+	}
+
+	@Test
+	void testCase12() {
+		StateMachine<String> machine = getMachine("[a-c[d-f[g-i]]]");
+		assertMatches(machine, "a");
+		assertMatches(machine, "e");
+		assertMatches(machine, "h");
+		assertNotMatches(machine, "m");
+	}
+
+	@Test
+	void testCase13() {
+		StateMachine<String> machine = getMachine("[abc[def]ghi]");
+		assertMatches(machine, "d");
+		assertMatches(machine, "h");
+		assertNotMatches(machine, "w");
+		assertNotMatches(machine, "z");
+	}
+
+	@Test
+	void testCase14() {
+		StateMachine<String> machine = getMachine("[abc[^bcd]]");
+		assertMatches(machine, "a");
+		assertNotMatches(machine, "d");
+	}
+
+	@Test
+	void testCase15() {
+		StateMachine<String> machine = getMachine("ab\\wc");
+		assertMatches(machine, "abcc");
+	}
+
+	@Test
+	void testCase16() {
+		StateMachine<String> machine = getMachine("\\W\\w\\W");
+		assertMatches(machine, "#r#");
+	}
+
+	@Test
+	void testCase17() {
+		StateMachine<String> machine = getMachine("abc[\\sdef]*");
+		assertMatches(machine, "abc  def");
+	}
+
+	@Test
+	void testCase18() {
+		StateMachine<String> machine = getMachine("abc[a-d\\sm-p]*");
+		assertMatches(machine, "abcaa mn  p");
+	}
+
+	@Test
+	void testCase19() {
+		StateMachine<String> machine = getMachine("(a+b)+");
+		assertMatches(machine, "ababab");
+	}
+
+	@Test
+	void testCase20() {
+		StateMachine<String> machine = getMachine("(a|b)+");
+		assertMatches(machine, "ababab");
+		assertNotMatches(machine, "cccccd");
+	}
+	
+	void assertConsistant(
 			Pattern pattern,
 			StateMachine<String> machine,
 			String target
@@ -655,41 +771,9 @@ class StandardStateMachineRegexTest {
 		);
 	}
 
-	private static StateMachine<String> getMachine(String exp) {
+	static StateMachine<String> getMachine(@Language("RegExp") String exp) {
 		RegexParser regexParser = new RegexParser();
 		Expression expression = regexParser.parseExpression(exp, FORWARD);
 		return StandardStateMachine.create("M0", expression, PARSER, MATCHER);
-	}
-	
-	private static void assertNotMatches(StateMachine<String> machine, String target) {
-		assertFalse(
-				test(machine, target) >= 0,
-				"Machine accepted input it should not have: " + target
-		);
-	}
-
-	private static void assertMatchesGroup(
-			@NonNull StateMachine<String> machine,
-			@NonNull String input,
-			int group,
-			@NonNull String expected
-	) {
-		Match<String> match = machine.match(input, 0);
-		String matchedGroup = match.group(group);
-		assertEquals(expected, matchedGroup);
-	}
-
-	private static void assertNoGroup(
-			@NonNull StateMachine<String> machine,
-			@NonNull String input,
-			int group
-	) {
-		Match<String> match = machine.match(input, 0);
-		assertNull(match.group(group));
-	}
-	
-	private static int test(StateMachine<String> machine, String string) {
-		Match<String> match = machine.match(string, 0);
-		return match.end();
 	}
 }

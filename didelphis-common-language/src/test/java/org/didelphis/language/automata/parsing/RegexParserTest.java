@@ -210,9 +210,56 @@ class RegexParserTest {
 		assertTrue(expression2.isParallel());
 		assertTrue(expression2.hasChildren());
 		assertEquals(52, expression2.getChildren().size());
-
 	}
 
+	@Test
+	void testNestedGroups01() {
+		String string = "(a(b))";
+		Expression expression = PARSER.parseExpression(string);
+		assertTrue(expression.hasChildren());
+		assertEquals(2, expression.getChildren().size());
+	}
+	
+	@Test
+	void testNestedGroups02() {
+		String string = "^(a(b)?)+$";
+		Expression expression = PARSER.parseExpression(string);
+		assertTrue(expression.hasChildren());
+		assertEquals(3, expression.getChildren().size());
+	}
+
+	@Test
+	void testNestedGroups03() {
+		Expression ex3 = PARSER.parseExpression("(a(xy)?b)+");
+		assertTrue(ex3.isCapturing());
+
+		List<Expression> children = ex3.getChildren();
+		assertEquals(3, children.size());
+		assertEquals("+", ex3.getQuantifier());
+		assertFalse(ex3.isNegative());
+
+		assertEquals("a", children.get(0).getTerminal());
+		assertEquals("b", children.get(2).getTerminal());
+
+		assertFalse(children.get(0).isCapturing());
+		assertFalse(children.get(2).isCapturing());
+
+		Expression ch1 = children.get(1);
+		assertTrue(ch1.isCapturing());
+		assertEquals(2, ch1.getChildren().size());
+		assertEquals("?", ch1.getQuantifier());
+	}
+
+	@Test
+	void testReverse() {
+		Expression ex1 = PARSER.parseExpression("(a(xy)?b)+");
+		Expression ex2 = PARSER.parseExpression("(b(yx)?a)+");
+		Expression rev1 = Expression.rewriteIds(ex1.reverse(), "0");
+		Expression rev2 = Expression.rewriteIds(ex2.reverse(), "0");
+		assertEquals(ex1, rev2);
+		assertEquals(rev1, ex2);
+	}
+	
 	private static void assertThrowsParse(String expression) {
 		assertThrows(
 				ParseException.class,

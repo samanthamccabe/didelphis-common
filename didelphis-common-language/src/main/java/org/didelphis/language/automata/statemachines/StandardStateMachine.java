@@ -107,8 +107,8 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		}
 
 		List<Expression> list = Collections.singletonList(expression);
-		String accepting = parseExpression(0, startStateId, "", list, captures);
-		acceptingStates.add(accepting);
+		String state = parseExpression(0, startStateId, "Z", list, captures);
+		acceptingStates.add(state);
 	}
 
 	private StandardStateMachine(
@@ -135,7 +135,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		}
 
 		List<Expression> list = Collections.singletonList(expression);
-		String accepting = parseExpression(0, startStateId, "", list, captures);
+		String accepting = parseExpression(0, startStateId, "Z", list, captures);
 		acceptingStates.add(accepting);
 	}
 

@@ -16,7 +16,6 @@ import org.didelphis.utilities.Templates;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,15 +23,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.didelphis.language.automata.parsing.LanguageParser.*;
+
 /**
  * Class {@code RegexParser}
  *
+ * A regular expression parser for creating expression trees that can be used to
+ * construct a state machine. This is not intended to fully mimic the capability
+ * of {@link java.util.regex.Pattern}; it is primarily intended to support a 
+ * limited set of basic functions:
+ * <ul>
+ *     <li>Greedy quantification only</li>
+ *     <li>Capturing and non-capturing groups</li>
+ *     <li>Basic character classes</li>
+ *     <li>Negations</li>
+ *     <li>Simple character ranges</li>
+ * </ul>
+ * 
  * @author Samantha Fiona McCabe
  * @since 0.3.0
  */
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class RegexParser implements LanguageParser<String> {    
+public class RegexParser implements LanguageParser<String> {
 
 	static Map<String, String> DELIMITERS = new HashMap<>();
 	static {
@@ -231,12 +244,14 @@ public class RegexParser implements LanguageParser<String> {
 					String substring = s.substring(3, endIndex).trim();
 					List<String> list = split(substring);
 					Expression exp = parse(list);
-					buffer.setNodes(exp.getChildren());
+					List<Expression> exps = getChildrenOrExpression(exp);
+					buffer.setNodes(exps);
 				} else {
 					String substring = s.substring(1, endIndex).trim();
 					List<String> list = split(substring);
 					Expression exp = parse(list);
-					buffer.setNodes(exp.getChildren());
+					List<Expression> exps = getChildrenOrExpression(exp);
+					buffer.setNodes(exps);
 					buffer.setCapturing(true);
 				}
 			} else {
@@ -306,32 +321,11 @@ public class RegexParser implements LanguageParser<String> {
 		return new ArrayList<>(parsedChildren);
 	}
 
-	private static boolean startsWithDelimiter(String s) {
-		for (String delimiter : DELIMITERS.keySet()) {
+	private boolean startsWithDelimiter(String s) {
+		for (String delimiter : supportedDelimiters().keySet()) {
 			if (s.startsWith(delimiter)) return true;
 		}
 		return false;
-	}
-
-	@NonNull
-	private static Buffer update(
-			@NonNull Buffer buffer,
-			@NonNull Collection<Expression> children
-	) {
-		if (!buffer.isEmpty()) {
-			Expression ex = buffer.toExpression();
-			if (ex == null) {
-				String message = Templates.create()
-						.add("Unable to convert buffer to expression")
-						.data(buffer)
-						.build();
-				throw new ParseException(message);
-			}
-			children.add(ex);
-			return new Buffer();
-		} else {
-			return buffer;
-		}
 	}
 	
 	@Override
