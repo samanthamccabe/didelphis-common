@@ -22,19 +22,17 @@ import org.didelphis.language.automata.parsing.RegexParser;
 import org.didelphis.language.automata.statemachines.StandardStateMachine;
 import org.didelphis.language.automata.statemachines.StateMachine;
 import org.didelphis.utilities.Logger;
+import org.didelphis.utilities.Templates;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.didelphis.language.parsing.ParseDirection.FORWARD;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -49,7 +47,8 @@ class StandardStateMachineRegexTest {
 	
 	private static final RegexParser PARSER = new RegexParser();
 	private static final RegexMatcher MATCHER = new RegexMatcher();
-	
+	public static final String CONSIST_MESSAGE = "Java regex returned {} but Didelphis regex returned {}";
+
 	@Test
 	void testEmpty() {
 		StateMachine<String> machine = getMachine("");
@@ -380,21 +379,22 @@ class StandardStateMachineRegexTest {
 		
 	@Test
 	void testComplex07() {
+		Pattern pattern = Pattern.compile("[rl]?[iu]?s");
 		StateMachine<String> machine = getMachine("[rl]?[iu]?s");
 
-		assertMatches(machine, "s");
+		assertConsistant(pattern, machine, "s");
 
-		assertMatches(machine, "is");
-		assertMatches(machine, "us");
+		assertConsistant(pattern, machine, "is");
+		assertConsistant(pattern, machine, "us");
 		
-		assertMatches(machine, "rs");
-		assertMatches(machine, "ls");
+		assertConsistant(pattern, machine, "rs");
+		assertConsistant(pattern, machine, "ls");
 
-		assertMatches(machine, "ris");
-		assertMatches(machine, "rus");
+		assertConsistant(pattern, machine, "ris");
+		assertConsistant(pattern, machine, "rus");
 
-		assertMatches(machine, "lis");
-		assertMatches(machine, "lus");
+		assertConsistant(pattern, machine, "lis");
+		assertConsistant(pattern, machine, "lus");
 	}
 
 	@Test
@@ -559,36 +559,100 @@ class StandardStateMachineRegexTest {
 
 	@Test
 	void testWordCharacters() {
-		StateMachine<String> machine = getMachine("\\w+");
+		String regex = "\\w+";
+		Pattern pattern = Pattern.compile(regex);
+		StateMachine<String> machine = getMachine(regex);
 
-		assertMatches(machine, "c");
-		assertMatches(machine, "cc");
-		assertMatches(machine, "cD");
-		assertMatches(machine, "cD0");
-		assertMatches(machine, "cD_0");
-		assertMatches(machine, "cD_09_a");
+		assertConsistant(pattern, machine, "c");
+		assertConsistant(pattern, machine, "cc");
+		assertConsistant(pattern, machine, "cD");
+		assertConsistant(pattern, machine, "cD0");
+		assertConsistant(pattern, machine, "cD_0");
+		assertConsistant(pattern, machine, "cD_09_a");
+	}
+
+	@Test
+	void testConsistantNegative01() {
+		String regex = "[^abc]";
+		Pattern pattern = Pattern.compile(regex);
+		StateMachine<String> machine = getMachine(regex);
+		
+		assertConsistant(pattern, machine, "a");
+		assertConsistant(pattern, machine, "b");
+		assertConsistant(pattern, machine, "c");
+		assertConsistant(pattern, machine, "d");
+	}
+
+	@Test
+	void testConsistantNegative02() {
+		String regex = "^[^abc].[^abc]$";
+		Pattern pattern = Pattern.compile(regex);
+		StateMachine<String> machine = getMachine(regex);
+
+		assertConsistant(pattern, machine, "aaa");
+		assertConsistant(pattern, machine, "bac");
+		assertConsistant(pattern, machine, "cab");
+		assertConsistant(pattern, machine, "ddd");
+		assertConsistant(pattern, machine, "d");
+		assertConsistant(pattern, machine, "x");
+		assertConsistant(pattern, machine, "dxdx");
+		assertConsistant(pattern, machine, "dx");
+	}
+
+	@Test
+	void testNestedNegative01() {
+		String regex = "^[^abc[^d]]$";
+		StateMachine<String> machine = getMachine(regex);
+
+		assertMatches(machine, "x");
+		assertMatches(machine, "d");
+		assertNotMatches(machine, "a");
+		assertNotMatches(machine, "b");
+		assertNotMatches(machine, "c");
+	}
+
+	@Test
+	void testNestedNegative02() {
+		String regex = "^[^abc[d]]$";
+		Pattern pattern = Pattern.compile(regex);
+		StateMachine<String> machine = getMachine(regex);
+
+		assertMatches(machine, "x");
+
+		assertConsistant(pattern, machine, "a");
+		assertConsistant(pattern, machine, "b");
+		assertConsistant(pattern, machine, "c");
+		assertConsistant(pattern, machine, "d");
+		
+		assertNotMatches(machine, "a");
+		assertNotMatches(machine, "b");
+		assertNotMatches(machine, "c");
+		
+		// This is not quite expected, but the previous consistency check does
+		// at least show that the behavior is the same as Pattern
+		assertMatches(machine, "d");
 	}
 	
 	private static void assertMatches(StateMachine<String> machine, String target) {
-		Executable executable = () -> {
-			Collection<Integer> collection = testMachine(machine, target);
-			Collection<Integer> matchIndices = new ArrayList<>(collection);
-			assertFalse(
-					matchIndices.isEmpty(),
-					"Machine failed to accept input: " + target
-			);
-		};
-		
-		if (TIMEOUT) {
-			assertTimeoutPreemptively(DURATION, executable);
-		} else {
-			try {
-				executable.execute();
-			} catch (Throwable throwable) {
-				LOG.error("Unexpected failure encountered: {}", throwable);
-				throw new RuntimeException(throwable);
-			}
-		}
+		assertTrue(
+				test(machine, target) >= 0,
+				"Machine failed to accept an input it should have: " + target
+		);
+	}
+
+	private static void assertConsistant(
+			Pattern pattern,
+			StateMachine<String> machine,
+			String target
+	) {
+		Matcher matcher = pattern.matcher(target);
+		int machineEnd = test(machine, target);
+		int patternEnd = matcher.find() ? matcher.end() : -1;
+		assertEquals(
+				patternEnd,
+				machineEnd, 
+				Templates.compile(CONSIST_MESSAGE, patternEnd, machineEnd)
+		);
 	}
 
 	private static StateMachine<String> getMachine(String exp) {
@@ -598,24 +662,10 @@ class StandardStateMachineRegexTest {
 	}
 	
 	private static void assertNotMatches(StateMachine<String> machine, String target) {
-		Executable executable = () -> {
-			Collection<Integer> matchIndices = testMachine(machine, target);
-			assertTrue(
-					matchIndices.isEmpty(),
-					"Machine accepted input it should not have: " + target
-			);
-		};
-		
-		if (TIMEOUT) {
-			assertTimeoutPreemptively(DURATION, executable);
-		} else {
-			try {
-				executable.execute();
-			} catch (Throwable throwable) {
-				LOG.error("Unexpected failure encountered: {}", throwable);
-				throw new RuntimeException(throwable);
-			}
-		}
+		assertFalse(
+				test(machine, target) >= 0,
+				"Machine accepted input it should not have: " + target
+		);
 	}
 
 	private static void assertMatchesGroup(
@@ -638,11 +688,8 @@ class StandardStateMachineRegexTest {
 		assertNull(match.group(group));
 	}
 	
-	private static Collection<Integer> testMachine(
-			StateMachine<String> machine, String target) {
-		Match<String> match = machine.match(target, 0);
-		return match.end() >= 0
-				? Collections.singleton(match.end())
-				: Collections.emptyList();
+	private static int test(StateMachine<String> machine, String string) {
+		Match<String> match = machine.match(string, 0);
+		return match.end();
 	}
 }

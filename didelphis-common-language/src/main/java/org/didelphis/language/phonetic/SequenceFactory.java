@@ -31,7 +31,9 @@ import org.didelphis.language.phonetic.sequences.Sequence;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -47,6 +49,11 @@ import java.util.stream.Collectors;
 @Value
 public class SequenceFactory<T> implements Function<String, Sequence<T>> {
 
+	static Map<String, String> DELIMITERS = new LinkedHashMap<>();
+	static {
+		DELIMITERS.put("[", "]");
+	}
+	
 	/* --------------------------------------------------------------------- <*/ 
 	FeatureMapping<T>  featureMapping;
 	FormatterMode      formatterMode;
@@ -79,7 +86,7 @@ public class SequenceFactory<T> implements Function<String, Sequence<T>> {
 		keys.addAll(featureMapping.getFeatureMap().keySet());
 		keys.sort(SequenceFactory::compare);
 		Collection<String> list = formatterMode.split(word, keys,
-				Collections.emptyMap()
+				DELIMITERS
 		);
 		FeatureModel<T> featureModel = featureMapping.getFeatureModel();
 		List<Segment<T>> segments = list.stream()

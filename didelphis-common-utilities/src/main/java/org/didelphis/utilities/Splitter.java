@@ -21,7 +21,8 @@ import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,14 +37,6 @@ import java.util.Map;
 @UtilityClass
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class Splitter {
-	
-	@Deprecated
-	Map<String, String> DELIMITERS = new HashMap<>();
-	static {
-		DELIMITERS.put("[", "]");
-		DELIMITERS.put("(", ")");
-		DELIMITERS.put("{", "}");
-	}
 	
 	/**
 	 * A simple utility method for splitting input at line breaks using the 
@@ -79,7 +72,6 @@ public class Splitter {
 		}
 
 		lines.add(string.substring(cursor));
-
 		return lines;
 	}
 
@@ -101,7 +93,9 @@ public class Splitter {
 	 */
 	@NonNull
 	public List<String> toList(
-			@NonNull String string, @NonNull Map<String, String> delimiters, @Nullable Iterable<String> special
+			@NonNull String string, 
+			@NonNull Map<String, String> delimiters, 
+			@Nullable Iterable<String> special
 	) {
 		List<String> strings = new ArrayList<>();
 		for (int i = 0; i < string.length(); i++) {
@@ -183,24 +177,6 @@ public class Splitter {
 	private boolean isWhitespace(char c) {
 		return " \t\n\f\r".indexOf(c) >= 0;
 	}
-	
-	/**
-	 * Finds the index of the bracket matching the one at {@code index} within
-	 * the provided {@code String}.
-	 *
-	 * @param string the {@link CharSequence} to be matched for
-	 * @param index of the opening bracket.
-	 *
-	 * @return the index of the corresponding closing bracket.
-	 *
-	 * @deprecated in order to function appropriate, the mapping of delimiters
-	 * 		cannot be assumed (as they are here) and must be provided by the
-	 * 		caller.
-	 */
-	@Deprecated
-	public int parseParens(@NonNull String string, int index) {
-		return parseParens(string, DELIMITERS, index);
-	}
 
 	/**
 	 * Finds the index of the bracket matching the one at {@param index} within
@@ -218,11 +194,9 @@ public class Splitter {
 			@NonNull Map<String, String> parens,
 			int index
 	) {
-		for (Map.Entry<String, String> stringStringEntry : parens.entrySet()) {
-			String key = stringStringEntry.getKey();
+		for (String key: parens.keySet()) {
 			if (string.startsWith(key, index)) {
-				String value = stringStringEntry.getValue();
-				return findClosingBracket(string, key, value, index);
+				return findClosingBracket(string, key, parens, index);
 			}
 		}
 		return -1;
@@ -234,7 +208,7 @@ public class Splitter {
 	 * 
 	 * @param string the input to be examined for parentheses
 	 * @param left the opening parenthesis
-	 * @param right the closing parenthesis
+	 * @param delimiters a map of opening and closing delimiters
 	 * @param startIndex the index in {@param string} where to start looking
 	 *
 	 * @return the index of the closing bracket, if it was found; otherwise, -1
@@ -242,20 +216,29 @@ public class Splitter {
 	public int findClosingBracket(
 			@NonNull String string,
 			@NonNull String left, 
-			@NonNull String right, 
+			@NonNull Map<String, String> delimiters, 
 			int startIndex
 	) {
-		int count = 1;
 		int endIndex = startIndex;
 
-		for (int i = startIndex + 1; i < string.length(); i++) {
-			if (string.startsWith(right, i) && count == 1) {
-				endIndex = i;
-				break;
-			} else if (string.startsWith(right, i)) {
-				count++;
-			} else if (string.startsWith(left, i)) {
-				count--;
+		Deque<String> stack = new LinkedList<>();
+		for (int i = startIndex + left.length(); i < string.length(); i++) {
+			String substring = string.substring(i);
+			for (Map.Entry<String, String> entry : delimiters.entrySet()) {
+				String key = entry.getKey();
+				String val = entry.getValue();
+				
+				if (substring.startsWith(key)) {
+					stack.add(key);
+				} else if (substring.startsWith(val)) {
+					if (stack.isEmpty()) {
+						endIndex = i;
+						break;
+					} else
+					if (stack.peekLast().equals(key)) {
+						stack.removeLast();
+					}
+				}
 			}
 		}
 		/* 'endIndex' is the index of the closing bracket; we advance by 1 to

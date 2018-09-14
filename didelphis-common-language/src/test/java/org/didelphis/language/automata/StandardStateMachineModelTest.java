@@ -15,13 +15,13 @@
 package org.didelphis.language.automata;
 
 import org.didelphis.io.ClassPathFileHandler;
-import org.didelphis.language.automata.matching.SequenceMatcher;
+import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.matching.Match;
+import org.didelphis.language.automata.matching.SequenceMatcher;
 import org.didelphis.language.automata.parsing.SequenceParser;
 import org.didelphis.language.automata.statemachines.StandardStateMachine;
 import org.didelphis.language.automata.statemachines.StateMachine;
 import org.didelphis.language.parsing.FormatterMode;
-import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.SequenceFactory;
 import org.didelphis.language.phonetic.features.IntegerFeature;
@@ -305,12 +305,8 @@ class StandardStateMachineModelTest {
 		SequenceParser<Integer> parser = new SequenceParser<>(factory);
 		SequenceMatcher<Integer> matcher = new SequenceMatcher<>(parser);
 
-		return StandardStateMachine.create(
-				"M0",
-				parser.parseExpression(exp, ParseDirection.FORWARD),
-				parser,
-				matcher
-		);
+		Expression expression = parser.parseExpression(exp);
+		return StandardStateMachine.create("M0", expression, parser, matcher);
 	}
 
 	private static void test(

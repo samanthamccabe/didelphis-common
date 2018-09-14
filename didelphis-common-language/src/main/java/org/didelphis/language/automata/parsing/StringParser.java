@@ -22,7 +22,10 @@ import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.didelphis.utilities.Splitter;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Class {@code StringParser}
@@ -37,6 +40,13 @@ import java.util.List;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class StringParser extends AbstractDidelphisParser<String> {
 
+	private static final Map<String, String> DELIMITERS = new LinkedHashMap<>();
+	static {
+		DELIMITERS.put("(?:", ")");
+		DELIMITERS.put("(", ")");
+		DELIMITERS.put("{", "}");
+	}
+	
 	static String WORD_START = "#[";
 	static String WORD_END   = "]#";
 	static String EPSILON    = "𝜆" ;
@@ -49,6 +59,12 @@ public class StringParser extends AbstractDidelphisParser<String> {
 
 	public StringParser(@NonNull MultiMap<String, String> specials) {
 		this.specials = specials;
+	}
+
+	@NonNull
+	@Override
+	public Map<String, String> supportedDelimiters() {
+		return Collections.unmodifiableMap(DELIMITERS);
 	}
 
 	@NonNull

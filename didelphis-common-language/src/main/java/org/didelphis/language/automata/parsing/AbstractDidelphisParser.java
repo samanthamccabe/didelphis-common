@@ -17,9 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -34,28 +32,16 @@ import java.util.Set;
 @ToString
 @FieldDefaults (makeFinal = true, level = AccessLevel.PROTECTED)
 public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
-
-	static Map<String, String> DELIMITERS;
+	
 	static Set<String> QUANTIFIERS;
 	static Expression START_EXP = new TerminalNode("#[");
 	static Expression END_EXP = new TerminalNode("]#");
 
 	static {
-		DELIMITERS = new LinkedHashMap<>();
-		DELIMITERS.put("(?:", ")");
-		DELIMITERS.put("(", ")");
-		DELIMITERS.put("{", "}");
-
 		QUANTIFIERS = new HashSet<>();
 		QUANTIFIERS.add("?");
 		QUANTIFIERS.add("*");
 		QUANTIFIERS.add("+");
-	}
-
-	@NonNull
-	@Override
-	public Map<String, String> supportedDelimiters() {
-		return Collections.unmodifiableMap(DELIMITERS);
 	}
 
 	@NonNull
@@ -77,7 +63,8 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 
 		Expression exp;
 		try {
-			exp = parse(split(expression));
+			List<String> strings = split(expression);
+			exp = parse(strings);
 			if (direction == ParseDirection.BACKWARD) {
 				exp = exp.reverse();
 			}
@@ -111,16 +98,20 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 				buffer = update(buffer, expressions);
 			} else if (startsDelimiter(s)) {
 				buffer = update(buffer, expressions);
-				if (s.length() <= 1) {
+				if (s.length() <= 2) {
+					// TODO: there's a better way to do this if we want to cover all cases
 					String message = Templates.create()
-							.add("Unmatched group delimiter {}")
+							.add("Unmatched delimiter or empty group {}")
 							.with(s)
 							.build();
 					throw new ParseException(message);
 				}
 				String substring = s.substring(1, s.length() - 1).trim();
-				if (s.startsWith("{")) {
-					List<String> elements = Splitter.whitespace(substring, DELIMITERS);
+				if (s.startsWith("[")) {
+					buffer = update(buffer, expressions);
+					buffer.setTerminal(s);					
+				} else if (s.startsWith("{")) {
+					List<String> elements = Splitter.whitespace(substring, supportedDelimiters());
 					List<Expression> children = new ArrayList<>();
 					for (String element : elements) {
 						List<String> list = split(element);
@@ -150,8 +141,8 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 				: new ParentNode(expressions);
 	}
 
-	private static boolean startsDelimiter(String string) {
-		for (String s : DELIMITERS.keySet()) {
+	private boolean startsDelimiter(String string) {
+		for (String s : supportedDelimiters().keySet()) {
 			if (string.startsWith(s)) return true;
 		}
 		return false;

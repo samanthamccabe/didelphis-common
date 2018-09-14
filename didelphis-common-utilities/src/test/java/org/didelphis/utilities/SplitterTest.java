@@ -35,6 +35,7 @@ class SplitterTest {
 	private static final Map<String, String> DELIMITERS = new HashMap<>();
 
 	static {
+		DELIMITERS.put("[^", "]");
 		DELIMITERS.put("(?:", ")");
 		DELIMITERS.put("[", "]");
 		DELIMITERS.put("(", ")");
@@ -119,7 +120,7 @@ class SplitterTest {
 
 	@Test
 	void testParseParens01() {
-		assertEquals(7, parseParens("a [b c]", DELIMITERS, 2));
+		assertEquals(5, parseParens("[b c]", DELIMITERS, 0));
 	}
 
 	@Test
@@ -128,28 +129,39 @@ class SplitterTest {
 	}
 
 	@Test
+	void testParseParens03() {
+		assertEquals(11, parseParens("a [^bc[xy]]", DELIMITERS, 2));
+	}
+	
+	@Test
+	void testParseParens04() {
+		String string = "[-con, +voice, -creaky][-son, -voice, +vot]us";
+		assertEquals(23, parseParens(string, DELIMITERS, 0));
+	}
+	
+	@Test
 	void testFindClosingBracketA01() {
-		assertEquals(7, findClosingBracket("a [b c]", "[", "]", 2));
+		assertEquals(7, findClosingBracket("a [b c]", "[", DELIMITERS, 2));
 	}
 
 	@Test
 	void testFindClosingBracketB01() {
-		assertEquals(7, findClosingBracket("a [b c]", "[", "]", 2));
+		assertEquals(7, findClosingBracket("a [b c]", "[", DELIMITERS, 2));
 	}
 
 	@Test
 	void testFindNoClosingBracket1() {
-		assertEquals(-1, findClosingBracket("a [b c", "[", "]", 2));
+		assertEquals(-1, findClosingBracket("a [b c", "[", DELIMITERS, 2));
 	}
 
 	@Test
 	void testFindNoClosingBracket2() {
-		assertEquals(-1, findClosingBracket("a [b c[", "[", "]", 2));
+		assertEquals(-1, findClosingBracket("a [b c[", "[", DELIMITERS, 2));
 	}
 
 	@Test
 	void testFindNoClosingBracket3() {
-		assertEquals(-1, findClosingBracket("a [b c [c]", "[", "]", 2));
+		assertEquals(-1, findClosingBracket("a [b c [c]", "[", DELIMITERS, 2));
 	}
 
 	@Test

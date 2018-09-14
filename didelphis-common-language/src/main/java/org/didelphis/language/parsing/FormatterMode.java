@@ -122,7 +122,7 @@ public enum FormatterMode implements Segmenter, Formatter {
 		@NonNull @Override public List<String> split(
 				@NonNull String string,
 				@NonNull Iterable<String> special,
-				Map<String, String> delimiters
+				@NonNull Map<String, String> delimiters
 		) {
 			String word = normalize(string);
 
@@ -130,7 +130,7 @@ public enum FormatterMode implements Segmenter, Formatter {
 			StringBuilder sb = new StringBuilder(4);
 			for (int i = 0; i < word.length(); ) {
 				// Get the word from current position on
-				int index = parseParens(word, i);
+				int index = parseParens(word, delimiters, i);
 				if (index > 0) {
 					if (sb.length() > 0) {
 						strings.add(sb.toString());

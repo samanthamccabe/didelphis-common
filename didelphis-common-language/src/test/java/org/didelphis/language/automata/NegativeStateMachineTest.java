@@ -409,7 +409,7 @@ class NegativeStateMachineTest {
 			StateMachine<Sequence<Integer>> stateMachine, String target
 	) {
 		int index = testMachine(stateMachine, target);
-		Assertions.assertTrue(index > 0,
+		Assertions.assertTrue(index >= 0,
 				"Machine failed to accept input: " + target
 		);
 	}
@@ -418,7 +418,7 @@ class NegativeStateMachineTest {
 			StateMachine<Sequence<Integer>> stateMachine, String target
 	) {
 		int index = testMachine(stateMachine, target);
-		Assertions.assertFalse(index > 0,
+		Assertions.assertFalse(index >= 0,
 				"Machine accepted input it should not have: " + target
 		);
 	}
