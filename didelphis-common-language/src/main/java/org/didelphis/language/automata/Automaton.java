@@ -18,6 +18,8 @@ import lombok.NonNull;
 import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.phonetic.sequences.Sequence;
 
+import java.util.List;
+
 /**
  * Interface {@code Automaton}
  * <p>
@@ -34,7 +36,6 @@ import org.didelphis.language.phonetic.sequences.Sequence;
  * @author Samantha Fiona McCabe
  * @date 10/17/17
  */
-@FunctionalInterface
 public interface Automaton<S> {
 
 	/**
@@ -57,4 +58,37 @@ public interface Automaton<S> {
 	default Match<S> match(@NonNull S input) {
 		return match(input, 0);
 	}
+
+	/**
+	 * Splits the given input sequence around matches of this automaton.
+	 * <p>
+	 * The list returned by this method contains each subsequence of the input
+	 * sequence that is terminated by another subsequence that matches this
+	 * automaton or is terminated by the end of the input. The sequences in the
+	 * list are in the order in which they occur in the input. If this automaton
+	 * does not match any subsequence of the input then the resulting list has
+	 * just one element, namely the input sequence itself.
+	 * 
+	 * @see java.util.regex.Pattern#split(CharSequence, int) 
+	 * 
+	 * @param input the sequence to be split
+	 * @param limit the maximum number of times the automaton is applied
+	 * @return a list of sequences matched by this automaton
+	 */
+	@NonNull
+	List<S> split(@NonNull S input, int limit);
+
+	@NonNull
+	default List<S> split(@NonNull S input) {
+		return split(input, -1);
+	}
+
+	/**
+	 * 
+	 * @param input
+	 * @param replacement
+	 * @return
+	 */
+	@NonNull
+	S replace(@NonNull S input, @NonNull S replacement);
 }

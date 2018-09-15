@@ -145,6 +145,18 @@ public final class NegativeStateMachine<S> implements StateMachine<S> {
 				: pMatch;
 	}
 
+	@NonNull
+	@Override
+	public List<S> split(@NonNull S input, int limit) {
+		throw new UnsupportedOperationException("method #split is not supported by this implementation");
+	}
+
+	@NonNull
+	@Override
+	public S replace(@NonNull S input, @NonNull S replacement) {
+		throw new UnsupportedOperationException("method #replace is not supported by this implementation");
+	}
+
 	private static <S> void buildPositiveBranch(
 			@NonNull LanguageParser<S> parser,
 			@NonNull StateMachine<S> positive

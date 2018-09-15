@@ -285,6 +285,62 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		return best;
 	}
 
+	@NonNull
+	@Override
+	public List<S> split(@NonNull S input, int limit) {
+		int index = 0;
+		boolean matchLimited = limit > 0;
+		List<S> matchList = new ArrayList<>();
+
+		int i = 0;
+		int length = parser.lengthOf(input);
+		while (i < length) {
+			Match<S> m = match(input, i);
+
+			if (!matchLimited || matchList.size() < limit - 1) {
+				if (index == 0 && index == m.start() && m.start() == m.end()) {
+					// no empty leading substring included for zero-width match
+					// at the beginning of the input char sequence.
+					continue;
+				}
+				S match = parser.subSequence(input, index, m.start());
+				matchList.add(match);
+				index = m.end();
+			} else if (matchList.size() == limit - 1) { // last one
+				S match = parser.subSequence(input, index,
+						parser.lengthOf(input));
+				matchList.add(match);
+				index = m.end();
+			}
+			i++;
+		}
+		
+		// If no match was found, return this
+		if (index == 0) {
+			return Collections.singletonList(input);
+		}
+		
+		// Add remaining segment
+		if (!matchLimited || matchList.size() < limit) {
+			matchList.add(parser.subSequence(input, index, length));
+		}
+
+		// Construct result
+		int resultSize = matchList.size();
+		if (limit == 0) {
+			while (resultSize > 0 && matchList.get(resultSize - 1).equals("")) {
+				resultSize--;
+			}
+		}
+		return matchList.subList(0, resultSize);
+	}
+
+	@NonNull
+	@Override
+	public S replace(@NonNull S input, @NonNull S replacement) {
+		return null; //  TODO:
+	}
+
 	@Override
 	public String toString() {
 		return "StandardStateMachine{" + id + '}';
