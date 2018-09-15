@@ -26,6 +26,7 @@ import org.didelphis.language.automata.matching.Match;
 import org.didelphis.utilities.Templates;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -92,5 +93,17 @@ public final class EmptyStateMachine<S> implements StateMachine<S> {
 	@Override
 	public Match<S> match(@NonNull S input, int start) {
 		return new BasicMatch<>(input, 0, start);
+	}
+
+	@NonNull
+	@Override
+	public List<S> split(@NonNull S input, int limit) {
+		return Collections.singletonList(input);
+	}
+
+	@NonNull
+	@Override
+	public S replace(@NonNull S input, @NonNull S replacement) {
+		return input; // no-op
 	}
 }

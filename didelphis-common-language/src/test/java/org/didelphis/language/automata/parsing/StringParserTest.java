@@ -214,6 +214,15 @@ class StringParserTest {
 	}
 
 	@Test
+	void testNestedGroups03() {
+		String string = "((((a))))";
+		Expression expression = parser.parseExpression(string);
+		assertTrue(expression.hasChildren());
+		assertEquals(1, expression.getChildren().size());
+		assertEquals("a", expression.getChildren().get(0).getTerminal());
+	}
+
+	@Test
 	void testSetWithBoundary01() {
 		Expression ex = parser.parseExpression("{x #}a");
 		List<Expression> children = ex.getChildren();
@@ -249,6 +258,25 @@ class StringParserTest {
 		assertEquals("CH", children.get(3).getTerminal());
 		assertEquals("a",  children.get(4).getTerminal());
 		assertEquals("m",  children.get(5).getTerminal());
+	}
+
+	@Test
+	void testNestedNegation01() {
+		Expression expression = parser.parseExpression("!(!(ab))");
+		
+		assertTrue(expression.isNegative());
+		assertTrue(expression.isCapturing());
+		assertTrue(expression.hasChildren());
+		List<Expression> children = expression.getChildren();
+		
+		assertEquals(1, children.size());
+		Expression child = children.get(0);
+
+		assertTrue(child.isNegative());
+		assertTrue(child.isCapturing());
+		assertTrue(child.hasChildren());
+		assertEquals(2, child.getChildren().size());
+		
 	}
 
 	private void assertThrowsParse(String expression) {

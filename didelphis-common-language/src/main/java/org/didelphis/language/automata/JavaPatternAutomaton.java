@@ -21,6 +21,8 @@ import lombok.experimental.Delegate;
 import org.didelphis.language.automata.matching.Match;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -54,6 +56,20 @@ public class JavaPatternAutomaton implements Automaton<String> {
 			return new PatternMatch(matcher.toMatchResult());
 		}
 		return new EmptyMatch();
+	}
+
+	@NonNull
+	@Override
+	public List<String> split(@NonNull String input, int limit) {
+		return Arrays.asList(pattern.split(input, limit));
+	}
+
+	@NonNull
+	@Override
+	public String replace(
+			@NonNull String input, @NonNull String replacement
+	) {
+		return pattern.matcher(input).replaceAll(replacement);
 	}
 
 	@Value

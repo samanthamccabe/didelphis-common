@@ -101,7 +101,6 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 			} else if (startsDelimiter(s)) {
 				buffer = update(buffer, expressions);
 				if (s.length() <= 2) {
-					// TODO: there's a better way to do this if we want to cover all cases
 					String message = Templates.create()
 							.add("Unmatched delimiter or empty group {}")
 							.with(s)

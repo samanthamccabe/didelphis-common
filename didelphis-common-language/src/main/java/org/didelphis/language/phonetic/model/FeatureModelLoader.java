@@ -20,6 +20,9 @@ import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import org.didelphis.io.FileHandler;
 import org.didelphis.io.NullFileHandler;
+import org.didelphis.language.automata.Automaton;
+import org.didelphis.language.automata.matching.Match;
+import org.didelphis.language.automata.utils.Regex;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.FeatureType;
@@ -32,14 +35,18 @@ import org.didelphis.utilities.Templates;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.Normalizer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static java.util.regex.Pattern.LITERAL;
-import static java.util.regex.Pattern.compile;
 import static org.didelphis.utilities.Splitter.lines;
 
 /**
@@ -67,15 +74,15 @@ public final class FeatureModelLoader<T> {
 	}
 
 	/*-----------------------------------------------------------------------<*/
-	static final Pattern FEATURES_PATTERN = compile("(\\w+)(\\s+(\\w*))?", CASE_INSENSITIVE);
-	static final Pattern TRANSFORM        = compile("\\s*>\\s*");
-	static final Pattern BRACKETS         = compile("[\\[\\]]");
-	static final Pattern EQUALS           = compile("\\s*=\\s*");
-	static final Pattern IMPORT           = compile("import\\s+['\"]([^'\"]+)['\"]", CASE_INSENSITIVE);
-	static final Pattern COMMENT_PATTERN  = compile("\\s*%.*");
-	static final Pattern SYMBOL_PATTERN   = compile("([^\\t]+)\\t(.*)");
-	static final Pattern TAB_PATTERN      = compile("\\t");
-	static final Pattern DOTTED_CIRCLE    = compile("◌", LITERAL);
+	static final Automaton<String> FEATURES_PATTERN = Regex.create("(\\w+)(\\s+(\\w*))?", CASE_INSENSITIVE);
+	static final Automaton<String> TRANSFORM        = Regex.create("\\s*>\\s*");
+	static final Automaton<String> BRACKETS         = Regex.create("[\\[\\]]");
+	static final Automaton<String> EQUALS           = Regex.create("\\s*=\\s*");
+	static final Automaton<String> IMPORT           = Regex.create("import\\s+['\"]([^'\"]+)['\"]", CASE_INSENSITIVE);
+	static final Automaton<String> COMMENT_PATTERN  = Regex.create("\\s*%.*");
+	static final Automaton<String> SYMBOL_PATTERN   = Regex.create("([^\\t]+)\\t(.*)");
+	static final Automaton<String> TAB_PATTERN      = Regex.create("\\t");
+	static final Automaton<String> DOTTED_CIRCLE    = Regex.create("◌", LITERAL);
 	
 	final MultiMap<ParseZone, String> zoneData;
 	
@@ -138,10 +145,10 @@ public final class FeatureModelLoader<T> {
 	}
 
 	@NonNull
-	public Constraint<T> parseConstraint(@NonNull CharSequence entry) {
-		String[] split = TRANSFORM.split(entry, 2);
-		String source = split[0];
-		String target = split[1];
+	public Constraint<T> parseConstraint(@NonNull String entry) {
+		List<String> split = TRANSFORM.split(entry, 2);
+		String source = split.get(0);
+		String target = split.get(1);
 		FeatureArray<T> sMap = featureModel.parseFeatureString(source);
 		FeatureArray<T> tMap = featureModel.parseFeatureString(target);
 		return new Constraint<>(sMap, tMap);
@@ -174,18 +181,18 @@ public final class FeatureModelLoader<T> {
 				aliases
 		);
 
-		for (CharSequence string : zoneData.get(ParseZone.ALIASES)) {
-			String[] split = EQUALS.split(string, 2);
-			String alias = BRACKETS.matcher(split[0]).replaceAll("");
-			String value = split[1];
+		for (String string : zoneData.get(ParseZone.ALIASES)) {
+			List<String> split = EQUALS.split(string, 2);
+			String alias = BRACKETS.replace(split.get(0),"");
+			String value = split.get(1);
 			aliases.put(alias, featureModel.parseFeatureString(value));
 		}
 
 		// populate constraints
-		zoneData.get(ParseZone.CONSTRAINTS)
-				.stream()
-				.map(this::parseConstraint)
-				.forEach(constraints::add);
+		for (String s : zoneData.get(ParseZone.CONSTRAINTS)) {
+			Constraint<T> constraint = parseConstraint(s);
+			constraints.add(constraint);
+		}
 
 		featureMapping = new GeneralFeatureMapping<>(featureModel,
 				populateSymbols(),
@@ -210,14 +217,14 @@ public final class FeatureModelLoader<T> {
 	 */
 	private void parse(@NonNull Iterable<String> lines) {
 		ParseZone currentZone = ParseZone.NONE;
-		for (CharSequence string : lines) {
-			String line = COMMENT_PATTERN.matcher(string).replaceAll("").trim();
+		for (String string : lines) {
+			String line = COMMENT_PATTERN.replace(string,"").trim();
 			if (line.isEmpty()) {
 				continue;
 			}
 			if (line.toLowerCase().startsWith("import")) {
-				Matcher matcher = IMPORT.matcher(line);
-				if (matcher.find()) {
+				Match<String> matcher = IMPORT.match(line);
+				if (matcher.end() >= 0) {
 					String filePath = matcher.group(1);
 					String fileData = fileHandler.read(filePath);
 					Iterable<String> list = lines(fileData);
@@ -238,8 +245,8 @@ public final class FeatureModelLoader<T> {
 	private void populateFeatures() {
 		int i = 0;
 		for (String entry : zoneData.get(ParseZone.FEATURES)) {
-			Matcher matcher = FEATURES_PATTERN.matcher(entry);
-			if (matcher.find()) {
+			Match<String> matcher = FEATURES_PATTERN.match(entry);
+			if (matcher.end() >= 0) {
 				String name = matcher.group(1);
 				String code = matcher.group(3);
 				featureNames.add(name);
@@ -262,11 +269,11 @@ public final class FeatureModelLoader<T> {
 	private Map<String, FeatureArray<T>> populateModifiers() {
 		Map<String, FeatureArray<T>> diacritics = new LinkedHashMap<>();
 		Iterable<String> lines = zoneData.get(ParseZone.MODIFIERS);
-		for (CharSequence entry : lines) {
-			Matcher matcher = SYMBOL_PATTERN.matcher(entry);
-			if (matcher.matches()) {
-				CharSequence symbol = matcher.group(1);
-				String[] values = TAB_PATTERN.split(matcher.group(2), -1);
+		for (String entry : lines) {
+			Match<String> matcher = SYMBOL_PATTERN.match(entry);
+			if (matcher.end() >= 0) {
+				String symbol = matcher.group(1);
+				List<String> values = TAB_PATTERN.split(matcher.group(2), -1);
 				FeatureArray<T> array = new SparseFeatureArray<>(featureModel);
 				int i = 0;
 				for (String value : values) {
@@ -275,7 +282,7 @@ public final class FeatureModelLoader<T> {
 					}
 					i++;
 				}
-				String diacritic = DOTTED_CIRCLE.matcher(symbol).replaceAll("");
+				String diacritic = DOTTED_CIRCLE.replace(symbol, "");
 				String norm = Normalizer.normalize(diacritic, Normalizer.Form.NFD);
 				diacritics.put(norm, array);
 			} else {
@@ -289,16 +296,16 @@ public final class FeatureModelLoader<T> {
 	private Map<String, FeatureArray<T>> populateSymbols() {
 		Map<String, FeatureArray<T>> featureMap = new LinkedHashMap<>();
 		Iterable<String> lines = zoneData.get(ParseZone.SYMBOLS);
-		for (CharSequence entry : lines) {
-			Matcher matcher = SYMBOL_PATTERN.matcher(entry);
-			if (matcher.matches()) {
-				String symbol = matcher.group(1);
-				String[] values = TAB_PATTERN.split(matcher.group(2), -1);
+		for (String entry : lines) {
+			Match<String> match = SYMBOL_PATTERN.match(entry);
+			if (match.end() >= 0) {
+				String symbol = match.group(1);
+				List<String> values = TAB_PATTERN.split(match.group(2), -1);
 				int size = featureModel.getSpecification().size();
 				FeatureArray<T> features
 						= new SparseFeatureArray<>(featureModel);
 				for (int i = 0; i < size; i++) {
-					String value = values[i];
+					String value = values.get(i);
 					features.set(i, featureType.parseValue(value));
 				}
 				checkFeatureCollisions(symbol, featureMap, features);

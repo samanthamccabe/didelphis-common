@@ -357,6 +357,25 @@ class NegativeStateMachineTest extends StateMachineTestBase<Sequence<Integer>> {
 		assertNotMatches(machine, "kwh");
 	}
 
+	@Test
+	void testNesting01() {
+		// It's unclear if this is necessarily the desired behavior but since
+		// nested negations are clearly an edge case, it is reasonable to not
+		// support them
+		StateMachine<Sequence<Integer>> machine = getMachine("!(!(ab))");
+		
+		assertNotMatches(machine, "ab");
+
+		assertNotMatches(machine, "aa");
+		assertNotMatches(machine, "ac");
+		assertNotMatches(machine, "aab");
+
+		// These are too short
+		assertNotMatches(machine, "a");
+		assertNotMatches(machine, "b");
+		assertNotMatches(machine, "c");
+	}
+
 	@NonNull
 	private static Map<String, Collection<Sequence<Integer>>> parse(String string) {
 		String[] split = string.split("\\s*=\\s*");
