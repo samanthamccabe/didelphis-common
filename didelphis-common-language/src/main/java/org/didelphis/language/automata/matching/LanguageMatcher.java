@@ -25,25 +25,25 @@ import lombok.NonNull;
  * @param <S> The type of object which represents state transitions.
  *
  * @author Samantha Fiona McCabe
- * @date 2017-02-23
- * @since 0.1.0
+ * @since 0.3.0
  */
 @FunctionalInterface
 public interface LanguageMatcher<S>  {
 
 	/**
-	 * Determines if the provided input matches the provided target in per the
-	 * semantics of the implementation. This may be an exact or approximate
-	 * match, or use operate like {@link String#startsWith(String)}
+	 * Determines if {@param input} matches the provided {@param arc} per the
+	 * implementation' semantics. This may be an exact or approximate match, or
+	 * use operate like {@link String#startsWith(String)}
 	 *
-	 * @param input  the input to test
-	 * @param target the data being checked for within the input
-	 * @param index  the index of the input at which to evaluate the match
+	 * @param input the input to test
+	 * @param arc the data being checked for within the input
+	 * @param index the index of the input at which to evaluate the match
 	 *
 	 * @return the length of the matched data; in many cases this will be the
-	 * length of the param {@code target}, but some implementations may permit
-	 * {@code target} to stand in for a set of items, in which case this method
-	 * should return the length of whichever element did match.
+	 * 		length of {@param arc}, but some implementations may permit {@param
+	 * 		arc} to stand in for a set of items, in which case this method 
+	 * 		should return the length of whichever element did match. In the 
+	 * 		event that there is no match, it should return -1
 	 */
-	int matches(@NonNull S input, @NonNull S target, int index);
+	int matches(@NonNull S input, @NonNull S arc, int index);
 }

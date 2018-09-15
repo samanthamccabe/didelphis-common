@@ -28,16 +28,16 @@ import java.util.Map;
 @Data
 public final class MockFileHandler implements FileHandler {
 
-	private final Map<String, CharSequence> mockFileSystem;
+	private final Map<String, String> mockFileSystem;
 
 	@Override
-	public CharSequence read( @NonNull String path) {
+	public String read( @NonNull String path) {
 		return mockFileSystem.get(path);
 	}
 
 	@Override
 	public boolean writeString(
-			 @NonNull String path,  @NonNull CharSequence data
+			 @NonNull String path,  @NonNull String data
 	) {
 		mockFileSystem.put(path, data);
 		return true;

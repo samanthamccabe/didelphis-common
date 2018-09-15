@@ -25,20 +25,13 @@ import java.util.regex.Pattern;
  * Utility Class {@code PatternUtils}
  *
  * @author Samantha Fiona McCabe
- * @date 2017-02-24
  * @since 0.1.0
  */
+@Deprecated
 @SuppressWarnings("TypeMayBeWeakened")
 @UtilityClass
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PatternUtils {
-
-	Pattern WHITESPACE = Pattern.compile("\\s+");
-
-	@NonNull
-	public String cleanSpaces(@NonNull CharSequence charSequence) {
-		return WHITESPACE.matcher(charSequence).replaceAll(" ");
-	}
 
 	@NonNull
 	public Pattern template(@NonNull String head, @NonNull String... vars) {

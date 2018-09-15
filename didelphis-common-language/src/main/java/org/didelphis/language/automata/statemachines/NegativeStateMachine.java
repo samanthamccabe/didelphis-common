@@ -137,12 +137,16 @@ public final class NegativeStateMachine<S> implements StateMachine<S> {
 	@Override
 	public Match<S> match(@NonNull S input, int start) {
 
+		BasicMatch<S> match = new BasicMatch<>(input, -1, -1);
+
+		if (start >= getParser().lengthOf(input)) {
+			return match;
+		}
+
 		Match<S> pMatch = positive.match(input, start);
 		Match<S> nMatch = negative.match(input, start);
 
-		return pMatch.end() == nMatch.end()
-				? new BasicMatch<>(input, -1, -1)
-				: pMatch;
+		return pMatch.end() == nMatch.end() ? match : pMatch;
 	}
 
 	@NonNull
@@ -175,7 +179,7 @@ public final class NegativeStateMachine<S> implements StateMachine<S> {
 			String source = triple.getFirstElement();
 			if (Objects.equals(arc, parser.epsilon())) {
 				graph.put(source, parser.epsilon(), targets);
-			} else if (parser.getSpecials().containsKey(arc.toString())) {
+			} else if (parser.getSpecialsMap().containsKey(arc.toString())) {
 				S dot = parser.getDot();
 				for (Integer length : collectLengths(parser, arc)) {
 					buildDotChain(graph, source, targets, length, dot);
@@ -207,7 +211,7 @@ public final class NegativeStateMachine<S> implements StateMachine<S> {
 			@NonNull LanguageParser<S> parser,
 			@NonNull S arc
 	) {
-		return parser.getSpecials()
+		return parser.getSpecialsMap()
 				.get(arc.toString())
 				.stream()
 				.map(parser::lengthOf)

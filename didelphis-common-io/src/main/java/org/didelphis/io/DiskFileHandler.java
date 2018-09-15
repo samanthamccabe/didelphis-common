@@ -40,17 +40,17 @@ public final class DiskFileHandler implements FileHandler {
 	}
 
 	@Override
-	public @Nullable CharSequence read( @NonNull String path) {
+	public @Nullable String read( @NonNull String path) {
 		return IOUtil.readPath(path);
 	}
 
 	@Override
 	public boolean writeString(
-			 @NonNull String path,  @NonNull CharSequence data
+			 @NonNull String path,  @NonNull String data
 	) {
 		File file = new File(path);
 		try (Writer writer = new BufferedWriter(new FileWriter(file))) {
-			writer.write(data.toString());
+			writer.write(data);
 			return true;
 		} catch (IOException e) {
 			LOG.error("Failed to write to path {}", path, e);

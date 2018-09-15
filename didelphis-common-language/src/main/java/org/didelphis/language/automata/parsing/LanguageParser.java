@@ -14,12 +14,22 @@
 
 package org.didelphis.language.automata.parsing;
 
+import lombok.AccessLevel;
+import lombok.Data;
 import lombok.NonNull;
+import lombok.experimental.FieldDefaults;
 import org.didelphis.language.automata.expressions.Expression;
+import org.didelphis.language.automata.expressions.ParallelNode;
+import org.didelphis.language.automata.expressions.ParentNode;
+import org.didelphis.language.automata.expressions.TerminalNode;
 import org.didelphis.language.parsing.ParseDirection;
+import org.didelphis.language.parsing.ParseException;
 import org.didelphis.structures.maps.interfaces.MultiMap;
+import org.didelphis.utilities.Templates;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,7 +39,6 @@ import java.util.Set;
  * @param <S>
  *     
  * @since 0.2.0
- * @date 2017-10-25
  */
 public interface LanguageParser<S> {
 
@@ -82,7 +91,7 @@ public interface LanguageParser<S> {
 	 * corresponding literal values
 	 */
 	@NonNull
-	MultiMap<String, S> getSpecials();
+	MultiMap<String, S> getSpecialsMap();
 
 	/**
 	 * Provides a uniform value for "dot" transitions, which accept any value,
@@ -99,9 +108,6 @@ public interface LanguageParser<S> {
 	 * @return the length of the provided element
 	 */
 	int lengthOf(@NonNull S t);
-
-	@NonNull
-	List<String> split(String substring);
 
 	/**
 	 * Allows type-agnostic retrieval of a subsequence
@@ -121,5 +127,67 @@ public interface LanguageParser<S> {
 	
 	default Expression parseExpression(String exp) {
 		return parseExpression(exp, ParseDirection.FORWARD);
+	}
+
+	@Data
+	@FieldDefaults (level = AccessLevel.PRIVATE)
+	final class Buffer {
+
+		boolean negative;
+		boolean parallel;
+		boolean capturing;
+
+		String quantifier = "";
+		String terminal = "";
+
+		List<Expression> nodes = new ArrayList<>();
+
+		public boolean isEmpty() {
+			return nodes.isEmpty() && terminal.isEmpty();
+		}
+
+		public @Nullable Expression toExpression() {
+			if (nodes.isEmpty()) {
+				return new TerminalNode(terminal, quantifier, negative);
+			} else if (parallel) {
+				return new ParallelNode(nodes, quantifier, negative);
+			} else if (terminal == null || terminal.isEmpty()) {
+				return new ParentNode(nodes, quantifier, negative, capturing);
+			} else {
+				return null;
+			}
+		}
+	}
+
+	@NonNull
+	static List<Expression> getChildrenOrExpression(@NonNull Expression exp) {
+		if (exp.hasChildren()) {
+			return exp.getChildren();
+		} else {
+			List<Expression> list = new ArrayList<>();
+			list.add(exp);
+			return list;
+		}
+	}
+	
+	@NonNull
+	static Buffer update(
+			@NonNull Buffer buffer,
+			@NonNull Collection<Expression> children
+	) {
+		if (!buffer.isEmpty()) {
+			Expression ex = buffer.toExpression();
+			if (ex == null) {
+				String message = Templates.create()
+						.add("Unable to convert buffer to expression")
+						.data(buffer)
+						.build();
+				throw new ParseException(message);
+			}
+			children.add(ex);
+			return new Buffer();
+		} else {
+			return buffer;
+		}
 	}
 }

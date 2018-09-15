@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
  */
 class MockFileHandlerTest {
 	
-	private static Map<String, CharSequence> map;
+	private static Map<String, String> map;
 	private static FileHandler handler;
 	
 	@BeforeAll
@@ -37,7 +37,7 @@ class MockFileHandlerTest {
 		map.put("file1", "payload1: xx");
 		map.put("file2", "payload2: yy");
 		map.put("file3", "payload3: zz");
-		map.put("file4", new StringBuilder("payloadX: 00"));
+		map.put("file4", "payloadX: 00");
 		handler = new MockFileHandler(map);
 	}
 	
@@ -56,7 +56,7 @@ class MockFileHandlerTest {
 		assertEquals("payload1: xx", handler.read("file1"));
 		assertEquals("payload2: yy", handler.read("file2"));
 		assertEquals("payload3: zz", handler.read("file3"));
-		assertEquals("payloadX: 00", handler.read("file4").toString());
+		assertEquals("payloadX: 00", handler.read("file4"));
 	}
 
 	@Test

@@ -15,15 +15,9 @@
 package org.didelphis.language.automata.parsing;
 
 import org.didelphis.language.automata.expressions.Expression;
-import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.parsing.ParseException;
-import org.didelphis.language.phonetic.SequenceFactory;
-import org.didelphis.language.phonetic.features.BinaryFeature;
-import org.didelphis.language.phonetic.model.FeatureModelLoader;
-import org.didelphis.language.phonetic.sequences.Sequence;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -33,32 +27,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class SequenceParserTest {
+class StringParserTest {
 
-	private SequenceParser<Boolean> parser;
-	private SequenceFactory<Boolean> factory;
-
-	@BeforeEach
-	void init() {
-		FeatureModelLoader<Boolean> loader
-				= new FeatureModelLoader<>(BinaryFeature.INSTANCE);
-		factory = new SequenceFactory<>(
-				loader.getFeatureMapping(),
-				FormatterMode.NONE
-		);
-		parser = new SequenceParser<>(factory);
-	}
+	private final StringParser parser = new StringParser();
 
 	@Test
-	void testIllegalNegation01() {
-		assertThrowsParse("!!a");
-	}
-
-	@Test
-	void testIllegalNegation02() {
-		assertThrowsParse("!?a");
-		assertThrowsParse("!*a");
-		assertThrowsParse("!+a");
+	void testNegatedDot01() {
+		assertThrowsParse("!.");
 	}
 	
 	@Test
@@ -104,6 +79,14 @@ class SequenceParserTest {
 	@Test
 	void testUnmatchedParen() {
 		assertThrowsParse("(a");
+	}
+	
+	@Test
+	void tesTransform01() {
+		assertEquals("a", parser.transform("a"));
+		assertEquals("b", parser.transform("b"));
+		assertEquals("c", parser.transform("c"));
+		assertEquals("d", parser.transform("d"));
 	}
 	
 	@Test
@@ -215,6 +198,22 @@ class SequenceParserTest {
 	}
 
 	@Test
+	void testNestedGroups01() {
+		String string = "a(b)";
+		Expression expression = parser.parseExpression(string);
+		assertTrue(expression.hasChildren());
+		assertEquals(2, expression.getChildren().size());
+	}
+	
+	@Test
+	void testNestedGroups02() {
+		String string = "(a(b))";
+		Expression expression = parser.parseExpression(string);
+		assertTrue(expression.hasChildren());
+		assertEquals(2, expression.getChildren().size());
+	}
+
+	@Test
 	void testSetWithBoundary01() {
 		Expression ex = parser.parseExpression("{x #}a");
 		List<Expression> children = ex.getChildren();
@@ -234,16 +233,14 @@ class SequenceParserTest {
 		Expression child1 = children.get(1);
 		List<Expression> child2 = child1.getChildren();
 		assertEquals(2, child2.size());
-
 		assertEquals("]#", child2.get(1).getTerminal());
 	}
 
 	@Test
 	void testSpecials01() {
-		MultiMap<String, Sequence<Boolean>> specials = new GeneralMultiMap<>();
-		specials.add("CH",  factory.toSequence("th"));
-		SequenceParser<Boolean> localParser = new SequenceParser<>(factory, specials);
-		Expression ex1 = localParser.parseExpression("ataCHam");
+		MultiMap<String, String> specials = new GeneralMultiMap<>();
+		specials.add("CH",  "th");
+		Expression ex1 = new StringParser(specials).parseExpression("ataCHam");
 		assertTrue(ex1.hasChildren());
 		List<Expression> children = ex1.getChildren();
 		assertEquals("a",  children.get(0).getTerminal());

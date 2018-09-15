@@ -17,7 +17,6 @@ package org.didelphis.language.automata;
 import lombok.NonNull;
 import org.didelphis.io.ClassPathFileHandler;
 import org.didelphis.language.automata.expressions.Expression;
-import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.automata.matching.SequenceMatcher;
 import org.didelphis.language.automata.parsing.SequenceParser;
 import org.didelphis.language.automata.statemachines.StandardStateMachine;
@@ -25,50 +24,38 @@ import org.didelphis.language.automata.statemachines.StateMachine;
 import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.phonetic.SequenceFactory;
 import org.didelphis.language.phonetic.features.IntegerFeature;
-import org.didelphis.language.phonetic.model.FeatureMapping;
-import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
-import org.didelphis.language.phonetic.sequences.BasicSequence;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
-import org.didelphis.utilities.Logger;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.didelphis.language.parsing.ParseDirection.FORWARD;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * @author Samantha Fiona McCabe
- * @date 1/31/2016
  */
-class NegativeStateMachineTest {
-
-	private static final Logger LOG = Logger.create(NegativeStateMachineTest.class);
+class NegativeStateMachineTest extends StateMachineTestBase<Sequence<Integer>> {
 	
-	private static final boolean  TIMEOUT  = false;
-	private static final Duration DURATION = Duration.ofSeconds(1);
-	
-	private static final FeatureMapping<Integer> MAPPING
-			= new FeatureModelLoader<>(IntegerFeature.INSTANCE,
-			ClassPathFileHandler.INSTANCE,
-			Collections.emptyList()
-	).getFeatureMapping();
-
 	private static final SequenceFactory<Integer> FACTORY = loadModel();
+	
+	private static SequenceParser<Integer> parser;
+	private static SequenceMatcher<Integer> matcher;
+
+	@Override
+	protected Sequence<Integer> transform(String input) {
+		return input.isEmpty()
+				? FACTORY.toSequence(input)
+				: parser.transform(input);
+	}
 
 	private static SequenceFactory<Integer> loadModel() {
 		String name = "AT_hybrid.model";
@@ -82,101 +69,101 @@ class NegativeStateMachineTest {
 	@Test
 	void testBasic01() {
 		StateMachine<Sequence<Integer>> machine = getMachine("!a");
-		fail(machine, "a");
-		fail(machine, "aa");
+		assertNotMatches(machine, "a");
+		assertNotMatches(machine, "aa");
 
-		test(machine, "b");
-		test(machine, "c");
+		assertMatches(machine, "b");
+		assertMatches(machine, "c");
 	}
 
 	@Test
 	void testBasic02() {
 		StateMachine<Sequence<Integer>> machine = getMachine("!a?b#");
-		fail(machine, "ab");
-		fail(machine, "c");
+		assertNotMatches(machine, "ab");
+		assertNotMatches(machine, "c");
 
-		test(machine, "bb");
-		test(machine, "b");
+		assertMatches(machine, "bb");
+		assertMatches(machine, "b");
 	}
 	
 	@Test
 	void testBasic03() {
 		StateMachine<Sequence<Integer>> machine = getMachine("!a*b#");
-		fail(machine, "ab");
-		fail(machine, "aab");
-		fail(machine, "aaab");
-		fail(machine, "c");
+		assertNotMatches(machine, "ab");
+		assertNotMatches(machine, "aab");
+		assertNotMatches(machine, "aaab");
+		assertNotMatches(machine, "c");
+		
+		assertNotMatches(machine, "bab");
+		assertNotMatches(machine, "bbab");
 
-		//		fail(machine, "bab"); // TODO: actually it is unclear if this should pass or fail
-		//		fail(machine, "bbab"); // TODO: actually it is unclear if this should pass or fail
-
-		test(machine, "b");
-		test(machine, "bb");
-		test(machine, "bbb");
+		assertMatches(machine, "b");
+		assertMatches(machine, "bb");
+		assertMatches(machine, "bbb");
 	}
 
 	@Test
 	void testGroup01() {
 		StateMachine<Sequence<Integer>> machine = getMachine("!(ab)");
-		fail(machine, "ab");
+		assertNotMatches(machine, "ab");
 
-		test(machine, "aa");
-		test(machine, "ac");
-		test(machine, "aab");
+		assertMatches(machine, "aa");
+		assertMatches(machine, "ac");
+		assertMatches(machine, "aab");
 
 		// These are too short
-		fail(machine, "a");
-		fail(machine, "b");
-		fail(machine, "c");
+		assertNotMatches(machine, "a");
+		assertNotMatches(machine, "b");
+		assertNotMatches(machine, "c");
 	}
 
 	@Test
 	void testGroup01_With_Captures() {
 		StateMachine<Sequence<Integer>> machine = getMachine("!(ab)");
 		
-		assertMatchesGroup(machine, "aa", 0, "aa");
-		assertMatchesGroup(machine, "aa", 1, "aa");
+		assertMatchesGroup(machine, "aa", "aa", 0);
+		assertMatchesGroup(machine, "aa", "aa", 1);
 		
-		assertMatchesGroup(machine, "ac", 0, "ac");
-		assertMatchesGroup(machine, "ac", 1, "ac");
+		assertMatchesGroup(machine, "ac", "ac", 0);
+		assertMatchesGroup(machine, "ac", "ac", 1);
 		
-		assertMatchesGroup(machine, "aab", 0, "aa");
-		assertMatchesGroup(machine, "aab", 1, "aa");
+		assertMatchesGroup(machine, "aab", "aa", 0);
+		assertMatchesGroup(machine, "aab", "aa", 1);
 	}
 	
 	@Test
 	void testGroup02_With_Captures() {
 		StateMachine<Sequence<Integer>> machine = getMachine("!(ab(xy)?)");
 
-		assertMatchesGroup(machine, "aa", 0, "aa");
-		assertMatchesGroup(machine, "aa", 1, "aa");
+		assertMatchesGroup(machine, "aa", "aa", 0);
+		assertMatchesGroup(machine, "aa", "aa", 1);
 
-		assertMatchesGroup(machine, "ac", 0, "ac");
-		assertMatchesGroup(machine, "ac", 1, "ac");
+		assertMatchesGroup(machine, "ac", "ac", 0);
+		assertMatchesGroup(machine, "ac", "ac", 1);
 		assertNoGroup(machine, "ac", 2);
 		
-		assertMatchesGroup(machine, "aab", 0, "aa");
-		assertMatchesGroup(machine, "aab", 1, "aa");
+		assertMatchesGroup(machine, "aab", "aa", 0);
+		assertMatchesGroup(machine, "aab", "aa", 1);
 
-		assertMatchesGroup(machine, "aazz", 0, "aazz");
-		assertMatchesGroup(machine, "aazz", 1, "aazz");
-		assertMatchesGroup(machine, "aaxz", 2, "xz");
+		assertMatchesGroup(machine, "aazz", "aazz", 0);
+		assertMatchesGroup(machine, "aazz", "aazz", 1);
+		assertMatchesGroup(machine, "aaxz", "xz", 2);
 	}
 	
 	@Test
 	void testGroup03() {
 		StateMachine<Sequence<Integer>> machine = getMachine("!(ab)*xy#");
-		fail(machine, "abxy");
-		fail(machine, "ababxy");
+		assertNotMatches(machine, "abxy");
+		assertNotMatches(machine, "ababxy");
 
-		test(machine, "xy");
-		test(machine, "xyxy");
-		test(machine, "xyxyxy");
+		assertMatches(machine, "xy");
+		assertMatches(machine, "xyxy");
+		assertMatches(machine, "xyxyxy");
 
 		// These are too short
-		fail(machine, "aabxy");
-		fail(machine, "babxy");
-		fail(machine, "cabxy");
+		assertNotMatches(machine, "aabxy");
+		assertNotMatches(machine, "babxy");
+		assertNotMatches(machine, "cabxy");
 	}
 
 	@Test
@@ -185,113 +172,113 @@ class NegativeStateMachineTest {
 		//             !(ab)+ != !((ab)+) - this is the correct interpretation
 		StateMachine<Sequence<Integer>> machine = getMachine("!(ab)+xy#");
 
-		test(machine, "aaxy");
-		test(machine, "acxy");
-		test(machine, "cbxy");
-		test(machine, "ccxy");
+		assertMatches(machine, "aaxy");
+		assertMatches(machine, "acxy");
+		assertMatches(machine, "cbxy");
+		assertMatches(machine, "ccxy");
 
-		fail(machine, "aaxyZ");
-		fail(machine, "acxyZ");
-		fail(machine, "cbxyZ");
-		fail(machine, "ccxyZ");
+		assertNotMatches(machine, "aaxyZ");
+		assertNotMatches(machine, "acxyZ");
+		assertNotMatches(machine, "cbxyZ");
+		assertNotMatches(machine, "ccxyZ");
 		
-		fail(machine, "abxy");
-		fail(machine, "ababxy");
-		fail(machine, "abababxy");
+		assertNotMatches(machine, "abxy");
+		assertNotMatches(machine, "ababxy");
+		assertNotMatches(machine, "abababxy");
 
-		fail(machine, "aaabxy");
-		fail(machine, "acabxy");
+		assertNotMatches(machine, "aaabxy");
+		assertNotMatches(machine, "acabxy");
 
 		// These are too short
-		fail(machine, "aabxy");
-		fail(machine, "babxy");
-		fail(machine, "cabxy");
+		assertNotMatches(machine, "aabxy");
+		assertNotMatches(machine, "babxy");
+		assertNotMatches(machine, "cabxy");
 	}
 
 	@Test
 	void testSet01() {
 		StateMachine<Sequence<Integer>> machine = getMachine("!{a b c}");
-		fail(machine, "a");
-		fail(machine, "b");
-		fail(machine, "c");
+		assertNotMatches(machine, "a");
+		assertNotMatches(machine, "b");
+		assertNotMatches(machine, "c");
 
-		test(machine, "x");
-		test(machine, "y");
-		test(machine, "z");
+		assertMatches(machine, "x");
+		assertMatches(machine, "y");
+		assertMatches(machine, "z");
 	}
 
 	@Test
 	void testSet02() {
 		StateMachine<Sequence<Integer>> machine = getMachine("#!{a b c}#");
-		fail(machine, "a");
-		fail(machine, "b");
-		fail(machine, "c");
+		assertNotMatches(machine, "a");
+		assertNotMatches(machine, "b");
+		assertNotMatches(machine, "c");
 
-		test(machine, "x");
-		test(machine, "y");
-		test(machine, "z");
+		assertMatches(machine, "x");
+		assertMatches(machine, "y");
+		assertMatches(machine, "z");
 	}
 
 	@Test
 	void testSet03() {
 		StateMachine<Sequence<Integer>> machine = getMachine("!{a b c}+#");
-		fail(machine, "a");
-		fail(machine, "b");
-		fail(machine, "c");
+		assertNotMatches(machine, "a");
+		assertNotMatches(machine, "b");
+		assertNotMatches(machine, "c");
 
 		// Length 2 - exhaustive
-		fail(machine, "aa");
-		fail(machine, "ba");
-		fail(machine, "ca");
+		assertNotMatches(machine, "aa");
+		assertNotMatches(machine, "ba");
+		assertNotMatches(machine, "ca");
 
-		fail(machine, "ab");
-		fail(machine, "bb");
-		fail(machine, "cb");
+		assertNotMatches(machine, "ab");
+		assertNotMatches(machine, "bb");
+		assertNotMatches(machine, "cb");
 
-		fail(machine, "ac");
-		fail(machine, "bc");
-		fail(machine, "cc");
+		assertNotMatches(machine, "ac");
+		assertNotMatches(machine, "bc");
+		assertNotMatches(machine, "cc");
 
 		// Length 3 - partial
-		fail(machine, "acb");
-		fail(machine, "bac");
-		fail(machine, "cba");
-		fail(machine, "acc");
-		fail(machine, "baa");
-		fail(machine, "cbb");
-		fail(machine, "aca");
-		fail(machine, "bab");
-		fail(machine, "cbc");
+		assertNotMatches(machine, "acb");
+		assertNotMatches(machine, "bac");
+		assertNotMatches(machine, "cba");
+		assertNotMatches(machine, "acc");
+		assertNotMatches(machine, "baa");
+		assertNotMatches(machine, "cbb");
+		assertNotMatches(machine, "aca");
+		assertNotMatches(machine, "bab");
+		assertNotMatches(machine, "cbc");
 
 		// Pass
-		test(machine, "x");
-		test(machine, "y");
-		test(machine, "z");
+		assertMatches(machine, "x");
+		assertMatches(machine, "y");
+		assertMatches(machine, "z");
 
-		test(machine, "xxy");
-		test(machine, "yyz");
-		test(machine, "zzx");
+		assertMatches(machine, "xxy");
+		assertMatches(machine, "yyz");
+		assertMatches(machine, "zzx");
 	}
 
 	@Test
 	void testSet03Special() {
 		StateMachine<Sequence<Integer>> machine = getMachine("!{a b c}+#");
 
-		test(machine, "xxx");
+		assertMatches(machine, "xxx");
 
-		fail(machine, "aaa");
-		fail(machine, "aax");
-		fail(machine, "xaa");
-		fail(machine, "xax");
-		fail(machine, "axx");
-		fail(machine, "xxa");
-		fail(machine, "xa");
-		fail(machine, "yb");
-		fail(machine, "zc");
+		assertNotMatches(machine, "aaa");
+		assertNotMatches(machine, "aax");
+		assertNotMatches(machine, "xaa");
+		assertNotMatches(machine, "xax");
+		assertNotMatches(machine, "axx");
+		assertNotMatches(machine, "xxa");
+		assertNotMatches(machine, "xa");
+		assertNotMatches(machine, "yb");
+		assertNotMatches(machine, "zc");
 
-		fail(machine, "xya");
-		fail(machine, "yzb");
-		fail(machine, "zxc");
+		assertNotMatches(machine, "xya");
+		assertNotMatches(machine, "yzb");
+		assertNotMatches(machine, "zxc");
 	}
 
 	@Test
@@ -306,13 +293,13 @@ class NegativeStateMachineTest {
 				expression
 		);
 
-		test(machine, "a");
-		test(machine, "b");
-		test(machine, "c");
+		assertMatches(machine, "a");
+		assertMatches(machine, "b");
+		assertMatches(machine, "c");
 
-		fail(machine, "p");
-		fail(machine, "t");
-		fail(machine, "k");
+		assertNotMatches(machine, "p");
+		assertNotMatches(machine, "t");
+		assertNotMatches(machine, "k");
 	}
 
 	@Test
@@ -327,18 +314,18 @@ class NegativeStateMachineTest {
 				expression
 		);
 
-		test(machine, "pp");
-		test(machine, "tt");
-		test(machine, "kk");
+		assertMatches(machine, "pp");
+		assertMatches(machine, "tt");
+		assertMatches(machine, "kk");
 
 		// These are too short
-		fail(machine, "p");
-		fail(machine, "t");
-		fail(machine, "k");
+		assertNotMatches(machine, "p");
+		assertNotMatches(machine, "t");
+		assertNotMatches(machine, "k");
 
-		fail(machine, "ph");
-		fail(machine, "th");
-		fail(machine, "kh");
+		assertNotMatches(machine, "ph");
+		assertNotMatches(machine, "th");
+		assertNotMatches(machine, "kh");
 	}
 
 	@Test
@@ -352,22 +339,22 @@ class NegativeStateMachineTest {
 				expression
 		);
 
-		test(machine, "pp");
-		test(machine, "tt");
-		test(machine, "kk");
-		test(machine, "kw");
-		test(machine, "kkw");
+		assertMatches(machine, "pp");
+		assertMatches(machine, "tt");
+		assertMatches(machine, "kk");
+		assertMatches(machine, "kw");
+		assertMatches(machine, "kkw");
 
 		// These are too short
-		fail(machine, "p");
-		fail(machine, "t");
-		fail(machine, "k");
+		assertNotMatches(machine, "p");
+		assertNotMatches(machine, "t");
+		assertNotMatches(machine, "k");
 
-		fail(machine, "ph");
-		fail(machine, "th");
-		fail(machine, "kh");
+		assertNotMatches(machine, "ph");
+		assertNotMatches(machine, "th");
+		assertNotMatches(machine, "kh");
 
-		fail(machine, "kwh");
+		assertNotMatches(machine, "kwh");
 	}
 
 	@NonNull
@@ -383,8 +370,8 @@ class NegativeStateMachineTest {
 	}
 
 	private static StateMachine<Sequence<Integer>> getMachine(String exp) {
-		SequenceParser<Integer> parser = new SequenceParser<>(FACTORY);
-		SequenceMatcher<Integer> matcher = new SequenceMatcher<>(parser);
+		parser = new SequenceParser<>(FACTORY);
+		matcher = new SequenceMatcher<>(parser);
 		Expression expression = parser.parseExpression(exp, FORWARD);
 		return StandardStateMachine.create("M0", expression, parser, matcher);
 	}
@@ -397,8 +384,8 @@ class NegativeStateMachineTest {
 				map,
 				Suppliers.ofHashSet()
 		);
-		SequenceParser<Integer> parser = new SequenceParser<>(FACTORY, mMap);
-		SequenceMatcher<Integer> matcher = new SequenceMatcher<>(parser);
+		parser = new SequenceParser<>(FACTORY, mMap);
+		matcher = new SequenceMatcher<>(parser);
 		return StandardStateMachine.create(
 				"M0",
 				parser.parseExpression(exp, FORWARD),
@@ -406,83 +393,4 @@ class NegativeStateMachineTest {
 				matcher
 		);
 	}
-
-	private static void test(
-			StateMachine<Sequence<Integer>> stateMachine, String target
-	) {
-			Executable executable = () -> {
-				Collection<Integer> indices = testMachine(stateMachine, target);
-				Assertions.assertFalse(
-						indices.isEmpty(),
-						"Machine failed to accept input: " + target
-				);
-			};
-		if (TIMEOUT && DURATION != null) {
-			Assertions.assertTimeoutPreemptively(DURATION, executable);
-		} else {
-			try {
-				executable.execute();
-			} catch (Throwable throwable) {
-				LOG.error("Unexpected failure encountered: {}", throwable);
-			}
-		}
-	}
-
-	private static void fail(
-			StateMachine<Sequence<Integer>> stateMachine, 
-			String target
-	) {
-		Executable executable = () -> {
-			Collection<Integer> indices = testMachine(stateMachine, target);
-			Assertions.assertTrue(
-					indices.isEmpty(),
-					"Machine accepted input it should not have: " + target
-			);
-		};
-
-		if (TIMEOUT && DURATION != null) {
-			Assertions.assertTimeoutPreemptively(DURATION, executable);
-		} else {
-			try {
-				executable.execute();
-			} catch (Throwable throwable) {
-				LOG.error("Unexpected failure encountered: {}", throwable);
-			}
-		}
-	}
-
-	private static void assertMatchesGroup(
-			@NonNull StateMachine<Sequence<Integer>> machine,
-			@NonNull String input,
-			int group,
-			@NonNull String expected
-	) {
-		Sequence<Integer> sequence = FACTORY.toSequence(input);
-		Match<Sequence<Integer>> match = machine.match(sequence, 0);
-		Sequence<Integer> matchedGroup = match.group(group);
-		assertEquals(FACTORY.toSequence(expected), matchedGroup);
-	}
-
-	private static void assertNoGroup(
-			@NonNull StateMachine<Sequence<Integer>> machine,
-			@NonNull String input,
-			int group
-	) {
-		Sequence<Integer> sequence = FACTORY.toSequence(input);
-		Match<Sequence<Integer>> match = machine.match(sequence, 0);
-		assertNull(match.group(group));
-	}
-	
-	private static Collection<Integer> testMachine(
-			StateMachine<Sequence<Integer>> stateMachine, String target
-	) {
-		FeatureModel<Integer> model = FACTORY.getFeatureMapping().getFeatureModel();
-		Sequence<Integer> sequence = new BasicSequence<>(model);
-		SequenceParser<Integer> parser = new SequenceParser<>(FACTORY);
-		if (target.startsWith("#")) sequence.add(parser.transform("#["));
-		sequence.add(FACTORY.toSequence(target.replaceAll("#","")));
-		if (target.endsWith("#")) sequence.add(parser.transform("]#"));
-
-		Match<Sequence<Integer>> match = stateMachine.match(sequence, 0);
-		return Collections.singleton(match.end());	}
 }

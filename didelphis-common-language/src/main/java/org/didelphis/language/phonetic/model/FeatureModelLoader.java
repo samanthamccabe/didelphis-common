@@ -226,7 +226,7 @@ public final class FeatureModelLoader<T> {
 				Match<String> matcher = IMPORT.match(line);
 				if (matcher.end() >= 0) {
 					String filePath = matcher.group(1);
-					CharSequence fileData = fileHandler.read(filePath);
+					String fileData = fileHandler.read(filePath);
 					Iterable<String> list = lines(fileData);
 					parse(list);
 					continue;

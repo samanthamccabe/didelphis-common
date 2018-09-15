@@ -22,21 +22,31 @@ import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.didelphis.utilities.Splitter;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Class {@code StringParser}
  *
- * A {@link String}-only companion to {@link SequenceParser}
- * 
+ * A {@link String}-only companion to {@link SequenceParser} which uses the same
+ * linguistics-oriented regular expression syntax.
+ *
  * @author Samantha Fiona McCabe
- * @date 2018-08-25
  * @since 0.3.0
  */
 @ToString
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class StringParser extends AbstractDidelphisParser<String> {
 
+	private static final Map<String, String> DELIMITERS = new LinkedHashMap<>();
+	static {
+		DELIMITERS.put("(?:", ")");
+		DELIMITERS.put("(", ")");
+		DELIMITERS.put("{", "}");
+	}
+	
 	static String WORD_START = "#[";
 	static String WORD_END   = "]#";
 	static String EPSILON    = "𝜆" ;
@@ -49,6 +59,12 @@ public class StringParser extends AbstractDidelphisParser<String> {
 
 	public StringParser(@NonNull MultiMap<String, String> specials) {
 		this.specials = specials;
+	}
+
+	@NonNull
+	@Override
+	public Map<String, String> supportedDelimiters() {
+		return Collections.unmodifiableMap(DELIMITERS);
 	}
 
 	@NonNull
@@ -77,7 +93,7 @@ public class StringParser extends AbstractDidelphisParser<String> {
 
 	@NonNull
 	@Override
-	public MultiMap<String, String> getSpecials() {
+	public MultiMap<String, String> getSpecialsMap() {
 		return specials;
 	}
 
@@ -94,8 +110,8 @@ public class StringParser extends AbstractDidelphisParser<String> {
 
 	@Override
 	@NonNull
-	public List<String> split(String substring) {
-		return Splitter.toList(substring, specials.keys());
+	protected List<String> split(String string) {
+		return Splitter.toList(string, DELIMITERS, specials.keys());
 	}
 
 	@NonNull

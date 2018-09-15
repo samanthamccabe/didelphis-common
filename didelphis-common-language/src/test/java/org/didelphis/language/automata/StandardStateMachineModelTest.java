@@ -15,38 +15,30 @@
 package org.didelphis.language.automata;
 
 import org.didelphis.io.ClassPathFileHandler;
+import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.matching.SequenceMatcher;
-import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.automata.parsing.SequenceParser;
 import org.didelphis.language.automata.statemachines.StandardStateMachine;
 import org.didelphis.language.automata.statemachines.StateMachine;
 import org.didelphis.language.parsing.FormatterMode;
-import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.SequenceFactory;
 import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.model.FeatureMapping;
-import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
-import org.didelphis.language.phonetic.sequences.BasicSequence;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
-import java.util.Collections;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Samantha Fiona McCabe
- * @date 2/28/2015
  */
-class StandardStateMachineModelTest {
+class StandardStateMachineModelTest extends StateMachineTestBase<Sequence<Integer>> {
 	
 	private static SequenceFactory<Integer> factory;
+	private static SequenceParser<Integer> parser;
 
 	@BeforeAll
 	static void loadModel() {
@@ -72,271 +64,248 @@ class StandardStateMachineModelTest {
 	void testDot() {
 		StateMachine<Sequence<Integer>> machine = getMachine(".");
 
-		test(machine, "a");
-		test(machine, "b");
-		test(machine, "c");
+		assertMatches(machine, "a");
+		assertMatches(machine, "b");
+		assertMatches(machine, "c");
 
-		test(machine, "g");
-		test(machine, "h");
-		test(machine, "y");
+		assertMatches(machine, "g");
+		assertMatches(machine, "h");
+		assertMatches(machine, "y");
 	}
 
 	@Test
 	void testDotEmptyString() {
 		StateMachine<Sequence<Integer>> machine = getMachine(".");
-		fail(machine, "");
+		assertNotMatches(machine, "");
 	}
 	
 	@Test
 	void testBasicStateMachine01() {
-		StateMachine<Sequence<Integer>> machine = getMachine("[-con, +son, -hgh, +frn, -atr, +voice]");
+		String exp = "[-con, +son, -hgh, +frn, -atr, +voice]";
+		StateMachine<Sequence<Integer>> machine = getMachine(exp);
 
-		test(machine, "a");
-		test(machine, "aa");
+		assertMatches(machine, "a");
+		assertMatches(machine, "aa");
 
-		fail(machine, "b");
-		fail(machine, "c");
+		assertNotMatches(machine, "b");
+		assertNotMatches(machine, "c");
 	}
 
 	@Test
 	void testBasicStateMachine03() {
-		StateMachine<Sequence<Integer>> machine = getMachine("a[-con, +son, -hgh, +frn]+");
+		String exp = "a[-con, +son, -hgh, +frn]+";
+		StateMachine<Sequence<Integer>> machine = getMachine(exp);
 
-		fail(machine, "a");
-		test(machine, "aa");
-		test(machine, "aaa");
-		test(machine, "aa̤");
-		test(machine, "aa̤a");
+		assertNotMatches(machine, "a");
+		assertMatches(machine, "aa");
+		assertMatches(machine, "aaa");
+		assertMatches(machine, "aa̤");
+		assertMatches(machine, "aa̤a");
 
-		fail(machine, "b");
-		fail(machine, "c");
+		assertNotMatches(machine, "b");
+		assertNotMatches(machine, "c");
 	}
 
 	@Test
 	void testBasicStateMachine02() {
 		StateMachine<Sequence<Integer>> machine = getMachine("aaa");
 
-//		test(machine, "aaa");
+		assertMatches(machine, "aaa");
 
-		fail(machine, "a");
-		fail(machine, "aa");
-		fail(machine, "b");
-		fail(machine, "c");
+		assertNotMatches(machine, "a");
+		assertNotMatches(machine, "aa");
+		assertNotMatches(machine, "b");
+		assertNotMatches(machine, "c");
 	}
 
 	@Test
 	void testStateMachineStar() {
 		StateMachine<Sequence<Integer>> machine = getMachine("aa*");
 
-		test(machine, "a");
-		test(machine, "aa");
-		test(machine, "aaa");
-		test(machine, "aaaa");
-		test(machine, "aaaaa");
-		test(machine, "aaaaaa");
+		assertMatches(machine, "a");
+		assertMatches(machine, "aa");
+		assertMatches(machine, "aaa");
+		assertMatches(machine, "aaaa");
+		assertMatches(machine, "aaaaa");
+		assertMatches(machine, "aaaaaa");
 	}
 
 	@Test
 	void testComplex01() {
-		StateMachine<Sequence<Integer>> machine = getMachine("{a e o ā ē ō}{n m l r}?{pʰ tʰ kʰ cʰ}us");
+		String exp = "{a e o ā ē ō}{n m l r}?{pʰ tʰ kʰ cʰ}us";
+		StateMachine<Sequence<Integer>> machine = getMachine(exp);
 
-		test(machine, "ācʰus");
-		test(machine, "āncʰus");
+		assertMatches(machine, "ācʰus");
+		assertMatches(machine, "āncʰus");
 		
-		test(machine, "ātʰus");
-		test(machine, "āntʰus");
+		assertMatches(machine, "ātʰus");
+		assertMatches(machine, "āntʰus");
 
-		test(machine, "ārpʰus");
-		test(machine, "ārpʰus");
+		assertMatches(machine, "ārpʰus");
+		assertMatches(machine, "ārpʰus");
 
-		test(machine, "olkʰus");
-		test(machine, "olkʰus");
+		assertMatches(machine, "olkʰus");
+		assertMatches(machine, "olkʰus");
 
-		fail(machine, "entu");
-		fail(machine, "āntus");
-		fail(machine, "intʰus");
+		assertNotMatches(machine, "entu");
+		assertNotMatches(machine, "āntus");
+		assertNotMatches(machine, "intʰus");
 	}
 	
 	@Test
 	void testComplex02() {
-		StateMachine<Sequence<Integer>> machine = getMachine("{r l}?{a e o ā ē ō}{i u}?{n m l r}?{pʰ tʰ kʰ cʰ}us");
+		String exp = "{r l}?{a e o ā ē ō}{i u}?{n m l r}?{pʰ tʰ kʰ cʰ}us";
+		StateMachine<Sequence<Integer>> machine = getMachine(exp);
 
-		test(machine, "ācʰus");
-		test(machine, "rācʰus");
-		test(machine, "lācʰus");
+		assertMatches(machine, "ācʰus");
+		assertMatches(machine, "rācʰus");
+		assertMatches(machine, "lācʰus");
 
-		test(machine, "aicʰus");
-		test(machine, "raicʰus");
-		test(machine, "laicʰus");
+		assertMatches(machine, "aicʰus");
+		assertMatches(machine, "raicʰus");
+		assertMatches(machine, "laicʰus");
 
-		test(machine, "āncʰus");
-		test(machine, "rāncʰus");
-		test(machine, "lāncʰus");
+		assertMatches(machine, "āncʰus");
+		assertMatches(machine, "rāncʰus");
+		assertMatches(machine, "lāncʰus");
 
-		test(machine, "ātʰus");
-		test(machine, "rātʰus");
-		test(machine, "lātʰus");
+		assertMatches(machine, "ātʰus");
+		assertMatches(machine, "rātʰus");
+		assertMatches(machine, "lātʰus");
 
-		test(machine, "aitʰus");
-		test(machine, "raitʰus");
-		test(machine, "laitʰus");
+		assertMatches(machine, "aitʰus");
+		assertMatches(machine, "raitʰus");
+		assertMatches(machine, "laitʰus");
 
-		test(machine, "āntʰus");
-		test(machine, "rāntʰus");
-		test(machine, "lāntʰus");
+		assertMatches(machine, "āntʰus");
+		assertMatches(machine, "rāntʰus");
+		assertMatches(machine, "lāntʰus");
 
-		fail(machine, "āntus");
-		fail(machine, "rāntus");
-		fail(machine, "lāntus");
+		assertNotMatches(machine, "āntus");
+		assertNotMatches(machine, "rāntus");
+		assertNotMatches(machine, "lāntus");
 
-		fail(machine, "intʰus");
-		fail(machine, "rintʰus");
-		fail(machine, "lintʰus");
+		assertNotMatches(machine, "intʰus");
+		assertNotMatches(machine, "rintʰus");
+		assertNotMatches(machine, "lintʰus");
 	}
 
 	@Test
 	void testComplex03() {
-		StateMachine<Sequence<Integer>> machine = getMachine("a?{pʰ tʰ kʰ cʰ}us");
+		String exp = "a?{pʰ tʰ kʰ cʰ}us";
+		StateMachine<Sequence<Integer>> machine = getMachine(exp);
 
-		test(machine, "pʰus");
-		test(machine, "tʰus");
-		test(machine, "kʰus");
-		test(machine, "cʰus");
-		test(machine, "acʰus");
+		assertMatches(machine, "pʰus");
+		assertMatches(machine, "tʰus");
+		assertMatches(machine, "kʰus");
+		assertMatches(machine, "cʰus");
+		assertMatches(machine, "acʰus");
 	}
 
 	@Test
 	void testComplex04() {
-		StateMachine<Sequence<Integer>> machine = getMachine("{a e o ā ē ō}{pʰ tʰ kʰ cʰ}us");
+		String exp = "{a e o ā ē ō}{pʰ tʰ kʰ cʰ}us";
+		StateMachine<Sequence<Integer>> machine = getMachine(exp);
 
-		test(machine, "apʰus");
-		test(machine, "atʰus");
-		test(machine, "akʰus");
-		test(machine, "acʰus");
+		assertMatches(machine, "apʰus");
+		assertMatches(machine, "atʰus");
+		assertMatches(machine, "akʰus");
+		assertMatches(machine, "acʰus");
 
-		test(machine, "epʰus");
-		test(machine, "etʰus");
-		test(machine, "ekʰus");
-		test(machine, "ecʰus");
+		assertMatches(machine, "epʰus");
+		assertMatches(machine, "etʰus");
+		assertMatches(machine, "ekʰus");
+		assertMatches(machine, "ecʰus");
 
-		test(machine, "opʰus");
-		test(machine, "otʰus");
-		test(machine, "okʰus");
-		test(machine, "ocʰus");
+		assertMatches(machine, "opʰus");
+		assertMatches(machine, "otʰus");
+		assertMatches(machine, "okʰus");
+		assertMatches(machine, "ocʰus");
 
-		test(machine, "āpʰus");
-		test(machine, "ātʰus");
-		test(machine, "ākʰus");
-		test(machine, "ācʰus");
+		assertMatches(machine, "āpʰus");
+		assertMatches(machine, "ātʰus");
+		assertMatches(machine, "ākʰus");
+		assertMatches(machine, "ācʰus");
 
-		test(machine, "ēpʰus");
-		test(machine, "ētʰus");
-		test(machine, "ēkʰus");
-		test(machine, "ēcʰus");
+		assertMatches(machine, "ēpʰus");
+		assertMatches(machine, "ētʰus");
+		assertMatches(machine, "ēkʰus");
+		assertMatches(machine, "ēcʰus");
 
-		test(machine, "ōpʰus");
-		test(machine, "ōtʰus");
-		test(machine, "ōkʰus");
-		test(machine, "ōcʰus");
+		assertMatches(machine, "ōpʰus");
+		assertMatches(machine, "ōtʰus");
+		assertMatches(machine, "ōkʰus");
+		assertMatches(machine, "ōcʰus");
 
-		fail(machine, "ōpus");
-		fail(machine, "ōtus");
-		fail(machine, "ōkus");
-		fail(machine, "ōcus");
+		assertNotMatches(machine, "ōpus");
+		assertNotMatches(machine, "ōtus");
+		assertNotMatches(machine, "ōkus");
+		assertNotMatches(machine, "ōcus");
 	}
 
 	@Test
 	void testComplex05() {
-		StateMachine<Sequence<Integer>> machine = getMachine("[-con, +voice, -creaky][-son, -voice, +vot]us");
+		String exp = "[-con, +voice, -creaky][-son, -voice, +vot]us";
+		StateMachine<Sequence<Integer>> machine = getMachine(exp);
 
-		test(machine, "apʰus");
-		test(machine, "atʰus");
-		test(machine, "akʰus");
-		test(machine, "acʰus");
+		assertMatches(machine, "apʰus");
+		assertMatches(machine, "atʰus");
+		assertMatches(machine, "akʰus");
+		assertMatches(machine, "acʰus");
 
-		test(machine, "epʰus");
-		test(machine, "etʰus");
-		test(machine, "ekʰus");
-		test(machine, "ecʰus");
+		assertMatches(machine, "epʰus");
+		assertMatches(machine, "etʰus");
+		assertMatches(machine, "ekʰus");
+		assertMatches(machine, "ecʰus");
 
-		test(machine, "opʰus");
-		test(machine, "otʰus");
-		test(machine, "okʰus");
-		test(machine, "ocʰus");
+		assertMatches(machine, "opʰus");
+		assertMatches(machine, "otʰus");
+		assertMatches(machine, "okʰus");
+		assertMatches(machine, "ocʰus");
 
-		test(machine, "āpʰus");
-		test(machine, "ātʰus");
-		test(machine, "ākʰus");
-		test(machine, "ācʰus");
+		assertMatches(machine, "āpʰus");
+		assertMatches(machine, "ātʰus");
+		assertMatches(machine, "ākʰus");
+		assertMatches(machine, "ācʰus");
 
-		test(machine, "ēpʰus");
-		test(machine, "ētʰus");
-		test(machine, "ēkʰus");
-		test(machine, "ēcʰus");
+		assertMatches(machine, "ēpʰus");
+		assertMatches(machine, "ētʰus");
+		assertMatches(machine, "ēkʰus");
+		assertMatches(machine, "ēcʰus");
 
-		test(machine, "ōpʰus");
-		test(machine, "ōtʰus");
-		test(machine, "ōkʰus");
-		test(machine, "ōcʰus");
+		assertMatches(machine, "ōpʰus");
+		assertMatches(machine, "ōtʰus");
+		assertMatches(machine, "ōkʰus");
+		assertMatches(machine, "ōcʰus");
 
-		test(machine, "ipʰus");
-		test(machine, "itʰus");
-		test(machine, "ikʰus");
-		test(machine, "icʰus");
+		assertMatches(machine, "ipʰus");
+		assertMatches(machine, "itʰus");
+		assertMatches(machine, "ikʰus");
+		assertMatches(machine, "icʰus");
 
-		fail(machine, "ōpus");
-		fail(machine, "ōtus");
-		fail(machine, "ōkus");
-		fail(machine, "ōcus");
+		assertNotMatches(machine, "ōpus");
+		assertNotMatches(machine, "ōtus");
+		assertNotMatches(machine, "ōkus");
+		assertNotMatches(machine, "ōcus");
 
-		fail(machine, "a̰pʰus");
-		fail(machine, "a̰tʰus");
-		fail(machine, "a̰kʰus");
-		fail(machine, "a̰cʰus");
+		assertNotMatches(machine, "a̰pʰus");
+		assertNotMatches(machine, "a̰tʰus");
+		assertNotMatches(machine, "a̰kʰus");
+		assertNotMatches(machine, "a̰cʰus");
 	}
 
 	private static StateMachine<Sequence<Integer>> getMachine(String exp) {
-		SequenceParser<Integer> parser = new SequenceParser<>(factory);
+		parser = new SequenceParser<>(factory);
 		SequenceMatcher<Integer> matcher = new SequenceMatcher<>(parser);
 
-		return StandardStateMachine.create(
-				"M0",
-				parser.parseExpression(exp, ParseDirection.FORWARD),
-				parser,
-				matcher
-		);
+		Expression expression = parser.parseExpression(exp);
+		return StandardStateMachine.create("M0", expression, parser, matcher);
 	}
-
-	private static void test(
-			StateMachine<Sequence<Integer>> stateMachine,
-			String target
-	) {
-		Collection<Integer> matchIndices = testMachine(stateMachine, target);
-		String message = "Machine failed to accept input: " + target;
-		assertFalse(matchIndices.isEmpty(),message);
-	}
-
-	private static void fail(
-			StateMachine<Sequence<Integer>> stateMachine,
-			String target
-	) {
-		Collection<Integer> matchIndices = testMachine(stateMachine, target);
-		String message = "Machine accepted input it should not have: " + target;
-		assertTrue(matchIndices.isEmpty(), message);
-	}
-
-	private static Collection<Integer> testMachine(
-			StateMachine<Sequence<Integer>> machine, String target) {
-		FeatureModel<Integer> model = factory.getFeatureMapping().getFeatureModel();
-		Sequence<Integer> sequence = new BasicSequence<>(model);
-		SequenceParser<Integer> parser = new SequenceParser<>(factory);
-		if (target.startsWith("#")) sequence.add(parser.transform("#["));
-		sequence.add(factory.toSequence(target.replaceAll("#","")));
-		if (target.endsWith("#")) sequence.add(parser.transform("]#"));
-
-		Match<Sequence<Integer>> match = machine.match(sequence, 0);
-		return match.end() >= 0
-				? Collections.singleton(match.end())
-				: Collections.emptyList();
+	
+	@Override
+	protected Sequence<Integer> transform(String input) {
+		return input.isEmpty()
+				? factory.toSequence(input)
+				: parser.transform(input);
 	}
 }

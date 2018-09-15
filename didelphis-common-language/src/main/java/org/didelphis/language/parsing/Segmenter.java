@@ -17,6 +17,7 @@ package org.didelphis.language.parsing;
 import lombok.NonNull;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by samantha on 1/22/17.
@@ -33,10 +34,19 @@ public interface Segmenter {
 
 	/**
 	 * Splits a string into components using reserved symbols
+	 *
 	 * @param string string to be segmented
 	 * @param special reserved characters to be treated as unitary
-	 * @return a list of strings
+	 * @param delimiters a map of opening and closing delimiters which will
+	 * 		not be split; that is, everything between the matching start and end
+	 * 		delimiters will be preserved intact
+	 *
+	 * @return a list of strings; not {@code null}
 	 */
 	@NonNull
-	List<String> split(@NonNull String string, @NonNull Iterable<String> special);
+	List<String> split(
+			@NonNull String string,
+			@NonNull Iterable<String> special,
+			@NonNull Map<String, String> delimiters
+	);
 }

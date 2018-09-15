@@ -26,12 +26,12 @@ public enum NullFileHandler implements FileHandler {
 	INSTANCE;
 
 	@Override
-	public CharSequence read( @NonNull String path) {
+	public String read( @NonNull String path) {
 		return "";
 	}
 
 	@Override
-	public boolean writeString( @NonNull String path,  @NonNull CharSequence data) {
+	public boolean writeString( @NonNull String path,  @NonNull String data) {
 		return false;
 	}
 
