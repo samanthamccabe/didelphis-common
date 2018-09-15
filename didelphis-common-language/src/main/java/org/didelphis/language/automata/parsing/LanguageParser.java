@@ -161,13 +161,16 @@ public interface LanguageParser<S> {
 
 	@NonNull
 	static List<Expression> getChildrenOrExpression(@NonNull Expression exp) {
-		if (exp.hasChildren()) {
+		if (exp.hasChildren() && !(exp.isNegative() || exp.isParallel()) && exp.getQuantifier().isEmpty()) {
 			return exp.getChildren();
 		} else {
 			List<Expression> list = new ArrayList<>();
 			list.add(exp);
 			return list;
 		}
+//		List<Expression> list = new ArrayList<>();
+//		list.add(exp);
+//		return list;
 	}
 	
 	@NonNull
