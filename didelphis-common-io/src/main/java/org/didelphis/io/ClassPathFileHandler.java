@@ -23,11 +23,10 @@ import java.io.InputStream;
 /**
  * Enum {@code ClassPathFileHandler}
  *
- * Primarily
- *
  * @author Samantha Fiona McCabe
- * @date 10/11/2014
  * @since 0.1.0
+ *
+ * 10/11/2014
  */
 @ToString
 public enum ClassPathFileHandler implements FileHandler {
@@ -43,8 +42,8 @@ public enum ClassPathFileHandler implements FileHandler {
 	public @Nullable String read(@NonNull String path) {
 		ClassLoader classLoader = ClassPathFileHandler.class.getClassLoader();
 		InputStream stream = classLoader.getResourceAsStream(path);
-		if (stream == null) return null; // TODO:
-		return IOUtil.readStream(stream);
+		if (stream == null) return null;
+		return IoUtil.readStream(stream, encoding);
 	}
 
 	@Override
