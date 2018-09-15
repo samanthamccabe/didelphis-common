@@ -24,7 +24,7 @@ import java.io.*;
 
 /**
  * @author Samantha Fiona McCabe
- * @date 10/11/2014
+ * 10/11/2014
  */
 
 @ToString
@@ -41,7 +41,7 @@ public final class DiskFileHandler implements FileHandler {
 
 	@Override
 	public @Nullable String read( @NonNull String path) {
-		return IOUtil.readPath(path);
+		return IoUtil.readPath(path);
 	}
 
 	@Override

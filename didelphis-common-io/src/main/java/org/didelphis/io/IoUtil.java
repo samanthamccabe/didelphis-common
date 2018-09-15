@@ -17,18 +17,20 @@ package org.didelphis.io;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import org.didelphis.utilities.Logger;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
-/**
- * Created by samantha on 1/21/17.
- */
 @UtilityClass
-public final class IOUtil {
+public final class IoUtil {
 
-	private static final Logger LOG = Logger.create(IOUtil.class);
+	private static final Logger LOG = Logger.create(IoUtil.class);
 	
 	public @Nullable String readPath(@NonNull String path) {
 		File file = new File(path);
@@ -49,8 +51,26 @@ public final class IOUtil {
 		return null;
 	}
 
+	public @Nullable String readPath(@NonNull String path, @NonNull String encoding) {
+		File file = new File(path);
+		try (InputStream stream = new FileInputStream(file)) {
+			return readStream(stream, encoding);
+		} catch (IOException e) {
+			LOG.error("Failed to read from path {}", path, e);
+		}
+		return null;
+	}
+
+	public @Nullable String readStream(@NonNull InputStream stream, @NonNull String encoding) {
+		try (Reader reader = new BufferedReader(new InputStreamReader(stream, encoding))) {
+			return readString(reader);
+		} catch (IOException e) {
+			LOG.error("Failed to read from stream", e);
+		}
+		return null;
+	}
+
 	@NonNull
-	@Contract("null -> fail")
 	private String readString(@NonNull Reader reader) throws IOException {
 		StringBuilder sb = new StringBuilder(0x1000);
 		int r = reader.read();

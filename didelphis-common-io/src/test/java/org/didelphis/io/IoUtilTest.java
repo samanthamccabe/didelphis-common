@@ -24,32 +24,27 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-/**
- * Class IOUtilTest
- *
- * @since 06/05/2017
- */
-class IOUtilTest {
+class IoUtilTest {
 
 	@Test
 	void readPath() throws IOException {
 		String path = "pom.xml";
-		String data = IOUtil.readPath(path);
+		String data = IoUtil.readPath(path);
 		assertNotNull(data,"Failed to read "+new File(path).getCanonicalPath());
 		assertFalse(data.isEmpty());
 	}
 
 	@Test
 	void readPath_Fail() {
-		String data = IOUtil.readPath("willfail");
+		String data = IoUtil.readPath("willfail");
 		assertNull(data);
 	}
 
 	@Test
 	void readStream() {
 		String name = "testFile.txt";
-		InputStream resource = IOUtilTest.class.getClassLoader().getResourceAsStream(name);
-		String data = IOUtil.readStream(resource);
+		InputStream resource = IoUtilTest.class.getClassLoader().getResourceAsStream(name);
+		String data = IoUtil.readStream(resource);
 		assertNotNull(data);
 		assertFalse(data.isEmpty());
 	}
