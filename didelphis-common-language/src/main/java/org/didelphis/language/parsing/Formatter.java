@@ -22,5 +22,5 @@ import lombok.NonNull;
 @FunctionalInterface
 public interface Formatter {
 	@NonNull
-	String normalize(String string);
+	String normalize(@NonNull String string);
 }

@@ -24,7 +24,6 @@ import org.didelphis.language.phonetic.model.FeatureModel;
  *
  * @author Samantha Fiona McCabe
  * @since 0.1.0
-	 * @date 2017-06-21
  */
 public class ImmutableSegment<T> extends StandardSegment<T> {
 
@@ -67,7 +66,6 @@ public class ImmutableSegment<T> extends StandardSegment<T> {
 	public int hashCode() {
 		return 31 * ImmutableSegment.class.hashCode() * super.hashCode();
 	}
-
 
 	@NonNull
 	@Override

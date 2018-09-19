@@ -33,7 +33,6 @@ import java.util.Objects;
  * 
  * @author Samantha Fiona McCabe
  * @since 0.1.0
- * @date 2017-03-16
  */
 public class StandardSegment<T> implements Segment<T> {
 
@@ -124,20 +123,4 @@ public class StandardSegment<T> implements Segment<T> {
 	public String toString() {
 		return symbol;
 	}
-
-	@Override
-	public int compareTo(@NonNull Segment<T> o) {
-		if (equals(o)) {
-			return 0;
-		} else {
-			int value = features.compareTo(o.getFeatures());
-			if (value == 0) {
-				// If we get here, there is either no features, or feature
-				// arrays are equal so just compare the symbols
-				return symbol.compareTo(o.getSymbol());
-			}
-			return value;
-		}
-	}
-
 }

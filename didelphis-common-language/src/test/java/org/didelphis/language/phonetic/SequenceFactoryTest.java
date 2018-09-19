@@ -21,23 +21,21 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * @author Samantha Fiona McCabe
- * @date 2015/02/05
- * @since 0.0.0
- */
 class SequenceFactoryTest extends PhoneticTestBase {
 
 	private SequenceFactory<Integer> testFactory;
 
 	@BeforeEach
 	void init() {
-		testFactory = new SequenceFactory<>(loader.getFeatureMapping(),
+		testFactory = new SequenceFactory<>(
+				loader.getFeatureMapping(),
 				FormatterMode.INTELLIGENT
 		);
 	}
@@ -51,6 +49,24 @@ class SequenceFactoryTest extends PhoneticTestBase {
 	void toSegment() {
 		assertEquals(loader.getFeatureMapping().parseSegment("a"),
 				factory.toSegment("a")
+		);
+	}
+
+	@Test
+	void toSegmentFeatures() {
+		String string = "[+con, -son, -voice]";
+		assertEquals(
+				loader.getFeatureMapping().parseSegment(string),
+				factory.toSegment(string)
+		);
+	}
+
+	@Test
+	void toSequenceFeatures() {
+		String string = "$[+hgh]1k";
+		assertEquals(
+				loader.getFeatureMapping().parseSegment(string),
+				factory.toSegment(string)
 		);
 	}
 
@@ -106,26 +122,52 @@ class SequenceFactoryTest extends PhoneticTestBase {
 	}
 
 	@Test
-	void testReserved() {
+	void testReservedConstructor() {
 		Set<String> reserved = new HashSet<>();
 		reserved.add("ph");
 		reserved.add("th");
 		reserved.add("kh");
 
-		SequenceFactory<Integer> factory
-				= new SequenceFactory<>(loader.getFeatureMapping(),
+		SequenceFactory<Integer> factory = new SequenceFactory<>(
+				loader.getFeatureMapping(), 
 				reserved,
 				FormatterMode.NONE
 		);
 
+		List<String> strings = asList("a", "ph", "a", "th", "a", "kh", "a");
 		Sequence<Integer> expected = factory.toSequence("");
-		expected.add(factory.toSegment("a"));
-		expected.add(factory.toSegment("ph"));
-		expected.add(factory.toSegment("a"));
-		expected.add(factory.toSegment("th"));
-		expected.add(factory.toSegment("a"));
-		expected.add(factory.toSegment("kh"));
-		expected.add(factory.toSegment("a"));
+		for (String string : strings) {
+			expected.add(factory.toSequence(string));
+		}
+
+		Sequence<Integer> received = factory.toSequence("aphathakha");
+
+		for (int i = 0; i < expected.size(); i++) {
+			Segment<Integer> ex = expected.get(i);
+			Segment<Integer> re = received.get(i);
+			assertEquals(ex, re, "index: " + i);
+		}
+
+		assertEquals(expected, received);
+	}
+
+	@Test
+	void testReservedMethod() {
+
+		SequenceFactory<Integer> factory = new SequenceFactory<>(
+				loader.getFeatureMapping(),
+				FormatterMode.NONE
+		);
+
+		factory.reserve("ph");
+		factory.reserve("th");
+		factory.reserve("kh");
+
+		List<String> strings = asList("a", "ph", "a", "th", "a", "kh", "a");
+		Sequence<Integer> expected = factory.toSequence("");
+		for (String string : strings) {
+			expected.add(factory.toSequence(string));
+		}
 
 		Sequence<Integer> received = factory.toSequence("aphathakha");
 

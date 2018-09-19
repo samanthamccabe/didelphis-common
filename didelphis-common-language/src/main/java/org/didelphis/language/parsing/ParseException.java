@@ -18,13 +18,9 @@ package org.didelphis.language.parsing;
  * Exception {@code ParseException}
  *
  * @author Samantha Fiona McCabe
- * @date 8/25/2014
  * @since 0.1.0
  */
 public class ParseException extends RuntimeException {
-
-	public ParseException() {
-	}
 
 	public ParseException(String message) {
 		super(message);
@@ -33,9 +29,4 @@ public class ParseException extends RuntimeException {
 	public ParseException(String message, Throwable cause) {
 		super(message, cause);
 	}
-
-	public ParseException(Throwable cause) {
-		super(cause);
-	}
-
 }

@@ -28,7 +28,6 @@ import static java.text.Normalizer.normalize;
  * Enum {@code BinaryFeatureType}
  *
  * @author Samantha Fiona McCabe
- * @date 2017-06-11
  * @since 0.1.0
  */
 public enum BinaryFeature implements FeatureType<Boolean> {
@@ -42,6 +41,9 @@ public enum BinaryFeature implements FeatureType<Boolean> {
 	@Override
 	public Boolean parseValue(@NonNull String string) {
 		String normalized = normalize(string, Form.NFKC);
+		if (normalized.isEmpty()) {
+			return Boolean.FALSE;
+		}
 		if (normalized.equals("-") || normalized.equals("0")) {
 			return Boolean.FALSE;
 		}
@@ -60,7 +62,7 @@ public enum BinaryFeature implements FeatureType<Boolean> {
 
 	@Override
 	public int compare(Boolean v1, Boolean v2) {
-		return Boolean.compare(v1, v2);
+		return Boolean.compare(validate(v1), validate(v2));
 	}
 
 	@Override

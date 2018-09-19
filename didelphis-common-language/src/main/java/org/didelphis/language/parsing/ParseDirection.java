@@ -14,18 +14,6 @@
 
 package org.didelphis.language.parsing;
 
-import lombok.Getter;
-
-/**
- * Created by samantha on 12/24/14.
- */
 public enum ParseDirection {
-	FORWARD  ("Forward"),
-	BACKWARD ("Backward");
-
-	@Getter private final String value;
-
-	ParseDirection(String value) {
-		this.value = value;
-	}
+	FORWARD, BACKWARD
 }

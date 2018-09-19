@@ -20,9 +20,6 @@ import org.didelphis.language.phonetic.segments.Segment;
 
 import java.util.List;
 
-/**
- * Created by samantha on 1/30/17.
- */
 public interface Sequence<T>
 	  extends ModelBearer<T>,
 	          List<Segment<T>>,

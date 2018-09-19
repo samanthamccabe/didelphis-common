@@ -28,7 +28,6 @@ import static java.text.Normalizer.normalize;
  * Enum {@code DoubleFeature}
  *
  * @author Samantha Fiona McCabe
- * @date 2017-06-12
  * @since 0.1.0
  */
 public enum DoubleFeature implements FeatureType<Double> {
@@ -69,7 +68,9 @@ public enum DoubleFeature implements FeatureType<Double> {
 
 	@Override
 	public int compare(Double v1, Double v2) {
-		return Double.compare(v1, v2);
+		double x = v1 == null ? 0.0 : v1;
+		double y = v2 == null ? 0.0 : v2;
+		return Double.compare(x, y);
 	}
 
 	@Override

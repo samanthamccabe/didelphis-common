@@ -14,12 +14,7 @@
 
 package org.didelphis.language.phonetic;
 
-import org.didelphis.io.ClassPathFileHandler;
-import org.didelphis.io.FileHandler;
-import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.phonetic.features.FeatureArray;
-import org.didelphis.language.phonetic.features.IntegerFeature;
-import org.didelphis.language.phonetic.model.FeatureModelLoader;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.segments.StandardSegment;
 import org.junit.jupiter.api.Test;
@@ -30,11 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * @author Samantha Fiona McCabe
- * @date 2/14/2015
- */
-public class StandardSegmentTest extends PhoneticTestBase {
+class StandardSegmentTest extends PhoneticTestBase {
 	
 	private static final Pattern INFINITY_PATTERN = Pattern.compile("([-+])?Infinity");
 	private static final Pattern DECIMAL_PATTERN = Pattern.compile("([^\\-])(\\d\\.\\d)");
@@ -167,6 +158,26 @@ public class StandardSegmentTest extends PhoneticTestBase {
 	}
 
 	@Test
+	void testOrdering03() {
+		Segment<Integer> t1 = factory.toSegment("t");
+		Segment<Integer> t2 = factory.toSegment("t");
+
+		assertEquals(0, t1.compareTo(t2));
+		assertEquals(0, t2.compareTo(t1));
+	}
+
+	@Test
+	void testOrdering04() {
+		Segment<Integer> t1 = factory.toSegment("t");
+		Segment<Integer> t2 = new StandardSegment<>("x", t1.getFeatures());
+		Segment<Integer> t3 = factory.toSegment("t");
+
+		assertEquals(-1, t1.compareTo(t2));
+		assertEquals(1,  t2.compareTo(t1));
+		assertEquals(0,  t3.compareTo(t1));
+	}
+	
+	@Test
 	void testConstraintLateralToNasal01() {
 		Segment<Integer> segment = factory.toSegment("l");
 
@@ -280,17 +291,6 @@ public class StandardSegmentTest extends PhoneticTestBase {
 		assertFalse(x.matches(y));
 	}
 
-	private static SequenceFactory<Integer> loadFactory() {
-		String path = "AT_hybrid.model";
-		FileHandler handler = ClassPathFileHandler.INSTANCE;
-		FormatterMode mode = FormatterMode.INTELLIGENT;
-
-		return new SequenceFactory<>(new FeatureModelLoader<>(
-				IntegerFeature.INSTANCE,
-				ClassPathFileHandler.INSTANCE,
-				path).getFeatureMapping(), mode);
-	}
-
 	private static void assertMatch(
 			Segment<Integer> segment,
 			Segment<Integer> modifier,
@@ -298,17 +298,18 @@ public class StandardSegmentTest extends PhoneticTestBase {
 	) {
 		Segment<Integer> alter= new StandardSegment<>(segment);
 		alter.alter(modifier);
-		String message = "\n"
-		                 + segment.getFeatures()
-		                 + "\naltered by\n"
-		                 + modifier.getFeatures()
-		                 + "\nproduces\n"
-		                 + alter.getFeatures()
-		                 + "\nwhich does not match\n"
-		                 + matching.getFeatures();
-
-		message = INFINITY_PATTERN.matcher(message).replaceAll("____");
-		message = DECIMAL_PATTERN.matcher(message).replaceAll("$1 $2");
-		assertTrue(alter.matches(matching), message);
+		assertTrue(alter.matches(matching), () -> {
+			String message = "\n"
+					+ segment.getFeatures()
+					+ "\naltered by\n"
+					+ modifier.getFeatures()
+					+ "\nproduces\n"
+					+ alter.getFeatures()
+					+ "\nwhich does not match\n"
+					+ matching.getFeatures();
+			message = INFINITY_PATTERN.matcher(message).replaceAll("____");
+			message = DECIMAL_PATTERN.matcher(message).replaceAll("$1 $2");
+			return message;
+		});
 	}
 }

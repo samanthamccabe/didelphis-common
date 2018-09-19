@@ -16,6 +16,7 @@ package org.didelphis.language.parsing;
 
 import lombok.NonNull;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +31,9 @@ public interface Segmenter {
 	 * @return a list of strings
 	 */
 	@NonNull
-	List<String> split(@NonNull String string);
+	default List<String> split(@NonNull String string) {
+		return split(string, Collections.emptyList(), Collections.emptyMap());
+	}
 
 	/**
 	 * Splits a string into components using reserved symbols

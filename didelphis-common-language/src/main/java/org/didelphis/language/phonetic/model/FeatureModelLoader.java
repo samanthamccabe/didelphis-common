@@ -53,7 +53,6 @@ import static org.didelphis.utilities.Splitter.lines;
  * Class {@code FeatureModelLoader}
  *
  * @author Samantha Fiona McCabe
- * @date 2017-02-18
  * @since 0.1.0
  */
 @ToString

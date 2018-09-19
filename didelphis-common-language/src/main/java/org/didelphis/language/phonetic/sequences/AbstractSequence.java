@@ -30,7 +30,6 @@ import java.util.List;
  * Abstract Class {@code AbstractSequence}
  *
  * @author Samantha Fiona McCabe
- * @date 2017-02-04
  * @since 0.1.0
  */
 @EqualsAndHashCode

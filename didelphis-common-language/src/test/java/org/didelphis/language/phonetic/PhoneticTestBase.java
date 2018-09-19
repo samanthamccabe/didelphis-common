@@ -20,14 +20,7 @@ import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
 import org.junit.jupiter.api.BeforeAll;
 
-/**
- * Class {@code PhoneticTestBase}
- *
- * @author Samantha Fiona McCabe
- * @since 0.1.0
- * @date 2017-06-24
- */
-public class PhoneticTestBase {
+public abstract class PhoneticTestBase {
 
 	protected static FeatureModelLoader<Integer> loader;
 	protected static SequenceFactory<Integer> factory;

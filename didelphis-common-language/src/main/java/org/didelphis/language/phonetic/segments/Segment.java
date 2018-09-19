@@ -24,7 +24,6 @@ import org.didelphis.language.phonetic.features.FeatureArray;
  * @param <T> the type of feature data used by the segment's model
  *
  * @author Samantha Fiona McCabe
- * @date 2017-02-15
  * @since 0.1.0
  */
 public interface Segment<T> extends ModelBearer<T>, Comparable<Segment<T>> {
@@ -95,7 +94,17 @@ public interface Segment<T> extends ModelBearer<T>, Comparable<Segment<T>> {
 			if (value == 0) {
 				// If we get here, there is either no features, or feature
 				// arrays are equal so just compare the symbols
-				return getSymbol().compareTo(o.getSymbol());
+				int difference = getSymbol().compareTo(o.getSymbol());
+				// however, calling compareTo on Strings is not like an object
+				// which implements Comparable; returned values can be larger
+				// than |1|
+				if (difference > 0) {
+					return 1;
+				} else if (difference < 0) {
+					return -1;
+				} else {
+					return 0;
+				}
 			}
 			return value;
 		}
