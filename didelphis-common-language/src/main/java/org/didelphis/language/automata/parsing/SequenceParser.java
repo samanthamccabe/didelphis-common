@@ -137,12 +137,12 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 
 	@Override
 	@NonNull
-	protected List<String> split(String substring) {
+	protected List<String> split(String string) {
 		FormatterMode formatter = factory.getFormatterMode();
 		Set<String> set = new HashSet<>();
 		set.addAll(factory.getSpecialStrings());
 		set.addAll(specials.keys());
-		return formatter.split(substring, set, DELIMITERS);
+		return formatter.split(string, set, DELIMITERS);
 	}
 
 	@NonNull

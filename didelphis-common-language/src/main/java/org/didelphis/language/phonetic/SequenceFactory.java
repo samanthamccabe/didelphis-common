@@ -30,8 +30,8 @@ import org.didelphis.language.phonetic.sequences.Sequence;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -42,14 +42,13 @@ import java.util.stream.Collectors;
  * 
  * @since 0.0.0
  * @author Samantha Fiona McCabe
- * @date 2014/11/23
  */
 @ToString         (of = {"featureMapping", "formatterMode", "reservedStrings"})
 @EqualsAndHashCode(of = {"featureMapping", "formatterMode", "reservedStrings"})
 @Value
 public class SequenceFactory<T> implements Function<String, Sequence<T>> {
 
-	static Map<String, String> DELIMITERS = new LinkedHashMap<>();
+	static Map<String, String> DELIMITERS = new HashMap<>();
 	static {
 		DELIMITERS.put("[", "]");
 	}
@@ -64,7 +63,7 @@ public class SequenceFactory<T> implements Function<String, Sequence<T>> {
 			@NonNull FeatureMapping<T> featureMapping,
 			@NonNull FormatterMode formatterMode
 	) {
-		this(featureMapping, Collections.emptySet(), formatterMode);
+		this(featureMapping, new HashSet<>(), formatterMode);
 	}
 
 	public SequenceFactory(
@@ -85,9 +84,7 @@ public class SequenceFactory<T> implements Function<String, Sequence<T>> {
 		keys.addAll(reservedStrings);
 		keys.addAll(featureMapping.getFeatureMap().keySet());
 		keys.sort(SequenceFactory::compare);
-		Collection<String> list = formatterMode.split(word, keys,
-				DELIMITERS
-		);
+		Collection<String> list = formatterMode.split(word, keys, DELIMITERS);
 		FeatureModel<T> featureModel = featureMapping.getFeatureModel();
 		List<Segment<T>> segments = list.stream()
 				.map(this::toSegment)
@@ -105,7 +102,6 @@ public class SequenceFactory<T> implements Function<String, Sequence<T>> {
 		FeatureModel<T> featureModel = featureMapping.getFeatureModel();
 		if (specification.size() > 0 && string.startsWith("[")) {
 			FeatureArray<T> array = featureModel.parseFeatureString(string);
-			// TODO:
 			return new StandardSegment<>(string, array);
 		} else {
 			return featureMapping.parseSegment(string);

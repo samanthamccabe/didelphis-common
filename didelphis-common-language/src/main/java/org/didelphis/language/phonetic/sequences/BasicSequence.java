@@ -14,20 +14,25 @@
 
 package org.didelphis.language.phonetic.sequences;
 
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import org.didelphis.language.phonetic.SpecificationBearer;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureSpecification;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.utilities.Logger;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * @author Samantha Fiona McCabe
+ * Class {@code BasicSequence}
+ * @param <T>
  */
+@EqualsAndHashCode(callSuper = true)
 public class BasicSequence<T> extends AbstractSequence<T> {
 
 	private static final Logger LOG = Logger.create(BasicSequence.class);
@@ -62,28 +67,28 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 
 	@Override
 	public int indexOf(@NonNull Sequence<T> target) {
-		validateModelOrWarn(target);
+		return indexOf(target, 0);
+	}
+
+	@Override
+	public int indexOf(@NonNull Sequence<T> target, int start) {
+		if (validateModelOrWarn(target)) {
+			return -1;
+		}
 		int size = target.size();
 		if (size > size() || size == 0) {
 			return -1;
 		}
 
-		int index = indexOf(target.get(0));
-		if (index >= 0 && index + size <= size()) {
-			// originally was equals, but use matches instead
+		int index = start;
+		while (index >= 0 && index + size <= size()) {
 			Sequence<T> subsequence = subsequence(index, index + size);
-			if (!target.matches(subsequence)) {
-				index = -1;
+			if (target.matches(subsequence)) {
+				return index;
 			}
+			index++;
 		}
-		return index;
-	}
-
-	@Override
-	public int indexOf(@NonNull Sequence<T> target, int start) {
-		validateModelOrWarn(target);
-		int index = subsequence(start).indexOf(target);
-		return (index >= 0) ? index + start : index;
+		return -1;
 	}
 
 	@NonNull
@@ -112,12 +117,17 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 
 	@Override
 	public boolean contains(@NonNull Sequence<T> sequence) {
+		if (validateModelOrWarn(sequence)) {
+			return false;
+		}
 		return indexOf(sequence) >= 0;
 	}
 
 	@Override
 	public boolean startsWith(@NonNull Segment<T> segment) {
-		validateModelOrWarn(segment);
+		if (validateModelOrWarn(segment)) {
+			return false;
+		}
 		return !isEmpty() && segments.get(0).matches(segment);
 	}
 
@@ -200,21 +210,26 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 
 	@Override
 	public String toString() {
-		return segments.stream()
-				.map(Segment::getSymbol)
-				.collect(Collectors.joining());
+		StringBuilder sb = new StringBuilder();
+		for (Segment<T> segment : segments) {
+			String symbol = segment.getSymbol();
+			sb.append(symbol);
+		}
+		return sb.toString();
 	}
 
 	@NonNull
 	@Override
 	public BasicSequence<T> getReverseSequence() {
-		BasicSequence<T> reversed = new BasicSequence<>(this);
-		Collections.reverse(reversed);
-		return reversed;
+		Deque<Segment<T>> linkedList = new LinkedList<>();
+		for (Segment<T> segment : getDelegate()) {
+			linkedList.addFirst(segment);
+		}
+		return new BasicSequence<>(linkedList, getFeatureModel());
 	}
 
 	@Override
-	public boolean add(@NonNull Segment<T> segment) {
+	public boolean add(Segment<T> segment) {
 		validateModelOrFail(segment);
 		return segments.add(segment);
 	}
@@ -242,31 +257,19 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 		return featureModel.getSpecification();
 	}
 
-	@Override
-	public boolean equals(@Nullable Object o) {
-		if (this == o) return true;
-		if (!(o instanceof BasicSequence)) return false;
-		BasicSequence<?> that = (BasicSequence<?>) o;
-		return Objects.equals(featureModel, that.featureModel) &&
-				Objects.equals(segments, that.segments);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(featureModel, segments);
-	}
-
-	private void validateModelOrWarn(@NonNull SpecificationBearer that) {
+	private boolean validateModelOrWarn(@NonNull SpecificationBearer that) {
 		if (!getSpecification().equals(that.getSpecification())) {
 			LOG.warn("Attempting to check a {} with an incompatible model!" +
 							"" + "\n\t{}\t{}\n\t{}\t{}", that.getClass(), this, that,
 					featureModel, that.getSpecification());
+			return true;
 		}
+		return false;
 	}
 
 	private void validateModelOrFail(@NonNull SpecificationBearer that) {
 		if (!getSpecification().equals(that.getSpecification())) {
-			throw new RuntimeException("Attempting to add " + that.getClass() +
+			throw new IllegalArgumentException("Attempting to add " + that.getClass() +
 					" with an incompatible model!\n" + '\t' + this + '\t' +
 					featureModel + '\n' + '\t' + that + '\t' +
 					that.getSpecification());

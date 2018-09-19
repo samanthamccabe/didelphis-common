@@ -20,7 +20,6 @@ import org.jetbrains.annotations.Nullable;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -48,17 +47,10 @@ public enum FormatterMode implements Segmenter, Formatter {
 	NONE(null) {
 		@NonNull
 		@Override
-		public List<String> split(@NonNull String string) {
-			return split(string, Collections.emptyList(),
-					Collections.emptyMap());
-		}
-
-		@NonNull
-		@Override
 		public List<String> split(
 				@NonNull String string,
 				@NonNull Iterable<String> special,
-				Map<String, String> delimiters
+				@NonNull Map<String, String> delimiters
 		) {
 			return toList(string, delimiters, special);
 		}
@@ -68,17 +60,10 @@ public enum FormatterMode implements Segmenter, Formatter {
 	DECOMPOSITION(Form.NFD) {
 		@NonNull
 		@Override
-		public List<String> split(@NonNull String string) {
-			return split(string, Collections.emptyList(),
-					Collections.emptyMap());
-		}
-
-		@NonNull
-		@Override
 		public List<String> split(
 				@NonNull String string,
 				@NonNull Iterable<String> special,
-				Map<String, String> delimiters
+				@NonNull Map<String, String> delimiters
 		) {
 			return toList(normalize(string), delimiters, special);
 		}
@@ -86,13 +71,6 @@ public enum FormatterMode implements Segmenter, Formatter {
 
 	// Unicode Canonical Decomposition followed by Canonical Composition
 	COMPOSITION(Form.NFC) {
-		@NonNull
-		@Override
-		public List<String> split(@NonNull String string) {
-			return split(string, Collections.emptyList(),
-					Collections.emptyMap());
-		}
-
 		@NonNull
 		@Override
 		public List<String> split(
@@ -108,18 +86,20 @@ public enum FormatterMode implements Segmenter, Formatter {
 	INTELLIGENT(Form.NFD) {
 
 		/* ------------------------------------------------------------------<*/
-		private static final int BINDER_START      = 0x035C;
-		private static final int BINDER_END        = 0x0362;
-		private static final int SUPERSCRIPT_ZERO  = 0x2070;
-		private static final int SUBSCRIPT_SMALL_T = 0x209C;
-		private static final int SUPERSCRIPT_TWO   = 0x00B2;
-		private static final int SUPERSCRIPT_THREE = 0x00B3;
-		private static final int SUPERSCRIPT_ONE   = 0x00B9;
+		private static final int SUPER_TWO    = 0x00B2;
+		private static final int SUPER_THREE  = 0x00B3;
+		private static final int SUPER_ONE    = 0x00B9;
+		private static final int BINDER_START = 0x035C;
+		private static final int BINDER_END   = 0x0362;
+		private static final int SUPER_ZERO   = 0x2070;
+		private static final int SUB_SMALL_T  = 0x209C;
 		/*>-------------------------------------------------------------------*/
 
 		private final Pattern pattern = Pattern.compile("(\\$[^$]*\\d+)");
 
-		@NonNull @Override public List<String> split(
+		@NonNull
+		@Override
+		public List<String> split(
 				@NonNull String string,
 				@NonNull Iterable<String> special,
 				@NonNull Map<String, String> delimiters
@@ -159,9 +139,15 @@ public enum FormatterMode implements Segmenter, Formatter {
 						}
 					} else {
 						char ch = word.charAt(i);
-						if (isAttachable(ch)) { // is it a standard diacritic?
+						if (isDoubleWidthBinder(ch)) {
 							sb.append(ch);
-						} else {
+							if (i + 1 < word.length() - 1) {
+								sb.append(word.charAt(i + 1));
+								i++;
+							}
+						} else if (isAttachable(ch)) {
+							sb.append(ch);
+						} else  {
 							// Not a diacritic
 							if (sb.length() > 0) {
 								strings.add(sb.toString());
@@ -184,20 +170,12 @@ public enum FormatterMode implements Segmenter, Formatter {
 			return strings;
 		}
 
-		@NonNull
-		@Override
-		public List<String> split(@NonNull String string) {
-			return split(string, Collections.emptyList(),
-					Collections.emptyMap());
-		}
-
 		// Finds longest item in keys which the provided string starts with
 		// Also can be used to grab index symbols
 		@NonNull
 		private String getBestMatch(
 				@NonNull String word, @NonNull Iterable<String> keys
 		) {
-
 			String bestMatch = "";
 			for (String key : keys) {
 				if (word.startsWith(key) && bestMatch.length() < key.length()) {
@@ -213,7 +191,7 @@ public enum FormatterMode implements Segmenter, Formatter {
 		}
 
 		private boolean isAttachable(char ch) {
-			return isSuperscriptAsciiDigit(ch)
+			return isSuperscriptAsciiDigit(ch) 
 					|| isMathematicalSubOrSuper(ch)
 					|| isCombiningClass(ch);
 		}
@@ -223,13 +201,13 @@ public enum FormatterMode implements Segmenter, Formatter {
 		}
 
 		private boolean isSuperscriptAsciiDigit(char value) {
-			return value == SUPERSCRIPT_TWO
-					|| value == SUPERSCRIPT_THREE
-					|| value == SUPERSCRIPT_ONE;
+			return value == SUPER_TWO 
+					|| value == SUPER_THREE 
+					|| value == SUPER_ONE;
 		}
 
 		private boolean isMathematicalSubOrSuper(char value) {
-			return SUPERSCRIPT_ZERO <= value && value <= SUBSCRIPT_SMALL_T;
+			return SUPER_ZERO <= value && value <= SUB_SMALL_T;
 		}
 
 		private boolean isCombiningClass(char ch) {

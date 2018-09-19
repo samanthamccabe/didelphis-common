@@ -14,15 +14,18 @@
 
 package org.didelphis.language.phonetic.model;
 
+import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.phonetic.PhoneticTestBase;
+import org.didelphis.language.phonetic.SequenceFactory;
 import org.didelphis.language.phonetic.features.FeatureArray;
+import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.features.SparseFeatureArray;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Created by samantha on 4/16/17.
@@ -76,10 +79,10 @@ class ConstraintTest extends PhoneticTestBase {
 		assertNotEquals(constraint1, constraint2);
 
 		//noinspection ObjectEqualsNull
-		assertFalse(constraint1.equals(null));
+		assertNotEquals(null, constraint1);
 
 		//noinspection EqualsBetweenInconvertibleTypes
-		assertFalse(constraint1.equals("null"));
+		assertNotEquals("null", constraint1);
 	}
 
 	@Test
@@ -106,4 +109,21 @@ class ConstraintTest extends PhoneticTestBase {
 		assertEquals(model.getSpecification(), constraint1.getSpecification());
 	}
 
+	@Test
+	void testConsistencyFailure() {
+
+		FeatureModelLoader<Integer> loader1 = IntegerFeature.emptyLoader();
+		SequenceFactory<Integer> factory1 = new SequenceFactory<>(
+				loader1.getFeatureMapping(),
+				FormatterMode.NONE
+		);
+		
+		FeatureArray<Integer> segment1 = factory.toSegment("a").getFeatures();
+		FeatureArray<Integer> segment2 = factory1.toSegment("x").getFeatures();
+
+		assertThrows(
+				IllegalArgumentException.class,
+				() -> new Constraint<>(segment1, segment2)
+		);
+	}
 }

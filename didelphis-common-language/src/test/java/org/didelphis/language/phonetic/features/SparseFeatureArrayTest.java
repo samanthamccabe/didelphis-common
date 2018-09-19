@@ -169,21 +169,21 @@ class SparseFeatureArrayTest extends PhoneticTestBase {
 		array3.set(2, 0);
 		array3.set(3, 2);
 		
-		assertEquals(-1, array.compareTo(array1));
+		assertEquals( 0, array.compareTo(array1));
 		assertEquals(-1, array.compareTo(array2));
 		assertEquals(-1, array.compareTo(array3));
-		assertEquals(1, array1.compareTo(array));
-		assertEquals(1, array2.compareTo(array));
-		assertEquals(1, array3.compareTo(array));
+		assertEquals( 0, array1.compareTo(array));
+		assertEquals( 1, array2.compareTo(array));
+		assertEquals( 1, array3.compareTo(array));
 
 		assertEquals(-1, array1.compareTo(array2));
 		assertEquals(-1, array1.compareTo(array3));
 		
-		assertEquals(1, array2.compareTo(array1));
+		assertEquals( 1, array2.compareTo(array1));
 		assertEquals(-1, array2.compareTo(array3));
 		
-		assertEquals(1, array3.compareTo(array2));
-		assertEquals(1, array3.compareTo(array1));
+		assertEquals( 1, array3.compareTo(array2));
+		assertEquals( 1, array3.compareTo(array1));
 
 		FeatureArray<Integer> array4 = new SparseFeatureArray<>(array3);
 		assertEquals(0, array3.compareTo(array4));

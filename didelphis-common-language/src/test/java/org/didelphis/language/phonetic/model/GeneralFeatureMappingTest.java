@@ -24,6 +24,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * @author Samantha Fiona McCabe
  */
@@ -38,8 +42,8 @@ public class GeneralFeatureMappingTest extends PhoneticTestBase {
 
 	@Test
 	void testLoad01() {
-		Assertions.assertFalse(mapping.getFeatureMap().isEmpty());
-		Assertions.assertFalse(mapping.getModifiers().isEmpty());
+		assertFalse(mapping.getFeatureMap().isEmpty());
+		assertFalse(mapping.getModifiers().isEmpty());
 	}
 
 	@Test
@@ -47,15 +51,22 @@ public class GeneralFeatureMappingTest extends PhoneticTestBase {
 		String resourceName = "AT_hybrid.mapping";
 		FeatureMapping<Integer> model = loadMapping(resourceName, FormatterMode.INTELLIGENT);
 		Assertions.assertNotNull(model.getSpecification());
-		Assertions.assertTrue(model.getSpecification().size() > 0);
+		assertTrue(model.getSpecification().size() > 0);
 	}
 
 	@Test
 	void testLoad_AT_Hybrid() {
 		String resourceName = "AT_hybrid.model";
 		FeatureMapping<Integer> model = loadMapping(resourceName, FormatterMode.INTELLIGENT);
-		Assertions.assertFalse(model.getFeatureMap().isEmpty());
-		Assertions.assertFalse(model.getModifiers().isEmpty());
+		assertFalse(model.getFeatureMap().isEmpty());
+		assertFalse(model.getModifiers().isEmpty());
+	}
+	
+	@Test
+	void testContainsKey() {
+		assertTrue(mapping.containsKey("p"));
+		assertFalse(mapping.containsKey("@"));
+		assertThrows(NullPointerException.class, ()->mapping.containsKey(null));
 	}
 	
 	@Test

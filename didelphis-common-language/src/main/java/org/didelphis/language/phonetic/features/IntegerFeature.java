@@ -29,7 +29,6 @@ import static java.text.Normalizer.normalize;
  * Class {@code IntegerFeature}
  *
  * @author Samantha Fiona McCabe
- * @date 2017-06-12
  * @since 0.1.0
  */
 public enum IntegerFeature implements FeatureType<Integer> {
@@ -42,15 +41,15 @@ public enum IntegerFeature implements FeatureType<Integer> {
 	@NonNull
 	@Override
 	public Integer parseValue(@NonNull String string) {
-		String normalize = normalize(string, Form.NFKC);
-		if (normalize.equals("+")) {
+		String normalized = normalize(string, Form.NFKC);
+		if (normalized.equals("+")) {
 			return 1;
-		} else if (normalize.equals("-")) {
+		} else if (normalized.equals("-")) {
 			return -1;
 		} else if (string.isEmpty()) {
 			return 0;
 		} else {
-			return Integer.parseInt(normalize);
+			return Integer.parseInt(normalized);
 		}
 	}
 
@@ -62,8 +61,8 @@ public enum IntegerFeature implements FeatureType<Integer> {
 
 	@Override
 	public int compare(@Nullable Integer v1, @Nullable Integer v2) {
-		int x = v1 == null ? Integer.MIN_VALUE : v1;
-		int y = v2 == null ? Integer.MIN_VALUE : v2;
+		int x = v1 == null ? 0 : v1;
+		int y = v2 == null ? 0 : v2;
 		return Integer.compare(x, y);
 	}
 

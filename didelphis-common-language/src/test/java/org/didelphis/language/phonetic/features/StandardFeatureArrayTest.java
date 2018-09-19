@@ -30,9 +30,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Created by samantha on 4/16/17.
- */
 class StandardFeatureArrayTest extends PhoneticTestBase {
 
 	private static final Integer NULL = null;
@@ -92,15 +89,26 @@ class StandardFeatureArrayTest extends PhoneticTestBase {
 
 	@Test
 	void alterException() {
-		assertThrows(IllegalArgumentException.class, () -> array.alter(
-				new StandardFeatureArray<>(NULL, empty)));
+		assertThrows(
+				IllegalArgumentException.class,
+				() -> array.alter(new StandardFeatureArray<>(NULL, empty))
+		);
 	}
-
 
 	@Test
 	void matchesException() {
-		assertThrows(IllegalArgumentException.class, () -> array.matches(
-				new StandardFeatureArray<>(NULL, empty)));
+		assertThrows(
+				IllegalArgumentException.class,
+				() -> array.matches(new StandardFeatureArray<>(NULL, empty))
+		);
+	}
+
+	@Test
+	void compareToException() {
+		assertThrows(
+				IllegalArgumentException.class,
+				() -> array.compareTo(new StandardFeatureArray<>(0, empty))
+		);
 	}
 	
 	@Test
@@ -121,12 +129,6 @@ class StandardFeatureArrayTest extends PhoneticTestBase {
 		assertEquals(1, array.compareTo(array1));
 		assertEquals(0, array.compareTo(array3));
 		assertEquals(-1, array.compareTo(array2));
-	}
-	
-	@Test
-	void compareToException() {
-		assertThrows(IllegalArgumentException.class, () -> array.compareTo(
-				new StandardFeatureArray<>(0, empty)));
 	}
 	
 	@Test
@@ -151,7 +153,6 @@ class StandardFeatureArrayTest extends PhoneticTestBase {
 	void equals() {
 		assertEquals(array, new StandardFeatureArray<>(1, model));
 		assertNotEquals(array, new StandardFeatureArray<>(-1, model));
-
 	}
 	
 	@Test
