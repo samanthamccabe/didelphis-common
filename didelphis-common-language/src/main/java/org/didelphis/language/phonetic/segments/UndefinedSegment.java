@@ -14,12 +14,11 @@
 
 package org.didelphis.language.phonetic.segments;
 
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import org.didelphis.language.phonetic.features.EmptyFeatureArray;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.model.FeatureModel;
-
-import java.util.Objects;
 
 /**
  * Class {@code UndefinedSegment}
@@ -36,6 +35,7 @@ import java.util.Objects;
  * @author Samantha Fiona McCabe
  * @date 12/29/17
  */
+@EqualsAndHashCode
 public class UndefinedSegment<T> implements Segment<T> {
 
 	private final FeatureModel<T> model;
@@ -49,19 +49,6 @@ public class UndefinedSegment<T> implements Segment<T> {
 		this.symbol = symbol;
 		
 		features = new EmptyFeatureArray<>(model);
-	}
-
-	@Override
-	public int hashCode() {
-		return 17 * (31 + symbol.hashCode());
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof UndefinedSegment)) return false;
-		UndefinedSegment<?> segment = (UndefinedSegment<?>) o;
-		return Objects.equals(symbol, segment.symbol);
 	}
 	
 	@Override
