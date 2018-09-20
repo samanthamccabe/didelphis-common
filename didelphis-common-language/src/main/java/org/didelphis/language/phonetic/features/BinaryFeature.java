@@ -15,7 +15,6 @@
 package org.didelphis.language.phonetic.features;
 
 import lombok.NonNull;
-import org.didelphis.io.NullFileHandler;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
 
 import java.util.Collection;
@@ -34,9 +33,9 @@ public enum BinaryFeature implements FeatureType<Boolean> {
 	INSTANCE;
 
 	public static FeatureModelLoader<Boolean> emptyLoader() {
-		return new FeatureModelLoader<>(INSTANCE, NullFileHandler.INSTANCE, "");
+		return new FeatureModelLoader<>(INSTANCE);
 	}
-
+	
 	@NonNull
 	@Override
 	public Boolean parseValue(@NonNull String string) {
@@ -79,7 +78,11 @@ public enum BinaryFeature implements FeatureType<Boolean> {
 	public double doubleValue(Boolean value) {
 		return intValue(value);
 	}
-
+	
+	@Override
+	public String toString() {
+		return "BinaryFeature";
+	}
 	private boolean validate(Boolean v) {
 		return isDefined(v) ? v : false;
 	}

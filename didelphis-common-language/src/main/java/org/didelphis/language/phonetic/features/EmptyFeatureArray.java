@@ -50,7 +50,7 @@ public final class EmptyFeatureArray<T> implements FeatureArray<T> {
 	@Override
 	public void set(int index, @Nullable T value) { 
 		String message = Templates.create()
-				.add("{} is immutable and does not support #set(...)")
+				.add("{} is immutable and does not support method #set")
 				.with(getClass())
 				.build();
 		throw new UnsupportedOperationException(message);
@@ -69,7 +69,7 @@ public final class EmptyFeatureArray<T> implements FeatureArray<T> {
 	@Override
 	public boolean alter(@NonNull FeatureArray<T> array) {
 		String message = Templates.create()
-				.add("{} is immutable and does not support #alter(...)")
+				.add("{} is immutable and does not support method #alter")
 				.with(getClass())
 				.build();
 		throw new UnsupportedOperationException(message);

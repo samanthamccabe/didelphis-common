@@ -15,6 +15,7 @@
 package org.didelphis.language.phonetic.model;
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
@@ -57,6 +58,7 @@ import static org.didelphis.utilities.Splitter.lines;
  */
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@EqualsAndHashCode
 public final class FeatureModelLoader<T> {
 
 	private static final Logger LOG = Logger.create(FeatureModelLoader.class);

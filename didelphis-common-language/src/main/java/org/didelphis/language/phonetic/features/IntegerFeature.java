@@ -15,7 +15,6 @@
 package org.didelphis.language.phonetic.features;
 
 import lombok.NonNull;
-import org.didelphis.io.NullFileHandler;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,7 +34,7 @@ public enum IntegerFeature implements FeatureType<Integer> {
 	INSTANCE;
 
 	public static FeatureModelLoader<Integer> emptyLoader() {
-		return new FeatureModelLoader<>(INSTANCE, NullFileHandler.INSTANCE, "");
+		return new FeatureModelLoader<>(INSTANCE);
 	}
 
 	@NonNull
@@ -79,6 +78,11 @@ public enum IntegerFeature implements FeatureType<Integer> {
 	@Override
 	public double doubleValue(Integer value) {
 		return (value == null) ? Double.NaN : value.doubleValue();
+	}
+	
+	@Override
+	public String toString() {
+		return "IntegerFeature";
 	}
 
 	@NonNull
