@@ -52,7 +52,7 @@ public class JavaPatternAutomaton implements Automaton<String> {
 	@Override
 	public Match<String> match(@NonNull String input, int start) {
 		Matcher matcher = pattern.matcher(input);
-		if (matcher.find(start)) {
+		if (matcher.find(start) && matcher.start() == start) {
 			return new PatternMatch(matcher.toMatchResult());
 		}
 		return new EmptyMatch();

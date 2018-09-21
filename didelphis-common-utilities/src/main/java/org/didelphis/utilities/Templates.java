@@ -154,11 +154,13 @@ public class Templates {
 		if (index < 0) {
 			sb.append(template);
 		} else {
+			int lastIndex = 0;
 			while (index > 0) {
-				String head = template.substring(0, index);
+				String head = template.substring(lastIndex, index);
 				sb.append(head);
 				sb.append(data[i]);
 				i++;
+				lastIndex = index + 2;
 				index = template.indexOf("{}", index + 2);
 			}
 		}

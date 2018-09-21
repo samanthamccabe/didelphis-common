@@ -18,12 +18,13 @@ import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.stream.IntStream;
 
 /**
- * Class {@code FeatureType}
+ * Interface {@code FeatureType}
  *
- * Defines the interactions between a feature type and the data type {@code T}
+ * @param <T> the value type of the feature 
+ * 
+ * Defines the interactions between a feature type and the data type {@code <T>}
  * used to store that type, such as between {@link BinaryFeature} and
  * {@link Boolean}.
  *
@@ -36,22 +37,24 @@ import java.util.stream.IntStream;
  * @author Samantha Fiona McCabe
  * @since 0.1.0
  *
- * @date 2017-06-11
+ * 2017-06-11
  */
 public interface FeatureType<T> {
 
 	/**
-	 * Parses the {@code String} argument as a value of type {@code N}. This
-	 * behaves similarly to {@link Integer#parseInt(String)},
-	 * {@link Double#parseDouble(String)} etc. but depends on the specific
-	 * implementation of the model. A specific implementation may simply
-	 * delegate to those methods, or could augment their behavior in various
+	 * Parses the {@code String} argument as a value of type {@code <T>}. This 
+	 * behaves similarly to {@link Integer#parseInt(String)}, {@link 
+	 * Double#parseDouble(String)} etc. but depends on the specific 
+	 * implementation of the model. A specific implementation may simply 
+	 * delegate to those methods, or could augment their behavior in various 
 	 * ways.
+	 *
 	 * @param string the {@code String} containing the value to be parsed
+	 *
 	 * @return the value represented by the string argument
 	 *
 	 * @throws NumberFormatException if the {@code String} does not contain a
-	 * parseable value;.
+	 * 		parseable value;.
 	 */
 	@NonNull
 	T parseValue(@NonNull String string);
@@ -133,8 +136,11 @@ public interface FeatureType<T> {
 			@NonNull FeatureArray<T> right
 	) {
 		assert left.size() == right.size() : "Feature arrays not of same size.";
-		return IntStream.range(0, left.size())
-				.mapToDouble(i -> difference(i, left, right))
-				.sum();
+		double sum = 0.0;
+		for (int i = 0; i < left.size(); i++) {
+			double difference = difference(i, left, right);
+			sum += difference;
+		}
+		return sum;
 	}
 }

@@ -32,7 +32,7 @@ import static java.text.Normalizer.normalize;
 public enum DoubleFeature implements FeatureType<Double> {
 	INSTANCE;
 
-	private static final Collection<Double> LIST = Arrays.asList(
+	private static final Collection<Double> UNDEFINED = Arrays.asList(
 			null,
 			Double.NaN,
 			Double.NEGATIVE_INFINITY,
@@ -62,7 +62,7 @@ public enum DoubleFeature implements FeatureType<Double> {
 	@NonNull
 	@Override
 	public Collection<Double> listUndefined() {
-		return LIST;
+		return UNDEFINED;
 	}
 
 	@Override

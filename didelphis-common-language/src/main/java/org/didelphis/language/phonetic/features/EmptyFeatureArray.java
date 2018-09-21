@@ -17,7 +17,6 @@ package org.didelphis.language.phonetic.features;
 
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.utilities.Templates;
@@ -36,12 +35,19 @@ import java.util.Iterator;
  * @since 0.2.0
  */
 @ToString
-@RequiredArgsConstructor
 @EqualsAndHashCode
 public final class EmptyFeatureArray<T> implements FeatureArray<T> {
 
 	private final FeatureModel<T> featureModel;
 
+	public EmptyFeatureArray(FeatureModel<T> featureModel) {
+		this.featureModel = featureModel;
+	}
+
+	public EmptyFeatureArray(FeatureArray<T> featureArray) {
+		this.featureModel = featureArray.getFeatureModel();
+	}
+	
 	@Override
 	public int size() {
 		return getSpecification().size();
@@ -58,6 +64,11 @@ public final class EmptyFeatureArray<T> implements FeatureArray<T> {
 
 	@Override
 	public @Nullable T get(int index) {
+		if (index >= featureModel.getSpecification().size()) {
+			throw new IndexOutOfBoundsException(
+					"Index: " + index + ", Size: " +
+					featureModel.getSpecification().size());
+		}
 		return null;
 	}
 

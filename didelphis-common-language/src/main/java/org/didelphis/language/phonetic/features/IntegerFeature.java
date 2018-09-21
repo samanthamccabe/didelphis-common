@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 
 import static java.text.Normalizer.Form;
 import static java.text.Normalizer.normalize;
@@ -32,6 +33,8 @@ import static java.text.Normalizer.normalize;
  */
 public enum IntegerFeature implements FeatureType<Integer> {
 	INSTANCE;
+
+	public static final Set<Integer> UNDEFINED = Collections.singleton(null);
 
 	public static FeatureModelLoader<Integer> emptyLoader() {
 		return new FeatureModelLoader<>(INSTANCE);
@@ -55,7 +58,7 @@ public enum IntegerFeature implements FeatureType<Integer> {
 	@NonNull
 	@Override
 	public Collection<Integer> listUndefined() {
-		return Collections.singleton(null);
+		return UNDEFINED;
 	}
 
 	@Override
