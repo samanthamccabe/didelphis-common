@@ -15,6 +15,7 @@
 package org.didelphis.language.phonetic.model;
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
@@ -34,7 +35,6 @@ import org.didelphis.utilities.Logger;
 import org.didelphis.utilities.Templates;
 import org.jetbrains.annotations.Nullable;
 
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -45,6 +45,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import static java.text.Normalizer.Form;
+import static java.text.Normalizer.normalize;
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static java.util.regex.Pattern.LITERAL;
 import static org.didelphis.utilities.Splitter.lines;
@@ -57,6 +59,7 @@ import static org.didelphis.utilities.Splitter.lines;
  */
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@EqualsAndHashCode
 public final class FeatureModelLoader<T> {
 
 	private static final Logger LOG = Logger.create(FeatureModelLoader.class);
@@ -217,7 +220,7 @@ public final class FeatureModelLoader<T> {
 	private void parse(@NonNull Iterable<String> lines) {
 		ParseZone currentZone = ParseZone.NONE;
 		for (String string : lines) {
-			String line = COMMENT_PATTERN.replace(string,"").trim();
+			String line = COMMENT_PATTERN.replace(string, "");
 			if (line.isEmpty()) {
 				continue;
 			}
@@ -250,7 +253,7 @@ public final class FeatureModelLoader<T> {
 				String code = matcher.group(3);
 				featureNames.add(name);
 				featureIndices.put(name, i);
-				if (!code.isEmpty()) {
+				if (code != null && !code.isEmpty()) {
 					featureIndices.put(code, i);
 				}
 			} else {
@@ -282,7 +285,7 @@ public final class FeatureModelLoader<T> {
 					i++;
 				}
 				String diacritic = DOTTED_CIRCLE.replace(symbol, "");
-				String norm = Normalizer.normalize(diacritic, Normalizer.Form.NFD);
+				String norm = normalize(diacritic, Form.NFD);
 				diacritics.put(norm, array);
 			} else {
 				LOG.error("Unrecognized diacritic definition {}", entry);
@@ -301,15 +304,27 @@ public final class FeatureModelLoader<T> {
 				String symbol = match.group(1);
 				List<String> values = TAB_PATTERN.split(match.group(2), -1);
 				int size = featureModel.getSpecification().size();
+				
+				if (size > values.size()) {
+					String message = Templates.create()
+							.add("Too few features are provided!")
+							.add("Found {} but was expecting {}")
+							.with(values.size(), size)
+							.data(entry)
+							.build();
+					throw new ParseException(message);
+				}
+				
 				FeatureArray<T> features
 						= new SparseFeatureArray<>(featureModel);
 				for (int i = 0; i < size; i++) {
 					String value = values.get(i);
 					features.set(i, featureType.parseValue(value));
 				}
-				checkFeatureCollisions(symbol, featureMap, features);
-				String norm = Normalizer.normalize(symbol, Normalizer.Form.NFD);
-				featureMap.put(norm, features);
+				if (checkFeatureCollisions(symbol, featureMap, features)) {
+					String norm = normalize(symbol, Form.NFD);
+					featureMap.put(norm, features);
+				}
 			} else {
 				LOG.error("Unrecognized symbol definition {}", entry);
 			}
@@ -331,7 +346,7 @@ public final class FeatureModelLoader<T> {
 		return null;
 	}
 
-	private static <T> void checkFeatureCollisions(
+	private static <T> boolean checkFeatureCollisions(
 			@NonNull String symbol,
 			@NonNull Map<String, FeatureArray<T>> featureMap,
 			@NonNull FeatureArray<T> features
@@ -341,8 +356,10 @@ public final class FeatureModelLoader<T> {
 				if (features.equals(e.getValue())) {
 					LOG.warn("Collision between features {} and {} --- both "
 							+ "have value {}", symbol, e.getKey(), features);
+					return false;
 				}
 			}
 		}
+		return true;
 	}
 }

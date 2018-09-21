@@ -24,7 +24,7 @@ import java.util.List;
  * Class {@code TerminalNode}
  *
  * @author Samantha Fiona McCabe
- * @date 10/12/17
+ * 10/12/17
  */
 @Value
 public class TerminalNode implements Expression {

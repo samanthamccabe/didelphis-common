@@ -15,6 +15,7 @@
 package org.didelphis.language.phonetic;
 
 import org.didelphis.language.phonetic.features.FeatureArray;
+import org.didelphis.language.phonetic.features.SparseFeatureArray;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.segments.StandardSegment;
 import org.junit.jupiter.api.Test;
@@ -175,6 +176,24 @@ class StandardSegmentTest extends PhoneticTestBase {
 		assertEquals(-1, t1.compareTo(t2));
 		assertEquals(1,  t2.compareTo(t1));
 		assertEquals(0,  t3.compareTo(t1));
+	}
+
+	@Test
+	void testOrdering05() {
+		// Tests a rare case where two objects with the same symbol are not
+		// equal to one another but still have the same feature values. In this
+		// case we achieve it by (mis)using SparseFeatureArray to construct an
+		// altered copy of the original segment; same symbol and features, but
+		// different FeatureArray implementations
+		Segment<Integer> t1 = factory.toSegment("t");
+
+		FeatureArray<Integer> f1 = t1.getFeatures();
+		FeatureArray<Integer> f2 = new SparseFeatureArray<>(f1);
+
+		StandardSegment<Integer> t2 = new StandardSegment<>("t", f2);
+
+		assertEquals(0, t1.compareTo(t2));
+		assertEquals(0, t2.compareTo(t1));
 	}
 	
 	@Test

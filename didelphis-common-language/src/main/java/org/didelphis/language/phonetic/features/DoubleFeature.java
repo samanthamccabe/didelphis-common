@@ -15,7 +15,6 @@
 package org.didelphis.language.phonetic.features;
 
 import lombok.NonNull;
-import org.didelphis.io.NullFileHandler;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
 
 import java.util.Arrays;
@@ -33,7 +32,7 @@ import static java.text.Normalizer.normalize;
 public enum DoubleFeature implements FeatureType<Double> {
 	INSTANCE;
 
-	private static final Collection<Double> LIST = Arrays.asList(
+	private static final Collection<Double> UNDEFINED = Arrays.asList(
 			null,
 			Double.NaN,
 			Double.NEGATIVE_INFINITY,
@@ -41,7 +40,7 @@ public enum DoubleFeature implements FeatureType<Double> {
 	);
 
 	public static FeatureModelLoader<Double> emptyLoader() {
-		return new FeatureModelLoader<>(INSTANCE, NullFileHandler.INSTANCE, "");
+		return new FeatureModelLoader<>(INSTANCE);
 	}
 
 	@NonNull
@@ -63,7 +62,7 @@ public enum DoubleFeature implements FeatureType<Double> {
 	@NonNull
 	@Override
 	public Collection<Double> listUndefined() {
-		return LIST;
+		return UNDEFINED;
 	}
 
 	@Override
@@ -86,6 +85,12 @@ public enum DoubleFeature implements FeatureType<Double> {
 	@Override
 	public double doubleValue(Double value) {
 		return (value == null) ? Double.NaN : value;
+	}
+
+
+	@Override
+	public String toString() {
+		return "DoubleFeature";
 	}
 
 	private double checkValue(Double value) {

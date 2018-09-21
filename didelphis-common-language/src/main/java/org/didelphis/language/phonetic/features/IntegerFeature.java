@@ -15,12 +15,12 @@
 package org.didelphis.language.phonetic.features;
 
 import lombok.NonNull;
-import org.didelphis.io.NullFileHandler;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 
 import static java.text.Normalizer.Form;
 import static java.text.Normalizer.normalize;
@@ -34,8 +34,10 @@ import static java.text.Normalizer.normalize;
 public enum IntegerFeature implements FeatureType<Integer> {
 	INSTANCE;
 
+	public static final Set<Integer> UNDEFINED = Collections.singleton(null);
+
 	public static FeatureModelLoader<Integer> emptyLoader() {
-		return new FeatureModelLoader<>(INSTANCE, NullFileHandler.INSTANCE, "");
+		return new FeatureModelLoader<>(INSTANCE);
 	}
 
 	@NonNull
@@ -56,7 +58,7 @@ public enum IntegerFeature implements FeatureType<Integer> {
 	@NonNull
 	@Override
 	public Collection<Integer> listUndefined() {
-		return Collections.singleton(null);
+		return UNDEFINED;
 	}
 
 	@Override
@@ -79,6 +81,11 @@ public enum IntegerFeature implements FeatureType<Integer> {
 	@Override
 	public double doubleValue(Integer value) {
 		return (value == null) ? Double.NaN : value.doubleValue();
+	}
+	
+	@Override
+	public String toString() {
+		return "IntegerFeature";
 	}
 
 	@NonNull

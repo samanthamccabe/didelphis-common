@@ -14,15 +14,15 @@
 
 package org.didelphis.language.phonetic.features;
 
-import org.didelphis.io.ClassPathFileHandler;
 import org.didelphis.language.phonetic.PhoneticTestBase;
 import org.didelphis.language.phonetic.model.FeatureModel;
-import org.didelphis.language.phonetic.model.FeatureModelLoader;
+import org.didelphis.language.phonetic.segments.Segment;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -41,15 +41,31 @@ class StandardFeatureArrayTest extends PhoneticTestBase {
 	@BeforeAll
 	static void initModel() {
 		model = loader.getFeatureModel();
-		empty = new FeatureModelLoader<>(
-				IntegerFeature.INSTANCE,
-				ClassPathFileHandler.INSTANCE,
-				Collections.emptyList()).getFeatureModel();
+		empty = IntegerFeature.emptyLoader().getFeatureModel();
 	}
 	
 	@BeforeEach
 	void initArray() {
 		array = new StandardFeatureArray<>(1, model);
+	}
+	
+	@Test
+	void testConstructor() {
+
+		Segment<Integer> segment = factory.toSegment("a");
+
+		FeatureArray<Integer> features = segment.getFeatures();
+
+		List<Integer> list = new ArrayList<>();
+		for (Integer integer : features) {
+			list.add(integer);
+		}
+
+		FeatureArray<Integer> array = new StandardFeatureArray<>(
+				list,
+				features.getFeatureModel()
+		);
+		assertEquals(features, array);
 	}
 	
 	@Test

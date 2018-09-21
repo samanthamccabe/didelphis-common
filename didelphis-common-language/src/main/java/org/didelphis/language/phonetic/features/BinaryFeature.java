@@ -15,11 +15,11 @@
 package org.didelphis.language.phonetic.features;
 
 import lombok.NonNull;
-import org.didelphis.io.NullFileHandler;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 
 import static java.text.Normalizer.Form;
 import static java.text.Normalizer.normalize;
@@ -33,10 +33,12 @@ import static java.text.Normalizer.normalize;
 public enum BinaryFeature implements FeatureType<Boolean> {
 	INSTANCE;
 
-	public static FeatureModelLoader<Boolean> emptyLoader() {
-		return new FeatureModelLoader<>(INSTANCE, NullFileHandler.INSTANCE, "");
-	}
+	public static final Set<Boolean> UNDEFINED = Collections.singleton(null);
 
+	public static FeatureModelLoader<Boolean> emptyLoader() {
+		return new FeatureModelLoader<>(INSTANCE);
+	}
+	
 	@NonNull
 	@Override
 	public Boolean parseValue(@NonNull String string) {
@@ -57,7 +59,7 @@ public enum BinaryFeature implements FeatureType<Boolean> {
 	@NonNull
 	@Override
 	public Collection<Boolean> listUndefined() {
-		return Collections.singleton(null);
+		return UNDEFINED;
 	}
 
 	@Override
@@ -79,7 +81,11 @@ public enum BinaryFeature implements FeatureType<Boolean> {
 	public double doubleValue(Boolean value) {
 		return intValue(value);
 	}
-
+	
+	@Override
+	public String toString() {
+		return "BinaryFeature";
+	}
 	private boolean validate(Boolean v) {
 		return isDefined(v) ? v : false;
 	}
