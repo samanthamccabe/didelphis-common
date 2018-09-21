@@ -107,6 +107,7 @@ public class Templates {
 			return this;
 		}
 		
+		@NonNull
 		public String build() {
 			StringBuilder sb = new StringBuilder();
 			String baseMessage = messages.isEmpty()
@@ -125,21 +126,21 @@ public class Templates {
 			}
 			return sb.toString();
 		}
-	}
 
-	@NonNull
-	private static String join(String delimiter, Iterable<String> list) {
-		String message = "";
-		Iterator<String> iterator = list.iterator();
-		while (iterator.hasNext()) {
-			message += iterator.next();
-			if (iterator.hasNext()) {
-				message += delimiter;
+		@NonNull
+		private static String join(String delimiter, Iterable<String> list) {
+			StringBuilder message = new StringBuilder();
+			Iterator<String> iterator = list.iterator();
+			while (iterator.hasNext()) {
+				message.append(iterator.next());
+				if (iterator.hasNext()) {
+					message.append(delimiter);
+				}
 			}
+			return message.toString();
 		}
-		return message;
 	}
-
+	
 	@NonNull
 	public String compile(String template, Object... data) {
 		StringBuilder sb = new StringBuilder();

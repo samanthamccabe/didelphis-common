@@ -1,10 +1,12 @@
 package org.didelphis.language.automata.parsing;
 
 import org.didelphis.language.automata.expressions.Expression;
+import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.language.parsing.ParseException;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -74,6 +76,18 @@ class RegexParserTest {
 	@Test
 	void testUnmatchedSquare() {
 		assertThrowsParse("[a");
+	}
+	
+	@Test
+	void testGetQuantifiers() {
+		Set<String> set = PARSER.supportedQuantifiers();
+		
+		assertTrue(set.contains("?"));
+		assertTrue(set.contains("*"));
+		assertTrue(set.contains("+"));
+		assertFalse(set.contains("!"));
+		
+		assertThrows(UnsupportedOperationException.class, () -> set.add(""));
 	}
 	
 	@Test
@@ -182,6 +196,12 @@ class RegexParserTest {
 		String string = "[a-\\z]";
 		assertThrowsParse(string);
 	}
+
+	@Test
+	void testSquareBracketInvalidRange03() {
+		String string = "[\\w-z]";
+		assertThrowsParse(string);
+	}
 	
 	@Test
 	void testWordMeta() {
@@ -251,7 +271,17 @@ class RegexParserTest {
 	}
 
 	@Test
-	void testReverse() {
+	void testReverse01() {
+		Expression ex1 = PARSER.parseExpression("(a(xy)?b)+");
+		Expression ex2 = PARSER.parseExpression("(b(yx)?a)+", ParseDirection.BACKWARD);
+		Expression rev1 = Expression.rewriteIds(ex1, "0");
+		Expression rev2 = Expression.rewriteIds(ex2, "0");
+		assertEquals(ex1, rev2);
+		assertEquals(rev1, ex2);
+	}
+
+	@Test
+	void testReverse02() {
 		Expression ex1 = PARSER.parseExpression("(a(xy)?b)+");
 		Expression ex2 = PARSER.parseExpression("(b(yx)?a)+");
 		Expression rev1 = Expression.rewriteIds(ex1.reverse(), "0");

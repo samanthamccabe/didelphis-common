@@ -1,6 +1,7 @@
 package org.didelphis.language.automata.parsing;
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
@@ -44,6 +45,7 @@ import static org.didelphis.language.automata.parsing.LanguageParser.*;
  * @since 0.3.0
  */
 @ToString
+@EqualsAndHashCode
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RegexParser implements LanguageParser<String> {
 
@@ -88,18 +90,6 @@ public class RegexParser implements LanguageParser<String> {
 		ESCAPES.add("\\*");
 		ESCAPES.add("\\+");
 		ESCAPES.add("\\-");
-	}
-	
-	private final Set<String> specials;
-
-	public RegexParser() {
-		this(Collections.emptySet());
-	}
-	
-	public RegexParser(Set<String> specials) {
-		this.specials = new HashSet<>();
-		this.specials.addAll(specials);
-		this.specials.addAll(ESCAPES);
 	}
 	
 	@NonNull
@@ -351,7 +341,7 @@ public class RegexParser implements LanguageParser<String> {
 	}
 	
 	@NonNull
-	private List<String> split(String string) {
+	private static List<String> split(String string) {
 		List<String> list = Splitter.toList(string, DELIMITERS, CLASSES.keySet());
 		for (int i = 0; i < list.size(); i++) {
 			String s = list.get(i);

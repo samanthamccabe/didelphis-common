@@ -24,5 +24,9 @@ class TemplatesTest {
 
 	@Test
 	void compile() {
+		String expected = "Found 2 but was expecting 3";
+		String template = "Found {} but was expecting {}";
+		String actual = Templates.compile(template, 2, 3);
+		assertEquals(expected, actual);
 	}
 }
