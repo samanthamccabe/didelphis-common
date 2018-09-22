@@ -19,6 +19,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
+import org.didelphis.language.automata.Automaton;
+import org.didelphis.language.automata.matching.Match;
+import org.didelphis.language.automata.utils.Regex;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.FeatureType;
@@ -28,17 +31,13 @@ import org.didelphis.utilities.Templates;
 import java.text.Normalizer.Form;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static java.text.Normalizer.normalize;
-import static org.didelphis.utilities.PatternUtils.compile;
 
 /**
  * Class {@code GeneralFeatureModel}
  *
  * @author Samantha Fiona McCabe
- * @date 2017-06-09
  * @since 0.1.0
  */
 @ToString
@@ -50,10 +49,10 @@ public final class GeneralFeatureModel<T> implements FeatureModel<T> {
 	static String NAME   = "(\\w+)";
 	static String ASSIGN = "([=:><])";
 
-	static Pattern VALUE_PATTERN   = compile(VALUE, ASSIGN, NAME);
-	static Pattern BINARY_PATTERN  = compile("([+\\-−])", NAME);
-	static Pattern FEATURE_PATTERN = compile("[,;]\\s*|\\s+");
-	static Pattern BRACKET_PATTERN = compile("\\[(.+?)]");
+	static Automaton<String> VALUE_PATTERN   = Regex.create(VALUE + ASSIGN + NAME);
+	static Automaton<String> BINARY_PATTERN  = Regex.create("([+\\-−])" + NAME);
+	static Automaton<String> FEATURE_PATTERN = Regex.create("[,;]\\s*|\\s+");
+	static Automaton<String> BRACKET_PATTERN = Regex.create("\\[(.+?)]");
 
 	FeatureSpecification specification;
 	List<Constraint<T>> constraints;
@@ -87,13 +86,13 @@ public final class GeneralFeatureModel<T> implements FeatureModel<T> {
 	@NonNull
 	@Override
 	public FeatureArray<T> parseFeatureString(@NonNull String string) {
-		CharSequence normal = normalize(string, Form.NFKC);
-		CharSequence pattern = BRACKET_PATTERN.matcher(normal).replaceAll("$1");
+		String normal = normalize(string, Form.NFKC);
+		String pattern = BRACKET_PATTERN.replace(normal, "$1");
 		FeatureArray<T> arr = new SparseFeatureArray<>(this);
 		Map<String, Integer> indices = specification.getFeatureIndices();
 		for (String element : FEATURE_PATTERN.split(pattern)) {
-			Matcher valueMatcher = VALUE_PATTERN.matcher(element);
-			Matcher binaryMatcher = BINARY_PATTERN.matcher(element);
+			Match<String> valueMatcher = VALUE_PATTERN.match(element);
+			Match<String> binaryMatcher = BINARY_PATTERN.match(element);
 			if (aliases.containsKey(element)) {
 				arr.alter(aliases.get(element));
 			} else {

@@ -151,4 +151,8 @@ public interface Match<S> {
 	 * @return The number of capturing groups in this matcher's pattern
 	 */
 	int groupCount();
+
+	default boolean matches() {
+		return end() >= 0;
+	}
 }
