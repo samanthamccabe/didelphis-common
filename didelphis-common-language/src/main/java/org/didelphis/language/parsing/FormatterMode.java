@@ -15,6 +15,9 @@
 package org.didelphis.language.parsing;
 
 import lombok.NonNull;
+import org.didelphis.language.automata.Automaton;
+import org.didelphis.language.automata.matching.Match;
+import org.didelphis.language.automata.utils.Regex;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.Normalizer;
@@ -22,8 +25,6 @@ import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.didelphis.utilities.Splitter.parseParens;
 import static org.didelphis.utilities.Splitter.toList;
@@ -38,7 +39,6 @@ import static org.didelphis.utilities.Splitter.toList;
  * segmentation with composition e.g.)
  *
  * @author Samantha Fiona McCabe
- * @date 2015-01-14
  * @since 0.1.0
  */
 public enum FormatterMode implements Segmenter, Formatter {
@@ -95,7 +95,7 @@ public enum FormatterMode implements Segmenter, Formatter {
 		private static final int SUB_SMALL_T  = 0x209C;
 		/*>-------------------------------------------------------------------*/
 
-		private final Pattern pattern = Pattern.compile("(\\$[^$]*\\d+)");
+		private final Automaton<String> pattern = Regex.create("(\\$[^$]*\\d+)");
 
 		@NonNull
 		@Override
@@ -183,9 +183,9 @@ public enum FormatterMode implements Segmenter, Formatter {
 				}
 			}
 
-			Matcher backReferenceMatcher = pattern.matcher(word);
-			if (backReferenceMatcher.lookingAt()) {
-				bestMatch = backReferenceMatcher.group();
+			Match<String> backReferenceMatcher = pattern.match(word);
+			if (backReferenceMatcher.matches()) {
+				bestMatch = backReferenceMatcher.group(0);
 			}
 			return bestMatch;
 		}

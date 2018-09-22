@@ -47,8 +47,6 @@ import java.util.Map.Entry;
 
 import static java.text.Normalizer.Form;
 import static java.text.Normalizer.normalize;
-import static java.util.regex.Pattern.CASE_INSENSITIVE;
-import static java.util.regex.Pattern.LITERAL;
 import static org.didelphis.utilities.Splitter.lines;
 
 /**
@@ -76,15 +74,15 @@ public final class FeatureModelLoader<T> {
 	}
 
 	/*-----------------------------------------------------------------------<*/
-	static final Automaton<String> FEATURES_PATTERN = Regex.create("(\\w+)(\\s+(\\w*))?", CASE_INSENSITIVE);
+	static final Automaton<String> FEATURES_PATTERN = Regex.create("(\\w+)(\\s+(\\w*))?", 0x02);
 	static final Automaton<String> TRANSFORM        = Regex.create("\\s*>\\s*");
 	static final Automaton<String> BRACKETS         = Regex.create("[\\[\\]]");
 	static final Automaton<String> EQUALS           = Regex.create("\\s*=\\s*");
-	static final Automaton<String> IMPORT           = Regex.create("import\\s+['\"]([^'\"]+)['\"]", CASE_INSENSITIVE);
+	static final Automaton<String> IMPORT           = Regex.create("import\\s+['\"]([^'\"]+)['\"]", 0x02);
 	static final Automaton<String> COMMENT_PATTERN  = Regex.create("\\s*%.*");
 	static final Automaton<String> SYMBOL_PATTERN   = Regex.create("([^\\t]+)\\t(.*)");
 	static final Automaton<String> TAB_PATTERN      = Regex.create("\\t");
-	static final Automaton<String> DOTTED_CIRCLE    = Regex.create("◌", LITERAL);
+	static final Automaton<String> DOTTED_CIRCLE    = Regex.create("◌", 0x10);
 	
 	final MultiMap<ParseZone, String> zoneData;
 	
