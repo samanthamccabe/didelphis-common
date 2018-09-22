@@ -47,7 +47,7 @@ public interface Automaton<S> {
 	 *
 	 * @return the resulting {@link Match} object
 	 */
-	@NonNull 
+	@NonNull
 	Match<S> match(@NonNull S input, int start);
 
 	default boolean matches(@NonNull S input) {
