@@ -13,20 +13,35 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Class {@code StateMachineTestBase}
  *
  * @author Samantha Fiona McCabe
- * @date 9/14/2018
  */
 abstract class StateMachineTestBase<S> {
 	
-	void assertMatches(StateMachine<S> machine, String target) {
+	void assertMatches(StateMachine<S> machine, String input) {
+		S target = transform(input);
 		assertTrue(
-				test(machine, target) >= 0,
+				machine.matches(target),
 				"Machine failed to accept an input it should have: " + target
 		);
 	}
 	
 	void assertNotMatches(StateMachine<S> machine, String input) {
+		S target = transform(input);
 		assertFalse(
-				test(machine, input) >= 0,
+				machine.matches(target),
+				"Machine accepted input it should not have: " + target
+		);
+	}
+
+	void assertMatches(StateMachine<S> machine, String target, int start) {
+		assertTrue(
+				test(machine, target, start) >= 0,
+				"Machine failed to accept an input it should have: " + target
+		);
+	}
+
+	void assertNotMatches(StateMachine<S> machine, String input, int start) {
+		assertFalse(
+				test(machine, input, start)  >= 0,
 				"Machine accepted input it should not have: " + input
 		);
 	}
@@ -56,9 +71,14 @@ abstract class StateMachineTestBase<S> {
 	}
 
 	int test(StateMachine<S> machine, String input) {
+		return test(machine, input, 0);
+	}
+
+	int test(StateMachine<S> machine, String input, int start) {
 		S target = transform(input);
-		Match<S> match = machine.match(target, 0);
+		Match<S> match = machine.match(target, start);
 		return match.end();
+
 	}
 
 	protected abstract S transform(String input);

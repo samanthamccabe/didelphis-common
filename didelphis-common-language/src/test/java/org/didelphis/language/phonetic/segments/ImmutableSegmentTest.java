@@ -47,12 +47,20 @@ class ImmutableSegmentTest extends PhoneticTestBase {
 
 	@Test
 	void testEmptyConstructor() {
-		new ImmutableSegment<>(segment1.getSymbol(), segment2.getFeatureModel());
+		ImmutableSegment<Integer> segment = new ImmutableSegment<>(
+				segment1.getSymbol(),
+				segment2.getFeatureModel()
+		);
+		assertEquals(segment1.getSymbol(), segment.getSymbol());
 	}
 
 	@Test
 	void testStandardConstructor() {
-		new ImmutableSegment<>(segment1.getSymbol(), segment2.getFeatures());
+		ImmutableSegment<Integer> segment = new ImmutableSegment<>(
+				segment1.getSymbol(),
+				segment2.getFeatures()
+		);
+		assertEquals(segment1.getSymbol(), segment.getSymbol());
 	}
 
 	@Test

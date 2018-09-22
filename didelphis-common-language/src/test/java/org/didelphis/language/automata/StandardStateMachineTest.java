@@ -31,8 +31,10 @@ import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.didelphis.language.parsing.ParseDirection.FORWARD;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Samantha Fiona McCabe
@@ -47,6 +49,22 @@ class StandardStateMachineTest extends StateMachineTestBase<Sequence<Integer>> {
 		return input.isEmpty()
 				? FACTORY.toSequence(input)
 				: parser.transform(input);
+	}
+	
+	@Test
+	void testSplit01() {
+		StateMachine<Sequence<Integer>> machine = getMachine("");
+		Sequence<Integer> sequence = factory().toSequence("abc");
+		List<Sequence<Integer>> split = machine.split(sequence);
+		assertEquals(3, split.size());
+	}
+
+	@Test
+	void testSplit02() {
+		StateMachine<Sequence<Integer>> machine = getMachine("b");
+		Sequence<Integer> sequence = factory().toSequence("abc");
+		List<Sequence<Integer>> split = machine.split(sequence);
+		assertEquals(2, split.size());
 	}
 
 	@Test
