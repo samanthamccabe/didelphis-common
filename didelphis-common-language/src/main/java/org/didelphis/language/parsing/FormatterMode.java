@@ -15,9 +15,8 @@
 package org.didelphis.language.parsing;
 
 import lombok.NonNull;
-import org.didelphis.language.automata.Automaton;
+import org.didelphis.language.automata.Regex;
 import org.didelphis.language.automata.matching.Match;
-import org.didelphis.language.automata.utils.Regex;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.Normalizer;
@@ -95,7 +94,7 @@ public enum FormatterMode implements Segmenter, Formatter {
 		private static final int SUB_SMALL_T  = 0x209C;
 		/*>-------------------------------------------------------------------*/
 
-		private final Automaton<String> pattern = Regex.create("(\\$[^$]*\\d+)");
+		private final Regex pattern = new Regex("(\\$[^$]*\\d+)");
 
 		@NonNull
 		@Override
@@ -185,7 +184,10 @@ public enum FormatterMode implements Segmenter, Formatter {
 
 			Match<String> backReferenceMatcher = pattern.match(word);
 			if (backReferenceMatcher.matches()) {
-				bestMatch = backReferenceMatcher.group(0);
+				String group = backReferenceMatcher.group(0);
+				if (group != null) {
+					bestMatch = group;
+				}
 			}
 			return bestMatch;
 		}

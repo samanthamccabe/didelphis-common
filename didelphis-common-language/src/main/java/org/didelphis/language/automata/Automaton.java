@@ -31,7 +31,7 @@ import java.util.List;
  * 		checked
  *
  * @see org.didelphis.language.automata.statemachines.StateMachine
- * @see org.didelphis.language.automata.JavaPatternAutomaton
+ * @see Regex
  * 
  * @author Samantha Fiona McCabe
  * @date 10/17/17
