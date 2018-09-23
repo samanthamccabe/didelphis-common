@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FeatureModelLoaderTest extends PhoneticTestBase {
 
-	private static final FeatureModelLoader<Integer> LOADER = IntegerFeature.emptyLoader();
+	private static final FeatureModelLoader<Integer> LOADER = IntegerFeature.INSTANCE.emptyLoader();
 
 	@Test
 	void testConstructorFeatureType() {

@@ -132,7 +132,7 @@ class BasicSequenceTest extends PhoneticTestBase {
 	void testMatchesEmptyModel() {
 
 		SequenceFactory<Integer> emptyFactory = new SequenceFactory<>(
-				IntegerFeature.emptyLoader().getFeatureMapping(),
+				IntegerFeature.INSTANCE.emptyLoader().getFeatureMapping(),
 				FormatterMode.NONE
 		);
 
@@ -190,7 +190,7 @@ class BasicSequenceTest extends PhoneticTestBase {
 	void testAddSequenceWrongModel() {
 
 		SequenceFactory<Integer> factory1 = new SequenceFactory<>(
-				IntegerFeature.emptyLoader().getFeatureMapping(),
+				IntegerFeature.INSTANCE.emptyLoader().getFeatureMapping(),
 				FormatterMode.NONE
 		);
 
@@ -215,7 +215,7 @@ class BasicSequenceTest extends PhoneticTestBase {
 	void testContainsWrongModel() {
 
 		SequenceFactory<Integer> factory1 = new SequenceFactory<>(
-				IntegerFeature.emptyLoader().getFeatureMapping(),
+				IntegerFeature.INSTANCE.emptyLoader().getFeatureMapping(),
 				FormatterMode.NONE
 		);
 
@@ -251,7 +251,7 @@ class BasicSequenceTest extends PhoneticTestBase {
 	void testStartsWithWrongModel() {
 
 		SequenceFactory<Integer> factory1 = new SequenceFactory<>(
-				IntegerFeature.emptyLoader().getFeatureMapping(),
+				IntegerFeature.INSTANCE.emptyLoader().getFeatureMapping(),
 				FormatterMode.NONE
 		);
 
@@ -265,7 +265,7 @@ class BasicSequenceTest extends PhoneticTestBase {
 	void testStartsWithSegmentWrongModel() {
 
 		SequenceFactory<Integer> factory1 = new SequenceFactory<>(
-				IntegerFeature.emptyLoader().getFeatureMapping(),
+				IntegerFeature.INSTANCE.emptyLoader().getFeatureMapping(),
 				FormatterMode.NONE
 		);
 
@@ -279,7 +279,7 @@ class BasicSequenceTest extends PhoneticTestBase {
 	void testIndexOfSequenceWrongModel() {
 
 		SequenceFactory<Integer> factory1 = new SequenceFactory<>(
-				IntegerFeature.emptyLoader().getFeatureMapping(),
+				IntegerFeature.INSTANCE.emptyLoader().getFeatureMapping(),
 				FormatterMode.NONE
 		);
 

@@ -20,7 +20,7 @@ class BinaryFeatureTest {
 
 	@Test
 	void testEmptyLoader() {
-		FeatureModelLoader<Boolean> loader = BinaryFeature.emptyLoader();
+		FeatureModelLoader<Boolean> loader = BinaryFeature.INSTANCE.emptyLoader();
 		assertEquals(0, loader.getSpecification().size());
 	}
 

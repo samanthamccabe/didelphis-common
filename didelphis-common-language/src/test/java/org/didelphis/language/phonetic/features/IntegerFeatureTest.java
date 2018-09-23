@@ -16,7 +16,7 @@ class IntegerFeatureTest {
 
 	@Test
 	void testEmptyLoader() {
-		FeatureModelLoader<Integer> loader = IntegerFeature.emptyLoader();
+		FeatureModelLoader<Integer> loader = IntegerFeature.INSTANCE.emptyLoader();
 		assertEquals(0, loader.getSpecification().size());
 	}
 

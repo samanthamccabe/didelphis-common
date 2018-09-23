@@ -29,23 +29,23 @@ import java.util.regex.Pattern;
 
 /**
  * Class {@code Regex}
- *
+ * <p>
  * A {@link Automaton} wrapper for the standard {@link Pattern} class.
- * 
+ *
  * @author Samantha Fiona McCabe
  */
 public class Regex implements Automaton<String> {
 
 	private final Pattern pattern;
 
-	public Regex(@Language("RegExp") @NonNull String pattern) {
+	public Regex(@Language ("RegExp") @NonNull String pattern) {
 		this(pattern, 0);
 	}
-	
-	public Regex(@Language("RegExp") @NonNull String pattern, int flags) {
+
+	public Regex(@Language ("RegExp") @NonNull String pattern, int flags) {
 		this.pattern = Pattern.compile(pattern, flags);
 	}
-	
+
 	@NonNull
 	@Override
 	public Match<String> match(@NonNull String input, int start) {
@@ -74,13 +74,12 @@ public class Regex implements Automaton<String> {
 	public String toString() {
 		return pattern.pattern();
 	}
-	
+
 	@Value
 	private static final class PatternMatch implements Match<String> {
-		@Delegate
-		MatchResult matchResult;
+		@Delegate MatchResult matchResult;
 	}
-	
+
 	private static final class EmptyMatch implements Match<String> {
 
 		@Override

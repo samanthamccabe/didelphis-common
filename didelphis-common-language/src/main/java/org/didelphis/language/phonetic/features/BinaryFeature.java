@@ -35,7 +35,9 @@ public enum BinaryFeature implements FeatureType<Boolean> {
 
 	public static final Set<Boolean> UNDEFINED = Collections.singleton(null);
 
-	public static FeatureModelLoader<Boolean> emptyLoader() {
+	@Override
+	@NonNull
+	public FeatureModelLoader<Boolean> emptyLoader() {
 		return new FeatureModelLoader<>(INSTANCE);
 	}
 	
