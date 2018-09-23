@@ -15,10 +15,10 @@
 package org.didelphis.language.automata;
 
 import lombok.NonNull;
-import lombok.ToString;
 import lombok.Value;
 import lombok.experimental.Delegate;
 import org.didelphis.language.automata.matching.Match;
+import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -28,23 +28,21 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Class {@code JavaPatternAutomaton}
+ * Class {@code Regex}
  *
  * A {@link Automaton} wrapper for the standard {@link Pattern} class.
  * 
  * @author Samantha Fiona McCabe
- * @date 10/17/17
  */
-@ToString
-public class JavaPatternAutomaton implements Automaton<String> {
+public class Regex implements Automaton<String> {
 
 	private final Pattern pattern;
 
-	public JavaPatternAutomaton(@NonNull String pattern) {
+	public Regex(@Language("RegExp") @NonNull String pattern) {
 		this(pattern, 0);
 	}
 	
-	public JavaPatternAutomaton(@NonNull String pattern, int flags) {
+	public Regex(@Language("RegExp") @NonNull String pattern, int flags) {
 		this.pattern = Pattern.compile(pattern, flags);
 	}
 	
@@ -72,6 +70,11 @@ public class JavaPatternAutomaton implements Automaton<String> {
 		return pattern.matcher(input).replaceAll(replacement);
 	}
 
+	@Override
+	public String toString() {
+		return pattern.pattern();
+	}
+	
 	@Value
 	private static final class PatternMatch implements Match<String> {
 		@Delegate

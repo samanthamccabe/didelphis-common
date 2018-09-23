@@ -21,9 +21,8 @@ import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import org.didelphis.io.FileHandler;
 import org.didelphis.io.NullFileHandler;
-import org.didelphis.language.automata.Automaton;
+import org.didelphis.language.automata.Regex;
 import org.didelphis.language.automata.matching.Match;
-import org.didelphis.language.automata.utils.Regex;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.FeatureType;
@@ -74,15 +73,15 @@ public final class FeatureModelLoader<T> {
 	}
 
 	/*-----------------------------------------------------------------------<*/
-	static final Automaton<String> FEATURES_PATTERN = Regex.create("(\\w+)(\\s+(\\w*))?", 0x02);
-	static final Automaton<String> TRANSFORM        = Regex.create("\\s*>\\s*");
-	static final Automaton<String> BRACKETS         = Regex.create("[\\[\\]]");
-	static final Automaton<String> EQUALS           = Regex.create("\\s*=\\s*");
-	static final Automaton<String> IMPORT           = Regex.create("import\\s+['\"]([^'\"]+)['\"]", 0x02);
-	static final Automaton<String> COMMENT_PATTERN  = Regex.create("\\s*%.*");
-	static final Automaton<String> SYMBOL_PATTERN   = Regex.create("([^\\t]+)\\t(.*)");
-	static final Automaton<String> TAB_PATTERN      = Regex.create("\\t");
-	static final Automaton<String> DOTTED_CIRCLE    = Regex.create("◌", 0x10);
+	static final Regex FEATURES_PATTERN = new Regex("(\\w+)(\\s+(\\w*))?");
+	static final Regex TRANSFORM        = new Regex("\\s*>\\s*");
+	static final Regex BRACKETS         = new Regex("[\\[\\]]");
+	static final Regex EQUALS           = new Regex("\\s*=\\s*");
+	static final Regex IMPORT           = new Regex("import\\s+['\"]([^'\"]+)['\"]", 0x02);
+	static final Regex COMMENT_PATTERN  = new Regex("\\s*%.*");
+	static final Regex SYMBOL_PATTERN   = new Regex("([^\\t]+)\\t(.*)");
+	static final Regex TAB_PATTERN      = new Regex("\\t");
+	static final Regex DOTTED_CIRCLE    = new Regex("◌", 0x10);
 	
 	final MultiMap<ParseZone, String> zoneData;
 	

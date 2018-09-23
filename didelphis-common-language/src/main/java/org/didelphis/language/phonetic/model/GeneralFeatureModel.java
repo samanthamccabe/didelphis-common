@@ -19,9 +19,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
-import org.didelphis.language.automata.Automaton;
+import org.didelphis.language.automata.Regex;
 import org.didelphis.language.automata.matching.Match;
-import org.didelphis.language.automata.utils.Regex;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.FeatureType;
@@ -49,10 +48,10 @@ public final class GeneralFeatureModel<T> implements FeatureModel<T> {
 	static String NAME   = "(\\w+)";
 	static String ASSIGN = "([=:><])";
 
-	static Automaton<String> VALUE_PATTERN   = Regex.create(VALUE + ASSIGN + NAME);
-	static Automaton<String> BINARY_PATTERN  = Regex.create("([+\\-−])" + NAME);
-	static Automaton<String> FEATURE_PATTERN = Regex.create("[,;]\\s*|\\s+");
-	static Automaton<String> BRACKET_PATTERN = Regex.create("\\[(.+?)]");
+	static Regex VALUE_PATTERN   = new Regex(VALUE + ASSIGN + NAME);
+	static Regex BINARY_PATTERN  = new Regex("([+\\-−])" + NAME);
+	static Regex FEATURE_PATTERN = new Regex("[,;]\\s*|\\s+");
+	static Regex BRACKET_PATTERN = new Regex("\\[(.+?)]");
 
 	FeatureSpecification specification;
 	List<Constraint<T>> constraints;
