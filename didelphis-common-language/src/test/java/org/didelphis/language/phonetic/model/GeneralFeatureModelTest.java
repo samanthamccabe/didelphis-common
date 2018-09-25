@@ -54,7 +54,7 @@ class GeneralFeatureModelTest extends PhoneticTestBase {
 		).getFeatureModel();
 		empty = new FeatureModelLoader<>(IntegerFeature.INSTANCE,
 				ClassPathFileHandler.INSTANCE,
-				Collections.emptyList()
+				Collections.emptyList(), ""
 		).getFeatureModel();
 	}
 

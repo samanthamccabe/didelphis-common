@@ -693,7 +693,8 @@ class StandardStateMachineTest extends StateMachineTestBase<Sequence<Integer>> {
 		FeatureModelLoader<Integer> loader = new FeatureModelLoader<>(
 				IntegerFeature.INSTANCE,
 				ClassPathFileHandler.INSTANCE,
-				Collections.emptyList());
+				Collections.emptyList(), ""
+		);
 		FeatureMapping<Integer> mapping = loader.getFeatureMapping();
 		return new SequenceFactory<>(mapping, FormatterMode.INTELLIGENT);
 	}
