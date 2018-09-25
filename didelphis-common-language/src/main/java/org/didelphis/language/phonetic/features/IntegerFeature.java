@@ -36,7 +36,9 @@ public enum IntegerFeature implements FeatureType<Integer> {
 
 	public static final Set<Integer> UNDEFINED = Collections.singleton(null);
 
-	public static FeatureModelLoader<Integer> emptyLoader() {
+	@NonNull
+	@Override
+	public FeatureModelLoader<Integer> emptyLoader() {
 		return new FeatureModelLoader<>(INSTANCE);
 	}
 

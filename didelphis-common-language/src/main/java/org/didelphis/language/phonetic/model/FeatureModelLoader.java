@@ -60,7 +60,7 @@ import static org.didelphis.utilities.Splitter.lines;
 public final class FeatureModelLoader<T> {
 
 	private static final Logger LOG = Logger.create(FeatureModelLoader.class);
-	
+
 	/**
 	 * Enum {@code ParseZone}
 	 */
@@ -82,9 +82,11 @@ public final class FeatureModelLoader<T> {
 	static final Regex SYMBOL_PATTERN   = new Regex("([^\\t]+)\\t(.*)");
 	static final Regex TAB_PATTERN      = new Regex("\\t");
 	static final Regex DOTTED_CIRCLE    = new Regex("◌", 0x10);
-	
+	static final Regex PARENT_PATH      = new Regex("(.*[\\\\/])?[^\\\\/]+$");
+
 	final MultiMap<ParseZone, String> zoneData;
-	
+
+	final String               basePath;
 	final List<String>         featureNames;
 	final Map<String, Integer> featureIndices;
 	final FeatureType<T>       featureType;
@@ -102,12 +104,15 @@ public final class FeatureModelLoader<T> {
 		featureIndices = new HashMap<>();
 		zoneData = new GeneralMultiMap<>();
 
+		basePath = "";
+
 		specification = new DefaultFeatureSpecification();
 		featureModel = new GeneralFeatureModel<>(featureType,
 				specification,
 				Collections.emptyList(),
 				Collections.emptyMap()
 		);
+
 		featureMapping = new GeneralFeatureMapping<>(featureModel,
 				Collections.emptyMap(),
 				Collections.emptyMap()
@@ -119,14 +124,36 @@ public final class FeatureModelLoader<T> {
 			@NonNull FileHandler fileHandler,
 			@NonNull String path
 	) {
-		this(featureType, fileHandler, lines(fileHandler.read(path)));
+		this.featureType = featureType;
+		this.fileHandler = fileHandler;
+
+		featureNames = new ArrayList<>();
+		featureIndices = new HashMap<>();
+		basePath = path;
+
+		Map<ParseZone, Collection<String>> map = new EnumMap<>(ParseZone.class);
+		for (ParseZone zone : ParseZone.values()) {
+			map.put(zone, new ArrayList<>());
+		}
+		zoneData = new GeneralMultiMap<>(map, Suppliers.ofList());
+
+		String read = fileHandler.read(path);
+
+		if (read == null) {
+			throw new ParseException("Failed to load data from path " + path);
+		}
+
+		parse(lines(read));
+		populate();
 	}
 
 	public FeatureModelLoader(
 			@NonNull FeatureType<T> featureType,
 			@NonNull FileHandler fileHandler,
-			@NonNull Iterable<String> lines
+			@NonNull Iterable<String> lines,
+			@NonNull String basePath
 	) {
+		this.basePath = basePath;
 		this.featureType = featureType;
 		this.fileHandler = fileHandler;
 
@@ -221,12 +248,16 @@ public final class FeatureModelLoader<T> {
 			if (line.isEmpty()) {
 				continue;
 			}
-			if (line.toLowerCase().startsWith("import")) {
-				Match<String> matcher = IMPORT.match(line);
+			Match<String> matcher = IMPORT.match(line);
+			if (matcher.matches()) {
 				if (matcher.end() >= 0) {
-					String filePath = matcher.group(1);
-					String fileData = fileHandler.read(filePath);
-					Iterable<String> list = lines(fileData);
+					String parent = PARENT_PATH.replace(basePath, "$1");
+					String filePath = parent + matcher.group(1);
+					String data = fileHandler.read(filePath);
+					if (data == null) {
+						throw new ParseException("Unable to read from " + data);
+					}
+					Iterable<String> list = lines(data);
 					parse(list);
 					continue;
 				}

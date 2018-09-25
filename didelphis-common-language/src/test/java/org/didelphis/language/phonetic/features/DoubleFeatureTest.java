@@ -16,7 +16,7 @@ class DoubleFeatureTest {
 
 	@Test
 	void testEmptyLoader() {
-		FeatureModelLoader<Double> loader = DoubleFeature.emptyLoader();
+		FeatureModelLoader<Double> loader = DoubleFeature.INSTANCE.emptyLoader();
 		assertEquals(0, loader.getSpecification().size());
 	}
 

@@ -50,7 +50,8 @@ class SparseFeatureArrayTest extends PhoneticTestBase {
 		empty = new FeatureModelLoader<>(
 				IntegerFeature.INSTANCE,
 				ClassPathFileHandler.INSTANCE,
-				Collections.emptyList()).getFeatureModel();
+				Collections.emptyList(), ""
+		).getFeatureModel();
 	}
 
 	@BeforeEach

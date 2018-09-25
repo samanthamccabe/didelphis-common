@@ -41,7 +41,7 @@ class StandardFeatureArrayTest extends PhoneticTestBase {
 	@BeforeAll
 	static void initModel() {
 		model = loader.getFeatureModel();
-		empty = IntegerFeature.emptyLoader().getFeatureModel();
+		empty = IntegerFeature.INSTANCE.emptyLoader().getFeatureModel();
 	}
 	
 	@BeforeEach

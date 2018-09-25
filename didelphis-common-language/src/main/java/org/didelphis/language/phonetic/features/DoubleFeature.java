@@ -39,7 +39,9 @@ public enum DoubleFeature implements FeatureType<Double> {
 			Double.POSITIVE_INFINITY
 	);
 
-	public static FeatureModelLoader<Double> emptyLoader() {
+	@Override
+	@NonNull
+	public FeatureModelLoader<Double> emptyLoader() {
 		return new FeatureModelLoader<>(INSTANCE);
 	}
 

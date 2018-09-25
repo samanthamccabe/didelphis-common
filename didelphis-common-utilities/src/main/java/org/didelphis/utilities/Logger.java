@@ -18,7 +18,6 @@ import lombok.ToString;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -150,9 +149,9 @@ public final class Logger {
 		String string = generate(level, template, data);
 		for (OutputStream appender : APPENDERS) {
 			try {
-				appender.write(string.getBytes(Charset.forName("UTF-8")));
+				appender.write(string.getBytes("UTF-8"));
 			} catch (IOException e) {
-				System.err.println("Failed to write message to output" +
+				System.out.println("Failed to write message to output" +
 						" stream for appender " + appender + ' ' + e);
 			}
 		}

@@ -112,7 +112,7 @@ class ConstraintTest extends PhoneticTestBase {
 	@Test
 	void testConsistencyFailure() {
 
-		FeatureModelLoader<Integer> loader1 = IntegerFeature.emptyLoader();
+		FeatureModelLoader<Integer> loader1 = IntegerFeature.INSTANCE.emptyLoader();
 		SequenceFactory<Integer> factory1 = new SequenceFactory<>(
 				loader1.getFeatureMapping(),
 				FormatterMode.NONE

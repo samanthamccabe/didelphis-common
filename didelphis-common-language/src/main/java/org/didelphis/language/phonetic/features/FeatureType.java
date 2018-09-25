@@ -15,6 +15,7 @@
 package org.didelphis.language.phonetic.features;
 
 import lombok.NonNull;
+import org.didelphis.language.phonetic.model.FeatureModelLoader;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -41,6 +42,12 @@ import java.util.Collection;
  */
 public interface FeatureType<T> {
 
+	/**
+	 * 
+	 * @return
+	 */
+	FeatureModelLoader<T> emptyLoader();
+	
 	/**
 	 * Parses the {@code String} argument as a value of type {@code <T>}. This 
 	 * behaves similarly to {@link Integer#parseInt(String)}, {@link 

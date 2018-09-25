@@ -15,7 +15,6 @@
 package org.didelphis.language.phonetic.model;
 
 import org.didelphis.io.ClassPathFileHandler;
-import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.phonetic.PhoneticTestBase;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.IntegerFeature;
@@ -28,10 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * @author Samantha Fiona McCabe
- */
-public class GeneralFeatureMappingTest extends PhoneticTestBase {
+class GeneralFeatureMappingTest extends PhoneticTestBase {
 
 	private static FeatureMapping<Integer> mapping;
 
@@ -49,7 +45,7 @@ public class GeneralFeatureMappingTest extends PhoneticTestBase {
 	@Test
 	void testLoad02() {
 		String resourceName = "AT_hybrid.mapping";
-		FeatureMapping<Integer> model = loadMapping(resourceName, FormatterMode.INTELLIGENT);
+		FeatureMapping<Integer> model = loadMapping(resourceName);
 		Assertions.assertNotNull(model.getSpecification());
 		assertTrue(model.getSpecification().size() > 0);
 	}
@@ -57,7 +53,7 @@ public class GeneralFeatureMappingTest extends PhoneticTestBase {
 	@Test
 	void testLoad_AT_Hybrid() {
 		String resourceName = "AT_hybrid.model";
-		FeatureMapping<Integer> model = loadMapping(resourceName, FormatterMode.INTELLIGENT);
+		FeatureMapping<Integer> model = loadMapping(resourceName);
 		assertFalse(model.getFeatureMap().isEmpty());
 		assertFalse(model.getModifiers().isEmpty());
 	}
@@ -66,7 +62,10 @@ public class GeneralFeatureMappingTest extends PhoneticTestBase {
 	void testContainsKey() {
 		assertTrue(mapping.containsKey("p"));
 		assertFalse(mapping.containsKey("@"));
-		assertThrows(NullPointerException.class, ()->mapping.containsKey(null));
+		assertThrows(
+				NullPointerException.class,
+				() -> mapping.containsKey(null)
+		);
 	}
 	
 	@Test
@@ -101,7 +100,7 @@ public class GeneralFeatureMappingTest extends PhoneticTestBase {
 		Assertions.assertEquals(string, bestSymbol);
 	}
 
-	private static FeatureMapping<Integer> loadMapping(String resourceName, FormatterMode mode) {
+	private static FeatureMapping<Integer> loadMapping(String resourceName) {
 		FeatureModelLoader<Integer> loader = new FeatureModelLoader<>(
 				IntegerFeature.INSTANCE,
 				ClassPathFileHandler.INSTANCE,
