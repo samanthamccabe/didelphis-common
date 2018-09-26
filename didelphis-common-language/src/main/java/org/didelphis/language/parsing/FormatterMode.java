@@ -213,11 +213,17 @@ public enum FormatterMode implements Segmenter, Formatter {
 		}
 
 		private boolean isCombiningClass(char ch) {
-			int type = Character.getType(ch);
-			return type == Character.MODIFIER_LETTER
-					|| type == Character.MODIFIER_SYMBOL
-					|| type == Character.COMBINING_SPACING_MARK
-					|| type == Character.NON_SPACING_MARK;
+			for (int[] range : COMBINING_RANGES) {
+				if (range[0] <= ch && ch <= range [1]) {
+					return true;
+				}
+			}
+			for (int aChar : MISC_COMBINING_CHARS) {
+				if (aChar == ch) {
+					return true;
+				}
+			}
+			return false;
 		}
 	};
 
@@ -232,4 +238,41 @@ public enum FormatterMode implements Segmenter, Formatter {
 	public String normalize(@NonNull String string) {
 		return (form == null) ? string : Normalizer.normalize(string, form);
 	}
+
+	private static final int[][] COMBINING_RANGES = {
+			{ 0x02B0, 0x02FF }, // Spacing Modifier Letters
+			{ 0x0300, 0x036F }, // Combining Diacritical Marks
+			{ 0x1AB0, 0x1AFF }, // Combining Diacritical Marks Extended
+			{ 0x1DC0, 0x1DFF }, // Combining Diacritical Marks Supplement
+			{ 0x20D0, 0x20FF }, // Combining Diacritical Marks for Symbols
+			{ 0xFE20, 0xFE2F }, // Combining Half Marks
+			{ 0x1D2C, 0x1D6A }, // Phonetic extensions (subset)
+			{ 0x1D9B, 0x1DBF }, // Phonetic Extensions Supplement (subset)
+			{ 0x2070, 0x209C }, // Superscripts and Subscripts (unofficial)
+			{ 0x2DE0, 0x2DFF }, // Cyrillic Extended (subset)
+			{ 0xA700, 0xA721 }, // Tone Marks
+			{ 0xFE20, 0xFE26 }, // Combining Half Marks
+			{ 0x0483, 0x0489 }  // Combining Cyrillic marks
+	}; 
+	private static final int[] MISC_COMBINING_CHARS = {
+			0x005E, 0x0060, 0x00A8, 0x00AF, 0x00B4, 0x00B8, 
+			
+			0x0374, // GREEK NUMERAL SIGN
+			0x0375, // GREEK LOWER NUMERAL SIGN
+			0x037A, // GREEK YPOGEGRAMMENI
+			0x0384, // GREEK TONOS
+			0x0385, // GREEK DIALYTIKA TONOS
+			
+			0x1D78, // MODIFIER LETTER CYRILLIC EN
+			
+			// Greek Extended
+			0x1FBD, 0x1FBF, 0x1FC0, 0x1FC1, 0x1FCD, 0x1FCE, 0x1FCF, 0x1FDD, 
+			0x1FDE, 0x1FDF, 0x1FED, 0x1FEE, 0x1FEF, 0x1FFD, 0x1FFE,
+			
+			0x2C7C, // LATIN SUBSCRIPT SMALL LETTER J
+			0x2C7D, // MODIFIER LETTER CAPITAL V
+			0x2E2F, // VERTICAL TILDE
+			0xA7F8, // MODIFIER LETTER CAPITAL H WITH STROKE
+			0xA7F9, // MODIFIER LETTER SMALL LIGATURE OE
+	};
 }
