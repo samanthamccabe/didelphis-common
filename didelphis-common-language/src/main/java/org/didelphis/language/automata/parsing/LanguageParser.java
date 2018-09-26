@@ -123,7 +123,17 @@ public interface LanguageParser<S> {
 	 * 		provided sequence
 	 */
 	@NonNull
-	S subSequence(S sequence, int start, int end);
+	S subSequence(@NonNull S sequence, int start, int end);
+
+	/**
+	 * It is critical that this function return a new object and to not mutate
+	 * and return {@param sequence1}. 
+	 * @param sequence1
+	 * @param sequence2
+	 * @return
+	 */
+	@NonNull
+	S concatenate(@NonNull S sequence1, @NonNull S sequence2);
 	
 	default Expression parseExpression(String exp) {
 		return parseExpression(exp, ParseDirection.FORWARD);

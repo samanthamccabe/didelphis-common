@@ -24,6 +24,8 @@ import org.didelphis.utilities.Templates;
 import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -291,7 +293,7 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 		assertMatches(machine, "c");
 		assertNotMatches(machine, "a");
 	}
-
+	
 	@Test
 	void testNestedSquareBrackets() {
 		StateMachine<String> machine = getMachine("[ab[cd]]");
@@ -754,6 +756,25 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 		StateMachine<String> machine = getMachine("(a|b)+");
 		assertMatches(machine, "ababab");
 		assertNotMatches(machine, "cccccd");
+	}
+
+	@Test
+	void testSplit01() {
+		StateMachine<String> machine = getMachine("a");
+		
+		assertEquals(Arrays.asList("b","b","b"), machine.split("babab"));
+		assertEquals(Arrays.asList("b","b"),     machine.split("ababa"));
+		assertEquals(Arrays.asList("b","b"),     machine.split("baba"));
+		assertEquals(Arrays.asList("b","b"),     machine.split("abab"));
+	}
+	
+	@Test
+	void testReplace01() {
+		StateMachine<String> machine = getMachine("a");
+
+		List<String> baba = machine.split("babab");
+
+		assert !baba.isEmpty();
 	}
 	
 	void assertConsistant(

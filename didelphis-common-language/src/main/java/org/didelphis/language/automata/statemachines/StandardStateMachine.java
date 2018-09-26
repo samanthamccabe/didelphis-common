@@ -318,7 +318,20 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	@NonNull
 	@Override
 	public S replace(@NonNull S input, @NonNull S replacement) {
-		return null; //  TODO:
+		List<S> split = split(input, -1);
+		if (split.isEmpty()) {
+			return input;
+		}
+
+
+		S sequence = parser.transform("");
+		int length = parser.lengthOf(input);
+		for (int i = 0; i < length; i++) {
+			sequence = parser.concatenate(sequence, replacement);
+			sequence = parser.concatenate(sequence, split.get(i));
+		}
+
+		return sequence;
 	}
 
 	@Override

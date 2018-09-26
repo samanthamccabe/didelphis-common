@@ -354,7 +354,16 @@ public class RegexParser implements LanguageParser<String> {
 
 	@NonNull
 	@Override
-	public String subSequence(String sequence, int start, int end) {
+	public String subSequence(@NonNull String sequence, int start, int end) {
 		return sequence.substring(start, end);
+	}
+
+	@NonNull
+	@Override
+	public String concatenate(
+			@NonNull String sequence1, 
+			@NonNull String sequence2
+	) {
+		return sequence1 + sequence2;
 	}
 }

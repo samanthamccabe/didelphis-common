@@ -147,8 +147,18 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 
 	@NonNull
 	@Override
-	public Sequence<T> subSequence(Sequence<T> sequence, int start, int end) {
+	public Sequence<T> subSequence(@NonNull Sequence<T> sequence, int start, int end) {
 		return sequence.subsequence(start, end);
+	}
+
+	@NonNull
+	@Override
+	public Sequence<T> concatenate(
+			@NonNull Sequence<T> sequence1,
+			@NonNull Sequence<T> sequence2
+	) {
+		sequence1.add(sequence2);
+		return sequence1;
 	}
 
 	@NonNull
