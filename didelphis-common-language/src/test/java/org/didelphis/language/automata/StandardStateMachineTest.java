@@ -372,7 +372,7 @@ class StandardStateMachineTest extends StateMachineTestBase<Sequence<Integer>> {
 
 		assertMatchesGroup(machine, "aalhammbhambra", "aalhammbhambra", 0);
 		assertMatchesGroup(machine, "aalhammbhambra", "aalhammbhambra", 1);
-		assertMatchesGroup(machine, "aalhammbhambra", "hammbhamb", 2);
+		assertMatchesGroup(machine, "aalhammbhambra", "hammb", 2);
 		
 		assertMatchesGroup(machine, "alra", "alra", 0);
 		assertMatchesGroup(machine, "alra", "alra", 1);
@@ -560,7 +560,7 @@ class StandardStateMachineTest extends StateMachineTestBase<Sequence<Integer>> {
 
 		assertMatchesGroup(machine, "aeaeftr", "aeaeftr", 0);
 		assertMatchesGroup(machine, "aeaeftr", "aeaef", 2);
-		assertMatchesGroup(machine, "aeaeftr", "aeae", 3);
+		assertMatchesGroup(machine, "aeaeftr", "ae", 3);
 		assertNoGroup(machine, "aeaeftr", 1);
 	}
 

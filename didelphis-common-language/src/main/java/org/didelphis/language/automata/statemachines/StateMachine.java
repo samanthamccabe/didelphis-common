@@ -15,11 +15,14 @@
 package org.didelphis.language.automata.statemachines;
 
 import lombok.NonNull;
-import org.didelphis.language.automata.Graph;
 import org.didelphis.language.automata.Automaton;
-import org.didelphis.language.automata.parsing.LanguageParser;
+import org.didelphis.language.automata.Graph;
 import org.didelphis.language.automata.matching.LanguageMatcher;
+import org.didelphis.language.automata.matching.Match;
+import org.didelphis.language.automata.parsing.LanguageParser;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -51,4 +54,49 @@ public interface StateMachine<S> extends Automaton<S> {
 
 	@NonNull
 	Map<String, StateMachine<S>> getStateMachines();
+
+	@NonNull
+	@Override
+	default S replace(@NonNull S input, @NonNull S replacement) {
+		List<S> split = split(input, -1);
+		if (split.isEmpty()) {
+			return input;
+		}
+
+		LanguageParser<S> parser = getParser();
+		S sequence = parser.transform("");
+		for (int i = 0; i < split.size(); i++) {
+			sequence = parser.concatenate(sequence, split.get(i));
+			if (i < split.size() - 1) {
+				sequence = parser.concatenate(sequence, replacement);
+			}
+		}
+		return sequence;
+	}
+
+	@NonNull
+	@Override
+	default List<S> split(@NonNull S input, int limit) {
+		List<S> list = new ArrayList<>();
+
+		LanguageParser<S> parser = getParser();
+		int length = parser.lengthOf(input);
+		int i = 0;
+		int cursor = 0;
+
+		while ((limit == -1 || list.size() < limit) && i < length) {
+			Match<S> match = match(input, i);
+			int end = match.end();
+			if (end >= 0) {
+				S sequence = parser.subSequence(input, cursor, i);
+				list.add(sequence);
+				cursor = end;
+			}
+			i++;
+		}
+		if (cursor <= length) {
+			list.add(parser.subSequence(input, cursor, length));
+		}
+		return list;
+	}
 }
