@@ -14,7 +14,22 @@ import org.didelphis.language.automata.parsing.RegexParser;
 @EqualsAndHashCode
 public class RegexMatcher implements LanguageMatcher<String> {
 	
-	private final RegexParser parser = new RegexParser();
+	private final RegexParser parser;
+	private final boolean insensitive;
+
+	public RegexMatcher() {
+		this(new RegexParser());
+	}
+	
+	public RegexMatcher(RegexParser parser) {
+		this.parser = parser;
+		insensitive = false;
+	}
+
+	public RegexMatcher(RegexParser parser, boolean insensitive) {
+		this.parser = parser;
+		this.insensitive = insensitive;
+	}
 	
 	@Override
 	public int matches(
@@ -26,6 +41,8 @@ public class RegexMatcher implements LanguageMatcher<String> {
 		// when the state machine is created, so only literal arcs are present
 		// in the graph. Evaluating this is a potential source of slowdown, but
 		// the performance has not been benchmarked
-		return input.startsWith(arc, index) ? arc.length() : -1;
+		String string = insensitive ? input.toLowerCase() : input;
+		String edge   = insensitive ? arc.toLowerCase()   : arc;
+		return string.startsWith(edge, index) ? arc.length() : -1;
 	}
 }

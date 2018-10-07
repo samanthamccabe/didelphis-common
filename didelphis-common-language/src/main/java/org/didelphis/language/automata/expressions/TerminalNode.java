@@ -77,6 +77,11 @@ public class TerminalNode implements Expression {
 		return false;
 	}
 
+	@Override
+	public boolean isTerminal() {
+		return true;
+	}
+
 	@NonNull
 	@Override
 	public String getTerminal() {
@@ -117,6 +122,12 @@ public class TerminalNode implements Expression {
 	@Override
 	public Expression withQuantifier(String newQuantifier) {
 		return new TerminalNode(id, terminal, newQuantifier, negative);
+	}
+
+	@NonNull
+	@Override
+	public Expression withTerminal(String newTerminal) {
+		return new TerminalNode(id, newTerminal, quantifier, negative);
 	}
 
 	@Override

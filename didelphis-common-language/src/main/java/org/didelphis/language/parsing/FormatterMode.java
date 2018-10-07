@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -109,7 +110,7 @@ public enum FormatterMode implements Segmenter, Formatter {
 			StringBuilder sb = new StringBuilder(4);
 			for (int i = 0; i < word.length(); ) {
 				// Get the word from current position on
-				int index = parseParens(word, delimiters, i);
+				int index = parseParens(word, delimiters, new HashSet<>(), i);
 				if (index > 0) {
 					if (sb.length() > 0) {
 						strings.add(sb.toString());

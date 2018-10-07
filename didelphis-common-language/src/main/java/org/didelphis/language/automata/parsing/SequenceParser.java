@@ -18,6 +18,7 @@ import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
+import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.phonetic.SequenceFactory;
 import org.didelphis.language.phonetic.model.FeatureModel;
@@ -159,6 +160,14 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 	) {
 		sequence1.add(sequence2);
 		return sequence1;
+	}
+
+	@NonNull
+	@Override
+	public Sequence<T> replaceGroups(
+			@NonNull Sequence<T> input, @NonNull Match<Sequence<T>> match
+	) {
+		return null;
 	}
 
 	@NonNull

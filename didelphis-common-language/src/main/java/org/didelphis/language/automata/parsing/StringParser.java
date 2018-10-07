@@ -18,6 +18,7 @@ import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
+import org.didelphis.language.automata.matching.Match;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.didelphis.utilities.Splitter;
@@ -127,5 +128,13 @@ public class StringParser extends AbstractDidelphisParser<String> {
 			@NonNull String sequence2
 	) {
 		return sequence1 + sequence2;
+	}
+
+	@NonNull
+	@Override
+	public String replaceGroups(
+			@NonNull String input, @NonNull Match<String> match
+	) {
+		return null;
 	}
 }

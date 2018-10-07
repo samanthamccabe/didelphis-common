@@ -197,12 +197,12 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 					if (end >= 0) {
 						cursor.setIndex(end);
 						// copy valid groups from the match to the cursor
-						for (int i = 0; i < match.groupCount(); i++) {
+						for (int i = 1; i < match.groupCount(); i++) {
 							int start1 = match.start(i);
-							cursor.setGroupStart(i, start1);
 							int end1 = match.end(i);
 							// don't overwrite existing groups with non-matched
 							if (start1 >= 0 && end1 >= 0) {
+								cursor.setGroupStart(i, start1);
 								cursor.setGroupEnd(i, end1);
 							}
 						}
@@ -215,10 +215,10 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 					int end = cursor.getIndex();
 					S seq = parser.subSequence(input, start, end);
 					BasicMatch<S> match = new BasicMatch<>(seq, start, end);
-					
+
 					// Add special group zero
 					match.addGroup(0, end, seq);
-					
+
 					for (int i = 1; i < groups.size(); i++) {
 						int gStart = cursor.getGroupStart(i);
 						int gEnd = cursor.getGroupEnd(i);
@@ -247,7 +247,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 							cursor.setGroupStart(group, index);
 						}
 					}
-					
+
 					List<Cursor> cursors = checkNode(input, cursor);
 					for (Cursor aCursor : cursors) {
 						String node = aCursor.getNode();
@@ -265,7 +265,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 			cursorList = cursorSwap;
 			cursorSwap = new ArrayList<>();
 		}
-		
+
 		Match<S> best = BasicMatch.empty(groups.size());
 		for (Match<S> match : matches) {
 			if (match.end() > best.end()) {
@@ -274,7 +274,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		}
 		return best;
 	}
-	
+
 	@NonNull
 	@Override
 	public LanguageMatcher<S> getMatcher() {
@@ -285,7 +285,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	public String toString() {
 		return "StandardStateMachine{" + id + '}';
 	}
-	
+
 	@Override
 	public String getId() {
 		return id;
@@ -336,7 +336,6 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 					cursors.add(new Cursor(index, node));
 					continue;
 				}
-				
 				if (eq(arc, parser.getDot()) && length > 0 && index < length) {
 					cursors.add(new Cursor(index + 1, node));
 				} else if (eq(arc, parser.getWordStart()) && index == 0) {
@@ -358,7 +357,6 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 				aCursor.setGroupEnd(i, cursor.getGroupEnd(i));
 			}
 		}
-		
 		return cursors;
 	}
 
@@ -400,7 +398,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 				previous = makeNegative(previous, nextNode, current, meta);
 				if (captures.contains(expression)) {
 					int index = captures.indexOf(expression);
-					groups.set(index, new Twin<>(current, nextNode));
+					groups.set(index, new Twin<>(current, previous));
 				}
 				continue;
 			}
@@ -425,7 +423,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 					previous = makeGroup(current, node, meta);
 					if (captures.contains(expression)) {
 						int index = captures.indexOf(expression);
-						groups.set(index, new Twin<>(current, node));
+						groups.set(index, new Twin<>(current, previous));
 					}
 				}
 			} else {
@@ -464,16 +462,16 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 
 	private void createNegative(
 			@NonNull Expression expression,
-			@NonNull String current,
+			@NonNull String machineNode,
 			@NonNull List<Expression> captures
 	) {
 		Expression negated = expression.withNegative(false).withQuantifier("");
-		StateMachine<S> machine = NegativeMachine.create(current,
+		StateMachine<S> stateMachine = NegativeMachine.create(machineNode,
 				negated,
 				parser,
 				matcher,
 				captures);
-		machinesMap.put(current, machine);
+		machinesMap.put(machineNode, stateMachine);
 	}
 
 	private String makeNegative(
@@ -681,19 +679,19 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 			Match<S> nMatch = negative.match(input, start);
 			return pMatch.end() == nMatch.end() ? match : pMatch;
 		}
-	
+
 		private static <S> void buildPositiveBranch(
 				@NonNull LanguageParser<S> parser,
 				@NonNull StateMachine<S> positive
 		) {
-	
+
 			Graph<S> graph = positive.getGraphs().values().iterator().next();
 			Graph<S> copy = new Graph<>(graph);
-	
+
 			graph.clear();
-	
+
 			for (Triple<String, S, Collection<String>> triple : copy) {
-	
+
 				S arc = triple.getSecondElement();
 				Collection<String> targets = triple.getThirdElement();
 				// lambda / epsilon transition
@@ -709,7 +707,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 					graph.put(source, parser.getDot(), targets);
 				}
 			}
-			
+
 			if (positive instanceof StandardStateMachine) {
 				Map<String, StateMachine<S>> map = positive.getStateMachines();
 				for (StateMachine<S> machine : map.values()) {
@@ -725,7 +723,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 				}
 			}
 		}
-		
+
 		private static <S> void buildDotChain(
 				@NonNull Graph<S> graph,
 				String key,
@@ -751,7 +749,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		// even though Graph itself cannot be extended
 		@SuppressWarnings ("TypeParameterExtendsFinalClass")
 		Map<String, ? extends Graph<?>> map = Collections.emptyMap();
-		
+
 		String id;
 		LanguageParser<S> parser;
 		LanguageMatcher<S> matcher;
@@ -811,6 +809,21 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 			}
 			return list;
 		}
+
+		@NonNull
+		@Override
+		public S replace(@NonNull S input, @NonNull S replacement) {
+			int size = parser.lengthOf(input);
+			S sequence = parser.transform("");
+			for (int i = 0; i < size; i++) {
+				S q = parser.subSequence(input, i, i + 1);
+				sequence = parser.concatenate(sequence, q);
+				if (i < size - 1) {
+					sequence = parser.concatenate(sequence, replacement);
+				}
+			}
+			return sequence;
+		}
 	}
 
 	@Data
@@ -821,11 +834,11 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		final int[] groupEnd ;
 		int index;
 		String node;
-		
+
 		private Cursor(int index, String node) {
 			this.index = index;
 			this.node = node;
-			
+
 			groupStart = new int[groups.size()];
 			groupEnd   = new int[groups.size()];
 
@@ -834,7 +847,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 				groupEnd[i]   = -1;
 			}
 		}
-		
+
 		private void setGroupStart(int group, int index) {
 			groupStart[group] = index;
 		}
@@ -842,11 +855,11 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		private void setGroupEnd(int group, int index) {
 			groupEnd[group] = index;
 		}
-		
+
 		private int getGroupStart(int group) {
 			return groupStart[group];
 		}
-		
+
 		private int getGroupEnd(int group) {
 			return groupEnd[group];
 		}

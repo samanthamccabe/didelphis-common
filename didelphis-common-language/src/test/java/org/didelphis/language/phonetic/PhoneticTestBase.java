@@ -18,22 +18,15 @@ import org.didelphis.io.ClassPathFileHandler;
 import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
-import org.junit.jupiter.api.BeforeAll;
 
 public abstract class PhoneticTestBase {
 
-	protected static FeatureModelLoader<Integer> loader;
-	protected static SequenceFactory<Integer> factory;
-
-	@BeforeAll
-	private static void load() {
-		String path = "AT_hybrid.model";
-		loader = new FeatureModelLoader<>(
-				IntegerFeature.INSTANCE,
-				ClassPathFileHandler.INSTANCE,
-				path);
-		factory = new SequenceFactory<>(
-				loader.getFeatureMapping(),
-				FormatterMode.INTELLIGENT);
-	}
+	protected static final FeatureModelLoader<Integer> loader = new FeatureModelLoader<>(
+			IntegerFeature.INSTANCE,
+			ClassPathFileHandler.INSTANCE,
+			"AT_hybrid.model");
+	
+	protected static final SequenceFactory<Integer> factory = new SequenceFactory<>(
+			loader.getFeatureMapping(),
+			FormatterMode.INTELLIGENT);
 }

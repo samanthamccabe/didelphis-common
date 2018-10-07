@@ -81,5 +81,22 @@ abstract class StateMachineTestBase<S> {
 
 	}
 
+	@SafeVarargs
+	final void assertMatch(
+			StateMachine<S> machine, S input, int groupCount, S... groups
+	) {
+		Match<S> match = machine.match(input);
+
+		assertTrue(match.matches());
+		assertEquals(groupCount, match.groupCount());
+		for (int i = 0; i < groups.length; i++) {
+			S expected = groups[i];
+			S received = match.group(i);
+			String message = "Group " + i + " was expected to match "
+					+ expected + " but actually matched " + received;
+			assertEquals(expected, received, message);
+		}
+	}
+
 	protected abstract S transform(String input);
 }

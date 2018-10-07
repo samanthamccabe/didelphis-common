@@ -39,6 +39,8 @@ public interface Expression {
 
 	boolean isCapturing();
 	
+	boolean isTerminal();
+	
 	@NonNull String getId();
 	
 	@NonNull String getTerminal();
@@ -54,6 +56,12 @@ public interface Expression {
 	@NonNull Expression withNegative(boolean isNegative);
 	
 	@NonNull Expression withQuantifier(String newQuantifier);
+	
+	@NonNull default Expression withTerminal(String newTerminal) {
+		throw new UnsupportedOperationException(
+				"Cannot add terminal " + newTerminal +
+						" to a non-terminal node");
+	}
 
 	@NonNull
 	static String randomId(Object... objects) {

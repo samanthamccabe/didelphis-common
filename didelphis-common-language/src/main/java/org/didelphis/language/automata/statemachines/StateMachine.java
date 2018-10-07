@@ -31,7 +31,6 @@ import java.util.Map;
  * @param <S> the type of data matched by the state machine
  * 
  * @author Samantha Fiona McCabe
- * @date 2015-04-07
  */
 public interface StateMachine<S> extends Automaton<S> {
 
@@ -58,20 +57,32 @@ public interface StateMachine<S> extends Automaton<S> {
 	@NonNull
 	@Override
 	default S replace(@NonNull S input, @NonNull S replacement) {
-		List<S> split = split(input, -1);
-		if (split.isEmpty()) {
-			return input;
-		}
-
 		LanguageParser<S> parser = getParser();
-		S sequence = parser.transform("");
-		for (int i = 0; i < split.size(); i++) {
-			sequence = parser.concatenate(sequence, split.get(i));
-			if (i < split.size() - 1) {
-				sequence = parser.concatenate(sequence, replacement);
+		
+		 S sequence = parser.transform("");
+		int size = parser.lengthOf(input);
+		int cursor = 0;
+		for (int i = 0; i < size;) {
+			Match<S> match = match(input, i);
+			if (match.matches()) {
+
+				// Append non-matched
+				S subSequence = parser.subSequence(input, cursor, i);
+				sequence = parser.concatenate(sequence, subSequence);
+
+				// Handle group references in replacement
+				S newReplacement = parser.replaceGroups(replacement, match);
+				sequence = parser.concatenate(sequence, newReplacement);
+				
+				i = match.end();
+				cursor = i;
+			} else {
+				i++;
 			}
 		}
-		return sequence;
+
+		S tail = parser.subSequence(input, cursor, size);
+		return parser.concatenate(sequence, tail);
 	}
 
 	@NonNull
@@ -91,8 +102,10 @@ public interface StateMachine<S> extends Automaton<S> {
 				S sequence = parser.subSequence(input, cursor, i);
 				list.add(sequence);
 				cursor = end;
+				i = cursor;
+			} else {
+				i++;
 			}
-			i++;
 		}
 		if (cursor <= length) {
 			list.add(parser.subSequence(input, cursor, length));

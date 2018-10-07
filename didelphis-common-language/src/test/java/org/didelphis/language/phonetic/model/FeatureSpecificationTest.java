@@ -17,20 +17,17 @@ package org.didelphis.language.phonetic.model;
 import org.didelphis.io.ClassPathFileHandler;
 import org.didelphis.language.phonetic.PhoneticTestBase;
 import org.didelphis.language.phonetic.features.IntegerFeature;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- * @author Samantha Fiona McCabe Created: 7/4/2016
- */
-public class FeatureSpecificationTest extends PhoneticTestBase {
+class FeatureSpecificationTest extends PhoneticTestBase {
 	
 	private static FeatureSpecification specification;
 
-	@BeforeAll
-	private static void load() {
+	@BeforeEach
+	private void load() {
 		specification =  loader.getSpecification();
 	}
 

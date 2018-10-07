@@ -167,7 +167,21 @@ public class GraphUtils {
 
 			T arc = edge.getSecondElement();
 
-			String string = Objects.toString(arc).replaceAll("\\s+\\(\\w+\\)", "");
+			String rawString = Objects.toString(arc);
+			
+			if (rawString.equals("\t")) {
+				rawString = "\\t";
+			} else if (rawString.equals("\n")) {
+				rawString = "\\n";
+			} else if (rawString.equals("\r")) {
+				rawString = "\\r";
+			} else if (rawString.equals(" ")) {
+				rawString = "\u2017";
+			} else if (rawString.equals("\f")) {
+				rawString = "\\f";
+			}
+			
+			String string = rawString.replaceAll("\\s+\\(\\w+\\)", "");
 
 			sb.append("\tedge [\n");
 			sb.append("\t\tsource\t").append(indices.get(source)).append('\n');

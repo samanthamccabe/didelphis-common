@@ -22,6 +22,7 @@ import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.expressions.ParallelNode;
 import org.didelphis.language.automata.expressions.ParentNode;
 import org.didelphis.language.automata.expressions.TerminalNode;
+import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.structures.maps.interfaces.MultiMap;
@@ -134,6 +135,9 @@ public interface LanguageParser<S> {
 	 */
 	@NonNull
 	S concatenate(@NonNull S sequence1, @NonNull S sequence2);
+	
+	@NonNull
+	S replaceGroups(@NonNull S input, @NonNull Match<S> match);
 	
 	default Expression parseExpression(String exp) {
 		return parseExpression(exp, ParseDirection.FORWARD);

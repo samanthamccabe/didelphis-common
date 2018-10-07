@@ -28,8 +28,6 @@ import static org.didelphis.structures.Suppliers.ofHashSet;
  * Class {@code Graph}
  *
  * @author Samantha Fiona McCabe
- * @date 2016-01-28
- * @since 0.1.0
  */
 @ToString
 @EqualsAndHashCode(callSuper = true)

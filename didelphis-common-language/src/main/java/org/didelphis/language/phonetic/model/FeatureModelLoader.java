@@ -77,12 +77,12 @@ public final class FeatureModelLoader<T> {
 	static final Regex TRANSFORM        = new Regex("\\s*>\\s*");
 	static final Regex BRACKETS         = new Regex("[\\[\\]]");
 	static final Regex EQUALS           = new Regex("\\s*=\\s*");
-	static final Regex IMPORT           = new Regex("import\\s+['\"]([^'\"]+)['\"]", 0x02);
+	static final Regex IMPORT           = new Regex("import\\s+['\"]([^'\"]+)['\"]", true);
 	static final Regex COMMENT_PATTERN  = new Regex("\\s*%.*");
-	static final Regex SYMBOL_PATTERN   = new Regex("([^\\t]+)\\t(.*)");
-	static final Regex TAB_PATTERN      = new Regex("\\t");
-	static final Regex DOTTED_CIRCLE    = new Regex("◌", 0x10);
-	static final Regex PARENT_PATH      = new Regex("(.*[\\\\/])?[^\\\\/]+$");
+	static final Regex SYMBOL_PATTERN   = new Regex("([^\t]+)\t(.*)");
+	static final Regex TAB_PATTERN      = new Regex("\t");
+	static final Regex DOTTED_CIRCLE    = new Regex("◌");
+	static final Regex PARENT_PATH      = new Regex("^(.*[\\\\/])?[^\\\\/]+$");
 
 	final MultiMap<ParseZone, String> zoneData;
 
@@ -255,7 +255,7 @@ public final class FeatureModelLoader<T> {
 					String filePath = parent + matcher.group(1);
 					String data = fileHandler.read(filePath);
 					if (data == null) {
-						throw new ParseException("Unable to read from " + data);
+						throw new ParseException("Unable to read from " + filePath);
 					}
 					Iterable<String> list = lines(data);
 					parse(list);
@@ -303,7 +303,8 @@ public final class FeatureModelLoader<T> {
 			Match<String> matcher = SYMBOL_PATTERN.match(entry);
 			if (matcher.end() >= 0) {
 				String symbol = matcher.group(1);
-				List<String> values = TAB_PATTERN.split(matcher.group(2), -1);
+				String group = matcher.group(2);
+				List<String> values = TAB_PATTERN.split(group, -1);
 				FeatureArray<T> array = new SparseFeatureArray<>(featureModel);
 				int i = 0;
 				for (String value : values) {
