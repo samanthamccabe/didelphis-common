@@ -451,7 +451,9 @@ public class RegexParser implements LanguageParser<String> {
 				if (number.length() > 0) {
 					int groupNumber = Integer.parseInt(number.toString());
 					String group = match.group(groupNumber);
-					sb.append(group);
+					if (group != null) {
+						sb.append(group);
+					}
 					// clear buffer
 					number = new StringBuilder();
 				}
@@ -476,9 +478,10 @@ public class RegexParser implements LanguageParser<String> {
 		if (number.length() > 0) {
 			int groupNumber = Integer.parseInt(number.toString());
 			String group = match.group(groupNumber);
-			sb.append(group);
+			if (group != null) {
+				sb.append(group);
+			}
 		}
-		
 		return sb.toString();
 	}
 }

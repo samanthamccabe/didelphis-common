@@ -21,8 +21,8 @@ import org.didelphis.structures.maps.GeneralTwoKeyMultiMap;
 
 import java.util.HashMap;
 
-import static org.didelphis.structures.Suppliers.ofHashMap;
-import static org.didelphis.structures.Suppliers.ofHashSet;
+import static org.didelphis.structures.Suppliers.ofLinkedHashMap;
+import static org.didelphis.structures.Suppliers.ofList;
 
 /**
  * Class {@code Graph}
@@ -34,9 +34,10 @@ import static org.didelphis.structures.Suppliers.ofHashSet;
 public final class Graph<T> extends GeneralTwoKeyMultiMap<String, T, String> {
 
 	public Graph() {
+		super(new HashMap<>(), ofLinkedHashMap(), ofList());
 	}
 	
 	public Graph(@NonNull GeneralTwoKeyMultiMap<String, T, String> graph) {
-		super(graph, new HashMap<>(), ofHashMap(), ofHashSet());
+		super(graph, new HashMap<>(), ofLinkedHashMap(), ofList());
 	}
 }

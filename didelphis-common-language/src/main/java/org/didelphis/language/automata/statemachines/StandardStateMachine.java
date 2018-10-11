@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @EqualsAndHashCode
@@ -183,7 +182,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		// Start here
 		cursorList.add(new Cursor(start, startStateId));
 
-		Set<Match<S>> matches = new HashSet<>();
+		List<Match<S>> matches = new ArrayList<>();
 		while (!cursorList.isEmpty()) {
 			for (Cursor cursor : cursorList) {
 
@@ -403,8 +402,8 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 				continue;
 			}
 
+			graph.add(previous, parser.epsilon(), current);
 			if (expression.hasChildren()) {
-				graph.add(previous, parser.epsilon(), current);
 				if (expression.isParallel()) {
 					String node = makeParallel(nodeId,
 							current,
@@ -428,7 +427,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 				}
 			} else {
 				String terminal = expression.getTerminal();
-				previous = makeTerminal(previous, current, terminal, meta);
+				previous = makeTerminal(current, "T-"+current, terminal, meta);
 			}
 		}
 		return previous;

@@ -673,6 +673,15 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 		assertMatch(machine, "/root/file.txt", 2, "/root/file.txt", "/root/");
 		assertMatch(machine, "/opt/x/z.sheet", 2, "/opt/x/z.sheet", "/opt/x/");
 	}
+	
+	@Test
+	void testGreedyCapture() {
+		String exp = "(.+)(.+)";
+		Pattern pattern = Pattern.compile(exp);
+		StateMachine<String> machine = getMachine(exp);
+
+		assertConsistant(pattern, machine, "abcd");
+	}
 
 	@Test
 	void testNestedNegative02() {
@@ -745,7 +754,7 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 	void testCase03() {
 		StateMachine<String> machine = getMachine("((a|b)?b)+");
 		assertMatch(machine, "b",    3, "b",   "b",  null);
-		assertMatch(machine, "bb",   3, "bb",  "b",  null);
+		assertMatch(machine, "bb",   3, "bb",  "bb", "b");
 		assertMatch(machine, "ab",   3, "ab",  "ab", "a");
 		assertMatch(machine, "abbx", 3, "abb", "ab", "a");
 
