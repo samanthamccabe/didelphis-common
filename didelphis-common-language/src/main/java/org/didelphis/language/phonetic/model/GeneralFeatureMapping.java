@@ -25,11 +25,13 @@ import org.didelphis.language.phonetic.features.StandardFeatureArray;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.segments.StandardSegment;
 import org.didelphis.language.phonetic.segments.UndefinedSegment;
+import org.didelphis.utilities.Sort;
 
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -59,14 +61,12 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 		this.featureMap = Collections.unmodifiableMap(featureMap);
 		this.modifiers = Collections.unmodifiableMap(modifiers);
 
-		orderedKeys = new ArrayList<>(featureMap.keySet());
-		orderedKeys.sort(GeneralFeatureMapping::compare);
-	}
-
-	private static int compare(CharSequence s1, CharSequence s2) {
-		s1 = Normalizer.normalize(s1, Normalizer.Form.NFD);
-		s2 = Normalizer.normalize(s2, Normalizer.Form.NFD);
-		return -1 * Integer.compare(s1.length(), s2.length());
+		orderedKeys = new LinkedList<>(featureMap.keySet());
+		Sort.quicksort(orderedKeys, (s1, s2) -> {
+			int x = Normalizer.normalize(s1, Normalizer.Form.NFD).length();
+			int y = Normalizer.normalize(s2, Normalizer.Form.NFD).length();
+			return -1 * ((x < y) ? -1 : ((x == y) ? 0 : 1));
+		});
 	}
 
 	@NonNull
@@ -163,7 +163,7 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 		FeatureArray<T> featureArray = getFeatureArray(best);
 		String substring = string.substring(best.length());
 		for (char c : substring.toCharArray()) {
-			String s = String.valueOf(c);
+			String s = ""+c;
 			if (modifiers.containsKey(s)) {
 				FeatureArray<T> array = modifiers.get(s);
 				featureArray.alter(array);

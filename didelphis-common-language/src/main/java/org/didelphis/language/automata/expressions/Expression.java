@@ -17,7 +17,6 @@ package org.didelphis.language.automata.expressions;
 import lombok.NonNull;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Interface {@code Expression}
@@ -65,8 +64,11 @@ public interface Expression {
 
 	@NonNull
 	static String randomId(Object... objects) {
-		int hash = Objects.hash(objects);
-		long rand = Double.doubleToLongBits(Math.random());
+		int hash = 1;
+		for (Object element : objects) {
+			hash = 31 * hash + (element == null ? 0 : element.hashCode());
+		}
+		long rand = System.nanoTime();
 		return Long.toHexString(hash ^ rand);
 	}
 

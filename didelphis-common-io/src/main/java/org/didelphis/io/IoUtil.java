@@ -19,12 +19,8 @@ import lombok.experimental.UtilityClass;
 import org.didelphis.utilities.Logger;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 
 @UtilityClass
@@ -33,51 +29,51 @@ public final class IoUtil {
 	private static final Logger LOG = Logger.create(IoUtil.class);
 	
 	public @Nullable String readPath(@NonNull String path) {
-		File file = new File(path);
-		try (InputStream stream = new FileInputStream(file)) {
-			return readStream(stream);
-		} catch (IOException e) {
-			LOG.error("Failed to read from path {}", path, e);
-		}
+//		File file = new File(path);
+//		try (InputStream stream = new FileInputStream(file)) {
+//			return readStream(stream);
+//		} catch (IOException e) {
+//			LOG.error("Failed to read from path {}", path, e);
+//		}
 		return null;
 	}
 
 	public @Nullable String readStream(@NonNull InputStream stream) {
-		try (Reader reader = new BufferedReader(new InputStreamReader(stream))) {
-			return readString(reader);
-		} catch (IOException e) {
-			LOG.error("Failed to read from stream", e);
-		}
+//		try (Reader reader = new BufferedReader(new InputStreamReader(stream))) {
+//			return readString(reader);
+//		} catch (IOException e) {
+//			LOG.error("Failed to read from stream", e);
+//		}
 		return null;
 	}
 
 	public @Nullable String readPath(@NonNull String path, @NonNull String encoding) {
-		File file = new File(path);
-		try (InputStream stream = new FileInputStream(file)) {
-			return readStream(stream, encoding);
-		} catch (IOException e) {
-			LOG.error("Failed to read from path {}", path, e);
-		}
+//		File file = new File(path);
+//		try (InputStream stream = new FileInputStream(file)) {
+//			return readStream(stream, encoding);
+//		} catch (IOException e) {
+//			LOG.error("Failed to read from path {}", path, e);
+//		}
 		return null;
 	}
 
 	public @Nullable String readStream(@NonNull InputStream stream, @NonNull String encoding) {
-		try (Reader reader = new BufferedReader(new InputStreamReader(stream, encoding))) {
-			return readString(reader);
-		} catch (IOException e) {
-			LOG.error("Failed to read from stream", e);
-		}
+//		try (Reader reader = new BufferedReader(new InputStreamReader(stream, encoding))) {
+//			return readString(reader);
+//		} catch (IOException e) {
+//			LOG.error("Failed to read from stream", e);
+//		}
 		return null;
 	}
 
 	@NonNull
 	private String readString(@NonNull Reader reader) throws IOException {
 		StringBuilder sb = new StringBuilder(0x1000);
-		int r = reader.read();
-		while (r >= 0) {
-			sb.append((char) r);
-			r = reader.read();
-		}
+//		int r = reader.read();
+//		while (r >= 0) {
+//			sb.append((char) r);
+//			r = reader.read();
+//		}
 		return sb.toString();
 	}
 }

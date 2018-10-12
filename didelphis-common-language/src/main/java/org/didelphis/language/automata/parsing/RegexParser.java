@@ -307,10 +307,10 @@ public class RegexParser implements LanguageParser<String> {
 							throw new ParseException(message);
 						}
 						
-						list2.add(String.valueOf(c1));
+						list2.add(""+c1);
 						while (c1 < c2) {
 							c1++;
-							list2.add(String.valueOf(c1));
+							list2.add(""+c1);
 						}
 						i+=2;
 					} else {

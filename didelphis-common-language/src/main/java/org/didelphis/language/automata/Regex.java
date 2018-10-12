@@ -60,6 +60,12 @@ public class Regex implements Automaton<String> {
 
 	@NonNull
 	@Override
+	public Match<String> find(@NonNull String input) {
+		return automaton.find(input);
+	}
+
+	@NonNull
+	@Override
 	public List<String> split(@NonNull String input, int limit) {
 		return automaton.split(input, limit);
 	}

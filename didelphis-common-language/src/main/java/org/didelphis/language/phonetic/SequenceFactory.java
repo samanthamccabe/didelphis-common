@@ -27,6 +27,7 @@ import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.segments.StandardSegment;
 import org.didelphis.language.phonetic.sequences.BasicSequence;
 import org.didelphis.language.phonetic.sequences.Sequence;
+import org.didelphis.utilities.Sort;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -83,7 +84,7 @@ public class SequenceFactory<T> implements Function<String, Sequence<T>> {
 		List<String> keys = new ArrayList<>();
 		keys.addAll(reservedStrings);
 		keys.addAll(featureMapping.getFeatureMap().keySet());
-		keys.sort(SequenceFactory::compare);
+		Sort.quicksort(keys, SequenceFactory::compare);
 		Collection<String> list = formatterMode.split(word, keys, DELIMITERS);
 		FeatureModel<T> featureModel = featureMapping.getFeatureModel();
 		List<Segment<T>> segments = list.stream()
@@ -122,6 +123,8 @@ public class SequenceFactory<T> implements Function<String, Sequence<T>> {
 	}
 
 	private static int compare(CharSequence k1, CharSequence k2) {
-		return Integer.compare(k2.length(), k1.length());
+		int x = k1.length();
+		int y = k2.length();
+		return (x < y) ? -1 : ((x == y) ? 0 : 1);
 	}
 }

@@ -17,6 +17,7 @@ package org.didelphis.language.automata.statemachines;
 import lombok.NonNull;
 import org.didelphis.language.automata.Automaton;
 import org.didelphis.language.automata.Graph;
+import org.didelphis.language.automata.matching.BasicMatch;
 import org.didelphis.language.automata.matching.LanguageMatcher;
 import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.automata.parsing.LanguageParser;
@@ -112,4 +113,18 @@ public interface StateMachine<S> extends Automaton<S> {
 		}
 		return list;
 	}
+
+	@NonNull
+	@Override
+	default Match<S> find(@NonNull S input) {
+		int length = getParser().lengthOf(input);
+		for (int i = 0; i < length; i++) {
+			Match<S> match = match(input, i);
+			if (match.matches()) {
+				return match;
+			}
+		}
+		return BasicMatch.empty(0);
+	}
+
 }
