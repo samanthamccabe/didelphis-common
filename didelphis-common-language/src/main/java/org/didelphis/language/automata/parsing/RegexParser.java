@@ -145,10 +145,10 @@ public class RegexParser implements LanguageParser<String> {
 			@NonNull @Language ("RegExp") String expression, 
 			@NonNull ParseDirection direction
 	) {
-		validate(expression);
 		Expression exp;
 		try {
 			List<String> split = split(expression);
+			validate(split);
 			exp = parse(split);
 			if (direction == ParseDirection.BACKWARD) {
 				exp = exp.reverse();
@@ -167,7 +167,7 @@ public class RegexParser implements LanguageParser<String> {
 	 * Checks for the presence of illegal sub-patterns in the expression which
 	 * are unambiguous errors.
 	 *
-	 * @param string an expression to be checked for basic errors
+	 * @param list an expression to be checked for basic errors
 	 *
 	 * @throws ParseException if basic structural errors are found in the
 	 * 		expression. Such errors include:
@@ -178,20 +178,23 @@ public class RegexParser implements LanguageParser<String> {
 	 * 		<li>Quantification of a boundary {@code ^?}</li>
 	 * 		</ul>
 	 */
-	private static void validate(@NonNull String string) {
+	private static void validate(@NonNull List<String> list) {
 		
-		if (string.equals("^") || string.equals("$")) {
-			String template = Templates.create()
-					.add("An expression must not consist of only a",
-							" word-boundary {}")
-					.with(string)
-					.build();
-			throw new ParseException(template);
+		if (list.size() == 1) {
+			String string = list.get(0);
+			if (string.equals("^") || string.equals("$")) {
+				String template = Templates.create().add(
+						"An expression must not consist of only a",
+						" word-boundary {}"
+				).with(list).build();
+				throw new ParseException(template);
+			}
+			return;
 		}
 		
-		for (int i = 0; i < string.length() - 1; i++) {
-			String p = String.valueOf(string.charAt(i));
-			String s = String.valueOf(string.charAt(i + 1));
+		for (int i = 0; i < list.size() - 1; i++) {
+			String p = list.get(i);
+			String s = list.get(i + 1);
 			String message = null;
 			
 			if (QUANTIFIERS.contains(p) && QUANTIFIERS.contains(s)) {
@@ -207,7 +210,7 @@ public class RegexParser implements LanguageParser<String> {
 				String template = Templates.create()
 						.add(message)
 						.with(p, s)
-						.data(string)
+						.data(list)
 						.build();
 				throw new ParseException(template);
 			}
@@ -282,8 +285,8 @@ public class RegexParser implements LanguageParser<String> {
 	}
 
 	@NonNull
-	private List<Expression> parseRanges(String string) {
-		List<String> list1 = splitAlt(string);
+	private List<Expression> parseRanges(String list) {
+		List<String> list1 = splitAlt(list);
 		List<String> list2 = new ArrayList<>();
 		for (int i = 0; i < list1.size();) {
 			String s1 = list1.get(i);
@@ -297,7 +300,7 @@ public class RegexParser implements LanguageParser<String> {
 						if (c1 > c2) {
 							String message = Templates.create()
 									.add("Unable to parse expression {}")
-									.with(string)
+									.with(list)
 									.add("Start {} is greater than end {}")
 									.with(c1, c2)
 									.build();
@@ -313,7 +316,7 @@ public class RegexParser implements LanguageParser<String> {
 					} else {
 						String message = Templates.create()
 								.add("Unable to parse expression {}")
-								.with(string)
+								.with(list)
 								.add("due to invalid range {}-{}")
 								.with(s1, s2)
 								.build();
