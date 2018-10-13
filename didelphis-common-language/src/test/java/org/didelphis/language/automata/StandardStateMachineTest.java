@@ -16,7 +16,6 @@ package org.didelphis.language.automata;
 
 import org.didelphis.io.ClassPathFileHandler;
 import org.didelphis.language.automata.expressions.Expression;
-import org.didelphis.language.automata.matching.SequenceMatcher;
 import org.didelphis.language.automata.parsing.SequenceParser;
 import org.didelphis.language.automata.statemachines.StandardStateMachine;
 import org.didelphis.language.automata.statemachines.StateMachine;
@@ -710,10 +709,8 @@ class StandardStateMachineTest extends StateMachineTestBase<Sequence<Integer>> {
 		parser = specials == null 
 				? new SequenceParser<>(FACTORY)
 				: new SequenceParser<>(FACTORY, specials);
-		SequenceMatcher<Integer> matcher = new SequenceMatcher<>(parser);
 		Expression expression = parser.parseExpression(exp, FORWARD);
 		return StandardStateMachine.create("M0",
-				expression, parser,
-				matcher);
+				expression, parser);
 	}
 }

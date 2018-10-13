@@ -12,7 +12,7 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata;
+package org.didelphis.structures.graph;
 
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
@@ -31,13 +31,13 @@ import static org.didelphis.structures.Suppliers.ofList;
  */
 @ToString
 @EqualsAndHashCode(callSuper = true)
-public final class Graph<T> extends GeneralTwoKeyMultiMap<String, T, String> {
+public final class Graph<S> extends GeneralTwoKeyMultiMap<String, Arc<S>, String> {
 
 	public Graph() {
 		super(new HashMap<>(), ofLinkedHashMap(), ofList());
 	}
 	
-	public Graph(@NonNull GeneralTwoKeyMultiMap<String, T, String> graph) {
+	public Graph(@NonNull GeneralTwoKeyMultiMap<String, Arc<S>, String> graph) {
 		super(graph, new HashMap<>(), ofLinkedHashMap(), ofList());
 	}
 }

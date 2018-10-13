@@ -25,6 +25,7 @@ import org.didelphis.language.automata.expressions.TerminalNode;
 import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.language.parsing.ParseException;
+import org.didelphis.structures.graph.Arc;
 import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.didelphis.utilities.Templates;
 import org.jetbrains.annotations.Nullable;
@@ -48,12 +49,6 @@ public interface LanguageParser<S> {
 
 	@NonNull
 	Set<String> supportedQuantifiers();
-	
-	@NonNull
-	S getWordStart();
-
-	@NonNull
-	S getWordEnd();
 
 	/**
 	 * Transform an expression string into a corresponding terminal symbol, the
@@ -69,6 +64,9 @@ public interface LanguageParser<S> {
 	@NonNull
 	S transform(String expression);
 
+	@NonNull
+	Arc<S> getArc(String arc);
+	
 	/**
 	 * Parse an expression string to a list of sub-expressions
 	 * @param expression
@@ -83,7 +81,7 @@ public interface LanguageParser<S> {
 	 * Provides a uniform value for epsilon transitions 
 	 * @return a uniform value for epsilon transitions 
 	 */
-	@Nullable S epsilon();
+	@Nullable Arc<S> epsilon();
 
 	/**
 	 * Provides a collection of supported special symbols and their
@@ -100,7 +98,7 @@ public interface LanguageParser<S> {
 	 * @return a uniform value for "dot" transitions, which accept any value
 	 */
 	@NonNull
-	S getDot();
+	Arc<S> getDot();
 
 	/**
 	 * Determines the length of the provided element, where applicable. In some

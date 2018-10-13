@@ -16,11 +16,10 @@ package org.didelphis.language.automata.statemachines;
 
 import lombok.NonNull;
 import org.didelphis.language.automata.Automaton;
-import org.didelphis.language.automata.Graph;
 import org.didelphis.language.automata.matching.BasicMatch;
-import org.didelphis.language.automata.matching.LanguageMatcher;
 import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.automata.parsing.LanguageParser;
+import org.didelphis.structures.graph.Graph;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +36,6 @@ public interface StateMachine<S> extends Automaton<S> {
 
 	@NonNull
 	LanguageParser<S> getParser();
-
-	@NonNull
-	LanguageMatcher<S> getMatcher();
 
 	String getId();
 

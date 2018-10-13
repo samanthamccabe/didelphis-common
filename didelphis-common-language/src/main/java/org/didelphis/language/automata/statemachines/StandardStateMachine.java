@@ -19,10 +19,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
-import org.didelphis.language.automata.Graph;
+import org.didelphis.structures.graph.Arc;
+import org.didelphis.structures.graph.Graph;
 import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.matching.BasicMatch;
-import org.didelphis.language.automata.matching.LanguageMatcher;
 import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.automata.parsing.LanguageParser;
 import org.didelphis.structures.tuples.Triple;
@@ -46,7 +46,6 @@ import java.util.stream.Collectors;
 public final class StandardStateMachine<S> implements StateMachine<S> {
 	
 	LanguageParser<S> parser;
-	LanguageMatcher<S> matcher;
 	
 	String id;
 	String startStateId;
@@ -62,18 +61,14 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	public static <T> StateMachine<T> create(
 			@NonNull String id,
 			@NonNull String expression,
-			@NonNull LanguageParser<T> parser,
-			@NonNull LanguageMatcher<T> matcher
-	) {
+			@NonNull LanguageParser<T> parser) {
 		//noinspection IfMayBeConditional
 		if (expression.isEmpty()) {
-			return new EmptyMachine<>(id, parser, matcher);
+			return new EmptyMachine<>(id, parser);
 		} else {
 			return new StandardStateMachine<>(id,
 					parser.parseExpression(expression),
-					parser,
-					matcher
-			);
+					parser);
 		}
 	}
 	
@@ -81,26 +76,22 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	public static <T> StateMachine<T> create(
 			@NonNull String id,
 			@NonNull Expression expression,
-			@NonNull LanguageParser<T> parser,
-			@NonNull LanguageMatcher<T> matcher
-	) {
+			@NonNull LanguageParser<T> parser) {
 		//noinspection IfMayBeConditional
 		if (!expression.hasChildren() && expression.getTerminal().isEmpty()) {
-			return new EmptyMachine<>(id, parser, matcher);
+			return new EmptyMachine<>(id, parser);
 		} else {
-			return new StandardStateMachine<>(id, expression, parser, matcher);
+			return new StandardStateMachine<>(id, expression, parser);
 		}
 	}
 	
 	private StandardStateMachine(
 			@NonNull String id,
 			@NonNull Expression expression,
-			@NonNull LanguageParser<S> parser,
-			@NonNull LanguageMatcher<S> matcher
+			@NonNull LanguageParser<S> parser
 	) {
 		this.id = id;
 		this.parser = parser;
-		this.matcher = matcher;
 
 		startStateId = this.id + "-S";
 	
@@ -127,12 +118,10 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 			@NonNull String id,
 			@NonNull Expression expression,
 			@NonNull LanguageParser<S> parser,
-			@NonNull LanguageMatcher<S> matcher,
 			@NonNull List<Expression> captures
 	) {
 		this.id = id;
 		this.parser = parser;
-		this.matcher = matcher;
 
 		startStateId = this.id + "-S";
 
@@ -274,12 +263,6 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		return best;
 	}
 
-	@NonNull
-	@Override
-	public LanguageMatcher<S> getMatcher() {
-		return matcher;
-	}
-
 	@Override
 	public String toString() {
 		return "StandardStateMachine{" + id + '}';
@@ -321,31 +304,18 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 			@NonNull S input,
 			@NonNull Cursor cursor
 	) {
-		int length = parser.lengthOf(input);
 		String currentNode = cursor.getNode();
 		int index = cursor.getIndex();
 
 		List<Cursor> cursors = new ArrayList<>();
-		Map<S, Collection<String>> map = graph.get(currentNode);
-		for (Entry<S, Collection<String>> entry : map.entrySet()) {
-			S arc = entry.getKey();
+		Map<Arc<S>, Collection<String>> map = graph.get(currentNode);
+		for (Entry<Arc<S>, Collection<String>> entry : map.entrySet()) {
+			Arc<S> arc = entry.getKey();
 			Collection<String> value = entry.getValue();
 			for (String node : value) {
-				if (eq(arc, parser.epsilon())) {
-					cursors.add(new Cursor(index, node));
-					continue;
-				}
-				if (eq(arc, parser.getDot()) && length > 0 && index < length) {
-					cursors.add(new Cursor(index + 1, node));
-				} else if (eq(arc, parser.getWordStart()) && index == 0) {
-					cursors.add(new Cursor(0, node));
-				} else if (eq(arc, parser.getWordEnd()) && index == length) {
-					cursors.add(new Cursor(index, node));
-				} else {
-					int matchLength = matcher.matches(input, arc, index);
-					if (matchLength >= 0) {
-						cursors.add(new Cursor(index + matchLength, node));
-					}
+				int newIndex = arc.match(input, index);
+				if (newIndex >= 0) {
+					cursors.add(new Cursor(newIndex, node));
 				}
 			}
 		}
@@ -468,7 +438,6 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		StateMachine<S> stateMachine = NegativeMachine.create(machineNode,
 				negated,
 				parser,
-				matcher,
 				captures);
 		machinesMap.put(machineNode, stateMachine);
 	}
@@ -490,7 +459,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 			@NotNull String machine,
 			@NotNull String meta
 	) {
-		S epsilon = parser.epsilon();
+		Arc<S> epsilon = parser.epsilon();
 		switch (meta) {
 			case "?":
 				graph.add(machine, epsilon, end);
@@ -528,8 +497,8 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 			@NonNull String exp,
 			@NonNull String meta
 	) {
-		S sequence = parser.transform(exp);
-		S epsilon = parser.epsilon();
+		Arc<S> sequence = parser.getArc(exp);
+		Arc<S> epsilon = parser.epsilon();
 		switch (meta) {
 			case "?":
 				graph.add(start, sequence, end);
@@ -563,10 +532,6 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		}
 	}
 
-	private static boolean eq(Object arc, Object dot) {
-		return Objects.equals(arc, dot);
-	}
-
 	@EqualsAndHashCode
 	@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 	private static final class NegativeMachine<S> implements StateMachine<S> {
@@ -590,7 +555,6 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 				@NonNull String id,
 				@NonNull Expression expression,
 				@NonNull LanguageParser<S> parser,
-				@NonNull LanguageMatcher<S> matcher,
 				@NonNull List<Expression> captures
 		) {
 			// Create the actual branch, the one we don't want to match
@@ -598,7 +562,6 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 					'N' + id,
 					expression,
 					parser,
-					matcher,
 					captures
 			);
 			
@@ -606,7 +569,6 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 					'P' + id,
 					expression,
 					parser,
-					matcher,
 					captures
 			);
 	
@@ -622,7 +584,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		@NonNull
 		private static <S> Iterable<Integer> collectLengths(
 				@NonNull LanguageParser<S> parser,
-				@NonNull S arc
+				@NonNull Arc<S> arc
 		) {
 			return parser.getSpecialsMap()
 					.get(arc.toString())
@@ -635,12 +597,6 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		@Override
 		public LanguageParser<S> getParser() {
 			return positive.getParser();
-		}
-
-		@NonNull
-		@Override
-		public LanguageMatcher<S> getMatcher() {
-			return positive.getMatcher();
 		}
 
 		@NonNull
@@ -689,16 +645,16 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 
 			graph.clear();
 
-			for (Triple<String, S, Collection<String>> triple : copy) {
+			for (Triple<String, Arc<S>, Collection<String>> triple : copy) {
 
-				S arc = triple.getSecondElement();
+				Arc<S> arc = triple.getSecondElement();
 				Collection<String> targets = triple.getThirdElement();
 				// lambda / epsilon transition
 				String source = triple.getFirstElement();
 				if (Objects.equals(arc, parser.epsilon())) {
 					graph.put(source, parser.epsilon(), targets);
 				} else if (parser.getSpecialsMap().containsKey(arc.toString())) {
-					S dot = parser.getDot();
+					Arc<S> dot = parser.getDot();
 					for (Integer length : collectLengths(parser, arc)) {
 						buildDotChain(graph, source, targets, length, dot);
 					}
@@ -728,7 +684,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 				String key,
 				Collection<String> endValues,
 				int length,
-				S dot
+				Arc<S> dot
 		) {
 			String thisState = key;
 			for (int i = 0; i < length - 1; i++) {
@@ -751,28 +707,19 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 
 		String id;
 		LanguageParser<S> parser;
-		LanguageMatcher<S> matcher;
 
 		private EmptyMachine(
 				@NonNull String id, 
-				@NonNull LanguageParser<S> parser,
-				@NonNull LanguageMatcher<S> matcher
+				@NonNull LanguageParser<S> parser
 		) {
 			this.id = id;
 			this.parser = parser;
-			this.matcher = matcher;
 		}
 
 		@NonNull
 		@Override
 		public LanguageParser<S> getParser() {
 			return parser;
-		}
-
-		@NonNull
-		@Override
-		public LanguageMatcher<S> getMatcher() {
-			return matcher;
 		}
 
 		@Override

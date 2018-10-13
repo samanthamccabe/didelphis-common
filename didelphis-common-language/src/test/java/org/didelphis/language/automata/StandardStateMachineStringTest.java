@@ -16,7 +16,6 @@ package org.didelphis.language.automata;
 
 import lombok.NonNull;
 import org.didelphis.language.automata.expressions.Expression;
-import org.didelphis.language.automata.matching.StringMatcher;
 import org.didelphis.language.automata.parsing.StringParser;
 import org.didelphis.language.automata.statemachines.StandardStateMachine;
 import org.didelphis.language.automata.statemachines.StateMachine;
@@ -1015,10 +1014,8 @@ class StandardStateMachineStringTest extends StateMachineTestBase<String> {
 		parser = specials == null 
 				? new StringParser()
 				: new StringParser(specials);
-		StringMatcher matcher = new StringMatcher(parser);
 		Expression expression = parser.parseExpression(exp, FORWARD);
 		return StandardStateMachine.create("M0",
-				expression, parser,
-				matcher);
+				expression, parser);
 	}
 }

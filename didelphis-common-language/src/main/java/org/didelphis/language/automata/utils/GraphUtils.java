@@ -20,7 +20,8 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.UtilityClass;
-import org.didelphis.language.automata.Graph;
+import org.didelphis.structures.graph.Arc;
+import org.didelphis.structures.graph.Graph;
 import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.structures.tuples.Triple;
 
@@ -59,11 +60,11 @@ public class GraphUtils {
 	@NonNull
 	public static <T> String graphToGML(@NonNull Graph<T> graph, boolean useRealId) {
 		Set<String> nodes = new HashSet<>();
-		Set<Triple<String, T, String>> edges = new HashSet<>();
-		for (Triple<String, T, Collection<String>> triple : graph) {
+		Set<Triple<String, Arc<T>, String>> edges = new HashSet<>();
+		for (Triple<String, Arc<T>, Collection<String>> triple : graph) {
 			String source = triple.getFirstElement();
 			nodes.add(source);
-			T arc = triple.getSecondElement();
+			Arc<T> arc = triple.getSecondElement();
 			for (String target : triple.getThirdElement()) {
 				nodes.add(target);
 				edges.add(new Triple<>(source, arc, target));

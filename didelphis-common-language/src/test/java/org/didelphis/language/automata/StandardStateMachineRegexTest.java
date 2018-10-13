@@ -16,7 +16,6 @@ package org.didelphis.language.automata;
 
 import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.matching.Match;
-import org.didelphis.language.automata.matching.RegexMatcher;
 import org.didelphis.language.automata.parsing.RegexParser;
 import org.didelphis.language.automata.statemachines.StandardStateMachine;
 import org.didelphis.language.automata.statemachines.StateMachine;
@@ -43,7 +42,6 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 	private static final Logger LOG = Logger.create(StandardStateMachineRegexTest.class);
 	
 	private static final RegexParser PARSER = new RegexParser();
-	private static final RegexMatcher MATCHER = new RegexMatcher();
 	private static final String CONSIST_MESSAGE = "Java regex returned {} but Didelphis regex returned {}";
 
 	@Override
@@ -996,6 +994,6 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 	static StateMachine<String> getMachine(@Language("RegExp") String exp) {
 		RegexParser regexParser = new RegexParser();
 		Expression expression = regexParser.parseExpression(exp, FORWARD);
-		return StandardStateMachine.create("M0", expression, PARSER, MATCHER);
+		return StandardStateMachine.create("M0", expression, PARSER);
 	}
 }

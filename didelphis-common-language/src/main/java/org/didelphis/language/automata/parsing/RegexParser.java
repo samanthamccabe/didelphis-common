@@ -12,6 +12,7 @@ import org.didelphis.language.automata.expressions.TerminalNode;
 import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.language.parsing.ParseException;
+import org.didelphis.structures.graph.Arc;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.didelphis.utilities.Splitter;
@@ -52,6 +53,53 @@ import static org.didelphis.language.automata.parsing.LanguageParser.update;
 @EqualsAndHashCode
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RegexParser implements LanguageParser<String> {
+
+	static Arc<String> DOT_ARC = new Arc<String>() {
+		@Override
+		public int match(String sequence, int index) {
+			int length = sequence.length();
+			return length > 0 && index < length ? index + 1 : -1;
+		}
+		
+		@Override
+		public String toString() {
+			return ".";
+		}
+	};
+	static Arc<String> EPSILON_ARC = new Arc<String>() {
+		@Override
+		public int match(String sequence, int index) {
+			return index;
+		}
+
+		@Override
+		public String toString() {
+			return "";
+		}
+	};
+	static Arc<String> WORD_START_ARC = new Arc<String>() {
+		@Override
+		public int match(String sequence, int index) {
+			return index == 0 ? 0 : -1;
+		}
+
+		@Override
+		public String toString() {
+			return "^";
+		}
+	};
+	static Arc<String> WORD_END_ARC = new Arc<String>() {
+		@Override
+		public int match(String sequence, int index) {
+			int length = sequence.length();
+			return index == length ? length : -1;
+		}
+
+		@Override
+		public String toString() {
+			return "$";
+		}
+	};
 
 	static Map<String, String> DELIMITERS_ALT = new HashMap<>();
 	static Map<String, String> DELIMITERS     = new HashMap<>();
@@ -121,22 +169,33 @@ public class RegexParser implements LanguageParser<String> {
 		return Collections.unmodifiableSet(QUANTIFIERS);
 	}
 
-	@NonNull
-	@Override
-	public String getWordStart() {
-		return "^";
-	}
-
-	@NonNull
-	@Override
-	public String getWordEnd() {
-		return "$";
-	}
+//	@NonNull
+//	@Override
+//	public String getWordStart() {
+//		return "^";
+//	}
+//
+//	@NonNull
+//	@Override
+//	public String getWordEnd() {
+//		return "$";
+//	}
 
 	@NonNull
 	@Override
 	public String transform(String expression) {
 		return expression;
+	}
+
+	@NonNull
+	@Override
+	public Arc<String> getArc(String arc) {
+		
+		if (arc.equals("^")) return WORD_START_ARC;
+		if (arc.equals("$")) return WORD_END_ARC;
+		if (arc.equals(".")) return DOT_ARC;
+		
+		return new LiteralArc(arc); // TODO: account for special cases
 	}
 
 	@NonNull
@@ -363,8 +422,8 @@ public class RegexParser implements LanguageParser<String> {
 	}
 	
 	@Override
-	public @Nullable String epsilon() {
-		return "";
+	public @Nullable Arc<String> epsilon() {
+		return EPSILON_ARC;
 	}
 
 	@NonNull
@@ -375,8 +434,8 @@ public class RegexParser implements LanguageParser<String> {
 
 	@NonNull
 	@Override
-	public String getDot() {
-		return ".";
+	public Arc<String> getDot() {
+		return DOT_ARC;
 	}
 
 	@Override
@@ -486,5 +545,27 @@ public class RegexParser implements LanguageParser<String> {
 			}
 		}
 		return sb.toString();
+	}
+
+	private static class LiteralArc implements Arc<String> {
+
+		private final String literal;
+
+		private LiteralArc(String literal) {
+			this.literal = literal;
+		}
+
+		@Override
+		public int match(String sequence, int index) {
+			if (sequence.startsWith(literal, index)) {
+				return index + literal.length();
+			}
+			return -1;
+		}
+
+		@Override
+		public String toString() {
+			return literal;
+		}
 	}
 }

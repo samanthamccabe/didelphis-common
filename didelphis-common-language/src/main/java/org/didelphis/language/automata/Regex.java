@@ -19,7 +19,6 @@ import lombok.NonNull;
 import lombok.ToString;
 import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.matching.Match;
-import org.didelphis.language.automata.matching.RegexMatcher;
 import org.didelphis.language.automata.parsing.RegexParser;
 import org.didelphis.language.automata.statemachines.StandardStateMachine;
 import org.didelphis.language.automata.statemachines.StateMachine;
@@ -47,9 +46,8 @@ public class Regex implements Automaton<String> {
 
 	public Regex(@Language ("RegExp") @NonNull String pattern, boolean insensitive) {
 		RegexParser parser = new RegexParser();
-		RegexMatcher matcher = new RegexMatcher(parser, insensitive);
 		Expression exp = parser.parseExpression(pattern);
-		automaton = StandardStateMachine.create("M0", exp, parser, matcher);
+		automaton = StandardStateMachine.create("M0", exp, parser);
 	}
 
 	@NonNull

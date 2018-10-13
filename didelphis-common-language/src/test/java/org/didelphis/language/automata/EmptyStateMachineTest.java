@@ -14,7 +14,6 @@
 
 package org.didelphis.language.automata;
 
-import org.didelphis.language.automata.matching.RegexMatcher;
 import org.didelphis.language.automata.parsing.RegexParser;
 import org.didelphis.language.automata.statemachines.StateMachine;
 import org.junit.jupiter.api.BeforeAll;
@@ -29,26 +28,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class EmptyStateMachineTest {
 
 	private static RegexParser parser;
-	private static RegexMatcher matcher;
 	private static StateMachine<String> instance;
 
 	@BeforeAll
 	static void init() {
 		parser  = new RegexParser();
-		matcher = new RegexMatcher();
-		instance = create("_", "", parser, matcher);
+		instance = create("_", "", parser);
 	}
 
 	@Test
 	void getParser() {
 		assertSame(parser, instance.getParser());
 	}
-
-	@Test
-	void getMatcher() {
-		assertSame(matcher, instance.getMatcher());
-	}
-
+	
 	@Test
 	void getId() {
 		assertEquals("_", instance.getId());
@@ -68,14 +60,14 @@ class EmptyStateMachineTest {
 
 	@Test
 	void equals() {
-		assertEquals(create("_", "", parser, matcher), instance);
-		assertNotEquals(create("_", ".", parser, matcher), instance);
+		assertEquals(create("_", "", parser), instance);
+		assertNotEquals(create("_", ".", parser), instance);
 
 	}
 
 	@Test
 	void testHashCode() {
-		assertEquals(create("_", "", parser, matcher).hashCode(), instance.hashCode());
-		assertNotEquals(create("_", ".", parser, matcher).hashCode(), instance.hashCode());
+		assertEquals(create("_", "", parser).hashCode(), instance.hashCode());
+		assertNotEquals(create("_", ".", parser).hashCode(), instance.hashCode());
 	}
 }
