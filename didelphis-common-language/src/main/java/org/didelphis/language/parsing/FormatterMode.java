@@ -95,7 +95,7 @@ public enum FormatterMode implements Segmenter, Formatter {
 		private static final int SUB_SMALL_T  = 0x209C;
 		/*>-------------------------------------------------------------------*/
 
-		private final Regex pattern = new Regex("(\\$[^$]*\\d+)");
+		private final Regex pattern = new Regex("\\$[^$]*\\d+");
 
 		@NonNull
 		@Override
@@ -107,7 +107,7 @@ public enum FormatterMode implements Segmenter, Formatter {
 			String word = normalize(string);
 
 			List<String> strings = new ArrayList<>();
-			StringBuilder sb = new StringBuilder(4);
+			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < word.length(); ) {
 				// Get the word from current position on
 				int index = parseParens(word, delimiters, new HashSet<>(), i);
@@ -117,7 +117,7 @@ public enum FormatterMode implements Segmenter, Formatter {
 					}
 					String substring = word.substring(i, index);
 					strings.add(substring);
-					sb = new StringBuilder(4);
+					sb = new StringBuilder();
 					i = index;
 				} else {
 					String substring = word.substring(i);
@@ -152,7 +152,7 @@ public enum FormatterMode implements Segmenter, Formatter {
 							if (sb.length() > 0) {
 								strings.add(sb.toString());
 							}
-							sb = new StringBuilder(4);
+							sb = new StringBuilder();
 							if (key.isEmpty()) {
 								sb.append(ch);
 							} else {

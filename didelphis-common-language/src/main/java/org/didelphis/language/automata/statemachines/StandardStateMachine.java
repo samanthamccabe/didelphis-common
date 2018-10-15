@@ -19,12 +19,13 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
-import org.didelphis.structures.graph.Arc;
-import org.didelphis.structures.graph.Graph;
 import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.matching.BasicMatch;
 import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.automata.parsing.LanguageParser;
+import org.didelphis.structures.graph.Arc;
+import org.didelphis.structures.graph.Graph;
+import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.didelphis.structures.tuples.Triple;
 import org.didelphis.structures.tuples.Tuple;
 import org.didelphis.structures.tuples.Twin;
@@ -549,7 +550,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 			this.positive = positive;
 			this.negative = negative;
 		}
-	
+
 		@NonNull
 		private static <S> StateMachine<S> create(
 				@NonNull String id,
@@ -558,27 +559,64 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 				@NonNull List<Expression> captures
 		) {
 			// Create the actual branch, the one we don't want to match
-			StateMachine<S> negative = new StandardStateMachine<>(
-					'N' + id,
+			StateMachine<S> negative = new StandardStateMachine<>('N' + id,
 					expression,
 					parser,
 					captures
 			);
-			
-			StateMachine<S> positive = new StandardStateMachine<>(
-					'P' + id,
-					expression,
+
+			StateMachine<S> positive = new StandardStateMachine<>('P' + id,
+					replaceDots(expression, parser),
 					parser,
 					captures
 			);
-	
-			// This is less elegant that I'd prefer, but bear with me:
-			// We will extract the graph and id-machine maps and then the graph for
-			// *each* machine recursively, in order to replace each literal terminal
-			// symbol with the dot (. / "accept-all") character
-			buildPositiveBranch(parser, positive);
-	
 			return new NegativeMachine<>(id, negative, positive);
+		}
+
+		private static <S> Expression replaceDots(
+				Expression expression, 
+				LanguageParser<S> parser
+		) {
+			if (expression.hasChildren()) {
+				List<Expression> children = expression.getChildren();
+				for (int i = 0; i < children.size(); i++) {
+					Expression expression2 = children.get(i);
+					children.set(i, replaceDots(expression2, parser));
+				}
+			} else {
+				String terminal = expression.getTerminal();
+				MultiMap<String, S> specialsMap = parser.getSpecialsMap();
+				if (specialsMap.containsKey(terminal)) {
+					Collection<S> collection = specialsMap.get(terminal);
+
+					int min = Integer.MAX_VALUE;
+					int max = Integer.MIN_VALUE;
+					for (S sequence : collection) {
+						int length = parser.lengthOf(sequence);
+						if (length < min) {
+							min = length;
+						}
+						if (length > max) {
+							max = length;
+						}
+					}
+					
+					StringBuilder sb = new StringBuilder();
+
+					for (int i = 0; i < min; i++) {
+						sb.append('.');
+					}
+					for (int i = 0; i < max - min; i++) {
+						sb.append(".?");
+					}
+
+					return parser.parseExpression(sb.toString());
+
+				} else {
+					return expression.withTerminal(".");
+				}
+			}
+			return expression;
 		}
 
 		@NonNull

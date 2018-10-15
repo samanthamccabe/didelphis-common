@@ -324,12 +324,7 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 		Pattern pattern = Pattern.compile(regex);
 		StateMachine<String> machine = getMachine(regex);
 		
-		assertMatches(machine, "a");
-		assertMatches(machine, "b");
-		assertNotMatches(machine, "c");
-		assertNotMatches(machine, "d");
-
-		assertMatches(machine, "x");
+		assertConsistant(pattern, machine, "x");
 		
 		assertConsistant(pattern, machine, "a");
 		assertConsistant(pattern, machine, "b");
