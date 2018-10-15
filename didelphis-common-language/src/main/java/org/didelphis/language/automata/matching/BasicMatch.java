@@ -49,7 +49,7 @@ public class BasicMatch<S> implements Match<S> {
 		return match;
 	}
 	
-	public BasicMatch(S input,int start, int end) {
+	public BasicMatch(S input, int start, int end) {
 		this.start = start;
 		this.end = end;
 		this.input = input;

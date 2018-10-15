@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -100,7 +101,7 @@ public class Splitter {
 		List<String> strings = new ArrayList<>();
 		for (int i = 0; i < string.length(); i++) {
 
-			int index = parseParens(string, delimiters, i);
+			int index = parseParens(string, delimiters, special, i);
 			if (index >= 0) {
 				strings.add(string.substring(i, index));
 				i = index - 1;
@@ -162,7 +163,7 @@ public class Splitter {
 				i++;
 				cursor = i;
 			} else {
-				int end = parseParens(string, delimiters, i);
+				int end = parseParens(string, delimiters, new HashSet<>(), i);
 				i = (end > i) ? end : i + 1;
 			}
 		}
@@ -184,19 +185,21 @@ public class Splitter {
 	 *
 	 * @param string the {@code CharSequence} to be matched for
 	 * @param parens a map of start to end characters for parentheses
+	 * @param specials
 	 * @param index of the opening bracket.
 	 *
 	 * @return the index of the corresponding closing bracket, or -1 if one is
 	 * 		not found
 	 */
 	public int parseParens(
-			@NonNull String string, 
+			@NonNull String string,
 			@NonNull Map<String, String> parens,
+			@Nullable Iterable<String> specials,
 			int index
 	) {
 		for (String key: parens.keySet()) {
 			if (string.startsWith(key, index)) {
-				return findClosingBracket(string, key, parens, index);
+				return findClosingBracket(string, key, parens, specials, index);
 			}
 		}
 		return -1;
@@ -209,14 +212,16 @@ public class Splitter {
 	 * @param string the input to be examined for parentheses
 	 * @param left the opening parenthesis
 	 * @param delimiters a map of opening and closing delimiters
+	 * @param specials
 	 * @param startIndex the index in {@param string} where to start looking
 	 *
 	 * @return the index of the closing bracket, if it was found; otherwise, -1
 	 */
 	public int findClosingBracket(
 			@NonNull String string,
-			@NonNull String left, 
-			@NonNull Map<String, String> delimiters, 
+			@NonNull String left,
+			@NonNull Map<String, String> delimiters,
+			@Nullable Iterable<String> specials,
 			int startIndex
 	) {
 		int endIndex = startIndex;
@@ -224,19 +229,37 @@ public class Splitter {
 		Deque<String> stack = new LinkedList<>();
 		for (int i = startIndex + left.length(); i < string.length(); i++) {
 			String substring = string.substring(i);
+
+			
+			if (specials != null) {
+				boolean matched = false;
+				for (String special : specials) {
+					if (substring.startsWith(special)) {
+						i += special.length() - 1;
+						matched = true;
+						break;
+					}
+				}
+				if (matched) {
+					continue;
+				}
+			}
+
 			for (Map.Entry<String, String> entry : delimiters.entrySet()) {
 				String key = entry.getKey();
 				String val = entry.getValue();
 				
 				if (substring.startsWith(key)) {
 					stack.add(key);
+					i += key.length() - 1;
+					break;
 				} else if (substring.startsWith(val)) {
 					if (stack.isEmpty()) {
 						endIndex = i;
 						break;
-					} else
-					if (stack.peekLast().equals(key)) {
+					} else if (stack.peekLast().equals(key)) {
 						stack.removeLast();
+						break;
 					}
 				}
 			}

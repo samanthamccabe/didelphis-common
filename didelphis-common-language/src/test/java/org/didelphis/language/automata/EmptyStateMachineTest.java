@@ -14,42 +14,36 @@
 
 package org.didelphis.language.automata;
 
-import org.didelphis.language.automata.matching.LanguageMatcher;
-import org.didelphis.language.automata.matching.BasicMatch;
-import org.didelphis.language.automata.statemachines.EmptyStateMachine;
+import org.didelphis.language.automata.parsing.RegexParser;
 import org.didelphis.language.automata.statemachines.StateMachine;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import static org.didelphis.language.automata.statemachines.StandardStateMachine.create;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EmptyStateMachineTest {
 
+	private static RegexParser parser;
 	private static StateMachine<String> instance;
 
 	@BeforeAll
 	static void init() {
-		instance = EmptyStateMachine.getInstance();
+		parser  = new RegexParser();
+		instance = create("_", "", parser);
 	}
 
 	@Test
 	void getParser() {
-		assertThrows(
-				UnsupportedOperationException.class,
-				() -> instance.getParser()
-		);
+		assertSame(parser, instance.getParser());
 	}
-
-	@Test
-	void getMatcher() {
-		assertTrue(instance.getMatcher() instanceof LanguageMatcher);
-	}
-
+	
 	@Test
 	void getId() {
-		assertEquals("Empty State Machine", instance.getId());
+		assertEquals("_", instance.getId());
 	}
 
 	@Test
@@ -59,18 +53,21 @@ class EmptyStateMachineTest {
 
 	@Test
 	void getMatchIndices() {
-		assertEquals(new BasicMatch<>("foo", 0, 0), instance.match("foo",0));
-		assertEquals(new BasicMatch<>("foo", 0, 1), instance.match("foo", 1));
-		assertEquals(new BasicMatch<>("foo", 0, 2), instance.match("foo", 2));
+		assertEquals(0, instance.match("foo", 0).end());
+		assertEquals(1, instance.match("foo", 1).end());
+		assertEquals(2, instance.match("foo", 2).end());
 	}
 
 	@Test
 	void equals() {
-		assertEquals(EmptyStateMachine.getInstance(), instance);
+		assertEquals(create("_", "", parser), instance);
+		assertNotEquals(create("_", ".", parser), instance);
+
 	}
 
 	@Test
 	void testHashCode() {
-		assertEquals(EmptyStateMachine.getInstance().hashCode(), instance.hashCode());
+		assertEquals(create("_", "", parser).hashCode(), instance.hashCode());
+		assertNotEquals(create("_", ".", parser).hashCode(), instance.hashCode());
 	}
 }

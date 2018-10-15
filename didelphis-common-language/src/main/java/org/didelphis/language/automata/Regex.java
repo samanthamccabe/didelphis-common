@@ -14,17 +14,17 @@
 
 package org.didelphis.language.automata;
 
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import lombok.Value;
-import lombok.experimental.Delegate;
+import lombok.ToString;
+import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.matching.Match;
+import org.didelphis.language.automata.parsing.RegexParser;
+import org.didelphis.language.automata.statemachines.StandardStateMachine;
+import org.didelphis.language.automata.statemachines.StateMachine;
 import org.intellij.lang.annotations.Language;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.regex.MatchResult;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -34,32 +34,38 @@ import java.util.regex.Pattern;
  *
  * @author Samantha Fiona McCabe
  */
+@ToString
+@EqualsAndHashCode
 public class Regex implements Automaton<String> {
 
-	private final Pattern pattern;
+	private final StateMachine<String> automaton;
 
 	public Regex(@Language ("RegExp") @NonNull String pattern) {
-		this(pattern, 0);
+		this(pattern, false);
 	}
 
-	public Regex(@Language ("RegExp") @NonNull String pattern, int flags) {
-		this.pattern = Pattern.compile(pattern, flags);
+	public Regex(@Language ("RegExp") @NonNull String pattern, boolean insensitive) {
+		RegexParser parser = new RegexParser();
+		Expression exp = parser.parseExpression(pattern);
+		automaton = StandardStateMachine.create("M0", exp, parser);
 	}
 
 	@NonNull
 	@Override
 	public Match<String> match(@NonNull String input, int start) {
-		Matcher matcher = pattern.matcher(input);
-		if (matcher.find(start) && matcher.start() == start) {
-			return new PatternMatch(matcher.toMatchResult());
-		}
-		return new EmptyMatch();
+		return automaton.match(input, start);
+	}
+
+	@NonNull
+	@Override
+	public Match<String> find(@NonNull String input) {
+		return automaton.find(input);
 	}
 
 	@NonNull
 	@Override
 	public List<String> split(@NonNull String input, int limit) {
-		return Arrays.asList(pattern.split(input, limit));
+		return automaton.split(input, limit);
 	}
 
 	@NonNull
@@ -67,49 +73,6 @@ public class Regex implements Automaton<String> {
 	public String replace(
 			@NonNull String input, @NonNull String replacement
 	) {
-		return pattern.matcher(input).replaceAll(replacement);
-	}
-
-	@Override
-	public String toString() {
-		return pattern.pattern();
-	}
-
-	@Value
-	private static final class PatternMatch implements Match<String> {
-		@Delegate MatchResult matchResult;
-	}
-
-	private static final class EmptyMatch implements Match<String> {
-
-		@Override
-		public int start() {
-			return -1;
-		}
-
-		@Override
-		public int start(int group) {
-			return -1;
-		}
-
-		@Override
-		public int end() {
-			return -1;
-		}
-
-		@Override
-		public int end(int group) {
-			return -1;
-		}
-
-		@Override
-		public @Nullable String group(int group) {
-			return null;
-		}
-
-		@Override
-		public int groupCount() {
-			return 0;
-		}
+		return automaton.replace(input, replacement);
 	}
 }

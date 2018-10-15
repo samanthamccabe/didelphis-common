@@ -44,14 +44,14 @@ import static java.text.Normalizer.normalize;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public final class GeneralFeatureModel<T> implements FeatureModel<T> {
 
-	static String VALUE  = "(-?\\d|[A-Zα-ω]+)";
+	static String VALUE  = "(-?\\d|[A-Z]+)";
 	static String NAME   = "(\\w+)";
 	static String ASSIGN = "([=:><])";
 
 	static Regex VALUE_PATTERN   = new Regex(VALUE + ASSIGN + NAME);
-	static Regex BINARY_PATTERN  = new Regex("([+\\-−])" + NAME);
+	static Regex BINARY_PATTERN  = new Regex("([+−-])" + NAME);
 	static Regex FEATURE_PATTERN = new Regex("[,;]\\s*|\\s+");
-	static Regex BRACKET_PATTERN = new Regex("\\[(.+?)]");
+	static Regex BRACKET_PATTERN = new Regex("\\[((?:[^\\]])+)\\]");
 
 	FeatureSpecification specification;
 	List<Constraint<T>> constraints;
@@ -108,7 +108,7 @@ public final class GeneralFeatureModel<T> implements FeatureModel<T> {
 					arr.set(value, featureType.parseValue(featureValue));
 				} else {
 					String message = Templates.create()
-							.add("Unrecognized feature '{}' in definition")
+							.add("Unrecognized feature {} in definition")
 							.with(element)
 							.data(string)
 							.build();

@@ -19,12 +19,11 @@
 
 package org.didelphis.language.phonetic.segments;
 
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureSpecification;
-
-import java.util.Objects;
 
 /**
  * Class {@code StandardSegment}
@@ -34,6 +33,7 @@ import java.util.Objects;
  * @author Samantha Fiona McCabe
  * @since 0.1.0
  */
+@EqualsAndHashCode
 public class StandardSegment<T> implements Segment<T> {
 
 	private final String symbol;
@@ -99,24 +99,6 @@ public class StandardSegment<T> implements Segment<T> {
 	@Override
 	public FeatureSpecification getSpecification() {
 		return features.getSpecification();
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(symbol, features);
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (!(o instanceof StandardSegment)) {
-			return false;
-		}
-		StandardSegment<?> segment = (StandardSegment<?>) o;
-		return Objects.equals(symbol, segment.symbol) &&
-				Objects.equals(features, segment.features);
 	}
 
 	@Override

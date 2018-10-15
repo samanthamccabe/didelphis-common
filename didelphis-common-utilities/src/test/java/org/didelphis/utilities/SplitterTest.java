@@ -18,16 +18,13 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
-import static org.didelphis.utilities.Splitter.findClosingBracket;
-import static org.didelphis.utilities.Splitter.lines;
-import static org.didelphis.utilities.Splitter.parseParens;
-import static org.didelphis.utilities.Splitter.toList;
-import static org.didelphis.utilities.Splitter.whitespace;
+import static org.didelphis.utilities.Splitter.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SplitterTest {
@@ -120,48 +117,122 @@ class SplitterTest {
 
 	@Test
 	void testParseParens01() {
-		assertEquals(5, parseParens("[b c]", DELIMITERS, 0));
+		assertEquals(5, parseParens("[b c]", DELIMITERS, new HashSet<>(), 0));
 	}
 
 	@Test
 	void testParseParens02() {
-		assertEquals(7, parseParens("a [b c]", DELIMITERS, 2));
+		assertEquals(7, parseParens("a [b c]", DELIMITERS, new HashSet<>(), 2));
 	}
 
 	@Test
 	void testParseParens03() {
-		assertEquals(11, parseParens("a [^bc[xy]]", DELIMITERS, 2));
+		assertEquals(11, parseParens("a [^bc[xy]]", DELIMITERS,
+				new HashSet<>(),
+				2));
 	}
 	
 	@Test
 	void testParseParens04() {
 		String string = "[-con, +voice, -creaky][-son, -voice, +vot]us";
-		assertEquals(23, parseParens(string, DELIMITERS, 0));
+		assertEquals(23, parseParens(string, DELIMITERS, new HashSet<>(), 0));
 	}
 	
 	@Test
 	void testFindClosingBracketA01() {
-		assertEquals(7, findClosingBracket("a [b c]", "[", DELIMITERS, 2));
+		assertEquals(7, findClosingBracket("a [b c]", "[", DELIMITERS,
+				new HashSet<>(),
+				2));
 	}
 
 	@Test
 	void testFindClosingBracketB01() {
-		assertEquals(7, findClosingBracket("a [b c]", "[", DELIMITERS, 2));
+		assertEquals(7, findClosingBracket("a [b c]", "[", DELIMITERS,
+				new HashSet<>(),
+				2));
 	}
 
 	@Test
 	void testFindNoClosingBracket1() {
-		assertEquals(-1, findClosingBracket("a [b c", "[", DELIMITERS, 2));
+		assertEquals(-1, findClosingBracket("a [b c", "[", DELIMITERS,
+				new HashSet<>(),
+				2));
 	}
 
 	@Test
 	void testFindNoClosingBracket2() {
-		assertEquals(-1, findClosingBracket("a [b c[", "[", DELIMITERS, 2));
+		assertEquals(-1, findClosingBracket("a [b c[", "[", DELIMITERS,
+				new HashSet<>(),
+				2));
 	}
 
 	@Test
 	void testFindNoClosingBracket3() {
-		assertEquals(-1, findClosingBracket("a [b c [c]", "[", DELIMITERS, 2));
+		assertEquals(-1, findClosingBracket("a [b c [c]", "[", DELIMITERS,
+				new HashSet<>(),
+				2));
+	}
+	
+	@Test
+	void testEmbedded01() {
+		List<String> specials = asList(
+				"\\d",
+				"\\D",
+				"\\w",
+				"\\W",
+				"\\s",
+				"\\S",
+				"\\a",
+				"\\A"
+		);
+		List<String> strings = toList(
+				"([^'\"]+)",
+				DELIMITERS,
+				specials
+		);
+
+		List<String> expected = Collections.singletonList("([^'\"]+)");
+		assertEquals(expected, strings);
+	}
+	
+	@Test
+	void testEmbedded02() {
+		List<String> specials = asList(
+				"\\d",
+				"\\D",
+				"\\w",
+				"\\W",
+				"\\s",
+				"\\S",
+				"\\a",
+				"\\A"
+		);
+		List<String> strings = toList(
+				"(.*[\\\\/])?[^\\\\/]+$",
+				DELIMITERS,
+				specials
+		);
+
+		List<String> expected = asList("(.*[\\\\/])","?","[^\\\\/]","+","$");
+		assertEquals(expected, strings);
+	}
+
+	@Test
+	void testEscapedBrackets() {
+		List<String> specials = asList(
+				"\\]",
+				"\\["
+		);
+		
+		String string = "\\[([^\\]]*)\\]";
+		List<String> strings = toList(
+				string,
+				DELIMITERS,
+				specials
+		);
+		
+		List<String> expected = asList("\\[","([^\\]]*)","\\]");
+		assertEquals(expected, strings);
 	}
 
 	@Test

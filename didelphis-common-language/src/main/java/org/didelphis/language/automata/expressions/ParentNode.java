@@ -89,6 +89,11 @@ public class ParentNode implements Expression {
 		return false;
 	}
 
+	@Override
+	public boolean isTerminal() {
+		return false;
+	}
+
 	@NonNull
 	@Override
 	public String getTerminal() {

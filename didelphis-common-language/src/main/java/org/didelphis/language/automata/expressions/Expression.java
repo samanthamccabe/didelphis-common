@@ -17,13 +17,11 @@ package org.didelphis.language.automata.expressions;
 import lombok.NonNull;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Interface {@code Expression}
  *
  * @author Samantha Fiona McCabe
- * @date 2013-09-01
  *
  * 	Expression creates and stores a compact representation of a regular
  * 	expression string and is used as a preprocessor for the creation of
@@ -38,6 +36,8 @@ public interface Expression {
 	boolean isParallel();
 
 	boolean isCapturing();
+	
+	boolean isTerminal();
 	
 	@NonNull String getId();
 	
@@ -54,11 +54,20 @@ public interface Expression {
 	@NonNull Expression withNegative(boolean isNegative);
 	
 	@NonNull Expression withQuantifier(String newQuantifier);
+	
+	@NonNull default Expression withTerminal(String newTerminal) {
+		throw new UnsupportedOperationException(
+				"Cannot add terminal " + newTerminal +
+						" to a non-terminal node");
+	}
 
 	@NonNull
 	static String randomId(Object... objects) {
-		int hash = Objects.hash(objects);
-		long rand = Double.doubleToLongBits(Math.random());
+		int hash = 1;
+		for (Object element : objects) {
+			hash = 31 * hash + (element == null ? 0 : element.hashCode());
+		}
+		long rand = System.nanoTime();
 		return Long.toHexString(hash ^ rand);
 	}
 

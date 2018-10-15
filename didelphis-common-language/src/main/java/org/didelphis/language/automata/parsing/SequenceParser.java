@@ -18,16 +18,20 @@ import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
+import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.phonetic.SequenceFactory;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.segments.UndefinedSegment;
 import org.didelphis.language.phonetic.sequences.ImmutableSequence;
 import org.didelphis.language.phonetic.sequences.Sequence;
+import org.didelphis.structures.graph.Arc;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.jetbrains.annotations.Contract;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -49,6 +53,56 @@ import java.util.Set;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 
+	Arc<Sequence<T>> dotArc = new Arc<Sequence<T>>() {
+		@Override
+		public int match(Sequence<T> sequence, int index) {
+			int length = sequence.size();
+			return (length > 0 && index < length) ? index + 1 : -1;
+		}
+
+		@Override
+		public String toString() {
+			return ".";
+		}
+	};
+
+	Arc<Sequence<T>> epsilonArc = new Arc<Sequence<T>>() {
+		@Override
+		public int match(Sequence<T> sequence, int index) {
+			return index;
+		}
+
+		@Override
+		public String toString() {
+			return "";
+		}
+	};
+
+	Arc<Sequence<T>> wordStartArc = new Arc<Sequence<T>>() {
+		@Override
+		public int match(Sequence<T> sequence, int index) {
+			return index == 0 ? 0 : -1;
+		}
+
+		@Override
+		public String toString() {
+			return "^";
+		}
+	};
+
+	Arc<Sequence<T>> wordEndArc = new Arc<Sequence<T>>() {
+		@Override
+		public int match(Sequence<T> sequence, int index) {
+			int length = sequence.size();
+			return index == length ? length : -1;
+		}
+
+		@Override
+		public String toString() {
+			return "$";
+		}
+	};
+	
 	private static final Map<String, String> DELIMITERS = new LinkedHashMap<>();
 	static {
 		DELIMITERS.put("(?:", ")");
@@ -62,8 +116,6 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 	
 	Sequence<T> wordStart;
 	Sequence<T> wordEnd;
-	Sequence<T> epsilon;
-	Sequence<T> dot;
 
 	public SequenceParser(@NonNull SequenceFactory<T> factory) {
 		this(factory, new GeneralMultiMap<>());
@@ -80,8 +132,6 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 		FeatureModel<T> model = factory.getFeatureMapping().getFeatureModel();
 		wordStart = immutable("#[", model);
 		wordEnd   = immutable("]#", model);
-		epsilon   = immutable("𝜆",  model);
-		dot       = immutable(".",  model);
 	}
 
 	@NonNull
@@ -92,30 +142,26 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 
 	@NonNull
 	@Override
-	public Sequence<T> getWordStart() {
-		return wordStart;
-	}
-
-	@NonNull
-	@Override
-	public Sequence<T> getWordEnd() {
-		return wordEnd;
-	}
-
-	@NonNull
-	@Override
 	public Sequence<T> transform(String expression) {
-		if (expression.equals("#[")) return wordStart;
-		if (expression.equals("]#")) return wordEnd;
-		if (expression.equals(".")) return dot;
-		if (expression.isEmpty()) return epsilon;
 		return factory.toSequence(expression);
 	}
 
 	@NonNull
 	@Override
-	public Sequence<T> epsilon() {
-		return epsilon;
+	public Arc<Sequence<T>> getArc(String arc) {
+		if (arc.equals("#[")) return wordStartArc;
+		if (arc.equals("]#")) return wordEndArc;
+		if (arc.equals(".")) return dotArc;
+		if (specials.containsKey(arc)) {
+			return new SetArc<>(specials.get(arc));
+		}
+		return new LiteralArc<>(factory.toSequence(arc));
+	}
+
+	@NonNull
+	@Override
+	public Arc<Sequence<T>> epsilon() {
+		return epsilonArc;
 	}
 
 	@NonNull
@@ -126,8 +172,8 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 
 	@NonNull
 	@Override
-	public Sequence<T> getDot() {
-		return dot;
+	public Arc<Sequence<T>> getDot() {
+		return dotArc;
 	}
 
 	@Override
@@ -147,8 +193,27 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 
 	@NonNull
 	@Override
-	public Sequence<T> subSequence(Sequence<T> sequence, int start, int end) {
+	public Sequence<T> subSequence(@NonNull Sequence<T> sequence, int start, int end) {
 		return sequence.subsequence(start, end);
+	}
+
+	@NonNull
+	@Override
+	public Sequence<T> concatenate(
+			@NonNull Sequence<T> sequence1,
+			@NonNull Sequence<T> sequence2
+	) {
+		sequence1.add(sequence2);
+		return sequence1;
+	}
+
+	@NonNull
+	@Override
+	public Sequence<T> replaceGroups(
+			@NonNull Sequence<T> input, @NonNull Match<Sequence<T>> match
+	) {
+		// TODO: ---------------------------------------------------------------
+		return null;
 	}
 
 	@NonNull
@@ -159,5 +224,51 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 	) {
 		// Undefined segments can only match when the symbol matches
 		return new ImmutableSequence<>(new UndefinedSegment<>(symbol, model));
+	}
+
+	private static final class LiteralArc<T> implements Arc<Sequence<T>> {
+
+		private final Sequence<T> literal;
+
+		private LiteralArc(Sequence<T> literal) {
+			this.literal = literal;
+		}
+
+		@Override
+		public int match(Sequence<T> sequence, int index) {
+			if (sequence.subsequence(index).startsWith(literal)) {
+				return index + literal.size();
+			}
+			return -1;
+		}
+
+		@Override
+		public String toString() {
+			return literal.toString();
+		}
+	}
+	
+	private static final class SetArc<T> implements Arc<Sequence<T>> {
+
+		private final List<Sequence<T>> strings;
+
+		private SetArc(Collection<Sequence<T>> strings) {
+			this.strings = new ArrayList<>(strings);
+		}
+
+		@Override
+		public int match(Sequence<T> sequence, int index) {
+			for (Sequence<T> string : strings) {
+				if (sequence.subsequence(index).startsWith(string)) {
+					return index + string.size();
+				}
+			}
+			return -1;
+		}
+
+		@Override
+		public String toString() {
+			return strings.toString();
+		}
 	}
 }

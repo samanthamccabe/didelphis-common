@@ -50,15 +50,9 @@ public interface Automaton<S> {
 	@NonNull
 	Match<S> match(@NonNull S input, int start);
 
-	default boolean matches(@NonNull S input) {
-		return match(input).start() > -1;
-	}
-	
 	@NonNull
-	default Match<S> match(@NonNull S input) {
-		return match(input, 0);
-	}
-
+	Match<S> find(@NonNull S input);
+	
 	/**
 	 * Splits the given input sequence around matches of this automaton.
 	 * <p>
@@ -91,4 +85,13 @@ public interface Automaton<S> {
 	 */
 	@NonNull
 	S replace(@NonNull S input, @NonNull S replacement);
+
+	default boolean matches(@NonNull S input) {
+		return match(input).start() > -1;
+	}
+
+	@NonNull
+	default Match<S> match(@NonNull S input) {
+		return match(input, 0);
+	}
 }

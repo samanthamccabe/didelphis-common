@@ -124,12 +124,7 @@ class RegexParserTest {
 		String string = "[abc]";
 
 		Expression expression = PARSER.parseExpression(string);
-
-		assertTrue(expression.hasChildren());
-		assertTrue(expression.isParallel());
-		assertFalse(expression.isNegative());
-		assertFalse(expression.isCapturing());
-		assertEquals(3, expression.getChildren().size());
+		assertFalse(expression.hasChildren());
 	}
 
 	@Test
@@ -138,11 +133,7 @@ class RegexParserTest {
 		String string = "[^abc]";
 
 		Expression expression = PARSER.parseExpression(string);
-
-		assertTrue(expression.hasChildren());
-		assertTrue(expression.isParallel());
-		assertTrue(expression.isNegative());
-		assertEquals(3, expression.getChildren().size());
+		assertFalse(expression.hasChildren());
 	}
 
 	@Test
@@ -177,18 +168,14 @@ class RegexParserTest {
 	void testSquareBracketRange() {
 		String string = "[a-z]";
 		Expression expression = PARSER.parseExpression(string);
-		assertTrue(expression.hasChildren());
-		assertTrue(expression.isParallel());
-		assertEquals(26, expression.getChildren().size());
+		assertFalse(expression.hasChildren());
 	}
 
 	@Test
 	void testSquareBracketInvalidRange01() {
 		String string = "[a-]";
 		Expression expression = PARSER.parseExpression(string);
-		assertTrue(expression.hasChildren());
-		assertTrue(expression.isParallel());
-		assertEquals(2, expression.getChildren().size());
+		assertFalse(expression.hasChildren());
 	}
 
 	@Test
@@ -207,29 +194,15 @@ class RegexParserTest {
 	void testWordMeta() {
 		String string = "\\w";
 		Expression expression = PARSER.parseExpression(string);
-		assertTrue(expression.hasChildren());
-		assertTrue(expression.isParallel());
-		assertEquals(63, expression.getChildren().size());
+		assertFalse(expression.hasChildren());
+
 	}
 
 	@Test
 	void testGroupedMeta() {
 		String string = "[\\d\\a]";
 		Expression expression = PARSER.parseExpression(string);
-		assertTrue(expression.hasChildren());
-		assertTrue(expression.isParallel());
-		List<Expression> children = expression.getChildren();
-		assertEquals(2, children.size());
-
-		Expression expression1 = children.get(0);
-		assertTrue(expression1.isParallel());
-		assertTrue(expression1.hasChildren());
-		assertEquals(10, expression1.getChildren().size());
-		
-		Expression expression2 = children.get(1);
-		assertTrue(expression2.isParallel());
-		assertTrue(expression2.hasChildren());
-		assertEquals(52, expression2.getChildren().size());
+		assertFalse(expression.hasChildren());
 	}
 
 	@Test
@@ -288,6 +261,13 @@ class RegexParserTest {
 		Expression rev2 = Expression.rewriteIds(ex2.reverse(), "0");
 		assertEquals(ex1, rev2);
 		assertEquals(rev1, ex2);
+	}
+	
+	@Test
+	void testParseEscapes() {
+		Expression expression = PARSER.parseExpression("\\[([^\\]]*)\\]");
+		
+		assertEquals(3, expression.getChildren().size());
 	}
 	
 	private static void assertThrowsParse(String expression) {

@@ -170,8 +170,8 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 	 */
 	private static void validate(@NonNull String string) {
 		for (int i = 0; i < string.length() - 1; i++) {
-			String p = String.valueOf(string.charAt(i));
-			String s = String.valueOf(string.charAt(i + 1));
+			String p = "" + string.charAt(i);
+			String s = "" + string.charAt(i + 1);
 			String message = null;
 
 			if(p.equals("!") && s.equals(".")) {
