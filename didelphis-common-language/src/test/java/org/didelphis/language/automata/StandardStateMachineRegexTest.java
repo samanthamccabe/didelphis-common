@@ -19,6 +19,7 @@ import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.automata.parsing.RegexParser;
 import org.didelphis.language.automata.statemachines.StandardStateMachine;
 import org.didelphis.language.automata.statemachines.StateMachine;
+import org.didelphis.language.parsing.ParseException;
 import org.didelphis.utilities.Logger;
 import org.didelphis.utilities.Templates;
 import org.intellij.lang.annotations.Language;
@@ -33,6 +34,7 @@ import static org.didelphis.language.parsing.ParseDirection.FORWARD;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Samantha Fiona McCabe
@@ -47,6 +49,24 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 	@Override
 	protected String transform(String input) {
 		return PARSER.transform(input);
+	}
+
+	@Test
+	void testSquareBracketInvalidRange02() {
+		String string = "[\\w-z]";
+		assertThrowsParse(string);
+	}
+
+	@Test
+	void testSquareBracketInvalidRange01() {
+		String string = "[z-a]";
+		assertThrowsParse(string);
+	}
+
+	@Test
+	void testSquareBracketInvalidRange03() {
+		String string = "[a-\\z]";
+		assertThrowsParse(string);
 	}
 
 	@Test
@@ -984,6 +1004,16 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 			assertEquals(matcher.group(i), match.group(i),
 					"Group " + i + " failed consistency check.");
 		}
+	}
+
+	private static void assertThrowsParse(String string) {
+		assertThrows(
+				ParseException.class,
+				() -> {
+					Expression expression = PARSER.parseExpression(string);
+					StandardStateMachine.create("M0", expression, PARSER);
+				}
+		);
 	}
 	
 	static StateMachine<String> getMachine(@Language("RegExp") String exp) {

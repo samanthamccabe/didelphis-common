@@ -172,25 +172,6 @@ class RegexParserTest {
 	}
 
 	@Test
-	void testSquareBracketInvalidRange01() {
-		String string = "[a-]";
-		Expression expression = PARSER.parseExpression(string);
-		assertFalse(expression.hasChildren());
-	}
-
-	@Test
-	void testSquareBracketInvalidRange02() {
-		String string = "[a-\\z]";
-		assertThrowsParse(string);
-	}
-
-	@Test
-	void testSquareBracketInvalidRange03() {
-		String string = "[\\w-z]";
-		assertThrowsParse(string);
-	}
-	
-	@Test
 	void testWordMeta() {
 		String string = "\\w";
 		Expression expression = PARSER.parseExpression(string);
