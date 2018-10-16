@@ -396,7 +396,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 						groups.set(index, new Twin<>(current, previous));
 					}
 				}
-			} else {
+			} else { 
 				String terminal = expression.getTerminal();
 				previous = makeTerminal(current, "T-"+current, terminal, meta);
 			}
