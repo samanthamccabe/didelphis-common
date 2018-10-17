@@ -19,18 +19,14 @@ import org.didelphis.language.automata.Automaton;
 import org.didelphis.language.automata.matching.BasicMatch;
 import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.automata.parsing.LanguageParser;
-import org.didelphis.structures.graph.Graph;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Interface {@code StateMachine}
  * 
  * @param <S> the type of data matched by the state machine
- * 
- * @author Samantha Fiona McCabe
  */
 public interface StateMachine<S> extends Automaton<S> {
 
@@ -38,18 +34,6 @@ public interface StateMachine<S> extends Automaton<S> {
 	LanguageParser<S> getParser();
 
 	String getId();
-
-	/**
-	 * Returns a map of ids to its associated graph. This
-	 * ensures accessibility for automata which contain multiple embedded state
-	 * automata.
-	 * @return a {@link Map}, from id → {@link Graph}
-	 */
-	@NonNull
-	Map<String, Graph<S>> getGraphs();
-
-	@NonNull
-	Map<String, StateMachine<S>> getStateMachines();
 
 	@NonNull
 	@Override

@@ -323,22 +323,6 @@ public class RegexParser implements LanguageParser<String> {
 	}
 
 	@NonNull
-	private static List<String> splitAlt(String string) {
-		Set<String> specials = new HashSet<>();
-		specials.addAll(CLASSES.keySet());
-		specials.addAll(ESCAPES.keySet());
-		
-		List<String> list = Splitter.toList(string, DELIMITERS_ALT, specials);
-		for (int i = 0; i < list.size(); i++) {
-			String s = list.get(i);
-			if (CLASSES.containsKey(s)) {
-				list.set(i, CLASSES.get(s));
-			}
-		}
-		return list;
-	}
-
-	@NonNull
 	@Override
 	public String subSequence(@NonNull String sequence, int start, int end) {
 		return sequence.substring(start, end);
@@ -471,7 +455,7 @@ public class RegexParser implements LanguageParser<String> {
 		specials.addAll(CLASSES.keySet());
 		specials.addAll(ESCAPES.keySet());
 
-		List<String> list1 = splitAlt(list);
+		List<String> list1 = Splitter.toList(list, DELIMITERS_ALT, specials);
 
 		Set<String> set = new HashSet<>();
 		Set<Arc<String>> arcs = new HashSet<>();

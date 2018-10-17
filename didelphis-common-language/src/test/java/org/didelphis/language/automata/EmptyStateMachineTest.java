@@ -23,7 +23,6 @@ import static org.didelphis.language.automata.statemachines.StandardStateMachine
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EmptyStateMachineTest {
 
@@ -45,12 +44,7 @@ class EmptyStateMachineTest {
 	void getId() {
 		assertEquals("_", instance.getId());
 	}
-
-	@Test
-	void getGraphs() {
-		assertTrue(instance.getGraphs().isEmpty());
-	}
-
+	
 	@Test
 	void getMatchIndices() {
 		assertEquals(0, instance.match("foo", 0).end());

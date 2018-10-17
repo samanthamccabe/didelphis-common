@@ -26,7 +26,6 @@ import org.didelphis.language.automata.parsing.LanguageParser;
 import org.didelphis.structures.graph.Arc;
 import org.didelphis.structures.graph.Graph;
 import org.didelphis.structures.maps.interfaces.MultiMap;
-import org.didelphis.structures.tuples.Triple;
 import org.didelphis.structures.tuples.Tuple;
 import org.didelphis.structures.tuples.Twin;
 import org.jetbrains.annotations.NotNull;
@@ -39,8 +38,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @EqualsAndHashCode
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -274,22 +271,6 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		return id;
 	}
 
-	@NonNull
-	@Override
-	public Map<String, Graph<S>> getGraphs() {
-		Map<String, Graph<S>> map = new HashMap<>();
-		map.put(id, graph);
-		return map;
-	}
-
-	@Override
-	@NonNull
-	public Map<String, StateMachine<S>> getStateMachines() {
-		// this needs to mutable:
-		// see NegativeMachine.create(..)
-		return machinesMap;
-	}
-
 	/**
 	 * Evaluates the inputs against the arcs leaving the current node and if
 	 * successful, will add to the output indices
@@ -396,7 +377,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 						groups.set(index, new Twin<>(current, previous));
 					}
 				}
-			} else {
+			} else { 
 				String terminal = expression.getTerminal();
 				previous = makeTerminal(current, "T-"+current, terminal, meta);
 			}
@@ -618,19 +599,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 			}
 			return expression;
 		}
-
-		@NonNull
-		private static <S> Iterable<Integer> collectLengths(
-				@NonNull LanguageParser<S> parser,
-				@NonNull Arc<S> arc
-		) {
-			return parser.getSpecialsMap()
-					.get(arc.toString())
-					.stream()
-					.map(parser::lengthOf)
-					.collect(Collectors.toSet());
-		}
-
+		
 		@NonNull
 		@Override
 		public LanguageParser<S> getParser() {
@@ -645,24 +614,6 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 
 		@NonNull
 		@Override
-		public Map<String, Graph<S>> getGraphs() {
-			Map<String, Graph<S>> map = new HashMap<>();
-			map.putAll(positive.getGraphs());
-			map.putAll(negative.getGraphs());
-			return map;
-		}
-
-		@NonNull
-		@Override
-		public Map<String, StateMachine<S>> getStateMachines() {
-			Map<String, StateMachine<S>> map = new HashMap<>();
-			map.put("POSITIVE", positive);
-			map.put("NEGATIVE", negative);
-			return map;
-		}
-
-		@NonNull
-		@Override
 		public Match<S> match(@NonNull S input, int start) {
 			BasicMatch<S> match = new BasicMatch<>(input, -1, -1);
 			if (start >= getParser().lengthOf(input)) {
@@ -671,66 +622,6 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 			Match<S> pMatch = positive.match(input, start);
 			Match<S> nMatch = negative.match(input, start);
 			return pMatch.end() == nMatch.end() ? match : pMatch;
-		}
-
-		private static <S> void buildPositiveBranch(
-				@NonNull LanguageParser<S> parser,
-				@NonNull StateMachine<S> positive
-		) {
-
-			Graph<S> graph = positive.getGraphs().values().iterator().next();
-			Graph<S> copy = new Graph<>(graph);
-
-			graph.clear();
-
-			for (Triple<String, Arc<S>, Collection<String>> triple : copy) {
-
-				Arc<S> arc = triple.getSecondElement();
-				Collection<String> targets = triple.getThirdElement();
-				// lambda / epsilon transition
-				String source = triple.getFirstElement();
-				if (Objects.equals(arc, parser.epsilon())) {
-					graph.put(source, parser.epsilon(), targets);
-				} else if (parser.getSpecialsMap().containsKey(arc.toString())) {
-					Arc<S> dot = parser.getDot();
-					for (Integer length : collectLengths(parser, arc)) {
-						buildDotChain(graph, source, targets, length, dot);
-					}
-				} else {
-					graph.put(source, parser.getDot(), targets);
-				}
-			}
-
-			if (positive instanceof StandardStateMachine) {
-				Map<String, StateMachine<S>> map = positive.getStateMachines();
-				for (StateMachine<S> machine : map.values()) {
-					if (machine instanceof NegativeMachine) {
-						// Unclear if this is allowed to happen
-						// or if this is the desired behavior
-						StateMachine<S> negative 
-								= ((NegativeMachine<S>) machine).negative;
-						buildPositiveBranch(parser, negative);
-					} else {
-						buildPositiveBranch(parser, machine);
-					}
-				}
-			}
-		}
-
-		private static <S> void buildDotChain(
-				@NonNull Graph<S> graph,
-				String key,
-				Collection<String> endValues,
-				int length,
-				Arc<S> dot
-		) {
-			String thisState = key;
-			for (int i = 0; i < length - 1; i++) {
-				String nextState = key + '-' + i;
-				graph.add(thisState, dot, nextState);
-				thisState = nextState;
-			}
-			graph.put(thisState, dot, endValues);
 		}
 	}
 
@@ -763,19 +654,6 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		@Override
 		public String getId() {
 			return id;
-		}
-
-		@NonNull
-		@SuppressWarnings("unchecked")
-		@Override
-		public Map<String, Graph<S>> getGraphs() {
-			return (Map<String, Graph<S>>) map;
-		}
-
-		@NonNull
-		@Override
-		public Map<String, StateMachine<S>> getStateMachines() {
-			return Collections.emptyMap();
 		}
 		
 		@NonNull
