@@ -26,7 +26,6 @@ import java.util.List;
 /**
  * Class {@code BasicMatch}
  *
- * @author Samantha Fiona McCabe
  * @date 2/22/18
  */
 @ToString

@@ -20,7 +20,6 @@ import org.didelphis.structures.contracts.Streamable;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * @author Samantha Fiona McCabe
  * @version 0.1.0
  * @since 2016-03-26
  */

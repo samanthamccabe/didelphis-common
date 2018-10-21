@@ -30,7 +30,6 @@ import java.util.Set;
  *      2) It reduces complexity for transpilation
  *      3) It allows us to more easily log data into a UI
  *
- * @author Samantha Fiona McCabe
  * @date 6/7/18
  */
 @SuppressWarnings ("UseOfSystemOutOrSystemErr")

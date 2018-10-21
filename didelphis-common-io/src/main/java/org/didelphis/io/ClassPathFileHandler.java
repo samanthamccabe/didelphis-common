@@ -23,7 +23,6 @@ import java.io.InputStream;
 /**
  * Enum {@code ClassPathFileHandler}
  *
- * @author Samantha Fiona McCabe
  * @since 0.1.0
  *
  * 10/11/2014

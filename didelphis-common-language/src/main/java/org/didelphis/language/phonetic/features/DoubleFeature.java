@@ -26,7 +26,6 @@ import static java.text.Normalizer.normalize;
 /**
  * Enum {@code DoubleFeature}
  *
- * @author Samantha Fiona McCabe
  * @since 0.1.0
  */
 public enum DoubleFeature implements FeatureType<Double> {

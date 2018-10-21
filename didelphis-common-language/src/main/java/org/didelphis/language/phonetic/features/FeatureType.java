@@ -35,7 +35,6 @@ import java.util.Collection;
  * what values should be considered undefined, such as {@code null}, or other
  * values.
  *
- * @author Samantha Fiona McCabe
  * @since 0.1.0
  *
  * 2017-06-11

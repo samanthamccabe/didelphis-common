@@ -8,7 +8,6 @@ import java.util.List;
 /**
  * Class {@code Sort}
  *
- * @author Samantha Fiona McCabe
  */
 @UtilityClass
 public class Sort {

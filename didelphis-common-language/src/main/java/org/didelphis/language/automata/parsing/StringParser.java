@@ -37,7 +37,6 @@ import java.util.Map;
  * A {@link String}-only companion to {@link SequenceParser} which uses the same
  * linguistics-oriented regular expression syntax.
  *
- * @author Samantha Fiona McCabe
  * @since 0.3.0
  */
 @ToString

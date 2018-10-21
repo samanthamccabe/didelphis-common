@@ -20,7 +20,6 @@ import lombok.NonNull;
 import java.util.Map;
 
 /**
- * @author Samantha Fiona McCabe
  * @since 10/13/2014 This mock handler simply uses maps to simulate a crude
  * file-system The maps is from 'path' to data, so a test can instantiate the
  * class with this object, either providing it data, or reading from it;

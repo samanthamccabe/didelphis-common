@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 /**
  * Class {@code SparseFeatureArray}
  *
- * @author Samantha Fiona McCabe
  * @date 2016-03-27
  * @since 0.1.0
  */

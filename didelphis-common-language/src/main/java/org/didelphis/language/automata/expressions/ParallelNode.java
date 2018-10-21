@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 /**
  * Class {@code ParallelNode}
  *
- * @author Samantha Fiona McCabe
  * @date 11/6/17
  */
 @Value

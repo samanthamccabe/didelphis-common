@@ -36,7 +36,6 @@ import static org.didelphis.language.parsing.ParseDirection.FORWARD;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * @author Samantha Fiona McCabe
  */
 class StandardStateMachineTest extends StateMachineTestBase<Sequence<Integer>> {
 

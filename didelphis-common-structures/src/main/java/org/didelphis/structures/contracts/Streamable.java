@@ -27,7 +27,6 @@ import java.util.stream.StreamSupport;
  * very simple add-on for non-collection classes which implement {@link
  * Iterable}
  *
- * @author Samantha Fiona McCabe
  * @date 2017-07-28
  * @since 0.2.0
  */

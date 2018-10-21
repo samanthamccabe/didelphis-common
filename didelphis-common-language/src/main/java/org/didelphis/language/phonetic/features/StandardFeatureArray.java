@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 /**
  * Class {@code StandardFeatureArray}
  *
- * @author Samantha Fiona McCabe
  * @since 0.1.0
  */
 @EqualsAndHashCode(callSuper = true)

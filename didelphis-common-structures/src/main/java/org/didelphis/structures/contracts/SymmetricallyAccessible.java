@@ -35,7 +35,6 @@ import java.util.Objects;
  *
  * @param <K> the type of keys used by the object
  *
- * @author Samantha Fiona McCabe
  * @date 2017-05-03
  * @since 0.2.0
  */

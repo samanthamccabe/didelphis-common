@@ -24,7 +24,6 @@ package org.didelphis.structures;
  * 
  * Implementing classes are very likely to be {@link Iterable} but
  * 
- * @author samantha.mccabe@didelphis.org
  */
 public interface Structure {
 	

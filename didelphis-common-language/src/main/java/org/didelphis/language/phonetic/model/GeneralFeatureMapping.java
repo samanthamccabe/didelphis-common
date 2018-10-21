@@ -38,7 +38,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * @author Samantha Fiona McCabe
  */
 @ToString
 @EqualsAndHashCode

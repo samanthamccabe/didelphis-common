@@ -17,7 +17,6 @@ package org.didelphis.language.parsing;
 /**
  * Exception {@code ParseException}
  *
- * @author Samantha Fiona McCabe
  * @since 0.1.0
  */
 public class ParseException extends RuntimeException {

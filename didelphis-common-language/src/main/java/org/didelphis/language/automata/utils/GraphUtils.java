@@ -40,7 +40,6 @@ import java.util.Set;
  * in the package {@link org.didelphis.language.automata}, and for developing
  * implementations based on these classes.
  * 
- * @author Samantha Fiona McCabe
  * @date 1/26/18
  */
 @UtilityClass

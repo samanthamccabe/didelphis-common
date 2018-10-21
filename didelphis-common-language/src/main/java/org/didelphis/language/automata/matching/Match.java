@@ -21,7 +21,6 @@ import org.jetbrains.annotations.Nullable;
  *
  * Like {@link java.util.regex.MatchResult} but parameterized
  * 
- * @author Samantha Fiona McCabe
  * @date 10/21/17
  */
 public interface Match<S> {

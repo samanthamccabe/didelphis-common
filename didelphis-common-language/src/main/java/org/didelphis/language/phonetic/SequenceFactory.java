@@ -42,7 +42,6 @@ import java.util.stream.Collectors;
  * Class {@code SequenceFactory}
  * 
  * @since 0.0.0
- * @author Samantha Fiona McCabe
  */
 @ToString         (of = {"featureMapping", "formatterMode", "reservedStrings"})
 @EqualsAndHashCode(of = {"featureMapping", "formatterMode", "reservedStrings"})

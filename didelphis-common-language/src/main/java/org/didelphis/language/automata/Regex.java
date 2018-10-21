@@ -32,7 +32,6 @@ import java.util.regex.Pattern;
  * <p>
  * A {@link Automaton} wrapper for the standard {@link Pattern} class.
  *
- * @author Samantha Fiona McCabe
  */
 @ToString
 @EqualsAndHashCode
@@ -45,7 +44,7 @@ public class Regex implements Automaton<String> {
 	}
 
 	public Regex(@Language ("RegExp") @NonNull String pattern, boolean insensitive) {
-		RegexParser parser = new RegexParser();
+		RegexParser parser = new RegexParser(insensitive);
 		Expression exp = parser.parseExpression(pattern);
 		automaton = StandardStateMachine.create("M0", exp, parser);
 	}

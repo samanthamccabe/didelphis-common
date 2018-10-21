@@ -24,7 +24,6 @@ import java.util.Objects;
 /**
  * Class {@code AbstractFeatureArray}
  *
- * @author Samantha Fiona McCabe
  * @date 2017-06-15
  * @since 0.1.0
  */

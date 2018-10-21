@@ -19,7 +19,6 @@ import lombok.NonNull;
 /**
  * Interface {@code Tuple}
  *
- * @author Samantha Fiona McCabe
  * @date 2017-07-22
  * @since 0.2.0
  */

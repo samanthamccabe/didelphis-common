@@ -17,7 +17,6 @@ import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.didelphis.utilities.Splitter;
 import org.didelphis.utilities.Templates;
 import org.intellij.lang.annotations.Language;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,13 +45,12 @@ import static org.didelphis.language.automata.parsing.LanguageParser.update;
  *     <li>Simple character ranges</li>
  * </ul>
  * 
- * @author Samantha Fiona McCabe
  * @since 0.3.0
  */
 @ToString
 @EqualsAndHashCode
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class RegexParser implements LanguageParser<String> {
+public final class RegexParser implements LanguageParser<String> {
 
 	static Arc<String> DOT_ARC = new Arc<String>() {
 		@Override
@@ -153,7 +151,22 @@ public class RegexParser implements LanguageParser<String> {
 		QUANTIFIERS.add("*");
 		QUANTIFIERS.add("+");
 	}
-	
+
+	private final boolean insensitive;
+
+	public RegexParser() {
+		this(false);
+	}
+
+	/**
+	 *
+	 * @param insensitive if {@code true} the parser is set up to generate case-
+	 * insensitive state machines
+	 */
+	public RegexParser(boolean insensitive) {
+		this.insensitive = insensitive;
+	}
+
 	@NonNull
 	@Override
 	public Map<String, String> supportedDelimiters() {
@@ -190,7 +203,7 @@ public class RegexParser implements LanguageParser<String> {
 			return parseRanges(substring);
 		}
 
-		return new LiteralArc(arc);
+		return new LiteralArc(arc, insensitive);
 	}
 
 	@NonNull
@@ -217,8 +230,9 @@ public class RegexParser implements LanguageParser<String> {
 		return Expression.rewriteIds(exp, "0");
 	}
 
+	@NonNull
 	@Override
-	public @Nullable Arc<String> epsilon() {
+	public Arc<String> epsilon() {
 		return EPSILON_ARC;
 	}
 
@@ -237,6 +251,78 @@ public class RegexParser implements LanguageParser<String> {
 	@Override
 	public int lengthOf(@NonNull String t) {
 		return t.length();
+	}
+
+	@NonNull
+	@Override
+	public String subSequence(@NonNull String sequence, int start, int end) {
+		return sequence.substring(start, end);
+	}
+
+	@NonNull
+	@Override
+	public String concatenate(
+			@NonNull String sequence1,
+			@NonNull String sequence2
+	) {
+		return sequence1 + sequence2;
+	}
+	
+	@NonNull
+	@Override
+	public String replaceGroups(
+			@NonNull String input, @NonNull Match<String> match
+	) {
+		StringBuilder sb = new StringBuilder();
+		StringBuilder number = new StringBuilder();
+
+		boolean inGroup = false;
+
+		int cursor = 0;
+		int i = 0;
+		while (i < input.length()) {
+			char c = input.charAt(i);
+			if (0x30 <= c && c < 0x3A && inGroup) {
+				number.append(c);
+				i++;
+				cursor = i;
+			} else {
+				// parse and append group data
+				if (number.length() > 0) {
+					int groupNumber = Integer.parseInt(number.toString());
+					String group = match.group(groupNumber);
+					if (group != null) {
+						sb.append(group);
+					}
+					// clear buffer
+					number = new StringBuilder();
+				}
+
+				if (c == '$') {
+					inGroup = true;
+					if (cursor != i) {
+						sb.append(input.substring(cursor, i));
+					}
+					i++;
+					cursor = i;
+				} else {
+					inGroup = false;
+					i++;
+				}
+			}
+		}
+
+		sb.append(input.substring(cursor));
+
+		// parse and append group data
+		if (number.length() > 0) {
+			int groupNumber = Integer.parseInt(number.toString());
+			String group = match.group(groupNumber);
+			if (group != null) {
+				sb.append(group);
+			}
+		}
+		return sb.toString();
 	}
 
 	private Expression parse(@NonNull List<String> split) {
@@ -305,7 +391,109 @@ public class RegexParser implements LanguageParser<String> {
 		}
 		return false;
 	}
-	
+
+	@NonNull
+	private Arc<String> parseRanges(String list) {
+
+		Set<String> specials = new HashSet<>();
+		specials.addAll(CLASSES.keySet());
+		specials.addAll(ESCAPES.keySet());
+
+		List<String> list1 = Splitter.toList(list, DELIMITERS_ALT, specials);
+
+		Set<String> set = new HashSet<>();
+		Set<Arc<String>> arcs = new HashSet<>();
+		for (int i = 0; i < list1.size(); ) {
+			String s1 = list1.get(i);
+
+			if (s1.startsWith("[^")) {
+				int i1 = Splitter.parseParens(s1, DELIMITERS_ALT, specials, 0);
+				if (i1 == s1.length()) {
+					Arc<String> arc = parseRanges(s1.substring(2, i1 - 1));
+					arcs.add(new NegativeArc(arc));
+				}
+				i++;
+				continue;
+			}
+
+			if (s1.startsWith("[")) {
+				int i1 = Splitter.parseParens(s1, DELIMITERS_ALT, specials, 0);
+				if (i1 == s1.length()) {
+					Arc<String> arc = parseRanges(s1.substring(1, i1 - 1));
+					arcs.add(arc);
+				}
+				i++;
+				continue;
+			}
+
+			// check if there's an end range past the hyphen
+			if (i + 2 < list1.size()) {
+				if (list1.get(i + 1).equals("-")) {
+					String s2 = list1.get(i + 2);
+					if (s1.length() == 1 && s2.length() == 1) {
+						char c1 = s1.charAt(0);
+						char c2 = s2.charAt(0);
+						if (c1 > c2) {
+							String message = Templates.create()
+									.add("Unable to parse expression {}")
+									.with(list)
+									.add("Start {} is greater than end {}")
+									.with(c1, c2)
+									.build();
+							throw new ParseException(message);
+						}
+
+						set.add("" + c1);
+						while (c1 < c2) {
+							c1++;
+							set.add("" + c1);
+						}
+						i += 2;
+					} else {
+						String message = Templates.create()
+								.add("Unable to parse expression {}")
+								.with(list)
+								.add("due to invalid range {}-{}")
+								.with(s1, s2)
+								.build();
+						throw new ParseException(message);
+					}
+				} else {
+					set.add(s1);
+				}
+			} else {
+				set.add(s1);
+			}
+			i++;
+		}
+
+		SetArc mainArc = new SetArc(substituteEscapes(set), insensitive);
+		if (!arcs.isEmpty()) {
+			arcs.add(mainArc);
+			return new OrArc(arcs);
+		}
+		return mainArc;
+	}
+
+	@NonNull
+	private static Set<String> substituteEscapes(Set<String> set) {
+		Set<String> substituted = new HashSet<>();
+		for (String item : set) {
+			boolean retained = true;
+			for (Map.Entry<String, String> entry : ESCAPES.entrySet()) {
+				if (item.equals(entry.getKey())) {
+					substituted.add(entry.getValue());
+					retained = false;
+					break;
+				}
+			}
+			if (retained) {
+				substituted.add(item);
+			}
+		}
+		return substituted;
+	}
+
 	@NonNull
 	private static List<String> split(String string) {
 		Set<String> specials = new HashSet<>();
@@ -320,78 +508,6 @@ public class RegexParser implements LanguageParser<String> {
 			}
 		}
 		return list;
-	}
-
-	@NonNull
-	@Override
-	public String subSequence(@NonNull String sequence, int start, int end) {
-		return sequence.substring(start, end);
-	}
-
-	@NonNull
-	@Override
-	public String concatenate(
-			@NonNull String sequence1, 
-			@NonNull String sequence2
-	) {
-		return sequence1 + sequence2;
-	}
-
-	@NonNull
-	@Override
-	public String replaceGroups(
-			@NonNull String input, @NonNull Match<String> match
-	) {
-		StringBuilder sb = new StringBuilder();
-		StringBuilder number = new StringBuilder();
-		
-		boolean inGroup = false;
-		
-		int cursor = 0;
-		int i = 0;
-		while (i < input.length()) {
-			char c = input.charAt(i);
-			if (0x30 <= c && c < 0x3A && inGroup) {
-				number.append(c);
-				i++;
-				cursor = i;
-			} else {
-				// parse and append group data
-				if (number.length() > 0) {
-					int groupNumber = Integer.parseInt(number.toString());
-					String group = match.group(groupNumber);
-					if (group != null) {
-						sb.append(group);
-					}
-					// clear buffer
-					number = new StringBuilder();
-				}
-
-				if (c == '$') {
-					inGroup = true;
-					if (cursor != i) {
-						sb.append(input.substring(cursor, i));
-					}
-					i++;
-					cursor = i;
-				} else {
-					inGroup = false;
-					i++;
-				}
-			}
-		}
-
-		sb.append(input.substring(cursor));
-
-		// parse and append group data
-		if (number.length() > 0) {
-			int groupNumber = Integer.parseInt(number.toString());
-			String group = match.group(groupNumber);
-			if (group != null) {
-				sb.append(group);
-			}
-		}
-		return sb.toString();
 	}
 
 	/**
@@ -448,119 +564,24 @@ public class RegexParser implements LanguageParser<String> {
 		}
 	}
 
-	@NonNull
-	private static Arc<String> parseRanges(String list) {
-
-		Set<String> specials = new HashSet<>();
-		specials.addAll(CLASSES.keySet());
-		specials.addAll(ESCAPES.keySet());
-
-		List<String> list1 = Splitter.toList(list, DELIMITERS_ALT, specials);
-
-		Set<String> set = new HashSet<>();
-		Set<Arc<String>> arcs = new HashSet<>();
-		for (int i = 0; i < list1.size();) {
-			String s1 = list1.get(i);
-
-			if (s1.startsWith("[^")) {
-				int i1 = Splitter.parseParens(s1, DELIMITERS_ALT, specials, 0);
-				if (i1 == s1.length()) {
-					Arc<String> arc = parseRanges(s1.substring(2, i1 - 1));
-					arcs.add(new NegativeArc(arc));
-				}
-				i++;
-				continue;
-			}
-			if (s1.startsWith("[")) {
-				int i1 = Splitter.parseParens(s1, DELIMITERS_ALT, specials, 0);
-				if (i1 == s1.length()) {
-					Arc<String> arc = parseRanges(s1.substring(1, i1 - 1));
-					arcs.add(arc);
-				}
-				i++;
-				continue;
-			}
-
-			// check if there's an end range past the hyphen
-			if (i + 2 < list1.size()) {
-				if (list1.get(i + 1).equals("-")) {
-					String s2 = list1.get(i + 2);
-					if (s1.length() == 1 && s2.length() == 1) {
-						char c1 = s1.charAt(0);
-						char c2 = s2.charAt(0);
-						if (c1 > c2) {
-							String message = Templates.create()
-									.add("Unable to parse expression {}")
-									.with(list)
-									.add("Start {} is greater than end {}")
-									.with(c1, c2)
-									.build();
-							throw new ParseException(message);
-						}
-
-						set.add(""+c1);
-						while (c1 < c2) {
-							c1++;
-							set.add(""+c1);
-						}
-						i+=2;
-					} else {
-						String message = Templates.create()
-								.add("Unable to parse expression {}")
-								.with(list)
-								.add("due to invalid range {}-{}")
-								.with(s1, s2)
-								.build();
-						throw new ParseException(message);
-					}
-				} else {
-					set.add(s1);
-				}
-			} else {
-				set.add(s1);
-			}
-			i++;
-		}
-
-		SetArc mainArc = new SetArc(substituteEscapes(set));
-		if (!arcs.isEmpty()) {
-			arcs.add(mainArc);
-			return new OrArc(arcs);
-		}
-		return mainArc;
-	}
-
-	@NonNull
-	private static Set<String> substituteEscapes(Set<String> set) {
-		Set<String> substitutedSet = new HashSet<>();
-		for (String item : set) {
-			boolean retained = true;
-			for (Map.Entry<String, String> entry : ESCAPES.entrySet()) {
-				if (item.equals(entry.getKey())) {
-					substitutedSet.add(entry.getValue());
-					retained = false;
-					break;
-				}
-			}
-			if (retained) {
-				substitutedSet.add(item);
-			}
-		}
-		return substitutedSet;
-	}
-
 	private static final class LiteralArc implements Arc<String> {
 
 		private final String literal;
+		private final boolean insensitive;
 
-		private LiteralArc(String literal) {
-			this.literal = ESCAPES.containsKey(literal)
+		private LiteralArc(String literal, boolean insensitive) {
+			this.insensitive = insensitive;
+			String string = ESCAPES.containsKey(literal)
 					? ESCAPES.get(literal)
 					: literal;
+			this.literal = insensitive ? string.toLowerCase() : string;
 		}
 
 		@Override
 		public int match(String sequence, int index) {
+			if (insensitive) {
+				sequence = sequence.toLowerCase();
+			}
 			if (sequence.startsWith(literal, index)) {
 				return index + literal.length();
 			}
@@ -576,13 +597,28 @@ public class RegexParser implements LanguageParser<String> {
 	private static final class SetArc implements Arc<String> {
 
 		private final Collection<String> strings;
+		private final boolean insensitive;
 
-		private SetArc(Collection<String> strings) {
-			this.strings = new HashSet<>(strings);
+		private SetArc(Collection<String> strings, boolean insensitive) {
+			this.insensitive = insensitive;
+			if (insensitive) {
+				Set<String> set = new HashSet<>();
+				for (String string : strings) {
+					set.add(string.toLowerCase());
+				}
+				this.strings = set;
+			} else {
+				this.strings = new HashSet<>(strings);
+			}
 		}
 
 		@Override
 		public int match(String sequence, int index) {
+
+			if (insensitive) {
+				sequence = sequence.toLowerCase();
+			}
+
 			for (String string : strings) {
 				if (sequence.startsWith(string, index)) {
 					return index + 1;

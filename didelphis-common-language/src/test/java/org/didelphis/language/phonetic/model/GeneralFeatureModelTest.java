@@ -34,7 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 /**
  * Class {@code GeneralFeatureModelTest}
  *
- * @author Samantha Fiona McCabe
  * @date 2017-06-15
  * @since 0.1.0
  */

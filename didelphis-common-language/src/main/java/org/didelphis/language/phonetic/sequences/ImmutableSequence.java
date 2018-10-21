@@ -25,7 +25,6 @@ import java.util.function.UnaryOperator;
 /**
  * Class {@code ImmutableSequence}
  *
- * @author Samantha Fiona McCabe
  * @date 2017-06-21
  * @since 0.1.0
  */

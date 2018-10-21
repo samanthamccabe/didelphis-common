@@ -21,7 +21,6 @@ import java.util.List;
 /**
  * Interface {@code Expression}
  *
- * @author Samantha Fiona McCabe
  *
  * 	Expression creates and stores a compact representation of a regular
  * 	expression string and is used as a preprocessor for the creation of

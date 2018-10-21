@@ -36,7 +36,6 @@ import static java.text.Normalizer.normalize;
 /**
  * Class {@code GeneralFeatureModel}
  *
- * @author Samantha Fiona McCabe
  * @since 0.1.0
  */
 @ToString

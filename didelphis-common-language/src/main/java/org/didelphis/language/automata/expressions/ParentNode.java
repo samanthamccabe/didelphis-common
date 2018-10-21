@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 /**
  * Class {@code ExpressionNode}
  *
- * @author Samantha Fiona McCabe
  * @date 10/13/17
  */
 @Value

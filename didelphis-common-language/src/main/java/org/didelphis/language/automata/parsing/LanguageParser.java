@@ -81,7 +81,8 @@ public interface LanguageParser<S> {
 	 * Provides a uniform value for epsilon transitions 
 	 * @return a uniform value for epsilon transitions 
 	 */
-	@Nullable Arc<S> epsilon();
+	@NonNull
+	Arc<S> epsilon();
 
 	/**
 	 * Provides a collection of supported special symbols and their

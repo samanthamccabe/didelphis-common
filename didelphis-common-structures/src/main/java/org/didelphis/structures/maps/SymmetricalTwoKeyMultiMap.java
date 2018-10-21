@@ -31,7 +31,6 @@ import java.util.function.Supplier;
 /**
  * Class {@code SymmetricalTwoKeyMultiMap}
  *
- * @author Samantha Fiona McCabe
  * @date 2017-04-25
  * @since 0.1.0
  */

@@ -38,7 +38,6 @@ import static org.didelphis.utilities.Splitter.toList;
  * excess of options, most of where were of no value (compatibility modes, or
  * segmentation with composition e.g.)
  *
- * @author Samantha Fiona McCabe
  * @since 0.1.0
  */
 public enum FormatterMode implements Segmenter, Formatter {
