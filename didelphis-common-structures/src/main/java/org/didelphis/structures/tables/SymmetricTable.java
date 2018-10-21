@@ -31,7 +31,6 @@ import java.util.stream.Stream;
 /**
  * @param <E>
  *
- * @author Samantha Fiona McCabe
  */
 public class SymmetricTable<E> extends AbstractTable<E> {
 

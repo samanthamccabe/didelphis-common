@@ -54,7 +54,6 @@ import java.util.Objects;
  * {@link Logger#error(String, Object...)}, 
  * <i>etc.</i>
  * 
- * @author Samantha Fiona McCabe
  */
 @UtilityClass
 public class Templates {

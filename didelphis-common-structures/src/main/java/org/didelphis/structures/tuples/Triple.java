@@ -28,7 +28,6 @@ import java.util.Iterator;
  * In many contexts, use of a class like this might indicate poor design. As it
  * is, {@code Triple} is used to provide an {@link Iterator} for two-key maps.
  *
- * @author Samantha Fiona McCabe
  * @date 2017-02-11
  * @since 0.2.0
  */

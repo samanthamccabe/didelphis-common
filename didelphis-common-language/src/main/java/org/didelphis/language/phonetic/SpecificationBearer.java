@@ -18,7 +18,6 @@ import lombok.NonNull;
 import org.didelphis.language.phonetic.model.FeatureSpecification;
 
 /**
- * @author Samantha Fiona McCabe 
  * @date  2015-01-21
  * @since 0.1.0
  */

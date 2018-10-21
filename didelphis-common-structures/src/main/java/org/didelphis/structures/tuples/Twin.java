@@ -23,7 +23,6 @@ import java.util.AbstractList;
 /**
  * Class {@code Pair}
  *
- * @author Samantha Fiona McCabe
  * @date 2017-07-22
  * @since 0.2.0
  */

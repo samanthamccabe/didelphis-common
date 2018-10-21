@@ -32,7 +32,6 @@ import org.didelphis.language.phonetic.model.FeatureModel;
  * #matches(Segment)} is called on another segment, which is not the desired
  * behavior.
  * 
- * @author Samantha Fiona McCabe
  * @date 12/29/17
  */
 @EqualsAndHashCode

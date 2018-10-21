@@ -28,7 +28,6 @@ import java.util.List;
  * for what feature values are  "defined" or "undefined" and defines a natural
  * ordering of elements.
  *
- * @author Samantha Fiona McCabe
  * @since 0.1.0
  *
  * @date 7/31/2016

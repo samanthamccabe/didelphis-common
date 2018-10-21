@@ -30,7 +30,6 @@ import java.util.stream.Stream;
  *
  * @param <E> the type parameter
  *
- * @author Samantha Fiona McCabe
  * @date 02/11/2017
  * @since 0.1.0
  */

@@ -22,7 +22,6 @@ import org.didelphis.language.phonetic.model.FeatureModel;
 /**
  * Class {@code ImmutableSegment}
  *
- * @author Samantha Fiona McCabe
  * @since 0.1.0
  */
 public class ImmutableSegment<T> extends StandardSegment<T> {

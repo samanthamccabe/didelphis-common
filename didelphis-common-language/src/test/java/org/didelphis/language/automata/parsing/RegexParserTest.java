@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Class {@code RegexParserTest}
  *
- * @author Samantha Fiona McCabe
  * @since 0.3.0
  */
 class RegexParserTest {

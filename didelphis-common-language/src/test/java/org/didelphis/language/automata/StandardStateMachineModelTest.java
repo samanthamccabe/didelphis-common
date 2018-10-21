@@ -32,7 +32,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * @author Samantha Fiona McCabe
  */
 class StandardStateMachineModelTest extends StateMachineTestBase<Sequence<Integer>> {
 	

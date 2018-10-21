@@ -35,7 +35,6 @@ import java.util.function.Supplier;
 /**
  * Utility Class {@code Suppliers}
  *
- * @author Samantha Fiona McCabe
  * @date 2017-09-07
  * @since 0.1.0
  */

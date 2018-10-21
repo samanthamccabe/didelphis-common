@@ -27,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 /**
  * Class {@code ImmutableSegmentTest}
  *
- * @author Samantha Fiona McCabe
  * @since 0.1.0
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)

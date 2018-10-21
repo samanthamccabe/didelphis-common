@@ -24,7 +24,6 @@ import java.util.Map;
  *
  * This interface underpins {@link FeatureModel} and {@link FeatureMapping}
  *
- * @author Samantha Fiona McCabe
  * @since 0.1.0
  *
  * @date 2017-02-16

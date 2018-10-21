@@ -45,7 +45,6 @@ import java.util.Set;
  * @param <T> the feature type used by language objects supported by a given
  * instance of this parser.
  *
- * @author Samantha Fiona McCabe
  * @date 2017-02-25
  * @since 0.1.0
  */

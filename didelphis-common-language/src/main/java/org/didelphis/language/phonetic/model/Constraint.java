@@ -25,7 +25,6 @@ import org.didelphis.language.phonetic.features.FeatureArray;
 /**
  * Class {@code Constraint}
  * 
- * @author Samantha Fiona McCabe
  * @since 0.1.0
  */
 @EqualsAndHashCode(exclude = "featureModel")

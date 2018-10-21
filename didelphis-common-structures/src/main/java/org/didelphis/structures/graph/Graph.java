@@ -17,27 +17,24 @@ package org.didelphis.structures.graph;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
+import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.maps.GeneralTwoKeyMultiMap;
 
 import java.util.HashMap;
 
-import static org.didelphis.structures.Suppliers.ofLinkedHashMap;
-import static org.didelphis.structures.Suppliers.ofList;
-
 /**
  * Class {@code Graph}
  *
- * @author Samantha Fiona McCabe
  */
 @ToString
 @EqualsAndHashCode(callSuper = true)
 public final class Graph<S> extends GeneralTwoKeyMultiMap<String, Arc<S>, String> {
 
 	public Graph() {
-		super(new HashMap<>(), ofLinkedHashMap(), ofList());
+		super(new HashMap<>(), Suppliers.ofLinkedHashMap(), Suppliers.ofList());
 	}
 	
 	public Graph(@NonNull GeneralTwoKeyMultiMap<String, Arc<S>, String> graph) {
-		super(graph, new HashMap<>(), ofLinkedHashMap(), ofList());
+		super(graph, new HashMap<>(), Suppliers.ofLinkedHashMap(), Suppliers.ofList());
 	}
 }

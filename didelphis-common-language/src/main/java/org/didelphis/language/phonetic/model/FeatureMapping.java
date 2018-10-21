@@ -30,7 +30,6 @@ import java.util.Set;
  * {@link FeatureModel} in order to express the fact that multiple mappings can
  * derive from the same model due to different notational standards.
  *
- * @author Samantha Fiona McCabe
  * @since 0.1.0
  *
  * @date 2017-02-16

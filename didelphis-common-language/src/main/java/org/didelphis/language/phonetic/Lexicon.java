@@ -25,7 +25,6 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * @author Samantha Fiona McCabe
 	 * @date 1/17/2015
  */
 @EqualsAndHashCode

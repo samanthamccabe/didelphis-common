@@ -26,7 +26,6 @@ import static org.didelphis.language.automata.parsing.LanguageParser.update;
 /**
  * Abstract Class {@code DidelphisBaseParser}
  *
- * @author Samantha Fiona McCabe
  * @see StringParser
  * @see SequenceParser
  * @since 0.3.0

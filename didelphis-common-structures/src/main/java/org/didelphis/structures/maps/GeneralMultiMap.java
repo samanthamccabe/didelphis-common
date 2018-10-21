@@ -44,7 +44,6 @@ import java.util.stream.Collectors;
  * @param <K> the key type
  * @param <V> the value type.
  *
- * @author Samantha Fiona McCabe
  * @date 2017-05-04
  * @since 0.1.0
  */

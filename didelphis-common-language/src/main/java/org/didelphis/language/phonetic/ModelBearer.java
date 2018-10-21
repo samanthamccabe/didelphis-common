@@ -22,7 +22,6 @@ import org.didelphis.utilities.Templates;
 /**
  * Interface {@code ModelBearer}
  *
- * @author Samantha Fiona McCabe
  * @date 2017-02-19
  * @since 0.1.0
  */

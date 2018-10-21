@@ -28,7 +28,6 @@ import static java.text.Normalizer.normalize;
 /**
  * Class {@code IntegerFeature}
  *
- * @author Samantha Fiona McCabe
  * @since 0.1.0
  */
 public enum IntegerFeature implements FeatureType<Integer> {

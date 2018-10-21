@@ -30,7 +30,6 @@ import org.didelphis.language.phonetic.model.FeatureSpecification;
  * 
  * @param <T> the type of feature data used by the segment's model
  * 
- * @author Samantha Fiona McCabe
  * @since 0.1.0
  */
 @EqualsAndHashCode

@@ -21,7 +21,6 @@ import java.util.Collection;
 /**
  * Interface {@code TwoKeyMultiMap}
  *
- * @author Samantha Fiona McCabe
  * @date 2016-04-10
  * @since 0.1.0
  */

@@ -23,7 +23,6 @@ import java.util.List;
 /**
  * Class {@code TerminalNode}
  *
- * @author Samantha Fiona McCabe
  * 10/12/17
  */
 @Value

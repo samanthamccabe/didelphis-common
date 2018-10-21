@@ -41,7 +41,6 @@ import java.util.function.Supplier;
  * @param <U> the second key type
  * @param <V> the value type
  *
- * @author Samantha Fiona McCabe
  * @date 2017 -01-15
  * @since 0.1.0
  */

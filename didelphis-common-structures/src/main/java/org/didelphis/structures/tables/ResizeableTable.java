@@ -19,7 +19,6 @@ import lombok.NonNull;
 import java.util.Collection;
 
 /**
- * @author Samantha Fiona McCabe
  * @date 5/25/17
  * 
  * A general interface for two-dimensional matrix data structures

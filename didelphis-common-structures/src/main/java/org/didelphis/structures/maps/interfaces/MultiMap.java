@@ -33,7 +33,6 @@ import java.util.Map;
  * @param <V> the type of the stored values; multiple such values are stored
  * 		per key
  *
- * @author Samantha Fiona McCabe
  * @date 2017-05-04
  * @see org.didelphis.structures.maps.GeneralMultiMap
  * @see org.didelphis.structures.maps.GeneralTwoKeyMultiMap

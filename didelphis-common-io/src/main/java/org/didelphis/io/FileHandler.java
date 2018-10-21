@@ -18,7 +18,6 @@ import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * @author Samantha Fiona McCabe
  * @date 10/11/2014
  *
  * 		Modular file IO facade. Designed to provide read-write capabilities in a

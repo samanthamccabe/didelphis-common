@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * @author Samantha Fiona McCabe
  * @date 8/23/2015
  */
 public class DataTable<E>

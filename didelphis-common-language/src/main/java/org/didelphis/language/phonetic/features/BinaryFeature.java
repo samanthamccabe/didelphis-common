@@ -27,7 +27,6 @@ import static java.text.Normalizer.normalize;
 /**
  * Enum {@code BinaryFeatureType}
  *
- * @author Samantha Fiona McCabe
  * @since 0.1.0
  */
 public enum BinaryFeature implements FeatureType<Boolean> {

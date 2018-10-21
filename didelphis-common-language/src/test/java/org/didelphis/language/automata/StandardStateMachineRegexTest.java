@@ -37,7 +37,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * @author Samantha Fiona McCabe
  */
 class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 
@@ -979,7 +978,7 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 		
 		assertConsistant(pattern, machine, "w\t+\t+");
 	}
-	
+
 	private void assertConsistant(
 			Pattern pattern, StateMachine<String> machine, String input
 	) {

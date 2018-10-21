@@ -29,7 +29,6 @@ import java.util.List;
 /**
  * Abstract Class {@code AbstractSequence}
  *
- * @author Samantha Fiona McCabe
  * @since 0.1.0
  */
 @EqualsAndHashCode

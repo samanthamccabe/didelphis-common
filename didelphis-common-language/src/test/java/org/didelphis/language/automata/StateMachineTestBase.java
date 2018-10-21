@@ -12,11 +12,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Class {@code StateMachineTestBase}
  *
- * @author Samantha Fiona McCabe
  */
 abstract class StateMachineTestBase<S> {
 	
-	void assertMatches(StateMachine<S> machine, String input) {
+	void assertMatches(Automaton<S> machine, String input) {
 		S target = transform(input);
 		assertTrue(
 				machine.matches(target),
@@ -24,7 +23,7 @@ abstract class StateMachineTestBase<S> {
 		);
 	}
 	
-	void assertNotMatches(StateMachine<S> machine, String input) {
+	void assertNotMatches(Automaton<S> machine, String input) {
 		S target = transform(input);
 		assertFalse(
 				machine.matches(target),

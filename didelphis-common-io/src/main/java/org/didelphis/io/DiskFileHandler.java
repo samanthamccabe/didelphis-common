@@ -23,7 +23,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.*;
 
 /**
- * @author Samantha Fiona McCabe
  * 10/11/2014
  */
 

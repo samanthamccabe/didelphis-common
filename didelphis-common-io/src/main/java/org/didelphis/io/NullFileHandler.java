@@ -18,7 +18,6 @@ import lombok.NonNull;
 import lombok.ToString;
 
 /**
- * @author Samantha Fiona McCabe
  * @date 10/13/2014
  */
 @ToString

@@ -31,7 +31,6 @@ import java.util.Iterator;
  * 
  * A simple immutable implementation of {@link FeatureArray} with no data.
  *
- * @author Samantha Fiona McCabe
  * @since 0.2.0
  */
 @ToString

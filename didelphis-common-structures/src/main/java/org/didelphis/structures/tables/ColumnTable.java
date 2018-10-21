@@ -20,7 +20,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * @author Samantha Fiona McCabe
  * @date 8/23/2015
  */
 public interface ColumnTable<E> extends Table<E> {
