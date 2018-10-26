@@ -77,7 +77,6 @@ abstract class StateMachineTestBase<S> {
 		S target = transform(input);
 		Match<S> match = machine.match(target, start);
 		return match.end();
-
 	}
 
 	@SafeVarargs

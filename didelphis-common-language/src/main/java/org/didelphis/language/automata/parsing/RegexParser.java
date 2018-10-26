@@ -539,6 +539,17 @@ public final class RegexParser implements LanguageParser<String> {
 			return;
 		}
 
+		if (!list.isEmpty()) {
+			String string = list.get(0);
+			if (QUANTIFIERS.contains(string)) {
+				String template = Templates.create()
+						.add("Expression cannot start with quantifier!")
+						.data(list)
+						.build();
+				throw new ParseException(template);
+			}
+		}
+
 		for (int i = 0; i < list.size() - 1; i++) {
 			String p = list.get(i);
 			String s = list.get(i + 1);

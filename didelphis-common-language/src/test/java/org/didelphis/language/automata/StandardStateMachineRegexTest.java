@@ -20,7 +20,6 @@ import org.didelphis.language.automata.parsing.RegexParser;
 import org.didelphis.language.automata.statemachines.StandardStateMachine;
 import org.didelphis.language.automata.statemachines.StateMachine;
 import org.didelphis.language.parsing.ParseException;
-import org.didelphis.utilities.Logger;
 import org.didelphis.utilities.Templates;
 import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.Test;
@@ -40,14 +39,19 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 
-	private static final Logger LOG = Logger.create(StandardStateMachineRegexTest.class);
-	
 	private static final RegexParser PARSER = new RegexParser();
 	private static final String CONSIST_MESSAGE = "Java regex returned {} but Didelphis regex returned {}";
 
 	@Override
 	protected String transform(String input) {
 		return PARSER.transform(input);
+	}
+
+	@Test
+	void testStartingQuantifier() {
+		assertThrowsParse("?a");
+		assertThrowsParse("*a");
+		assertThrowsParse("+a");
 	}
 
 	@Test
@@ -1014,7 +1018,7 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 				}
 		);
 	}
-	
+
 	static StateMachine<String> getMachine(@Language("RegExp") String exp) {
 		RegexParser regexParser = new RegexParser();
 		Expression expression = regexParser.parseExpression(exp, FORWARD);

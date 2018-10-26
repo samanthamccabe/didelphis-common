@@ -168,6 +168,18 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 	 * 		</ul>
 	 */
 	private static void validate(@NonNull String string) {
+
+		if (!string.isEmpty()) {
+			String subString = string.substring(0, 1);
+			if (QUANTIFIERS.contains(subString)) {
+				String template = Templates.create()
+						.add("Expression cannot start with quantifier!")
+						.data(string)
+						.build();
+				throw new ParseException(template);
+			}
+		}
+
 		for (int i = 0; i < string.length() - 1; i++) {
 			String p = "" + string.charAt(i);
 			String s = "" + string.charAt(i + 1);
