@@ -172,6 +172,11 @@ public final class FeatureModelLoader<T> {
 	@NonNull
 	public Constraint<T> parseConstraint(@NonNull String entry) {
 		List<String> split = TRANSFORM.split(entry, 2);
+
+		if (split.size() < 2) {
+			throw new ParseException("Unable to read constraint: " + entry);
+		}
+
 		String source = split.get(0);
 		String target = split.get(1);
 		FeatureArray<T> sMap = featureModel.parseFeatureString(source);
@@ -262,7 +267,7 @@ public final class FeatureModelLoader<T> {
 				}
 			}
 
-			ParseZone zone = determineZone(line);
+			ParseZone zone = determineZone(line.trim());
 			if (zone == null) {
 				zoneData.add(currentZone, line);
 			} else {

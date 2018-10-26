@@ -19,10 +19,12 @@ import org.didelphis.language.phonetic.PhoneticTestBase;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.segments.Segment;
+import org.didelphis.language.phonetic.segments.UndefinedSegment;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -69,35 +71,32 @@ class GeneralFeatureMappingTest extends PhoneticTestBase {
 	}
 	
 	@Test
-	void testGetStringFromFeatures01()  {
+	void testBestSymbol01()  {
 		testBestSymbol("g");
-	}
-
-	@Test
-	void testGetStringFromFeatures02()  {
 		testBestSymbol("gʱ");
-	}
-
-	@Test
-	void testGetStringFromFeatures03()  {
 		testBestSymbol("gʲ");
-	}
-
-	@Test
-	void testGetStringFromFeatures04()  {
 		testBestSymbol("kʷʰ");
-	}
-
-	@Test
-	void testGetStringFromFeatures05()  {
 		testBestSymbol("kːʷʰ");
 	}
-	
+
+	@Test
+	void testParseSegment01() {
+		Segment<Integer> s1 = mapping.parseSegment("ts");
+		assertFalse(s1 instanceof UndefinedSegment);
+		Segment<Integer> s2 = mapping.parseSegment("t͡s");
+		assertFalse(s2 instanceof UndefinedSegment);
+		Segment<Integer> s3 = mapping.parseSegment("t͜s");
+		assertFalse(s3 instanceof UndefinedSegment);
+
+		assertEquals(s1.getFeatures(), s2.getFeatures());
+		assertEquals(s1.getFeatures(), s3.getFeatures());
+	}
+
 	private static void testBestSymbol(String string) {
 		Segment<Integer> segment = mapping.parseSegment(string);
 		FeatureArray<Integer> array = segment.getFeatures();
 		String bestSymbol = mapping.findBestSymbol(array);
-		Assertions.assertEquals(string, bestSymbol);
+		assertEquals(string, bestSymbol);
 	}
 
 	private static FeatureMapping<Integer> loadMapping(String resourceName) {
