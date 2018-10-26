@@ -20,6 +20,7 @@ import org.didelphis.language.automata.parsing.SequenceParser;
 import org.didelphis.language.automata.statemachines.StandardStateMachine;
 import org.didelphis.language.automata.statemachines.StateMachine;
 import org.didelphis.language.parsing.FormatterMode;
+import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.SequenceFactory;
 import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.model.FeatureMapping;
@@ -34,6 +35,7 @@ import java.util.List;
 
 import static org.didelphis.language.parsing.ParseDirection.FORWARD;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  */
@@ -48,7 +50,14 @@ class StandardStateMachineTest extends StateMachineTestBase<Sequence<Integer>> {
 				? FACTORY.toSequence(input)
 				: parser.transform(input);
 	}
-	
+
+	@Test
+	void testStartingQuantifier() {
+		assertThrowsParse("?a");
+		assertThrowsParse("*a");
+		assertThrowsParse("+a");
+	}
+
 	@Test
 	void testSplit01() {
 		StateMachine<Sequence<Integer>> machine = getMachine("");
@@ -699,6 +708,17 @@ class StandardStateMachineTest extends StateMachineTestBase<Sequence<Integer>> {
 
 	private static StateMachine<Sequence<Integer>> getMachine(String expression) {
 		return getMachine(expression, null);
+	}
+
+	private static void assertThrowsParse(String string) {
+		parser = new SequenceParser<>(FACTORY);
+		assertThrows(
+				ParseException.class,
+				() -> {
+					Expression expression = parser.parseExpression(string);
+					StandardStateMachine.create("M0", expression, parser);
+				}
+		);
 	}
 
 	private static StateMachine<Sequence<Integer>> getMachine(

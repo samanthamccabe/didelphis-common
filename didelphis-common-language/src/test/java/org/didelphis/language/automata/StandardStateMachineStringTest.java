@@ -19,6 +19,7 @@ import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.parsing.StringParser;
 import org.didelphis.language.automata.statemachines.StandardStateMachine;
 import org.didelphis.language.automata.statemachines.StateMachine;
+import org.didelphis.language.parsing.ParseException;
 import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
@@ -32,6 +33,7 @@ import java.util.Map;
 
 import static org.didelphis.language.parsing.ParseDirection.FORWARD;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class StandardStateMachineStringTest extends StateMachineTestBase<String> {
 
@@ -42,7 +44,13 @@ class StandardStateMachineStringTest extends StateMachineTestBase<String> {
 		return parser.transform(input);
 	}
 
-	
+	@Test
+	void testStartingQuantifier() {
+		assertThrowsParse("?a");
+		assertThrowsParse("*a");
+		assertThrowsParse("+a");
+	}
+
 	@Test
 	void testSplit01() {
 		StateMachine<String> machine = getMachine("");
@@ -1005,6 +1013,16 @@ class StandardStateMachineStringTest extends StateMachineTestBase<String> {
 	
 	private static StateMachine<String> getMachine(String expression) {
 		return getMachine(expression, null);
+	}
+
+	private static void assertThrowsParse(String string) {
+		assertThrows(
+				ParseException.class,
+				() -> {
+					Expression expression = parser.parseExpression(string);
+					StandardStateMachine.create("M0", expression, parser);
+				}
+		);
 	}
 
 	private static StateMachine<String> getMachine(
