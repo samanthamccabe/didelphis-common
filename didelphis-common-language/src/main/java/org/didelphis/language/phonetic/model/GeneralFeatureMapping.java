@@ -17,6 +17,7 @@ package org.didelphis.language.phonetic.model;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
+import org.didelphis.language.automata.Regex;
 import org.didelphis.language.phonetic.features.EmptyFeatureArray;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.FeatureType;
@@ -42,7 +43,9 @@ import java.util.stream.Collectors;
 @ToString
 @EqualsAndHashCode
 public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
-	
+
+	private static final Regex BINDER = new Regex("[͜-͢]");
+
 	private final FeatureSpecification specification;
 	private final FeatureModel<T> featureModel;
 	
@@ -89,7 +92,7 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 		}
 
 		String sb = "";
-		if (minimum > 0.0) {
+		if (minimum > 0.0 && bestFeatures != null) {
 			Collection<String> collection = getBestDiacritic(
 					featureArray, 
 					bestFeatures, 
@@ -140,34 +143,45 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 	@Override
 	public Segment<T> parseSegment(@NonNull String string) {
 		string = Normalizer.normalize(string, Normalizer.Form.NFD);
+
 		if (featureMap.isEmpty()) {
 			FeatureArray<T> array = new EmptyFeatureArray<>(featureModel);
 			return new StandardSegment<>(string, array);
 		}
+
 		if (string.startsWith("[")) {
 			FeatureArray<T> array = featureModel.parseFeatureString(string);
 			return new StandardSegment<>(string, array);
 		}
+
+		FeatureArray<T> modifierArray = new SparseFeatureArray<>(featureModel);
+		int index = 0;
+		for (int i = string.length() - 1; i >= 0; i--) {
+			String substring = string.substring(i, i + 1);
+			if (modifiers.containsKey(substring)) {
+				FeatureArray<T> array = modifiers.get(substring);
+				modifierArray.alter(array);
+				index = i;
+			}
+		}
+
+		String substring = index <= 0 ? string : string.substring(0, index);
+
 		String best = "";
 		for (String key : orderedKeys) {
-			if (string.startsWith(key) && key.length() > best.length()) {
+			String s1 = BINDER.replace(substring, "");
+			String s2 = BINDER.replace(key, "");
+			if (s1.startsWith(s2) && key.length() > best.length()) {
 				best = key;
 			}
 		}
-		
-		if (best.isEmpty()) {
+
+		if ((best.isEmpty())) {
 			return new UndefinedSegment<>(string, featureModel);
 		}
 		
 		FeatureArray<T> featureArray = getFeatureArray(best);
-		String substring = string.substring(best.length());
-		for (char c : substring.toCharArray()) {
-			String s = ""+c;
-			if (modifiers.containsKey(s)) {
-				FeatureArray<T> array = modifiers.get(s);
-				featureArray.alter(array);
-			}
-		}
+		featureArray.alter(modifierArray);
 		return new StandardSegment<>(string, featureArray);
 	}
 

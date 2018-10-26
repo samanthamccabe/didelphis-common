@@ -140,7 +140,7 @@ public enum FormatterMode implements Segmenter, Formatter {
 						char ch = word.charAt(i);
 						if (isDoubleWidthBinder(ch)) {
 							sb.append(ch);
-							if (i + 1 < word.length() - 1) {
+							if (i + 1 < word.length()) {
 								sb.append(word.charAt(i + 1));
 								i++;
 							}

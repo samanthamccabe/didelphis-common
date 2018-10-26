@@ -130,7 +130,7 @@ class FeatureModelLoaderTest extends PhoneticTestBase {
 				"z\t-\t-",
 				"a\t-\t-",
 				"\t\t-\t-",
-				"MODIFIERS",
+				"MODIFIERS      ",
 				".\t-\t",
 				",\t\t-",
 				"`\t+\t",

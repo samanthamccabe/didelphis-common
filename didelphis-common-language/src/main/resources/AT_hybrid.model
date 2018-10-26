@@ -72,7 +72,7 @@ CONSTRAINTS %*******************************************************************
 [+continuant]  > [-ejective]
 [+voice]       > [-ejective]
 
-% Distrubuted requires a closure or near closure
+% Distributed requires a closure or near closure
 [+distributed] > [+consonantal]
 [-consonantal] > [-distributed]
 
@@ -119,8 +119,8 @@ pɸ	+	-	-	-	+	-	-	+	-	0	-	0	0	-	-	-	-	+	-	-
 bβ	+	-	-	-	+	-	-	+	-	0	-	0	0	-	+	-	-	+	-	-
 tθ	+	-	-	-	+	-	-	-	-	1	-	0	0	-	-	-	-	+	-	-
 dð	+	-	-	-	+	-	-	-	-	1	-	0	0	-	+	-	-	+	-	-
-t͜s	+	-	-	-	+	-	-	-	-	2	-	0	0	-	-	-	-	+	-	-
-d͜z	+	-	-	-	+	-	-	-	-	2	-	0	0	-	+	-	-	+	-	-
+ts	+	-	-	-	+	-	-	-	-	2	-	0	0	-	-	-	-	+	-	-
+dz	+	-	-	-	+	-	-	-	-	2	-	0	0	-	+	-	-	+	-	-
 tɬ	+	-	-	-	+	+	-	-	-	2	-	0	0	-	-	-	-	+	-	-
 dɮ	+	-	-	-	+	+	-	-	-	2	-	0	0	-	+	-	-	+	-	-
 tʃ	+	-	-	-	+	-	-	-	-	3	-	0	0	-	-	-	-	+	-	-
