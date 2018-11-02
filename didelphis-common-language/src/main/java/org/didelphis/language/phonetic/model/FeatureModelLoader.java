@@ -297,7 +297,7 @@ public final class FeatureModelLoader<T> {
 				if (code != null && !code.isEmpty()) {
 					featureIndices.put(code, i);
 				}
-			} else {
+			} else if (!entry.trim().isEmpty()) {
 				String message = Templates.create()
 						.add("Unrecognized 'FEATURE' command.")
 						.data(entry)
@@ -329,7 +329,7 @@ public final class FeatureModelLoader<T> {
 				String diacritic = DOTTED_CIRCLE.replace(symbol, "");
 				String norm = normalize(diacritic, Form.NFD);
 				diacritics.put(norm, array);
-			} else {
+			} else if (!entry.trim().isEmpty()) {
 				LOG.error("Unrecognized diacritic definition {}", entry);
 			}
 		}
@@ -367,7 +367,7 @@ public final class FeatureModelLoader<T> {
 					String norm = normalize(symbol, Form.NFD);
 					featureMap.put(norm, features);
 				}
-			} else {
+			} else if (!entry.trim().isEmpty()) {
 				LOG.error("Unrecognized symbol definition {}", entry);
 			}
 		}
