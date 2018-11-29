@@ -16,9 +16,11 @@ package org.didelphis.io;
 
 import lombok.NonNull;
 import lombok.ToString;
-import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 /**
  * Enum {@code ClassPathFileHandler}
@@ -37,17 +39,23 @@ public enum ClassPathFileHandler implements FileHandler {
 		encoding = "UTF-8";
 	}
 
+	@SuppressWarnings ("ProhibitedExceptionCaught")
 	@Override
-	public @Nullable String read(@NonNull String path) {
+	public String read(@NonNull String path) throws IOException {
 		ClassLoader classLoader = ClassPathFileHandler.class.getClassLoader();
-		InputStream stream = classLoader.getResourceAsStream(path);
-		if (stream == null) return null;
-		return IoUtil.readStream(stream, encoding);
+		try (
+				InputStream stream = classLoader.getResourceAsStream(path);
+				Reader reader = new InputStreamReader(stream, encoding)
+		) {
+			return FileHandler.readString(reader);
+		} catch (NullPointerException e) {
+			throw new IOException("Data not found on classpath at " + path, e);
+		}
 	}
 
 	@Override
-	public boolean writeString(
-			 @NonNull String path,  @NonNull String data
+	public void writeString(
+			@NonNull String path,  @NonNull String data
 	) {
 		throw new UnsupportedOperationException(
 				"Trying to write using an instance of "

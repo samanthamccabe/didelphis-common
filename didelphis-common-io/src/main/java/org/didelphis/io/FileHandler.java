@@ -15,13 +15,15 @@
 package org.didelphis.io;
 
 import lombok.NonNull;
-import org.jetbrains.annotations.Nullable;
+
+import java.io.IOException;
+import java.io.Reader;
 
 /**
- * @date 10/11/2014
- *
- * 		Modular file IO facade. Designed to provide read-write capabilities in a
- * 		general and modular fashion.
+ * Interface {@code FileHandler}
+ * <p>
+ * Modular file IO facade. Designed to provide read-write capabilities in a
+ * general and modular fashion.
  */
 public interface FileHandler {
 
@@ -29,19 +31,30 @@ public interface FileHandler {
 	 * Reads data from a provided path, if supported
 	 *
 	 * @param path where to read data from
-	 *
-	 * @return the data at the provided path; should be null on error
+	 * @return the data at the provided path
+	 * @throws IOException if the path is invalid or cannot be read from
 	 */
-	@Nullable String read(@NonNull String path);
-	
+	@NonNull
+	String read(@NonNull String path) throws IOException;
+
 	/**
 	 * Write data to a provided path, if supported
 	 *
 	 * @param path where to write the data
 	 * @param data data to write
-	 *
-	 * @return true if write is successful; false if an exception is thrown
+	 * @throws IOException if the path is invalid or cannot be written to
 	 */
-	boolean writeString(@NonNull String path, @NonNull String data);
+	void writeString(@NonNull String path, @NonNull String data)
+			throws IOException;
 
+	@NonNull
+	static String readString(@NonNull Reader reader) throws IOException {
+		StringBuilder sb = new StringBuilder(0x1000);
+		int r = reader.read();
+		while (r >= 0) {
+			sb.append((char) r);
+			r = reader.read();
+		}
+		return sb.toString();
+	}
 }

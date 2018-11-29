@@ -35,11 +35,10 @@ public final class MockFileHandler implements FileHandler {
 	}
 
 	@Override
-	public boolean writeString(
+	public void writeString(
 			 @NonNull String path,  @NonNull String data
 	) {
 		mockFileSystem.put(path, data);
-		return true;
 	}
 
 }

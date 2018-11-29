@@ -17,12 +17,18 @@ package org.didelphis.io;
 import org.didelphis.utilities.Logger;
 import org.junit.jupiter.api.Test;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Created by samantha on 3/16/17.
@@ -32,9 +38,9 @@ class DiskFileHandlerTest {
 	private static final Logger LOG = Logger.create(DiskFileHandlerTest.class);
 
 	private final DiskFileHandler handler = new DiskFileHandler("UTF-8");
-	
+
 	@Test
-	void read() {
+	void read() throws IOException {
 		String filePath = "./testFileRead.txt";
 		File file = new File(filePath);
 
@@ -56,7 +62,7 @@ class DiskFileHandlerTest {
 	}
 
 	@Test
-	void writeString() {
+	void writeString() throws IOException {
 		String filePath = "./testFileWrite.txt";
 		File file = new File(filePath);
 		String payload = "Test payload for writing";
@@ -84,7 +90,10 @@ class DiskFileHandlerTest {
 	void writeString_Fail() {
 		String filePath = "./foo/testFileWrite.txt";
 		String payload = "Expected Failure";
-		assertFalse(handler.writeString(filePath, payload));
+		assertThrows(
+				IOException.class,
+				() -> handler.writeString(filePath, payload)
+		);
 	}
 
 

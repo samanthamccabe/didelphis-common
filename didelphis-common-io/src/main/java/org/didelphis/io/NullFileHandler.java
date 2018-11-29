@@ -30,8 +30,7 @@ public enum NullFileHandler implements FileHandler {
 	}
 
 	@Override
-	public boolean writeString( @NonNull String path,  @NonNull String data) {
-		return false;
+	public void writeString(@NonNull String path, @NonNull String data) {
 	}
 
 }

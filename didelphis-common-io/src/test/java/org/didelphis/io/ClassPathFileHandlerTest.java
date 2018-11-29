@@ -16,6 +16,8 @@ package org.didelphis.io;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -25,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class ClassPathFileHandlerTest {
 
 	@Test
-	void read() {
+	void read() throws IOException {
 		String received = ClassPathFileHandler.INSTANCE.read("testFile.txt");
 		String expected = "this is a test file for ClassPathFileHandlerTest\n";
 		assertEquals(expected, received);
