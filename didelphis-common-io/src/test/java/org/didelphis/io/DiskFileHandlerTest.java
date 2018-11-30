@@ -30,9 +30,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-/**
- * Created by samantha on 3/16/17.
- */
 class DiskFileHandlerTest {
 
 	private static final Logger LOG = Logger.create(DiskFileHandlerTest.class);
@@ -45,7 +42,7 @@ class DiskFileHandlerTest {
 		File file = new File(filePath);
 
 		String payload = "Test payload for reading";
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))){
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
 			writer.write(payload);
 		} catch (IOException e) {
 			LOG.error("Failed to create file {}", filePath, e);
@@ -53,7 +50,7 @@ class DiskFileHandlerTest {
 
 		CharSequence sequence = handler.read(filePath);
 		assertEquals(payload, sequence.toString());
-		
+
 		// If deleting the file immediately fails, attempt to delete it on
 		// JVM shutdown, when the tests conclude
 		if (!file.delete()) {
@@ -63,17 +60,17 @@ class DiskFileHandlerTest {
 
 	@Test
 	void writeString() throws IOException {
-		String filePath = "./testFileWrite.txt";
-		File file = new File(filePath);
+		String path = "./testFileWrite.txt";
+		File file = new File(path);
 		String payload = "Test payload for writing";
 
-		handler.writeString(filePath, payload);
+		handler.writeString(path, payload);
 		
 		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 			String collect = reader.lines().collect(Collectors.joining("\n"));
 			assertEquals(payload, collect);
 		} catch (FileNotFoundException e) {
-			LOG.error("Failed to read from file {}, file not found", filePath, e);
+			LOG.error("Failed to read from file {}, file not found", path, e);
 		} catch (IOException e) {
 			LOG.error("Failed to read from file {}", e);
 		}
@@ -85,7 +82,6 @@ class DiskFileHandlerTest {
 		}
 	}
 
-
 	@Test
 	void writeString_Fail() {
 		String filePath = "./foo/testFileWrite.txt";
@@ -95,7 +91,6 @@ class DiskFileHandlerTest {
 				() -> handler.writeString(filePath, payload)
 		);
 	}
-
 
 	@Test
 	void testEquals() {

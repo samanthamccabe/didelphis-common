@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.didelphis.common</groupId>
         <artifactId>didelphis-common</artifactId>
-        <version>0.3.1-SNAPSHOT</version>
+        <version>0.3.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -29,7 +29,7 @@
         <dependency>
             <groupId>org.didelphis.common</groupId>
             <artifactId>didelphis-common-utilities</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>0.3.2-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

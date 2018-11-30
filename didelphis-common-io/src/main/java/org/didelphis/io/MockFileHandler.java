@@ -20,25 +20,34 @@ import lombok.NonNull;
 import java.util.Map;
 
 /**
- * @since 10/13/2014 This mock handler simply uses maps to simulate a crude
- * file-system The maps is from 'path' to data, so a test can instantiate the
- * class with this object, either providing it data, or reading from it;
+ * Class {@code MockFileHandler}
+ * <p>
+ * Simulates a crude file-system, mapping paths to data.
  */
 @Data
 public final class MockFileHandler implements FileHandler {
 
 	private final Map<String, String> mockFileSystem;
 
+	@NonNull
 	@Override
-	public String read( @NonNull String path) {
+	public String read(@NonNull String path) {
 		return mockFileSystem.get(path);
 	}
 
 	@Override
-	public void writeString(
-			 @NonNull String path,  @NonNull String data
-	) {
+	public void writeString(@NonNull String path, @NonNull String data) {
 		mockFileSystem.put(path, data);
+	}
+
+	@Override
+	public boolean validForRead(@NonNull String path) {
+		return mockFileSystem.containsKey(path);
+	}
+
+	@Override
+	public boolean validForWrite(@NonNull String path) {
+		return true;
 	}
 
 }

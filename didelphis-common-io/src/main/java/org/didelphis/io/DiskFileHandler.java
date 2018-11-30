@@ -29,10 +29,12 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
 
-/**
- * 10/11/2014
- */
 
+/**
+ * Class {@code DiskFileHandler}
+ *
+ *
+ */
 @ToString
 @EqualsAndHashCode
 public final class DiskFileHandler implements FileHandler {
@@ -64,5 +66,17 @@ public final class DiskFileHandler implements FileHandler {
 		try (Writer writer = new BufferedWriter(new FileWriter(file))) {
 			writer.write(data);
 		}
+	}
+
+	@Override
+	public boolean validForRead(@NonNull String path) {
+		File file = new File(path);
+		return file.exists() && file.canRead();
+	}
+
+	@Override
+	public boolean validForWrite(@NonNull String path) {
+		File file = new File(path);
+		return file.exists() && file.canWrite();
 	}
 }

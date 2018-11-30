@@ -29,7 +29,12 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
- * @param <E>
+ * Class {@code SymmetricTable}
+ *
+ * Note: as of version {@code 0.3.1} it is recommended that this class be used
+ * judiciously. Testing has indicated substantial runtime costs in repeated
+ * index lookups which is probably proportional to the size of the table. In
+ * the future, a different implementation of this class will be adopted.
  *
  */
 public class SymmetricTable<E> extends AbstractTable<E> {
@@ -38,7 +43,7 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 
 	private SymmetricTable(int n) {
 		super(n, n);
-		array = new ArrayList<>(n + ((n * n) / 2));
+		array = new ArrayList<>(n + ((n * n - n) / 2));
 	}
 
 	public SymmetricTable(int n, @NonNull List<E> array) {
@@ -304,7 +309,11 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 	}
 
 	private static int getRowStart(int row) {
-		return IntStream.rangeClosed(0, row).sum();
+		int sum = 0;
+		for (int i = 0; i <= row; i++) {
+			sum += i;
+		}
+		return sum;
 	}
 
 	private static final class ColumnIterator<E>

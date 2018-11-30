@@ -47,6 +47,30 @@ public interface FileHandler {
 	void writeString(@NonNull String path, @NonNull String data)
 			throws IOException;
 
+	/**
+	 * Checks if a path can be read from without producing an error. The path
+	 * does not need to actually exist. For example, a no-op implementation does
+	 * which not actually read data can return true for any path.
+	 *
+	 * @param path the path to check
+	 *
+	 * @return true if the path can be read from without producing an error.
+	 */
+	boolean validForRead(@NonNull String path);
+
+	/**
+	 * Checks if a path can be written to without error. The path does not need
+	 * to actually exist. For example, a no-op implementation does which not
+	 * actually write data can return true for any path. Similarly, a read-only
+	 * implementation should return {@code false} for all paths even if they do
+	 * exist.
+	 *
+	 * @param path the path to check
+	 *
+	 * @return true if the path can be written to without producing an error.
+	 */
+	boolean validForWrite(@NonNull String path);
+
 	@NonNull
 	static String readString(@NonNull Reader reader) throws IOException {
 		StringBuilder sb = new StringBuilder(0x1000);

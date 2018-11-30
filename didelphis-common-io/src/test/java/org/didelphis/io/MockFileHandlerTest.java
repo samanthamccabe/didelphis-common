@@ -24,9 +24,6 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-/**
- * Created by samantha on 3/16/17.
- */
 class MockFileHandlerTest {
 	
 	private static Map<String, String> map;
