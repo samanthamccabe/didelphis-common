@@ -18,20 +18,32 @@ import lombok.NonNull;
 import lombok.ToString;
 
 /**
- * @date 10/13/2014
+ * Enum {@code NullFileHandler}
+ *
+ * A simple no-op {@code FileHandler}
  */
 @ToString
 public enum NullFileHandler implements FileHandler {
 	INSTANCE;
 
+	@NonNull
 	@Override
 	public String read( @NonNull String path) {
 		return "";
 	}
 
 	@Override
-	public boolean writeString( @NonNull String path,  @NonNull String data) {
-		return false;
+	public void writeString(@NonNull String path, @NonNull String data) {
+	}
+
+	@Override
+	public boolean validForRead(@NonNull String path) {
+		return true;
+	}
+
+	@Override
+	public boolean validForWrite(@NonNull String path) {
+		return true;
 	}
 
 }

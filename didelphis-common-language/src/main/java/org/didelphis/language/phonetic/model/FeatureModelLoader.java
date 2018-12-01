@@ -34,6 +34,7 @@ import org.didelphis.utilities.Logger;
 import org.didelphis.utilities.Templates;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -136,14 +137,14 @@ public final class FeatureModelLoader<T> {
 		}
 		zoneData = new GeneralMultiMap<>(map, Suppliers.ofList());
 
-		String read = fileHandler.read(path);
-
-		if (read == null) {
-			throw new ParseException("Failed to load data from path " + path);
+		try {
+			String read = fileHandler.read(path);
+			parse(lines(read));
+			populate();
+		} catch (IOException e) {
+			LOG.error("Unexpected failure encountered: {}", e);
+			throw new ParseException("Failed to read from path " + path, e);
 		}
-
-		parse(lines(read));
-		populate();
 	}
 
 	public FeatureModelLoader(
@@ -257,13 +258,16 @@ public final class FeatureModelLoader<T> {
 				if (matcher.end() >= 0) {
 					String parent = PARENT_PATH.replace(basePath, "$1");
 					String filePath = parent + matcher.group(1);
-					String data = fileHandler.read(filePath);
-					if (data == null) {
-						throw new ParseException("Unable to read from " + filePath);
+					try {
+						String data = fileHandler.read(filePath);
+						Iterable<String> list = lines(data);
+						parse(list);
+						continue;
+					} catch (IOException e) {
+						LOG.error("Unexpected failure encountered: {}", e);
+						throw new ParseException("Unable to read from " 
+								+ filePath, e);
 					}
-					Iterable<String> list = lines(data);
-					parse(list);
-					continue;
 				}
 			}
 

@@ -16,20 +16,24 @@ package org.didelphis.io;
 
 import lombok.NonNull;
 import lombok.ToString;
-import org.jetbrains.annotations.Nullable;
+import org.didelphis.utilities.Logger;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 /**
  * Enum {@code ClassPathFileHandler}
- *
- * @since 0.1.0
- *
- * 10/11/2014
+ * <p>
+ * Read-only {@code FileHandler}
  */
 @ToString
-public enum ClassPathFileHandler implements FileHandler {
-	INSTANCE;
+public enum ClassPathFileHandler implements FileHandler {INSTANCE;
+
+	private static final Class<?> CLASS = ClassPathFileHandler.class;
+	private static final Logger LOG = Logger.create(CLASS);
+	private static final ClassLoader LOADER = CLASS.getClassLoader();
 
 	private final String encoding;
 
@@ -37,20 +41,38 @@ public enum ClassPathFileHandler implements FileHandler {
 		encoding = "UTF-8";
 	}
 
+	@NonNull
+	@SuppressWarnings ("ProhibitedExceptionCaught")
 	@Override
-	public @Nullable String read(@NonNull String path) {
-		ClassLoader classLoader = ClassPathFileHandler.class.getClassLoader();
-		InputStream stream = classLoader.getResourceAsStream(path);
-		if (stream == null) return null;
-		return IoUtil.readStream(stream, encoding);
+	public String read(@NonNull String path) throws IOException {
+		try (InputStream stream = LOADER.getResourceAsStream(path);
+				Reader reader = new InputStreamReader(stream, encoding)) {
+			return FileHandler.readString(reader);
+		} catch (NullPointerException e) {
+			throw new IOException("Data not found on classpath at " + path, e);
+		}
 	}
 
 	@Override
-	public boolean writeString(
-			 @NonNull String path,  @NonNull String data
+	public void writeString(
+			@NonNull String path, @NonNull String data
 	) {
 		throw new UnsupportedOperationException(
-				"Trying to write using an instance of "
-						+ ClassPathFileHandler.class.getCanonicalName());
+				"Trying to write using an instance of " +
+						CLASS.getCanonicalName());
 	}
-}
+
+	@Override
+	public boolean validForRead(@NonNull String path) {
+		try (InputStream stream = LOADER.getResourceAsStream(path)) {
+			return stream != null;
+		} catch (IOException e) {
+			LOG.warn("Failed to read from path {}", path, e);
+		}
+		return false;
+	}
+
+	@Override
+	public boolean validForWrite(@NonNull String path) {
+		return false;
+	}}

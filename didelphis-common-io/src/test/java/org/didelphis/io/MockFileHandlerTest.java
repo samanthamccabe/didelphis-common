@@ -17,15 +17,13 @@ package org.didelphis.io;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-/**
- * Created by samantha on 3/16/17.
- */
 class MockFileHandlerTest {
 	
 	private static Map<String, String> map;
@@ -52,7 +50,7 @@ class MockFileHandlerTest {
 	}
 
 	@Test
-	void read() {
+	void read() throws IOException {
 		assertEquals("payload1: xx", handler.read("file1"));
 		assertEquals("payload2: yy", handler.read("file2"));
 		assertEquals("payload3: zz", handler.read("file3"));
@@ -60,7 +58,7 @@ class MockFileHandlerTest {
 	}
 
 	@Test
-	void writeString() {
+	void writeString() throws IOException {
 		handler.writeString("newFile","new payload");
 		assertEquals("new payload", map.get("newFile"));
 	}

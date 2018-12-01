@@ -17,13 +17,7 @@ package org.didelphis.io;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
-/**
- * Class NullFileHandlerTest
- *
- * @since 06/06/2017
- */
 class NullFileHandlerTest {
 	@Test
 	void read() {
@@ -32,7 +26,8 @@ class NullFileHandlerTest {
 
 	@Test
 	void writeString() {
-		assertFalse(NullFileHandler.INSTANCE.writeString("", ""));
+		// Does nothing, throws no errors
+		NullFileHandler.INSTANCE.writeString("", "");
 	}
 
 }

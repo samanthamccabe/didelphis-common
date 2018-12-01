@@ -18,14 +18,23 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 import org.didelphis.utilities.Logger;
-import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.Writer;
+
 
 /**
- * 10/11/2014
+ * Class {@code DiskFileHandler}
+ *
+ *
  */
-
 @ToString
 @EqualsAndHashCode
 public final class DiskFileHandler implements FileHandler {
@@ -38,22 +47,36 @@ public final class DiskFileHandler implements FileHandler {
 		this.encoding = encoding;
 	}
 
+	@NonNull
 	@Override
-	public @Nullable String read( @NonNull String path) {
-		return IoUtil.readPath(path);
+	public String read(@NonNull String path) throws IOException {
+		File file = new File(path);
+		try (
+				InputStream stream = new FileInputStream(file);
+				Reader reader = new InputStreamReader(stream)
+		) {
+			return FileHandler.readString(reader);
+		}
 	}
 
 	@Override
-	public boolean writeString(
-			 @NonNull String path,  @NonNull String data
-	) {
+	public void writeString(@NonNull String path, @NonNull String data)
+			throws IOException {
 		File file = new File(path);
 		try (Writer writer = new BufferedWriter(new FileWriter(file))) {
 			writer.write(data);
-			return true;
-		} catch (IOException e) {
-			LOG.error("Failed to write to path {}", path, e);
 		}
-		return false;
+	}
+
+	@Override
+	public boolean validForRead(@NonNull String path) {
+		File file = new File(path);
+		return file.exists() && file.canRead();
+	}
+
+	@Override
+	public boolean validForWrite(@NonNull String path) {
+		File file = new File(path);
+		return file.exists() && file.canWrite();
 	}
 }
