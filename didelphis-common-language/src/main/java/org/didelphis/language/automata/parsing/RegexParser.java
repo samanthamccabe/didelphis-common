@@ -443,10 +443,10 @@ public final class RegexParser implements LanguageParser<String> {
 							throw new ParseException(message);
 						}
 
-						set.add("" + c1);
+						set.add(String.valueOf(c1));
 						while (c1 < c2) {
 							c1++;
-							set.add("" + c1);
+							set.add(String.valueOf(c1));
 						}
 						i += 2;
 					} else {

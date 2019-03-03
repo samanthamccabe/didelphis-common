@@ -12,7 +12,7 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-package org.didelphis.language.automata.utils;
+package org.didelphis.structures.graph;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -20,9 +20,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.UtilityClass;
-import org.didelphis.structures.graph.Arc;
-import org.didelphis.structures.graph.Graph;
-import org.didelphis.language.automata.expressions.Expression;
+import org.didelphis.structures.maps.interfaces.TwoKeyMultiMap;
 import org.didelphis.structures.tuples.Triple;
 
 import java.util.Collection;
@@ -47,69 +45,20 @@ import java.util.Set;
 public class GraphUtils {
 
 	@NonNull
-	public static  String expressionToGML(@NonNull Expression expression) {
-		Set<Node> nodes = new HashSet<>();
-		Set<Edge> edges = new HashSet<>();
-
-		recurse(1, expression, nodes, edges);
-
-		return buildGML(nodes, edges);
-	}
-	
-	@NonNull
-	public static <T> String graphToGML(@NonNull Graph<T> graph, boolean useRealId) {
+	public static <T> String graphToGML(@NonNull
+			TwoKeyMultiMap<String, T, String> graph, boolean useRealId) {
 		Set<String> nodes = new HashSet<>();
-		Set<Triple<String, Arc<T>, String>> edges = new HashSet<>();
-		for (Triple<String, Arc<T>, Collection<String>> triple : graph) {
+		Set<Triple<String, T, String>> edges = new HashSet<>();
+		for (Triple<String, T, Collection<String>> triple : graph) {
 			String source = triple.getFirstElement();
 			nodes.add(source);
-			Arc<T> arc = triple.getSecondElement();
+			T arc = triple.getSecondElement();
 			for (String target : triple.getThirdElement()) {
 				nodes.add(target);
 				edges.add(new Triple<>(source, arc, target));
 			}
 		}
 		return buildGML(nodes, edges, useRealId);
-	}
-	
-	private static int recurse(
-			int counter,
-			@NonNull Expression expression,
-			@NonNull Set<Node> nodes,
-			@NonNull Set<Edge> edges
-	) {
-		int parentId = counter;
-		nodes.add(new Node(parentId, buildLabel(expression)));
-		if (expression.hasChildren()) {
-			for (Expression child : expression.getChildren()) {
-				counter++;
-				edges.add(new Edge(parentId, counter, ""));
-				counter = recurse(counter, child, nodes, edges);
-			}
-		}
-		return counter;
-	}
-	
-	private static String buildLabel(Expression expression) {
-		StringBuilder stringBuilder = new StringBuilder();
-		
-		if (expression.isNegative()) {
-			stringBuilder.append('!');
-		}
-		
-		if (expression.hasChildren()) {
-			if (expression.isParallel()) {
-				stringBuilder.append("{ }");
-			} else if (expression.isCapturing()) {
-				stringBuilder.append("( )");
-			} else {
-				stringBuilder.append("(?: )");
-			}
-		} else {
-			stringBuilder.append(expression.getTerminal());
-		}
-		stringBuilder.append(expression.getQuantifier());
-		return stringBuilder.toString();
 	}
 
 	private static String buildGML(
