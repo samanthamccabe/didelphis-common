@@ -20,6 +20,7 @@ additions to the flexibility of state machine code.
 	[[42]](https://github.com/samanthamccabe/didelphis-common/issues/42)
 
 #### Changed
+- Changed license to GPL 3.0
 - Altered `FileHandler` interface to throw `IOException` rather than returning
 	`null` as it did originally
 	[[21]](https://github.com/samanthamccabe/didelphis-common/issues/21)
