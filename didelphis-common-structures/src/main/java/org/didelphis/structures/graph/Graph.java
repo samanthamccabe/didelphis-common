@@ -37,4 +37,17 @@ public final class Graph<S> extends GeneralTwoKeyMultiMap<String, Arc<S>, String
 	public Graph(@NonNull GeneralTwoKeyMultiMap<String, Arc<S>, String> graph) {
 		super(graph, new HashMap<>(), Suppliers.ofLinkedHashMap(), Suppliers.ofList());
 	}
+
+	public static class EmptyArc<S> implements Arc<S> {
+
+		@Override
+		public String toString() {
+			return "";
+		}
+
+		@Override
+		public int match(S sequence, int index) {
+			return 0;
+		}
+	}
 }
