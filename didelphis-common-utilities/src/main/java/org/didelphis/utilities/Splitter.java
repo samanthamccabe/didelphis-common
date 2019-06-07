@@ -19,9 +19,7 @@
 
 package org.didelphis.utilities;
 
-import lombok.AccessLevel;
 import lombok.NonNull;
-import lombok.experimental.FieldDefaults;
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,7 +39,6 @@ import java.util.Map;
  * @since 0.2.0
  */
 @UtilityClass
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class Splitter {
 	
 	/**
@@ -115,7 +112,8 @@ public class Splitter {
 				String matchedSpecial = "";
 				if (special != null) {
 					for (String s : special) {
-						if (substring.startsWith(s) && s.length() > matchedSpecial.length()) {
+						if (substring.startsWith(s) &&
+								s.length() > matchedSpecial.length()) {
 							matchedSpecial = s;
 						}
 					}

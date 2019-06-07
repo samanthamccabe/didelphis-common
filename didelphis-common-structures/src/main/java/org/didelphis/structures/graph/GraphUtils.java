@@ -42,11 +42,8 @@ import java.util.Set;
  * from a number of data types. This is especially useful for debugging classes
  * in the package {@link org.didelphis.language.automata}, and for developing
  * implementations based on these classes.
- * 
- * @date 1/26/18
  */
 @UtilityClass
-@FieldDefaults (level = AccessLevel.PRIVATE, makeFinal = true)
 public class GraphUtils {
 
 	@NonNull
