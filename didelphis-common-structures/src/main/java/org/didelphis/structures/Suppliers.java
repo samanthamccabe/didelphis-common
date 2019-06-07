@@ -19,9 +19,7 @@
 
 package org.didelphis.structures;
 
-import lombok.AccessLevel;
 import lombok.ToString;
-import lombok.experimental.FieldDefaults;
 import lombok.experimental.UtilityClass;
 
 import java.util.ArrayList;
@@ -40,47 +38,33 @@ import java.util.function.Supplier;
 /**
  * Utility Class {@code Suppliers}
  *
- * @date 2017-09-07
  * @since 0.1.0
  */
-@SuppressWarnings("unchecked")
 @ToString
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @UtilityClass
 public final class Suppliers {
 
-	/* --------------------------------------------------------------------- <*/
-	Supplier<? extends List<?>>   ARRAY_LIST      = () -> new ArrayList<>();
-
-	Supplier<? extends Set<?>>    HASH_SET        = () -> new HashSet<>();
-	Supplier<? extends Map<?, ?>> HASH_MAP        = () -> new HashMap<>();
-	Supplier<? extends Map<?, ?>> LINKED_HASH_MAP = () -> new LinkedHashMap<>();
-	// Navigable
-	Supplier<? extends NavigableSet<?>>    TREE_SET = () -> new TreeSet<>();
-	Supplier<? extends NavigableMap<?, ?>> TREE_MAP = () -> new TreeMap<>();
-	/*> --------------------------------------------------------------------- */
-
 	public <T> Supplier<Set<T>> ofHashSet() {
-		return (Supplier<Set<T>>) HASH_SET;
+		return HashSet::new;
 	}
 
 	public <K, V> Supplier<Map<K, V>> ofHashMap() {
-		return (Supplier<Map<K, V>>) HASH_MAP;
+		return HashMap::new;
 	}
 
 	public <K, V> Supplier<Map<K, V>> ofLinkedHashMap() {
-		return (Supplier<Map<K, V>>) LINKED_HASH_MAP;
+		return LinkedHashMap::new;
 	}
 
 	public <T> Supplier<NavigableSet<T>> ofTreeSet() {
-		return (Supplier<NavigableSet<T>>) TREE_SET;
+		return TreeSet::new;
 	}
 
 	public <T> Supplier<List<T>> ofList() {
-		return (Supplier<List<T>>) ARRAY_LIST;
+		return ArrayList::new;
 	}
 
 	public <K, V> Supplier<NavigableMap<K, V>> ofTreeMap() {
-		return (Supplier<NavigableMap<K, V>>) TREE_MAP;
+		return TreeMap::new;
 	}
 }
