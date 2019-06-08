@@ -27,7 +27,6 @@ import org.didelphis.utilities.Templates;
 /**
  * Interface {@code ModelBearer}
  *
- * @date 2017-02-19
  * @since 0.1.0
  */
 @FunctionalInterface

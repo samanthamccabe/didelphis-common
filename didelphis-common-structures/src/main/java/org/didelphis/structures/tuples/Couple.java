@@ -31,7 +31,6 @@ import java.util.Objects;
  * In many contexts, use of a class like this might indicate poor design. As it
  * is, {@code Tuple} is used to provide an {@code Iterator} for two-key maps.
  *
- * @date 2017-07-22
  * @since 0.2.0
  */
 @EqualsAndHashCode

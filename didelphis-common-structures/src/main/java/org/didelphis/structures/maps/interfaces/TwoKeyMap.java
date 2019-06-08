@@ -32,7 +32,6 @@ import java.util.Map;
 /**
  * Interface {@code TwoKeyMap}
  *
- * @date 2017-01-15
  * @since 0.1.0
  */
 public interface TwoKeyMap<T, U, V>

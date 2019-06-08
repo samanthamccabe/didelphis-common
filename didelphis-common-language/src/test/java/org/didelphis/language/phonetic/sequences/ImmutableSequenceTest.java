@@ -37,7 +37,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * Class {@code ImmutableSequenceTest}
  *
  * @since 0.1.0
- * @date 2017-06-23
  */
 class ImmutableSequenceTest {
 

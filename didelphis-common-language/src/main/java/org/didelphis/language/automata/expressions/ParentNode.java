@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 /**
  * Class {@code ExpressionNode}
  *
- * @date 10/13/17
  */
 @Value
 public class ParentNode implements Expression {

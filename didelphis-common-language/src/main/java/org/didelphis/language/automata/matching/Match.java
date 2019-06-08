@@ -26,7 +26,6 @@ import org.jetbrains.annotations.Nullable;
  *
  * Like {@link java.util.regex.MatchResult} but parameterized
  * 
- * @date 10/21/17
  */
 public interface Match<S> {
 

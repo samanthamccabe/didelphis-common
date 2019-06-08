@@ -26,7 +26,6 @@ import java.util.Collection;
 /**
  * Interface {@code TwoKeyMultiMap}
  *
- * @date 2016-04-10
  * @since 0.1.0
  */
 public interface TwoKeyMultiMap<T, U, V>

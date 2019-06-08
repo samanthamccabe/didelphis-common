@@ -29,7 +29,6 @@ import lombok.NonNull;
  *
  * @param <T> the type of the delegate object.
  *
- * @date 2017-05-03
  * @since 0.2.0
  */
 public interface Delegating<T> {

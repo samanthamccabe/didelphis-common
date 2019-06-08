@@ -28,7 +28,6 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * @date 8/23/2015
  */
 public class DataTable<E>
 		extends RectangularTable<E>

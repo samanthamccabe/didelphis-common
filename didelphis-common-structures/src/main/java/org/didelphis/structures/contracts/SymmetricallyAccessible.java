@@ -40,7 +40,6 @@ import java.util.Objects;
  *
  * @param <K> the type of keys used by the object
  *
- * @date 2017-05-03
  * @since 0.2.0
  */
 public interface SymmetricallyAccessible<K> {

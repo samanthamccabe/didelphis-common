@@ -35,7 +35,6 @@ import java.util.stream.Stream;
  *
  * @param <E> the type parameter
  *
- * @date 02/11/2017
  * @since 0.1.0
  */
 public interface Table<E> extends Structure {

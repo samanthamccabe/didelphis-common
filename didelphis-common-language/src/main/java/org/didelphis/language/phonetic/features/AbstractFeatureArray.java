@@ -29,7 +29,6 @@ import java.util.Objects;
 /**
  * Class {@code AbstractFeatureArray}
  *
- * @date 2017-06-15
  * @since 0.1.0
  */
 public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
