@@ -40,7 +40,6 @@ import java.util.stream.Stream;
  *
  * @param <E>
  *
- * @date 2017-02-11
  * @since 0.1.0
  */
 @ToString

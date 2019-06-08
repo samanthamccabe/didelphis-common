@@ -37,7 +37,6 @@ import java.util.Set;
  *
  * @since 0.1.0
  *
- * @date 2017-02-16
  */
 public interface FeatureMapping<T> extends ModelBearer<T> {
 

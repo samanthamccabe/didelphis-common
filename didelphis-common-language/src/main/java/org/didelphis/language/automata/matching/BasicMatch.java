@@ -31,7 +31,6 @@ import java.util.List;
 /**
  * Class {@code BasicMatch}
  *
- * @date 2/22/18
  */
 @ToString
 @EqualsAndHashCode

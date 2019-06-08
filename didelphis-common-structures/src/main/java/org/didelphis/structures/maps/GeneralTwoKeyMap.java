@@ -46,7 +46,6 @@ import java.util.function.Supplier;
  * @param <U> the second key type
  * @param <V> the value type
  *
- * @date 2017 -01-15
  * @since 0.1.0
  */
 @ToString

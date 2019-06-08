@@ -37,7 +37,6 @@ import java.util.stream.Collectors;
 /**
  * Class {@code SparseFeatureArray}
  *
- * @date 2016-03-27
  * @since 0.1.0
  */
 public final class SparseFeatureArray<T> extends AbstractFeatureArray<T> {

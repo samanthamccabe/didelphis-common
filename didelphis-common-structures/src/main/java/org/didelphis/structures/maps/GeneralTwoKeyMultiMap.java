@@ -34,7 +34,6 @@ import java.util.function.Supplier;
 /**
  * Class {@code GeneralTwoKeyMultiMap}
  *
- * @date 2016/04/10
  * @since 0.1.0
  */
 @ToString(callSuper = true)

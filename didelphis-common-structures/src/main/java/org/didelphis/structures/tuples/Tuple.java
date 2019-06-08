@@ -24,7 +24,6 @@ import lombok.NonNull;
 /**
  * Interface {@code Tuple}
  *
- * @date 2017-07-22
  * @since 0.2.0
  */
 public interface Tuple<L, R> {

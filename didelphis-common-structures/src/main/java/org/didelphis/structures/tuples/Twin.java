@@ -28,7 +28,6 @@ import java.util.AbstractList;
 /**
  * Class {@code Pair}
  *
- * @date 2017-07-22
  * @since 0.2.0
  */
 @EqualsAndHashCode(callSuper = true)

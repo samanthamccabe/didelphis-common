@@ -30,7 +30,6 @@ import java.util.Collection;
 /**
  * Abstract Class {@code AbstractTable}
  *
- * @date 4/17/2016
  * @since 0.1.0
  */
 @ToString

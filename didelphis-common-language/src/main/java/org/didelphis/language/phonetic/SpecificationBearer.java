@@ -23,7 +23,6 @@ import lombok.NonNull;
 import org.didelphis.language.phonetic.model.FeatureSpecification;
 
 /**
- * @date  2015-01-21
  * @since 0.1.0
  */
 public interface SpecificationBearer {

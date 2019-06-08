@@ -38,7 +38,6 @@ import java.util.Map;
  * @param <V> the type of the stored values; multiple such values are stored
  * 		per key
  *
- * @date 2017-05-04
  * @see org.didelphis.structures.maps.GeneralMultiMap
  * @see org.didelphis.structures.maps.GeneralTwoKeyMultiMap
  * @since 0.1.0

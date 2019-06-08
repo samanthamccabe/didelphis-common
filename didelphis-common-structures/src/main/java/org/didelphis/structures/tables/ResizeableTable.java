@@ -24,8 +24,7 @@ import lombok.NonNull;
 import java.util.Collection;
 
 /**
- * @date 5/25/17
- * 
+ *
  * A general interface for two-dimensional matrix data structures
  * @param <E> the type parameter
  */

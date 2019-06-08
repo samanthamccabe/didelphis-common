@@ -36,7 +36,6 @@ import java.util.function.Supplier;
 /**
  * Class {@code SymmetricalTwoKeyMultiMap}
  *
- * @date 2017-04-25
  * @since 0.1.0
  */
 @ToString(callSuper = true)

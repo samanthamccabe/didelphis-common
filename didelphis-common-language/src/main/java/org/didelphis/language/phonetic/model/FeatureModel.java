@@ -35,7 +35,6 @@ import java.util.List;
  *
  * @since 0.1.0
  *
- * @date 7/31/2016
  */
 public interface FeatureModel<T> extends SpecificationBearer {
 

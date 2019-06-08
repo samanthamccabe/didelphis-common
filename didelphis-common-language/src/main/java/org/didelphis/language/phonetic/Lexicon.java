@@ -30,8 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
-	 * @date 1/17/2015
- */
+	 */
 @EqualsAndHashCode
 public class Lexicon<T> implements Streamable<List<Sequence<T>>> {
 

@@ -38,7 +38,6 @@ import java.util.List;
  * @see org.didelphis.language.automata.statemachines.StateMachine
  * @see Regex
  * 
- * @date 10/17/17
  */
 public interface Automaton<S> {
 
