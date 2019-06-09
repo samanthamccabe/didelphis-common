@@ -33,9 +33,7 @@ import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-/**
- * Created by samantha on 1/15/17.
- */
+
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class SymmetricalTwoKeyMap<K, V> extends GeneralTwoKeyMap<K, K, V>

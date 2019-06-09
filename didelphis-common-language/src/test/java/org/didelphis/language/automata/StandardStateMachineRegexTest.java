@@ -40,8 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-/**
- */
+
 class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 
 	private static final RegexParser PARSER = new RegexParser();

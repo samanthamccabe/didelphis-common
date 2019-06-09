@@ -42,8 +42,7 @@ import static org.didelphis.language.parsing.ParseDirection.FORWARD;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-/**
- */
+
 class StandardStateMachineTest extends StateMachineTestBase<Sequence<Integer>> {
 
 	private static final SequenceFactory<Integer> FACTORY = factory();

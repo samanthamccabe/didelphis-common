@@ -25,9 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by samantha on 1/22/17.
- */
+
 public interface Segmenter {
 
 	/**
