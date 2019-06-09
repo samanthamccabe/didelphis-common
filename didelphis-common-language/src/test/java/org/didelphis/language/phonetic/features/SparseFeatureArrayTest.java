@@ -40,9 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Created by samantha on 4/15/17.
- */
+
 class SparseFeatureArrayTest extends PhoneticTestBase {
 	
 	private static FeatureModel<Integer> empty;

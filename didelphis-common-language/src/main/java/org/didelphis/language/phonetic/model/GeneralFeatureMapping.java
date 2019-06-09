@@ -43,8 +43,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- */
+
 @ToString
 @EqualsAndHashCode
 public class GeneralFeatureMapping<T> implements FeatureMapping<T> {

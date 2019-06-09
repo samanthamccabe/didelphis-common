@@ -39,9 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Created by samantha on 5/5/17.
- */
+
 class GeneralMultiMapTest {
 	
 	private GeneralMultiMap<String, String> map;

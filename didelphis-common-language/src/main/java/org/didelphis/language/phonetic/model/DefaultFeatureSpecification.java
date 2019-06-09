@@ -31,8 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by samantha on 2/16/17.
- * 
+ *
  * Reference implementation of the {@code FeatureSpecification} interface
  */
 @EqualsAndHashCode

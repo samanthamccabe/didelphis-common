@@ -40,9 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Created by samantha on 4/9/17.
- */
+
 class SymmetricalTwoKeyMapTest {
 
 	private SymmetricalTwoKeyMap<String, Integer> map;

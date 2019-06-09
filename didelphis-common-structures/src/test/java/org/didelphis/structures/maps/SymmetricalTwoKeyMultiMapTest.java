@@ -29,9 +29,7 @@ import java.util.HashMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-/**
- * Created by samantha on 4/28/17.
- */
+
 class SymmetricalTwoKeyMultiMapTest {
 	
 	private SymmetricalTwoKeyMultiMap<String, String> map;

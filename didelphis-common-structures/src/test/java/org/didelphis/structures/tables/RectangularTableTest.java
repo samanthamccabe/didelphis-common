@@ -36,9 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Created by samantha on 4/1/17.
- */
+
 class RectangularTableTest {
 
 	private static RectangularTable<String> table;

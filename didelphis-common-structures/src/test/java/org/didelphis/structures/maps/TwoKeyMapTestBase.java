@@ -27,9 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-/**
- * Created by samantha on 1/16/17.
- */
+
 public abstract class TwoKeyMapTestBase {
 	
 	protected TwoKeyMapTestBase() {}
