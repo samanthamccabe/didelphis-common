@@ -19,7 +19,9 @@
 
 package org.didelphis.structures.tables;
 
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -321,6 +323,8 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 		return sum;
 	}
 
+	@ToString
+	@EqualsAndHashCode
 	private static final class ColumnIterator<E>
 			implements Iterator<Collection<E>> {
 
@@ -329,6 +333,7 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 		private int i;
 
 		private ColumnIterator(List<E> list, int columns) {
+			i = 0;
 			array = list;
 			this.columns = columns;
 		}

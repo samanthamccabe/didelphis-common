@@ -19,7 +19,7 @@
 
 package org.didelphis.structures.tuples;
 
-import lombok.NonNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Interface {@code Tuple}
@@ -28,9 +28,9 @@ import lombok.NonNull;
  */
 public interface Tuple<L, R> {
 
-	@NonNull L getLeft();
+	@Nullable L getLeft();
 
-	@NonNull R getRight();
+	@Nullable R getRight();
 
-	boolean contains(@NonNull Object entry);
+	boolean contains(@Nullable Object entry);
 }

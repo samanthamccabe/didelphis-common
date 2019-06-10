@@ -90,10 +90,7 @@ public interface TwoKeyMap<T, U, V>
 	 */
 	@Override
 	default int size() {
-		long count = stream().count();
-		return count > Integer.MAX_VALUE
-				? Integer.MAX_VALUE
-				: Math.toIntExact(count);
+		return Math.toIntExact(stream().count());
 	}
 
 	/**
@@ -156,6 +153,13 @@ public interface TwoKeyMap<T, U, V>
 	 */
 	@NonNull
 	default V getOrDefault(@Nullable T k1, @Nullable U k2, @NonNull V value) {
-		return containsNotNull(k1, k2) ? get(k1, k2) : value;
+		if (contains(k1, k2)) {
+			V v = get(k1, k2);
+			if (v == null) {
+				return value;
+			}
+			return v;
+		}
+		return value;
 	}
 }
