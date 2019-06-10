@@ -21,6 +21,8 @@ package org.didelphis.structures.tuples;
 
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+import org.didelphis.utilities.Safe;
+import org.jetbrains.annotations.Nullable;
 
 import org.didelphis.utilities.Safe;
 
