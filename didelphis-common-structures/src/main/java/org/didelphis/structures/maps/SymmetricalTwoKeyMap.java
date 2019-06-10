@@ -23,6 +23,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 import org.didelphis.structures.contracts.SymmetricallyAccessible;
+import org.didelphis.structures.tuples.Triple;
 import org.didelphis.structures.tuples.Tuple;
 import org.jetbrains.annotations.Nullable;
 
@@ -62,16 +63,16 @@ public class SymmetricalTwoKeyMap<K, V> extends GeneralTwoKeyMap<K, K, V>
 	 * Copy-constructor; creates a deep copy of the provided multi-map using
 	 * the provided suppliers
 	 *
-	 * @param twoKeyMap a symmetric two key map whose data is to be copied
+	 * @param tripleIterable triples whose data is to be copied
 	 * @param delegate a (typically empty) delegate map
 	 * @param mapSupplier a {@link Supplier} to provide the inner map
 	 */
 	public SymmetricalTwoKeyMap(
-			@NonNull SymmetricalTwoKeyMap<K, V> twoKeyMap,
+			@NonNull Iterable<Triple<K, K, V>> tripleIterable,
 			@NonNull Map<K, Map<K, V>> delegate,
 			@NonNull Supplier<? extends Map<K, V>> mapSupplier
 	) {
-		super(twoKeyMap, delegate, mapSupplier);
+		super(tripleIterable, delegate, mapSupplier);
 	}
 
 	@Override

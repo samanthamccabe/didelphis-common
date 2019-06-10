@@ -57,20 +57,20 @@ public class SymmetricalTwoKeyMultiMap<K, V>
 	 * Copy-constructor; creates a deep copy of the map using the provided
 	 * delegate and suppliers.
 	 *
-	 * @param twoKeyMultiMap a symmetric two key map whose data is to be copied
+	 * @param tripleIterable triples whose data is to be copied
 	 * @param delegate a delegate map to be used by the new instance
 	 * @param mSupplier a {@link Supplier} to provide the inner map instances
 	 * @param cSupplier a {@link Supplier} to provide the inner collections
 	 */
 	public SymmetricalTwoKeyMultiMap(
-			@NonNull SymmetricalTwoKeyMultiMap<K, V> twoKeyMultiMap,
+			@NonNull Iterable<Triple<K, K, Collection<V>>> tripleIterable,
 			@NonNull Map<K, Map<K, Collection<V>>> delegate,
 			@NonNull Supplier<? extends Map<K, Collection<V>>> mSupplier,
 			@NonNull Supplier<? extends Collection<V>> cSupplier
 	) {
 		this(delegate,mSupplier,cSupplier);
 
-		for (Triple<K, K, Collection<V>> triple : twoKeyMultiMap) {
+		for (Triple<K, K, Collection<V>> triple : tripleIterable) {
 			K k1 = triple.getFirstElement();
 			K k2 = triple.getSecondElement();
 

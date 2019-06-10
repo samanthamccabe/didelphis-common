@@ -20,14 +20,17 @@
 
 package org.didelphis.structures.tables;
 
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+import lombok.ToString;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-
+@ToString(callSuper = true)
+@EqualsAndHashCode (callSuper = true)
 public class DataTable<E>
 		extends RectangularTable<E>
 		implements ColumnTable<E> {
@@ -47,12 +50,6 @@ public class DataTable<E>
 	public DataTable(@NonNull List<String> keys, @NonNull Collection<? extends Collection<E>> rowList) {
 		super(rowList, rowList.size(), keys.size());
 		this.keys = keys;
-	}
-
-	@NonNull
-	@Override
-	public String toString() {
-		return "DataTable{"+super.toString()+ '}';
 	}
 
 	@Override

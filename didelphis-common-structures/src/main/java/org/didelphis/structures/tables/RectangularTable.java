@@ -23,6 +23,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 import org.didelphis.structures.contracts.Delegating;
+import org.didelphis.utilities.Templates;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -245,15 +246,13 @@ public class RectangularTable<E> extends AbstractTable<E>
 		negativeCheck(rows, cols);
 
 		if (rows > rows() || cols > columns()) {
-			throw new IndexOutOfBoundsException("Unable to shrink table by "
-					+ rows
-					+ ", "
-					+ cols
-					+ " because the current size of the "
-					+ "table is less than this amount: "
-					+ rows()
-					+ ", "
-					+ columns());
+			String message = Templates.create()
+					.add("Unable to shrink table by {}, {} because",
+							"the current size of the table is less than",
+							"this amount: {}, {}")
+					.with(rows, cols, rows(), columns())
+					.build();
+			throw new IndexOutOfBoundsException(message);
 		}
 
 		for (int i = 0; i < rows; i++) {
@@ -335,6 +334,8 @@ public class RectangularTable<E> extends AbstractTable<E>
 		return col + row * columns;
 	}
 
+	@ToString
+	@EqualsAndHashCode
 	private static final class RowIterator<E>
 			implements Iterator<Collection<E>> {
 
@@ -344,6 +345,7 @@ public class RectangularTable<E> extends AbstractTable<E>
 		private int i;
 
 		private RowIterator(List<E> list, int rows, int columns) {
+			i = 0;
 			this.list = list;
 			this.rows = rows;
 			this.columns = columns;
@@ -368,6 +370,8 @@ public class RectangularTable<E> extends AbstractTable<E>
 		}
 	}
 
+	@ToString
+	@EqualsAndHashCode
 	private static final class ColumnIterator<E>
 			implements Iterator<Collection<E>> {
 
@@ -377,6 +381,7 @@ public class RectangularTable<E> extends AbstractTable<E>
 		private int i;
 
 		private ColumnIterator(List<E> list, int rows, int columns) {
+			i = 0;
 			array = list;
 			this.rows = rows;
 			this.columns = columns;

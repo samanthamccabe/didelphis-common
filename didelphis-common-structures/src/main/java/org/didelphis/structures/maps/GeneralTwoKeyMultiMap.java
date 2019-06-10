@@ -68,20 +68,20 @@ public class GeneralTwoKeyMultiMap<T, U, V>
 	 * Copy-constructor; creates a deep copy of the map using the provided
 	 * delegate and suppliers.
 	 * 
-	 * @param twoKeyMultiMap a two key map whose data is to be copied
+	 * @param tripleIterable triples whose data is to be copied
 	 * @param delegate a delegate map to be used by the new instance
 	 * @param mSupplier a {@link Supplier} to provide the inner map instances
 	 * @param cSupplier a {@link Supplier} to provide the inner collections
 	 */
 	public GeneralTwoKeyMultiMap(
-			@NonNull TwoKeyMultiMap<T, U, V> twoKeyMultiMap,
+			@NonNull Iterable<Triple<T, U, Collection<V>>> tripleIterable,
 			@NonNull Map<T, Map<U, Collection<V>>> delegate,
 			@NonNull Supplier<? extends Map<U, Collection<V>>> mSupplier,
 			@NonNull Supplier<? extends Collection<V>> cSupplier
 	) {
 		this(delegate, mSupplier, cSupplier);
 
-		for (Triple<T, U, Collection<V>> triple : twoKeyMultiMap) {
+		for (Triple<T, U, Collection<V>> triple : tripleIterable) {
 			T k1 = triple.getFirstElement();
 			U k2 = triple.getSecondElement();
 			
