@@ -20,7 +20,9 @@ General Didelphis components for language modeling and analysis
    *did* affect static members
    [[68]](https://github.com/samanthamccabe/didelphis-common/issues/68)
 #### Security
-- *none*
+- Changed inner `Cursor` class of `StandardStateMachine` to be static; it was 
+	written to access a field of it's containing class, but this can be passed
+	as a constructor argument.
 
 ### 0.3.0
 Substantial changes to several APIs. Greatly improved test coverage. Extensive
