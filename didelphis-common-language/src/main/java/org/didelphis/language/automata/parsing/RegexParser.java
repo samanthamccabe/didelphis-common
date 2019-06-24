@@ -68,10 +68,9 @@ import static org.didelphis.language.automata.parsing.LanguageParser.update;
  */
 @ToString
 @EqualsAndHashCode
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public final class RegexParser implements LanguageParser<String> {
 
-	static Arc<String> DOT_ARC = new Arc<String>() {
+	private static final Arc<String> DOT_ARC = new Arc<String>() {
 		@Override
 		public int match(String sequence, int index) {
 			int length = sequence.length();
@@ -83,7 +82,8 @@ public final class RegexParser implements LanguageParser<String> {
 			return ".";
 		}
 	};
-	static Arc<String> EPSILON_ARC = new Arc<String>() {
+
+	private static final Arc<String> EPSILON_ARC = new Arc<String>() {
 		@Override
 		public int match(String sequence, int index) {
 			return index;
@@ -94,7 +94,8 @@ public final class RegexParser implements LanguageParser<String> {
 			return "";
 		}
 	};
-	static Arc<String> WORD_START_ARC = new Arc<String>() {
+
+	private static final Arc<String> WORD_START_ARC = new Arc<String>() {
 		@Override
 		public int match(String sequence, int index) {
 			return index == 0 ? 0 : -1;
@@ -105,7 +106,8 @@ public final class RegexParser implements LanguageParser<String> {
 			return "^";
 		}
 	};
-	static Arc<String> WORD_END_ARC = new Arc<String>() {
+
+	private static final Arc<String> WORD_END_ARC = new Arc<String>() {
 		@Override
 		public int match(String sequence, int index) {
 			int length = sequence.length();
@@ -118,12 +120,12 @@ public final class RegexParser implements LanguageParser<String> {
 		}
 	};
 
-	static Map<String, String> DELIMITERS_ALT = new HashMap<>();
-	static Map<String, String> DELIMITERS     = new HashMap<>();
-	static Map<String, String> CLASSES        = new HashMap<>();
-	static Map<String, String> ESCAPES        = new HashMap<>();
-	
-	static Set<String> QUANTIFIERS = new HashSet<>();
+	private static final Map<String, String> DELIMITERS_ALT = new HashMap<>();
+	private static final Map<String, String> DELIMITERS     = new HashMap<>();
+	private static final Map<String, String> CLASSES        = new HashMap<>();
+	private static final Map<String, String> ESCAPES        = new HashMap<>();
+
+	private static final Set<String> QUANTIFIERS = new HashSet<>();
 
 	static {
 		DELIMITERS.put("[", "]");
