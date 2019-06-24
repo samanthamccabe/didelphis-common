@@ -48,14 +48,14 @@ import static java.text.Normalizer.normalize;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public final class GeneralFeatureModel<T> implements FeatureModel<T> {
 
-	static String VALUE  = "(-?\\d|[A-Z]+)";
-	static String NAME   = "(\\w+)";
-	static String ASSIGN = "([=:><])";
+	private static final String VALUE = "(-?\\d|[A-Z]+)";
+	private static final String NAME  = "(\\w+)";
+	private static final String ASSN  = "([=:><])";
 
-	static Regex VALUE_PATTERN   = new Regex(VALUE + ASSIGN + NAME);
-	static Regex BINARY_PATTERN  = new Regex("([+−-])" + NAME);
-	static Regex FEATURE_PATTERN = new Regex("[,;]\\s*|\\s+");
-	static Regex BRACKET_PATTERN = new Regex("\\[((?:[^\\]])+)\\]");
+	private static final Regex VALUE_PATTERN   = new Regex(VALUE + ASSN + NAME);
+	private static final Regex BINARY_PATTERN  = new Regex("([+−-])" + NAME);
+	private static final Regex FEATURE_PATTERN = new Regex("[,;]\\s*|\\s+");
+	private static final Regex BRACKET_PATTERN = new Regex("\\[((?:[^\\]])+)\\]");
 
 	FeatureSpecification specification;
 	List<Constraint<T>> constraints;

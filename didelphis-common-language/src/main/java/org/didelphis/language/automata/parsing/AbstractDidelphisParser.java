@@ -50,13 +50,12 @@ import static org.didelphis.language.automata.parsing.LanguageParser.update;
  * @since 0.3.0
  */
 @ToString
-@FieldDefaults (makeFinal = true, level = AccessLevel.PROTECTED)
 public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
-	
-	static Set<String> QUANTIFIERS;
-	static Expression START_EXP = new TerminalNode("#[");
-	static Expression END_EXP = new TerminalNode("]#");
 
+	private static final Expression START_EXP = new TerminalNode("#[");
+	private static final Expression END_EXP   = new TerminalNode("]#");
+
+	private static final Set<String> QUANTIFIERS;
 	static {
 		QUANTIFIERS = new HashSet<>();
 		QUANTIFIERS.add("?");

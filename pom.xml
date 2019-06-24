@@ -25,12 +25,12 @@
     <parent>
         <groupId>org.didelphis</groupId>
         <artifactId>didelphis-root</artifactId>
-        <version>0.3.2</version>
+        <version>0.3.3</version>
     </parent>
 
     <groupId>org.didelphis.common</groupId>
     <artifactId>didelphis-common</artifactId>
-    <version>0.3.2-SNAPSHOT</version>
+    <version>0.3.3-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
