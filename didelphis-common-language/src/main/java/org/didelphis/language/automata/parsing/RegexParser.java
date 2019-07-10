@@ -142,7 +142,7 @@ public final class RegexParser implements LanguageParser<String> {
 		CLASSES.put("\\W", "[^a-zA-Z0-9_]");
 		CLASSES.put("\\s", "[ \t\f\r\n]");
 		CLASSES.put("\\S", "[^ \t\f\r\n]");
-		CLASSES.put("\\a", "[a-zA-Z]"); // custom
+		CLASSES.put("\\a", "[a-zA-Z]");  // custom
 		CLASSES.put("\\A", "[^a-zA-Z]"); // custom
 
 		CLASSES.put("[:alnum:]", "[A-Za-z0-9]");
@@ -152,7 +152,7 @@ public final class RegexParser implements LanguageParser<String> {
 		CLASSES.put("[:lower:]", "[a-z]");
 		CLASSES.put("[:upper:]", "[A-Z]");
 		CLASSES.put("[:xdigit:]", "[A-Fa-f0-9]");
-		CLASSES.put("[:punct:]", "[!\"#$%&'()*+,./:;<=>?@\\^_`{|}~-\\[\\]]");
+		CLASSES.put("[:punct:]", "[!\"#$%&'=()*+,./:;><?@|\\^`{}~_-\\[\\]]");
 		CLASSES.put("[:space:]", "[ \t\f\r\n\\v]");
 
 		ESCAPES.put("\\$", "$");
