@@ -22,6 +22,7 @@ package org.didelphis.structures.contracts;
 import lombok.NonNull;
 import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Tuple;
+import org.didelphis.utilities.Safe;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -40,7 +41,6 @@ import java.util.Objects;
  *
  * @param <K> the type of keys used by the object
  *
- * @date 2017-05-03
  * @since 0.2.0
  */
 public interface SymmetricallyAccessible<K> {
@@ -67,7 +67,7 @@ public interface SymmetricallyAccessible<K> {
 		} else if (Objects.equals(k1, k2)) {
 			return new Couple<>(k1, k2);
 		} else {
-			int compare = Integer.compare(k1.hashCode(), k2.hashCode());
+			int compare = Integer.compare(Safe.hashCode(k1), Safe.hashCode(k2));
 			return compare < 0 ? new Couple<>(k1, k2) : new Couple<>(k2, k1);
 		}
 	}
@@ -84,7 +84,9 @@ public interface SymmetricallyAccessible<K> {
 	 * 		structure.
 	 */
 	@NonNull
-	default Tuple<K, K> canonicalKeyPair(@NonNull Tuple<K, K> tuple) {
+	default Tuple<K, K> canonicalKeyPair(
+			@NonNull Tuple<? extends K, ? extends K> tuple
+	) {
 		return canonicalKeyPair(tuple.getLeft(), tuple.getRight());
 	}
 }

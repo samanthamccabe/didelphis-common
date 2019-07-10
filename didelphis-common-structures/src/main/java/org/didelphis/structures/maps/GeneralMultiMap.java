@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -49,7 +50,6 @@ import java.util.stream.Collectors;
  * @param <K> the key type
  * @param <V> the value type.
  *
- * @date 2017-05-04
  * @since 0.1.0
  */
 @ToString
@@ -103,20 +103,20 @@ public class GeneralMultiMap<K, V>
 	 * Copy-constructor; creates a deep copy of the provided multi-map using
 	 * the provided suppliers
 	 *
-	 * @param multiMap a {@link MultiMap} instance whose data is to be copied
+	 * @param tupleIterable an instance whose data is to be copied
 	 * @param delegate a new (typically empty) delegate map
 	 * @param supplier a {@link Supplier} to provide the inner collections
 	 */
 	public GeneralMultiMap(
-			@NonNull MultiMap<K, V> multiMap,
+			@NonNull Iterable<Tuple<K, Collection<V>>> tupleIterable,
 			@NonNull Map<K, Collection<V>> delegate,
 			@NonNull Supplier<? extends Collection<V>> supplier
 	) {
 		this.delegate = delegate;
 		this.supplier = supplier;
-		for (Tuple<K, Collection<V>> tuple : multiMap) {
+		for (Tuple<K, Collection<V>> tuple : tupleIterable) {
 			Collection<V> collection = supplier.get();
-			collection.addAll(tuple.getRight());
+			collection.addAll(Objects.requireNonNull(tuple.getRight()));
 			delegate.put(tuple.getLeft(), collection);
 		}
 	}
@@ -164,7 +164,9 @@ public class GeneralMultiMap<K, V>
 	}
 
 	@NonNull
-	private Tuple<K, Collection<V>> toTuple(Entry<K, Collection<V>> entry) {
+	private Tuple<K, Collection<V>> toTuple(
+			@NonNull Entry<? extends K, Collection<V>> entry
+	) {
 		return new Couple<>(entry.getKey(), entry.getValue());
 	}
 }

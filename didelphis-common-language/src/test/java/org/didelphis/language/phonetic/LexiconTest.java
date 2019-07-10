@@ -31,9 +31,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-/**
- * Created by samantha on 3/29/17.
- */
+
 class LexiconTest extends PhoneticTestBase {
 
 	private static Lexicon<Integer> lexicon;

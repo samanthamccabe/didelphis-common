@@ -21,6 +21,8 @@ package org.didelphis.structures.tuples;
 
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+import org.didelphis.utilities.Safe;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -31,45 +33,44 @@ import java.util.Objects;
  * In many contexts, use of a class like this might indicate poor design. As it
  * is, {@code Tuple} is used to provide an {@code Iterator} for two-key maps.
  *
- * @date 2017-07-22
  * @since 0.2.0
  */
 @EqualsAndHashCode
 public class Couple<L, R> implements Tuple<L, R> {
 
-	@NonNull private final L left;
-	@NonNull private final R right;
+	@Nullable private final L left;
+	@Nullable private final R right;
 
-	public Couple(@NonNull L left, @NonNull R right) {
+	public Couple(@Nullable L left, @Nullable R right) {
 		this.left = left;
 		this.right = right;
 	}
 
-	public Couple(@NonNull Tuple<L, R> tuple) {
+	public Couple(@NonNull Tuple<? extends L, ? extends R> tuple) {
 		left = tuple.getLeft();
 		right = tuple.getRight();
 	}
 
-	@NonNull
+	@Nullable
 	@Override
 	public L getLeft() {
 		return left;
 	}
 
-	@NonNull
+	@Nullable
 	@Override
 	public R getRight() {
 		return right;
 	}
 
 	@Override
-	public boolean contains(@NonNull Object entry) {
+	public boolean contains(@Nullable Object entry) {
 		return Objects.equals(entry, left) || Objects.equals(entry, right);
 	}
 
 	@NonNull
 	@Override
 	public String toString() {
-		return "<" + left + ", " + right + '>';
+		return "<" + Safe.toString(left) + ", " + Safe.toString(right) + '>';
 	}
 }

@@ -25,9 +25,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-/**
- * Created by samantha on 4/22/17.
- */
+
 class CoupleTest {
 
 	private static Couple<String, String> tuple;

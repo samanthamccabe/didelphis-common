@@ -46,7 +46,6 @@ import java.util.function.Supplier;
  * @param <U> the second key type
  * @param <V> the value type
  *
- * @date 2017 -01-15
  * @since 0.1.0
  */
 @ToString
@@ -84,18 +83,18 @@ public class GeneralTwoKeyMap<T, U, V>
 	 * Copy-constructor; creates a deep copy of the provided multi-map using
 	 * the provided suppliers
 	 *
-	 * @param twoKeyMap a {@link TwoKeyMap} instance whose data is to be copied
+	 * @param tripleIterable a {@link TwoKeyMap} instance whose data is to be copied
 	 * @param delegate a new (typically empty) delegate map
 	 * @param mapSupplier a {@link Supplier} to provide the inner collections
 	 */
 	public GeneralTwoKeyMap(
-			@NonNull TwoKeyMap<T, U, V> twoKeyMap,
+			@NonNull Iterable<Triple<T, U, V>> tripleIterable,
 			@NonNull Map<T, Map<U, V>> delegate,
 			@NonNull Supplier<? extends Map<U, V>> mapSupplier
 	) {
 		this(delegate, mapSupplier);
 
-		for (Triple<T, U, V> triple : twoKeyMap) {
+		for (Triple<T, U, V> triple : tripleIterable) {
 			T k1 = triple.getFirstElement();
 			U k2 = triple.getSecondElement();
 			V value = triple.getThirdElement();

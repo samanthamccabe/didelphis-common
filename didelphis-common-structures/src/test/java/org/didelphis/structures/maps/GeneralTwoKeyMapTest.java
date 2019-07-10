@@ -37,9 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 
-/**
- * Created by samantha on 1/16/17.
- */
+
 class GeneralTwoKeyMapTest extends TwoKeyMapTestBase {
 
 	@Test

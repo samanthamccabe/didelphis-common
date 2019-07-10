@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 /**
  * Class {@code ParallelNode}
  *
- * @date 11/6/17
  */
 @Value
 public class ParallelNode implements Expression {

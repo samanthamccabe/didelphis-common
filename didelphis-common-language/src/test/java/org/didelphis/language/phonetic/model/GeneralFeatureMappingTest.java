@@ -69,8 +69,9 @@ class GeneralFeatureMappingTest extends PhoneticTestBase {
 	void testContainsKey() {
 		assertTrue(mapping.containsKey("p"));
 		assertFalse(mapping.containsKey("@"));
+		//noinspection ConstantConditions
 		assertThrows(
-				NullPointerException.class,
+				IllegalArgumentException.class,
 				() -> mapping.containsKey(null)
 		);
 	}

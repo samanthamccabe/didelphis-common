@@ -172,7 +172,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		List<Cursor> cursorSwap = new ArrayList<>();
 		List<Cursor> cursorList = new ArrayList<>();
 		// Start here
-		cursorList.add(new Cursor(start, startStateId));
+		cursorList.add(new Cursor(start, startStateId, groups.size()));
 
 		List<Match<S>> matches = new ArrayList<>();
 		while (!cursorList.isEmpty()) {
@@ -302,7 +302,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 			for (String node : value) {
 				int newIndex = arc.match(input, index);
 				if (newIndex >= 0) {
-					cursors.add(new Cursor(newIndex, node));
+					cursors.add(new Cursor(newIndex, node, groups.size()));
 				}
 			}
 		}
@@ -695,21 +695,21 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 
 	@Data
 	@FieldDefaults(level = AccessLevel.PRIVATE)
-	private final class Cursor {
+	private static final class Cursor {
 
 		final int[] groupStart;
 		final int[] groupEnd ;
 		int index;
 		String node;
 
-		private Cursor(int index, String node) {
+		private Cursor(int index, String node, int size) {
 			this.index = index;
 			this.node = node;
 
-			groupStart = new int[groups.size()];
-			groupEnd   = new int[groups.size()];
+			groupStart = new int[size];
+			groupEnd   = new int[size];
 
-			for (int i = 0; i < groups.size(); i++) {
+			for (int i = 0; i < size; i++) {
 				groupStart[i] = -1;
 				groupEnd[i]   = -1;
 			}

@@ -31,9 +31,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-/**
- * Created by samantha on 12/20/16.
- */
+
 class GeneralTwoKeyMultiMapTest extends TwoKeyMapTestBase {
 	
 	private TwoKeyMultiMap<String, String, String> map;

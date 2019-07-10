@@ -31,7 +31,6 @@ import java.util.Map;
  *
  * @since 0.1.0
  *
- * @date 2017-02-16
  */
 public interface FeatureSpecification {
 

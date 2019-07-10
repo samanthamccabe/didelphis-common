@@ -24,9 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-/**
- * @date 8/23/2015
- */
+
 public interface ColumnTable<E> extends Table<E> {
 
 	/**

@@ -36,9 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Created by samantha on 4/14/17.
- */
+
 class SymmetricTableTest {
 
 	/* Sample Data Diagram *

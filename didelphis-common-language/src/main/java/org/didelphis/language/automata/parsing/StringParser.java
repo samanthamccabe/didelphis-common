@@ -45,10 +45,9 @@ import java.util.Map;
  * @since 0.3.0
  */
 @ToString
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class StringParser extends AbstractDidelphisParser<String> {
 
-	static Arc<String> DOT_ARC = new Arc<String>() {
+	private static final Arc<String> DOT_ARC = new Arc<String>() {
 		@Override
 		public int match(String sequence, int index) {
 			int length = sequence.length();
@@ -60,8 +59,8 @@ public class StringParser extends AbstractDidelphisParser<String> {
 			return ".";
 		}
 	};
-	
-	static Arc<String> EPSILON_ARC = new Arc<String>() {
+
+	private static final Arc<String> EPSILON_ARC = new Arc<String>() {
 		@Override
 		public int match(String sequence, int index) {
 			return index;
@@ -72,8 +71,8 @@ public class StringParser extends AbstractDidelphisParser<String> {
 			return "";
 		}
 	};
-	
-	static Arc<String> WORD_START_ARC = new Arc<String>() {
+
+	private static final Arc<String> WORD_START_ARC = new Arc<String>() {
 		@Override
 		public int match(String sequence, int index) {
 			return index == 0 ? 0 : -1;
@@ -84,8 +83,8 @@ public class StringParser extends AbstractDidelphisParser<String> {
 			return "^";
 		}
 	};
-	
-	static Arc<String> WORD_END_ARC = new Arc<String>() {
+
+	private static final Arc<String> WORD_END_ARC = new Arc<String>() {
 		@Override
 		public int match(String sequence, int index) {
 			int length = sequence.length();

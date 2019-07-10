@@ -32,9 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-/**
- * Created by samantha on 4/16/17.
- */
+
 class ConstraintTest extends PhoneticTestBase {
 
 	private static FeatureModel<Integer> model;

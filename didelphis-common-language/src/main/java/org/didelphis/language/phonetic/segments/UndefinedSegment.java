@@ -37,7 +37,6 @@ import org.didelphis.language.phonetic.model.FeatureModel;
  * #matches(Segment)} is called on another segment, which is not the desired
  * behavior.
  * 
- * @date 12/29/17
  */
 @EqualsAndHashCode
 public class UndefinedSegment<T> implements Segment<T> {
