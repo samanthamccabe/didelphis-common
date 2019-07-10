@@ -1,15 +1,20 @@
 /******************************************************************************
- * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ * General components for language modeling and analysis                      *
  *                                                                            *
- * Licensed under the Apache License, Version 2.0 (the "License");            *
- * you may not use this file except in compliance with the License.           *
- * You may obtain a copy of the License at                                    *
- *     http://www.apache.org/licenses/LICENSE-2.0                             *
- * Unless required by applicable law or agreed to in writing, software        *
- * distributed under the License is distributed on an "AS IS" BASIS,          *
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
- * See the License for the specific language governing permissions and        *
- * limitations under the License.                                             *
+ * Copyright (C) 2014-2019 Samantha F McCabe                                  *
+ *                                                                            *
+ * This program is free software: you can redistribute it and/or modify       *
+ * it under the terms of the GNU General Public License as published by       *
+ * the Free Software Foundation, either version 3 of the License, or          *
+ * (at your option) any later version.                                        *
+ *                                                                            *
+ * This program is distributed in the hope that it will be useful,            *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of             *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the              *
+ * GNU General Public License for more details.                               *
+ *                                                                            *
+ * You should have received a copy of the GNU General Public License          *
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
 package org.didelphis.io;
@@ -17,29 +22,32 @@ package org.didelphis.io;
 import org.didelphis.utilities.Logger;
 import org.junit.jupiter.api.Test;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-/**
- * Created by samantha on 3/16/17.
- */
 class DiskFileHandlerTest {
 
 	private static final Logger LOG = Logger.create(DiskFileHandlerTest.class);
 
 	private final DiskFileHandler handler = new DiskFileHandler("UTF-8");
-	
+
 	@Test
-	void read() {
+	void read() throws IOException {
 		String filePath = "./testFileRead.txt";
 		File file = new File(filePath);
 
 		String payload = "Test payload for reading";
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))){
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
 			writer.write(payload);
 		} catch (IOException e) {
 			LOG.error("Failed to create file {}", filePath, e);
@@ -47,7 +55,7 @@ class DiskFileHandlerTest {
 
 		CharSequence sequence = handler.read(filePath);
 		assertEquals(payload, sequence.toString());
-		
+
 		// If deleting the file immediately fails, attempt to delete it on
 		// JVM shutdown, when the tests conclude
 		if (!file.delete()) {
@@ -56,18 +64,18 @@ class DiskFileHandlerTest {
 	}
 
 	@Test
-	void writeString() {
-		String filePath = "./testFileWrite.txt";
-		File file = new File(filePath);
+	void writeString() throws IOException {
+		String path = "./testFileWrite.txt";
+		File file = new File(path);
 		String payload = "Test payload for writing";
 
-		handler.writeString(filePath, payload);
+		handler.writeString(path, payload);
 		
 		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 			String collect = reader.lines().collect(Collectors.joining("\n"));
 			assertEquals(payload, collect);
 		} catch (FileNotFoundException e) {
-			LOG.error("Failed to read from file {}, file not found", filePath, e);
+			LOG.error("Failed to read from file {}, file not found", path, e);
 		} catch (IOException e) {
 			LOG.error("Failed to read from file {}", e);
 		}
@@ -79,14 +87,15 @@ class DiskFileHandlerTest {
 		}
 	}
 
-
 	@Test
 	void writeString_Fail() {
 		String filePath = "./foo/testFileWrite.txt";
 		String payload = "Expected Failure";
-		assertFalse(handler.writeString(filePath, payload));
+		assertThrows(
+				IOException.class,
+				() -> handler.writeString(filePath, payload)
+		);
 	}
-
 
 	@Test
 	void testEquals() {

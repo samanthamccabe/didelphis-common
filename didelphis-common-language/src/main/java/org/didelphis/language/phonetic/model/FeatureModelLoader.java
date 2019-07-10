@@ -1,15 +1,20 @@
 /******************************************************************************
- * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ * General components for language modeling and analysis                      *
  *                                                                            *
- * Licensed under the Apache License, Version 2.0 (the "License");            *
- * you may not use this file except in compliance with the License.           *
- * You may obtain a copy of the License at                                    *
- *     http://www.apache.org/licenses/LICENSE-2.0                             *
- * Unless required by applicable law or agreed to in writing, software        *
- * distributed under the License is distributed on an "AS IS" BASIS,          *
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
- * See the License for the specific language governing permissions and        *
- * limitations under the License.                                             *
+ * Copyright (C) 2014-2019 Samantha F McCabe                                  *
+ *                                                                            *
+ * This program is free software: you can redistribute it and/or modify       *
+ * it under the terms of the GNU General Public License as published by       *
+ * the Free Software Foundation, either version 3 of the License, or          *
+ * (at your option) any later version.                                        *
+ *                                                                            *
+ * This program is distributed in the hope that it will be useful,            *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of             *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the              *
+ * GNU General Public License for more details.                               *
+ *                                                                            *
+ * You should have received a copy of the GNU General Public License          *
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
 package org.didelphis.language.phonetic.model;
@@ -34,6 +39,7 @@ import org.didelphis.utilities.Logger;
 import org.didelphis.utilities.Templates;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -136,14 +142,14 @@ public final class FeatureModelLoader<T> {
 		}
 		zoneData = new GeneralMultiMap<>(map, Suppliers.ofList());
 
-		String read = fileHandler.read(path);
-
-		if (read == null) {
-			throw new ParseException("Failed to load data from path " + path);
+		try {
+			String read = fileHandler.read(path);
+			parse(lines(read));
+			populate();
+		} catch (IOException e) {
+			LOG.error("Unexpected failure encountered: {}", e);
+			throw new ParseException("Failed to read from path " + path, e);
 		}
-
-		parse(lines(read));
-		populate();
 	}
 
 	public FeatureModelLoader(
@@ -257,13 +263,16 @@ public final class FeatureModelLoader<T> {
 				if (matcher.end() >= 0) {
 					String parent = PARENT_PATH.replace(basePath, "$1");
 					String filePath = parent + matcher.group(1);
-					String data = fileHandler.read(filePath);
-					if (data == null) {
-						throw new ParseException("Unable to read from " + filePath);
+					try {
+						String data = fileHandler.read(filePath);
+						Iterable<String> list = lines(data);
+						parse(list);
+						continue;
+					} catch (IOException e) {
+						LOG.error("Unexpected failure encountered: {}", e);
+						throw new ParseException("Unable to read from " 
+								+ filePath, e);
 					}
-					Iterable<String> list = lines(data);
-					parse(list);
-					continue;
 				}
 			}
 

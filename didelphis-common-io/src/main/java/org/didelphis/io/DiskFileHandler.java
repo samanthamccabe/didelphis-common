@@ -1,15 +1,20 @@
 /******************************************************************************
- * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ * General components for language modeling and analysis                      *
  *                                                                            *
- * Licensed under the Apache License, Version 2.0 (the "License");            *
- * you may not use this file except in compliance with the License.           *
- * You may obtain a copy of the License at                                    *
- *     http://www.apache.org/licenses/LICENSE-2.0                             *
- * Unless required by applicable law or agreed to in writing, software        *
- * distributed under the License is distributed on an "AS IS" BASIS,          *
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
- * See the License for the specific language governing permissions and        *
- * limitations under the License.                                             *
+ * Copyright (C) 2014-2019 Samantha F McCabe                                  *
+ *                                                                            *
+ * This program is free software: you can redistribute it and/or modify       *
+ * it under the terms of the GNU General Public License as published by       *
+ * the Free Software Foundation, either version 3 of the License, or          *
+ * (at your option) any later version.                                        *
+ *                                                                            *
+ * This program is distributed in the hope that it will be useful,            *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of             *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the              *
+ * GNU General Public License for more details.                               *
+ *                                                                            *
+ * You should have received a copy of the GNU General Public License          *
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
 package org.didelphis.io;
@@ -18,14 +23,23 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 import org.didelphis.utilities.Logger;
-import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.Writer;
+
 
 /**
- * 10/11/2014
+ * Class {@code DiskFileHandler}
+ *
+ *
  */
-
 @ToString
 @EqualsAndHashCode
 public final class DiskFileHandler implements FileHandler {
@@ -38,22 +52,36 @@ public final class DiskFileHandler implements FileHandler {
 		this.encoding = encoding;
 	}
 
+	@NonNull
 	@Override
-	public @Nullable String read( @NonNull String path) {
-		return IoUtil.readPath(path);
+	public String read(@NonNull String path) throws IOException {
+		File file = new File(path);
+		try (
+				InputStream stream = new FileInputStream(file);
+				Reader reader = new InputStreamReader(stream)
+		) {
+			return FileHandler.readString(reader);
+		}
 	}
 
 	@Override
-	public boolean writeString(
-			 @NonNull String path,  @NonNull String data
-	) {
+	public void writeString(@NonNull String path, @NonNull String data)
+			throws IOException {
 		File file = new File(path);
 		try (Writer writer = new BufferedWriter(new FileWriter(file))) {
 			writer.write(data);
-			return true;
-		} catch (IOException e) {
-			LOG.error("Failed to write to path {}", path, e);
 		}
-		return false;
+	}
+
+	@Override
+	public boolean validForRead(@NonNull String path) {
+		File file = new File(path);
+		return file.exists() && file.canRead();
+	}
+
+	@Override
+	public boolean validForWrite(@NonNull String path) {
+		File file = new File(path);
+		return file.exists() && file.canWrite();
 	}
 }

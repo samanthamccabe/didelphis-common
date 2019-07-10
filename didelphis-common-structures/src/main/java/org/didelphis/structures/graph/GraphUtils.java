@@ -1,18 +1,23 @@
 /******************************************************************************
- * Copyright (c) 2017. Samantha Fiona McCabe (Didelphis.org)                  *
+ * General components for language modeling and analysis                      *
  *                                                                            *
- * Licensed under the Apache License, Version 2.0 (the "License");            *
- * you may not use this file except in compliance with the License.           *
- * You may obtain a copy of the License at                                    *
- *     http://www.apache.org/licenses/LICENSE-2.0                             *
- * Unless required by applicable law or agreed to in writing, software        *
- * distributed under the License is distributed on an "AS IS" BASIS,          *
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
- * See the License for the specific language governing permissions and        *
- * limitations under the License.                                             *
+ * Copyright (C) 2014-2019 Samantha F McCabe                                  *
+ *                                                                            *
+ * This program is free software: you can redistribute it and/or modify       *
+ * it under the terms of the GNU General Public License as published by       *
+ * the Free Software Foundation, either version 3 of the License, or          *
+ * (at your option) any later version.                                        *
+ *                                                                            *
+ * This program is distributed in the hope that it will be useful,            *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of             *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the              *
+ * GNU General Public License for more details.                               *
+ *                                                                            *
+ * You should have received a copy of the GNU General Public License          *
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package org.didelphis.language.automata.utils;
+package org.didelphis.structures.graph;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -20,9 +25,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.UtilityClass;
-import org.didelphis.structures.graph.Arc;
-import org.didelphis.structures.graph.Graph;
-import org.didelphis.language.automata.expressions.Expression;
+import org.didelphis.structures.maps.interfaces.TwoKeyMultiMap;
 import org.didelphis.structures.tuples.Triple;
 
 import java.util.Collection;
@@ -47,69 +50,20 @@ import java.util.Set;
 public class GraphUtils {
 
 	@NonNull
-	public static  String expressionToGML(@NonNull Expression expression) {
-		Set<Node> nodes = new HashSet<>();
-		Set<Edge> edges = new HashSet<>();
-
-		recurse(1, expression, nodes, edges);
-
-		return buildGML(nodes, edges);
-	}
-	
-	@NonNull
-	public static <T> String graphToGML(@NonNull Graph<T> graph, boolean useRealId) {
+	public static <T> String graphToGML(@NonNull
+			TwoKeyMultiMap<String, T, String> graph, boolean useRealId) {
 		Set<String> nodes = new HashSet<>();
-		Set<Triple<String, Arc<T>, String>> edges = new HashSet<>();
-		for (Triple<String, Arc<T>, Collection<String>> triple : graph) {
+		Set<Triple<String, T, String>> edges = new HashSet<>();
+		for (Triple<String, T, Collection<String>> triple : graph) {
 			String source = triple.getFirstElement();
 			nodes.add(source);
-			Arc<T> arc = triple.getSecondElement();
+			T arc = triple.getSecondElement();
 			for (String target : triple.getThirdElement()) {
 				nodes.add(target);
 				edges.add(new Triple<>(source, arc, target));
 			}
 		}
 		return buildGML(nodes, edges, useRealId);
-	}
-	
-	private static int recurse(
-			int counter,
-			@NonNull Expression expression,
-			@NonNull Set<Node> nodes,
-			@NonNull Set<Edge> edges
-	) {
-		int parentId = counter;
-		nodes.add(new Node(parentId, buildLabel(expression)));
-		if (expression.hasChildren()) {
-			for (Expression child : expression.getChildren()) {
-				counter++;
-				edges.add(new Edge(parentId, counter, ""));
-				counter = recurse(counter, child, nodes, edges);
-			}
-		}
-		return counter;
-	}
-	
-	private static String buildLabel(Expression expression) {
-		StringBuilder stringBuilder = new StringBuilder();
-		
-		if (expression.isNegative()) {
-			stringBuilder.append('!');
-		}
-		
-		if (expression.hasChildren()) {
-			if (expression.isParallel()) {
-				stringBuilder.append("{ }");
-			} else if (expression.isCapturing()) {
-				stringBuilder.append("( )");
-			} else {
-				stringBuilder.append("(?: )");
-			}
-		} else {
-			stringBuilder.append(expression.getTerminal());
-		}
-		stringBuilder.append(expression.getQuantifier());
-		return stringBuilder.toString();
 	}
 
 	private static String buildGML(
