@@ -140,6 +140,7 @@ public final class Logger {
 		sb.append(targetClass.getSimpleName());
 		sb.append(": ");
 		sb.append(Templates.compile(template, data));
+		sb.append("\n");
 		return sb.toString();
 	}
 
