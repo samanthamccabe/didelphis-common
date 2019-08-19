@@ -29,5 +29,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>didelphis-common-utilities</artifactId>
+    <version>0.3.3-SNAPSHOT</version>
 
 </project>
