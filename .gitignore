@@ -20,6 +20,8 @@
 # Log file
 *.log
 
+target/
+
 # BlueJ files
 # Mobile Tools for Java (J2ME)
 # Package Files #
