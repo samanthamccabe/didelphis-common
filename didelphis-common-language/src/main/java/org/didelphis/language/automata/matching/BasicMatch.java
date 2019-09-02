@@ -24,6 +24,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +53,7 @@ public class BasicMatch<S> implements Match<S> {
 		return match;
 	}
 	
-	public BasicMatch(S input, int start, int end) {
+	public BasicMatch(@Nullable S input, int start, int end) {
 		this.start = start;
 		this.end = end;
 		this.input = input;
@@ -60,7 +61,7 @@ public class BasicMatch<S> implements Match<S> {
 		groups = new ArrayList<>();
 	}
 	
-	public void addGroup(int start, int end, S input) {
+	public void addGroup(int start, int end, @Nullable S input) {
 		groups.add(new MatchGroup<>(start, end , input));
 	}
 	

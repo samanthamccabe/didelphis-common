@@ -737,6 +737,7 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 	
 	@Test
 	void testGroupPropagation01() {
+		@Language ("RegExp")
 		@SuppressWarnings ("RegExpRedundantEscape")
 		String exp = "\\[([^\\]]+)\\]";
 		Pattern pattern = Pattern.compile(exp);

@@ -41,7 +41,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  *
  * @since 0.1.0
  */
-@SuppressWarnings("ObjectEqualsNull")
 class GeneralFeatureModelTest extends PhoneticTestBase {
 
 	private static FeatureModel<Integer> model;
@@ -73,14 +72,13 @@ class GeneralFeatureModelTest extends PhoneticTestBase {
 		assertNotEquals(model.hashCode(), empty.hashCode());
 	}
 
-	@SuppressWarnings("EqualsBetweenInconvertibleTypes")
 	@Test
 	void testEquals() {
 		assertEquals(model, other);
 		assertNotEquals(model, empty);
 		assertEquals(model, model);
-		assertFalse(model.equals(null));
-		assertFalse(model.equals("null"));
+		assertNotEquals(null, model);
+		assertNotEquals("null", model);
 	}
 
 	@Test
@@ -120,20 +118,24 @@ class GeneralFeatureModelTest extends PhoneticTestBase {
 
 	@Test
 	void size() {
-		assertEquals(model.getSpecification().size(),
+		assertEquals(
+				model.getSpecification().size(),
 				other.getSpecification().size()
 		);
-		assertNotEquals(model.getSpecification().size(),
+		assertNotEquals(
+				model.getSpecification().size(),
 				empty.getSpecification().size()
 		);
 	}
 
 	@Test
 	void getFeatureIndices() {
-		assertEquals(model.getSpecification().getFeatureIndices(),
+		assertEquals(
+				model.getSpecification().getFeatureIndices(),
 				other.getSpecification().getFeatureIndices()
 		);
-		assertNotEquals(model.getSpecification().getFeatureIndices(),
+		assertNotEquals(
+				model.getSpecification().getFeatureIndices(),
 				empty.getSpecification().getFeatureIndices()
 		);
 	}
@@ -149,10 +151,12 @@ class GeneralFeatureModelTest extends PhoneticTestBase {
 
 	@Test
 	void getFeatureNames() {
-		assertEquals(model.getSpecification().getFeatureNames(),
+		assertEquals(
+				model.getSpecification().getFeatureNames(),
 				other.getSpecification().getFeatureNames()
 		);
-		assertNotEquals(model.getSpecification().getFeatureNames(),
+		assertNotEquals(
+				model.getSpecification().getFeatureNames(),
 				empty.getSpecification().getFeatureNames()
 		);
 	}
