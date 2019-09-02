@@ -26,16 +26,20 @@ import java.util.List;
 
 /**
  * Class {@code Sort}
- *
  */
 @UtilityClass
 public class Sort {
 
-	public <T> void quicksort(List<T> list, Comparator<T> comparator) {
+	public <T> void quicksort(List<? extends T> list, Comparator<T> comparator) {
 		quicksort(list, comparator, 0, list.size());
 	}
 
-	private <T> void quicksort(List<T> arr, Comparator<T> comp, int high, int low) {
+	private <T> void quicksort(
+			List<T> arr,
+			Comparator<? super T> comp,
+			int high,
+			int low
+	) {
 		if (arr == null || arr.isEmpty() || low >= high) {
 			return;
 		}
@@ -43,7 +47,7 @@ public class Sort {
 		// pick the pivot
 		int middle = low + (high - low) / 2;
 		T pivot = arr.get(middle);
- 
+
 		// make left < pivot and right > pivot
 		int i = low;
 		int j = high;

@@ -41,10 +41,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 class GeneralMultiMapTest {
-	
+
 	private GeneralMultiMap<String, String> map;
 	private GeneralMultiMap<String, String> map1;
-	
+
 	@BeforeEach
 	void init() {
 		map = new GeneralMultiMap<>();
@@ -54,22 +54,26 @@ class GeneralMultiMapTest {
 		map.add("Z", "d");
 		map.add("Z", "e");
 		map.add("Z", "f");
-		
-		map1 = new GeneralMultiMap<>(map, new HashMap<>(), Suppliers.ofHashSet());
+
+		map1 = new GeneralMultiMap<>(
+				map,
+				new HashMap<>(),
+				Suppliers.ofHashSet()
+		);
 		map1.add("X", "1");
 		map1.add("X", "2");
 	}
-	
+
 	@Test
 	void get() {
 		Set<String> expectedX = new HashSet<>(Collections.singletonList("a"));
 		Set<String> expectedY = new HashSet<>(Arrays.asList("b", "c"));
-		Set<String> expectedZ = new HashSet<>(Arrays.asList("d", "e","f"));
+		Set<String> expectedZ = new HashSet<>(Arrays.asList("d", "e", "f"));
 
 		assertEquals(expectedX, map.get("X"));
 		assertEquals(expectedY, map.get("Y"));
 		assertEquals(expectedZ, map.get("Z"));
-		
+
 		assertNull(map.get("W"));
 	}
 
@@ -85,14 +89,14 @@ class GeneralMultiMapTest {
 	@Test
 	void keys() {
 		Set<String> expected = new HashSet<>(Arrays.asList("X", "Y", "Z"));
-		assertEquals(expected,  map.keys());
+		assertEquals(expected, map.keys());
 	}
 
 	@Test
 	void remove() {
 		Set<String> expected = new HashSet<>(Arrays.asList("b", "c"));
 		Collection<String> received = map.remove("Y");
-		
+
 		assertEquals(expected, received);
 		assertFalse(map.containsKey("Y"));
 	}
@@ -122,9 +126,8 @@ class GeneralMultiMapTest {
 	@Test
 	void addAll() {
 		map.addAll("X", Arrays.asList("1", "2", "3"));
-		assertEquals(
-				new HashSet<>(Arrays.asList("a", "1", "2", "3")),
-		        map.get("X")
+		assertEquals(new HashSet<>(Arrays.asList("a", "1", "2", "3")),
+				map.get("X")
 		);
 	}
 
@@ -163,21 +166,39 @@ class GeneralMultiMapTest {
 
 	@Test
 	void equals() {
-		assertEquals(map, new GeneralMultiMap<>(map, new HashMap<>(), Suppliers.ofHashSet()));
+		assertEquals(
+				map,
+				new GeneralMultiMap<>(map,
+						new HashMap<>(),
+						Suppliers.ofHashSet()
+				)
+		);
 		assertNotEquals(map, new GeneralMultiMap<>());
 		assertNotEquals(map, map1);
 	}
 
 	@Test
 	void testHashCode() {
-		assertEquals(map.hashCode(), new GeneralMultiMap<>(map, new HashMap<>(), Suppliers.ofHashSet()).hashCode());
+		assertEquals(
+				map.hashCode(),
+				new GeneralMultiMap<>(map,
+						new HashMap<>(),
+						Suppliers.ofHashSet()
+				).hashCode()
+		);
 		assertNotEquals(map.hashCode(), new GeneralMultiMap<>().hashCode());
 		assertNotEquals(map.hashCode(), map1.hashCode());
 	}
 
 	@Test
 	void testToString() {
-		assertEquals(map.toString(), new GeneralMultiMap<>(map, new HashMap<>(), Suppliers.ofHashSet()).toString());
+		assertEquals(
+				map.toString(),
+				new GeneralMultiMap<>(map,
+						new HashMap<>(),
+						Suppliers.ofHashSet()
+				).toString()
+		);
 		assertNotEquals(map.toString(), new GeneralMultiMap<>().toString());
 		assertNotEquals(map.toString(), map1.toString());
 	}

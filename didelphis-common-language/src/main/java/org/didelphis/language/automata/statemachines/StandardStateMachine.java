@@ -23,6 +23,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.matching.BasicMatch;
@@ -630,13 +631,13 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		}
 	}
 
+	@ToString
 	@EqualsAndHashCode
 	@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 	private static final class EmptyMachine<S> implements StateMachine<S> {
 
 		// The wildcard-extends is necessary to avoid an incompatible type error
 		// even though Graph itself cannot be extended
-		@SuppressWarnings ("TypeParameterExtendsFinalClass")
 		Map<String, ? extends Graph<?>> map = Collections.emptyMap();
 
 		String id;

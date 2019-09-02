@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
 @Value
 public class SequenceFactory<T> implements Function<String, Sequence<T>> {
 
-	static Map<String, String> DELIMITERS = new HashMap<>();
+	private static final Map<String, String> DELIMITERS = new HashMap<>();
 	static {
 		DELIMITERS.put("[", "]");
 	}
@@ -97,8 +97,8 @@ public class SequenceFactory<T> implements Function<String, Sequence<T>> {
 		return new BasicSequence<>(segments, featureModel);
 	}
 
-	public void reserve(@NonNull String string) {
-		reservedStrings.add(string);
+	public void reserve(@NonNull String reserved) {
+		reservedStrings.add(reserved);
 	}
 
 	@NonNull
@@ -129,6 +129,6 @@ public class SequenceFactory<T> implements Function<String, Sequence<T>> {
 	private static int compare(CharSequence k1, CharSequence k2) {
 		int x = k1.length();
 		int y = k2.length();
-		return (x < y) ? -1 : ((x == y) ? 0 : 1);
+		return Integer.compare(x, y);
 	}
 }

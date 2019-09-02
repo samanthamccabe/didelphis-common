@@ -81,10 +81,8 @@ class ConstraintTest extends PhoneticTestBase {
 
 		assertNotEquals(constraint1, constraint2);
 
-		//noinspection ObjectEqualsNull
 		assertNotEquals(null, constraint1);
 
-		//noinspection EqualsBetweenInconvertibleTypes
 		assertNotEquals("null", constraint1);
 	}
 

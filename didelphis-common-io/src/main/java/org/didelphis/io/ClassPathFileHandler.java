@@ -47,7 +47,6 @@ public enum ClassPathFileHandler implements FileHandler {INSTANCE;
 	}
 
 	@NonNull
-	@SuppressWarnings ("ProhibitedExceptionCaught")
 	@Override
 	public String read(@NonNull String path) throws IOException {
 		try (InputStream stream = LOADER.getResourceAsStream(path);
