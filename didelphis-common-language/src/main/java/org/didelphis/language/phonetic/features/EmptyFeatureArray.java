@@ -43,13 +43,16 @@ import java.util.Iterator;
 public final class EmptyFeatureArray<T> implements FeatureArray<T> {
 
 	private final FeatureModel<T> featureModel;
+	private final int size;
 
 	public EmptyFeatureArray(FeatureModel<T> featureModel) {
 		this.featureModel = featureModel;
+		size = featureModel.getSpecification().size();
 	}
 
 	public EmptyFeatureArray(FeatureArray<T> featureArray) {
-		this.featureModel = featureArray.getFeatureModel();
+		featureModel = featureArray.getFeatureModel();
+		size = featureModel.getSpecification().size();
 	}
 	
 	@Override
@@ -68,7 +71,7 @@ public final class EmptyFeatureArray<T> implements FeatureArray<T> {
 
 	@Override
 	public @Nullable T get(int index) {
-		if (index >= featureModel.getSpecification().size()) {
+		if (index >= size) {
 			throw new IndexOutOfBoundsException(
 					"Index: " + index + ", Size: " +
 					featureModel.getSpecification().size());
