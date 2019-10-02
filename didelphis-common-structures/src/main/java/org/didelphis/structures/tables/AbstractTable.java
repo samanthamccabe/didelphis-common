@@ -129,11 +129,12 @@ public abstract class AbstractTable<E> implements ResizeableTable<E> {
 	}
 
 	protected void checkRowData(@NonNull Collection<E> data) {
-		if (data.size() != columns()) {
+		int size = data.size();
+		if (size != columns()) {
 			String message = Templates.create()
 					.add("New row is the wrong size!")
 					.add("Has {} columns but needs {}.")
-					.with(data.size(), columns())
+					.with(size, columns())
 					.data(data)
 					.build();
 			throw new IllegalArgumentException(message);
@@ -141,11 +142,12 @@ public abstract class AbstractTable<E> implements ResizeableTable<E> {
 	}
 
 	protected void checkColumnData(@NonNull Collection<E> data) {
-		if (data.size() != rows()) {
+		int size = data.size();
+		if (size != rows()) {
 			String message = Templates.create()
 					.add("New column is the wrong size!")
 					.add("Has {} rows but needs {}.")
-					.with(data.size(), rows())
+					.with(size, rows())
 					.data(data)
 					.build();
 			throw new IllegalArgumentException(message);

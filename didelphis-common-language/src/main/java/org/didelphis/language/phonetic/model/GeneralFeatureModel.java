@@ -24,6 +24,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
+
 import org.didelphis.language.automata.Regex;
 import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.parsing.ParseException;
@@ -33,6 +34,7 @@ import org.didelphis.language.phonetic.features.SparseFeatureArray;
 import org.didelphis.utilities.Templates;
 
 import java.text.Normalizer.Form;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +47,6 @@ import static java.text.Normalizer.normalize;
  */
 @ToString
 @EqualsAndHashCode
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public final class GeneralFeatureModel<T> implements FeatureModel<T> {
 
 	private static final String VALUE = "(-?\\d|[A-Z]+)";
@@ -57,10 +58,10 @@ public final class GeneralFeatureModel<T> implements FeatureModel<T> {
 	private static final Regex FEATURE_PATTERN = new Regex("[,;]\\s*|\\s+");
 	private static final Regex BRACKET_PATTERN = new Regex("\\[((?:[^\\]])+)\\]");
 
-	FeatureSpecification specification;
-	List<Constraint<T>> constraints;
-	Map<String, FeatureArray<T>> aliases;
-	FeatureType<T> featureType;
+	private final FeatureSpecification specification;
+	private final List<Constraint<T>> constraints;
+	private final Map<String, FeatureArray<T>> aliases;
+	private final FeatureType<T> featureType;
 
 	/**
 	 * @param featureType
@@ -76,8 +77,8 @@ public final class GeneralFeatureModel<T> implements FeatureModel<T> {
 	) {
 		this.featureType = featureType;
 		this.specification = specification;
-		this.constraints = constraints;
-		this.aliases = aliases;
+		this.constraints = Collections.unmodifiableList(constraints);
+		this.aliases = Collections.unmodifiableMap(aliases);
 	}
 	
 	@NonNull

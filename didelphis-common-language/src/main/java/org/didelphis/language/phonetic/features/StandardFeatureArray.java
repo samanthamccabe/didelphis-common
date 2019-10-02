@@ -157,8 +157,8 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 
 	private void applyConstraints(int index) {
 		for (Constraint<T> constraint : getFeatureModel().getConstraints()) {
-			if (constraint.getSource().get(index) != null
-					&& matches(constraint.getSource())) {
+			FeatureArray<T> source = constraint.getSource();
+			if (source.get(index) != null && matches(source)) {
 				alter(constraint.getTarget());
 			}
 		}

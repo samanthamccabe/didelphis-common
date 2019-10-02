@@ -48,7 +48,7 @@ public final class SparseFeatureArray<T> extends AbstractFeatureArray<T> {
 	 */
 	public SparseFeatureArray(@NonNull FeatureModel<T> featureModel) {
 		super(featureModel);
-		features = new TreeMap<>();
+		features = new HashMap<>();
 	}
 
 	/**
@@ -113,10 +113,11 @@ public final class SparseFeatureArray<T> extends AbstractFeatureArray<T> {
 	@Override
 	public int hashCode() {
 		int code = super.hashCode();
-		code *= features.entrySet().stream()
-				.mapToInt(entry -> 
-						entry.getValue().hashCode() ^ (entry.getKey() >> 1))
-				.reduce(1, (k, v) -> k * v);
+		code *= features.entrySet()
+				.stream()
+				.mapToInt(tEntry -> 31 * tEntry.getKey() *
+						Objects.hashCode(tEntry.getValue()))
+				.reduce(1, (a, b) -> a * b);
 		return code;
 	}
 	
@@ -174,13 +175,11 @@ public final class SparseFeatureArray<T> extends AbstractFeatureArray<T> {
 	}
 
 	private void indexCheck(int index) {
-		int size = getSpecification().size();
-		if (index >= size) {
-			String message = Templates.create()
-					.add("Provided index {} is larger than the defined size {}",
-							"of the feature model.")
-					.with(index, size)
-					.build();
+		if (index >= size()) {
+			String message = Templates.create().add(
+					"Provided index {} is larger than the defined size {}",
+					"of the feature model."
+			).with(index, size()).build();
 			throw new IndexOutOfBoundsException(message);
 		}
 	}

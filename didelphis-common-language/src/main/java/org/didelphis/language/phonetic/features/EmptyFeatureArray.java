@@ -23,8 +23,10 @@ package org.didelphis.language.phonetic.features;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
+
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.utilities.Templates;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -33,7 +35,7 @@ import java.util.Iterator;
 
 /**
  * Class {@code EmptyFeatureArray}
- * 
+ * <p>
  * A simple immutable implementation of {@link FeatureArray} with no data.
  *
  * @since 0.2.0
@@ -54,14 +56,14 @@ public final class EmptyFeatureArray<T> implements FeatureArray<T> {
 		featureModel = featureArray.getFeatureModel();
 		size = featureModel.getSpecification().size();
 	}
-	
+
 	@Override
 	public int size() {
-		return getSpecification().size();
+		return size;
 	}
 
 	@Override
-	public void set(int index, @Nullable T value) { 
+	public void set(int index, @Nullable T value) {
 		String message = Templates.create()
 				.add("{} is immutable and does not support method #set")
 				.with(getClass())
@@ -72,8 +74,7 @@ public final class EmptyFeatureArray<T> implements FeatureArray<T> {
 	@Override
 	public @Nullable T get(int index) {
 		if (index >= size) {
-			throw new IndexOutOfBoundsException(
-					"Index: " + index + ", Size: " +
+			throw new IndexOutOfBoundsException("Index: " + index + ", Size: " +
 					featureModel.getSpecification().size());
 		}
 		return null;
