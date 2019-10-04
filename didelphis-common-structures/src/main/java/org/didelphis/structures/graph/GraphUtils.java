@@ -52,10 +52,10 @@ public class GraphUtils {
 		Set<String> nodes = new HashSet<>();
 		Set<Triple<String, T, String>> edges = new HashSet<>();
 		for (Triple<String, T, Collection<String>> triple : graph) {
-			String source = triple.getFirstElement();
+			String source = triple.first();
 			nodes.add(source);
-			T arc = triple.getSecondElement();
-			for (String target : triple.getThirdElement()) {
+			T arc = triple.second();
+			for (String target : triple.third()) {
 				nodes.add(target);
 				edges.add(new Triple<>(source, arc, target));
 			}
@@ -113,10 +113,10 @@ public class GraphUtils {
 
 		for (Triple<String, T, String> edge : edges) {
 
-			String source = edge.getFirstElement();
-			String target = edge.getThirdElement();
+			String source = edge.first();
+			String target = edge.third();
 
-			T arc = edge.getSecondElement();
+			T arc = edge.second();
 
 			String rawString = Objects.toString(arc);
 			

@@ -19,11 +19,8 @@
 
 package org.didelphis.language.phonetic.model;
 
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
-import lombok.experimental.FieldDefaults;
 
 import org.didelphis.language.automata.Regex;
 import org.didelphis.language.automata.matching.Match;
@@ -37,6 +34,7 @@ import java.text.Normalizer.Form;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static java.text.Normalizer.normalize;
 
@@ -45,8 +43,7 @@ import static java.text.Normalizer.normalize;
  *
  * @since 0.1.0
  */
-@ToString
-@EqualsAndHashCode
+@ToString(exclude = "hash")
 public final class GeneralFeatureModel<T> implements FeatureModel<T> {
 
 	private static final String VALUE = "(-?\\d|[A-Z]+)";
@@ -57,6 +54,8 @@ public final class GeneralFeatureModel<T> implements FeatureModel<T> {
 	private static final Regex BINARY_PATTERN  = new Regex("([+−-])" + NAME);
 	private static final Regex FEATURE_PATTERN = new Regex("[,;]\\s*|\\s+");
 	private static final Regex BRACKET_PATTERN = new Regex("\\[((?:[^\\]])+)\\]");
+
+	private int hash;
 
 	private final FeatureSpecification specification;
 	private final List<Constraint<T>> constraints;
@@ -134,6 +133,25 @@ public final class GeneralFeatureModel<T> implements FeatureModel<T> {
 	@Override
 	public FeatureSpecification getSpecification() {
 		return specification;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		GeneralFeatureModel<?> that = (GeneralFeatureModel<?>) o;
+		return specification.equals(that.specification) &&
+				constraints.equals(that.constraints) &&
+				aliases.equals(that.aliases) &&
+				featureType.equals(that.featureType);
+	}
+
+	@Override
+	public int hashCode() {
+		if (hash == 0) {
+			hash = Objects.hash(specification, constraints, aliases, featureType);
+		}
+		return hash;
 	}
 
 	private static int retrieveIndex(

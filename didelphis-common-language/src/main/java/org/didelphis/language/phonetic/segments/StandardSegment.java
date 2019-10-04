@@ -26,15 +26,16 @@ package org.didelphis.language.phonetic.segments;
 
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureSpecification;
 
 /**
  * Class {@code StandardSegment}
- * 
+ *
  * @param <T> the type of feature data used by the segment's model
- * 
+ *
  * @since 0.1.0
  */
 @EqualsAndHashCode
@@ -69,6 +70,7 @@ public class StandardSegment<T> implements Segment<T> {
 	 * other segment onto this one
 	 *
 	 * @param segment an underspecified segment from which to take changes
+	 *
 	 * @return a new segment based on this one with modifications from the other
 	 */
 	@Override

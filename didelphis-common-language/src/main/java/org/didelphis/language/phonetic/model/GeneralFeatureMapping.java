@@ -19,9 +19,9 @@
 
 package org.didelphis.language.phonetic.model;
 
-import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
+
 import org.didelphis.language.automata.Regex;
 import org.didelphis.language.phonetic.features.EmptyFeatureArray;
 import org.didelphis.language.phonetic.features.FeatureArray;
@@ -29,6 +29,7 @@ import org.didelphis.language.phonetic.features.FeatureType;
 import org.didelphis.language.phonetic.features.SparseFeatureArray;
 import org.didelphis.language.phonetic.features.StandardFeatureArray;
 import org.didelphis.language.phonetic.segments.Segment;
+import org.didelphis.language.phonetic.segments.SemidefinedSegment;
 import org.didelphis.language.phonetic.segments.StandardSegment;
 import org.didelphis.language.phonetic.segments.UndefinedSegment;
 import org.didelphis.utilities.Sort;
@@ -40,12 +41,12 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 
-@ToString
-@EqualsAndHashCode
+@ToString(exclude = "hash")
 public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 
 	private static final Regex BINDER = new Regex("[͜-͢]");
@@ -56,6 +57,8 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 	private final Map<String, FeatureArray<T>> featureMap;
 	private final Map<String, FeatureArray<T>> modifiers;
 	private final List<String> orderedKeys;
+
+	private int hash;
 
 	public GeneralFeatureMapping(
 			@NonNull FeatureModel<T> featureModel,
@@ -71,7 +74,7 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 		Sort.quicksort(orderedKeys, (s1, s2) -> {
 			int x = Normalizer.normalize(s1, Normalizer.Form.NFD).length();
 			int y = Normalizer.normalize(s2, Normalizer.Form.NFD).length();
-			return -1 * ((x < y) ? -1 : ((x == y) ? 0 : 1));
+			return -1 * (Integer.compare(x, y));
 		});
 	}
 
@@ -171,22 +174,22 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 
 		String substring = index <= 0 ? string : string.substring(0, index);
 
-		String best = "";
-		for (String key : orderedKeys) {
-			String s1 = BINDER.replace(substring, "");
-			String s2 = BINDER.replace(key, "");
-			if (s1.startsWith(s2) && key.length() > best.length()) {
-				best = key;
-			}
-		}
-
+		String best = findBestPrimarySymbol(substring);
 		if ((best.isEmpty())) {
 			return new UndefinedSegment<>(string, featureModel);
 		}
-		
-		FeatureArray<T> featureArray = getFeatureArray(best);
-		featureArray.alter(modifierArray);
-		return new StandardSegment<>(string, featureArray);
+
+		FeatureArray<T> array = getFeatureArray(best);
+		array.alter(modifierArray);
+
+		String[] split = substring.split(best);
+		if (split.length == 0) {
+			return new StandardSegment<>(string, array);
+		} else if (split.length == 1) {
+			return new SemidefinedSegment<>(string, split[0], "", array);
+		} else {
+			return new SemidefinedSegment<>(string, split[0], split[1], array);
+		}
 	}
 
 	@NonNull
@@ -194,11 +197,50 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 	public FeatureModel<T> getFeatureModel() {
 		return featureModel;
 	}
-	
+
 	@NonNull
 	@Override
 	public FeatureSpecification getSpecification() {
 		return specification;
+	}
+	
+	@Override
+	public int hashCode() {
+		if (hash == 0) {
+			hash = Objects.hash(
+					specification,
+					featureModel,
+					featureMap,
+					modifiers,
+					orderedKeys
+			);
+		}
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		GeneralFeatureMapping<?> that = (GeneralFeatureMapping<?>) o;
+		return specification.equals(that.specification) &&
+				featureModel.equals(that.featureModel) &&
+				featureMap.equals(that.featureMap) &&
+				modifiers.equals(that.modifiers) &&
+				orderedKeys.equals(that.orderedKeys);
+	}
+
+	@NonNull
+	private String findBestPrimarySymbol(String substring) {
+		String best = "";
+		String s1 = BINDER.replace(substring, "");
+		for (String key : orderedKeys) {
+			String s2 = BINDER.replace(key, "");
+			if (s1.startsWith(s2) && key.length() > best.length()) {
+				best = key;
+			}
+		}
+		return best;
 	}
 
 	@NonNull

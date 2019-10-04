@@ -95,9 +95,9 @@ public class GeneralTwoKeyMap<T, U, V>
 		this(delegate, mapSupplier);
 
 		for (Triple<T, U, V> triple : tripleIterable) {
-			T k1 = triple.getFirstElement();
-			U k2 = triple.getSecondElement();
-			V value = triple.getThirdElement();
+			T k1 = triple.first();
+			U k2 = triple.second();
+			V value = triple.third();
 			if (delegate.containsKey(k1)) {
 				Map<U, V> map = delegate.get(k1);
 				map.put(k2, value);

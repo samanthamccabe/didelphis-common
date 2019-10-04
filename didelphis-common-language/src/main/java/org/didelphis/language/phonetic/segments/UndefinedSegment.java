@@ -38,7 +38,7 @@ import org.didelphis.language.phonetic.model.FeatureModel;
  * behavior.
  * 
  */
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = "model")
 public class UndefinedSegment<T> implements Segment<T> {
 
 	private final FeatureModel<T> model;
