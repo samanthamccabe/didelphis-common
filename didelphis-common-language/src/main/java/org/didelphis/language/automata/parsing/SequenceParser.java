@@ -23,17 +23,22 @@ import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
+
 import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.phonetic.SequenceFactory;
 import org.didelphis.language.phonetic.model.FeatureModel;
+import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.segments.UndefinedSegment;
+import org.didelphis.language.phonetic.sequences.BasicSequence;
 import org.didelphis.language.phonetic.sequences.ImmutableSequence;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.didelphis.structures.graph.Arc;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
+
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,56 +61,11 @@ import java.util.Set;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 
-	Arc<Sequence<T>> dotArc = new Arc<Sequence<T>>() {
-		@Override
-		public int match(Sequence<T> sequence, int index) {
-			int length = sequence.size();
-			return (length > 0 && index < length) ? index + 1 : -1;
-		}
+	Arc<Sequence<T>> dotArc       = new DotArc<>();
+	Arc<Sequence<T>> epsilonArc   = new EpsilonArc<>();
+	Arc<Sequence<T>> wordStartArc = new WordStartArc<>();
+	Arc<Sequence<T>> wordEndArc   = new WordEndArc<>();
 
-		@Override
-		public String toString() {
-			return ".";
-		}
-	};
-
-	Arc<Sequence<T>> epsilonArc = new Arc<Sequence<T>>() {
-		@Override
-		public int match(Sequence<T> sequence, int index) {
-			return index;
-		}
-
-		@Override
-		public String toString() {
-			return "";
-		}
-	};
-
-	Arc<Sequence<T>> wordStartArc = new Arc<Sequence<T>>() {
-		@Override
-		public int match(Sequence<T> sequence, int index) {
-			return index == 0 ? 0 : -1;
-		}
-
-		@Override
-		public String toString() {
-			return "^";
-		}
-	};
-
-	Arc<Sequence<T>> wordEndArc = new Arc<Sequence<T>>() {
-		@Override
-		public int match(Sequence<T> sequence, int index) {
-			int length = sequence.size();
-			return index == length ? length : -1;
-		}
-
-		@Override
-		public String toString() {
-			return "$";
-		}
-	};
-	
 	private static final Map<String, String> DELIMITERS = new LinkedHashMap<>();
 	static {
 		DELIMITERS.put("(?:", ")");
@@ -113,10 +73,10 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 		DELIMITERS.put("{", "}");
 		DELIMITERS.put("[", "]");
 	}
-	
+
 	SequenceFactory<T> factory;
 	MultiMap<String, Sequence<T>> specials;
-	
+
 	Sequence<T> wordStart;
 	Sequence<T> wordEnd;
 
@@ -130,7 +90,7 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 	) {
 		this.factory = factory;
 		this.specials = specials;
-		
+
 		// Generate epsilon / lambda symbol
 		FeatureModel<T> model = factory.getFeatureMapping().getFeatureModel();
 		wordStart = immutable("#[", model);
@@ -215,8 +175,60 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 	public Sequence<T> replaceGroups(
 			@NonNull Sequence<T> input, @NonNull Match<Sequence<T>> match
 	) {
-		// TODO: ---------------------------------------------------------------
-		return null;
+
+		FeatureModel<T> featureModel = factory.getFeatureMapping().getFeatureModel();
+		Sequence<T> sequence = new BasicSequence<>(featureModel);
+		StringBuilder number = new StringBuilder();
+
+		boolean inGroup = false;
+
+		int cursor = 0;
+		int i = 0;
+		while (i < input.size()) {
+			Segment<T> segment = input.get(i);
+			// ASCII digits 0-9
+			if (/*0x30 <= c && c < 0x3A &&*/ inGroup) {
+				number.append(segment);
+				i++;
+				cursor = i;
+			} else {
+				// parse and append group data
+				if (number.length() > 0) {
+					int groupNumber = Integer.parseInt(number.toString());
+					Sequence<T> group = match.group(groupNumber);
+					if (group != null) {
+						sequence.add(group);
+					}
+					// clear buffer
+					number = new StringBuilder();
+				}
+
+				if (segment.getSymbol().startsWith("$")) {
+					inGroup = true;
+					if (cursor != i) {
+						sequence.add(input.subsequence(cursor, i));
+					}
+					i++;
+					cursor = i;
+				} else {
+					inGroup = false;
+					i++;
+				}
+			}
+		}
+
+		sequence.add(input.subsequence(cursor));
+
+		// parse and append group data
+		if (number.length() > 0) {
+			int groupNumber = Integer.parseInt(number.toString());
+			Sequence<T> group = match.group(groupNumber);
+			if (group != null) {
+				sequence.add(group);
+			}
+		}
+
+		return sequence;
 	}
 
 	@NonNull
@@ -250,7 +262,7 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 			return literal.toString();
 		}
 	}
-	
+
 	private static final class SetArc<T> implements Arc<Sequence<T>> {
 
 		private final List<Sequence<T>> strings;
@@ -272,6 +284,56 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 		@Override
 		public String toString() {
 			return strings.toString();
+		}
+	}
+
+	private static class EpsilonArc<T> implements Arc<Sequence<T>> {
+		@Override
+		public int match(Sequence<T> sequence, int index) {
+			return index;
+		}
+
+		@Override
+		public String toString() {
+			return "";
+		}
+	}
+
+	private static class WordStartArc<T> implements Arc<Sequence<T>> {
+		@Override
+		public int match(Sequence<T> sequence, int index) {
+			return index == 0 ? 0 : -1;
+		}
+
+		@Override
+		public String toString() {
+			return "^";
+		}
+	}
+
+	private static class DotArc<T> implements Arc<Sequence<T>> {
+		@Override
+		public int match(Sequence<T> sequence, int index) {
+			int length = sequence.size();
+			return (length > 0 && index < length) ? index + 1 : -1;
+		}
+
+		@Override
+		public String toString() {
+			return ".";
+		}
+	}
+
+	private static class WordEndArc<T> implements Arc<Sequence<T>> {
+		@Override
+		public int match(Sequence<T> sequence, int index) {
+			int length = sequence.size();
+			return index == length ? length : -1;
+		}
+
+		@Override
+		public String toString() {
+			return "$";
 		}
 	}
 }

@@ -24,6 +24,7 @@ import org.didelphis.structures.maps.interfaces.TwoKeyMap;
 import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Triple;
 import org.didelphis.structures.tuples.Tuple;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -33,8 +34,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 
@@ -46,17 +46,17 @@ class GeneralTwoKeyMapTest extends TwoKeyMapTestBase {
 		map.put("a1", "b1", "v1");
 		map.put("a2", "b2", "v2");
 		map.put("a3", "b3", "v3");
-		
+
 		Set<Triple<String, String, String>> expected = new HashSet<>();
 		expected.add(new Triple<>("a1", "b1", "v1"));
 		expected.add(new Triple<>("a2", "b2", "v2"));
 		expected.add(new Triple<>("a3", "b3", "v3"));
-		
+
 		Set<Triple<String, String, String>> received = new HashSet<>();
 		for (Triple<String, String, String> triple : map) {
 			received.add(triple);
 		}
-		
+
 		assertEquals(expected, received);
 	}
 
@@ -64,7 +64,7 @@ class GeneralTwoKeyMapTest extends TwoKeyMapTestBase {
 	void testPutAndGet() {
 		TwoKeyMap<String, String, String> map = new GeneralTwoKeyMap<>();
 		map.put("a", "b", "c");
-		
+
 		testGet(map, "a", "b", "c");
 		testNullGet(map, "b", "a");
 		testNullGet(map, "b", "c");
@@ -97,28 +97,28 @@ class GeneralTwoKeyMapTest extends TwoKeyMapTestBase {
 		expected.add(new Couple<>("a1", "b1"));
 		expected.add(new Couple<>("a2", "b2"));
 		expected.add(new Couple<>("a3", "b3"));
-		
+
 		assertEquals(expected, map.keys(), "Unexpected Key Set");
 	}
-	
+
 	@Test
 	void testAssociatedKeys() {
 		TwoKeyMap<String, String, String> map = new GeneralTwoKeyMap<>();
 		map.put("A", "1a", "v1a");
-		
+
 		map.put("B", "2a", "v2a");
 		map.put("B", "2b", "v2b");
-		
+
 		map.put("C", "3a", "v3a");
 		map.put("C", "3b", "v3b");
 		map.put("C", "3c", "v3c");
-		
+
 		assertEquals(1,map.getAssociatedKeys("A").size());
 		assertEquals(2,map.getAssociatedKeys("B").size());
 		assertEquals(3,map.getAssociatedKeys("C").size());
 		assertEquals(Collections.emptySet(), map.getAssociatedKeys("X"));
 	}
-	
+
 	@Test
 	void testEquals() {
 		GeneralTwoKeyMap<String, String, String> map = new GeneralTwoKeyMap<>();
@@ -129,7 +129,7 @@ class GeneralTwoKeyMapTest extends TwoKeyMapTestBase {
 		GeneralTwoKeyMap<String, String, String> map1 = copy(map);
 		GeneralTwoKeyMap<String, String, String> map2 = copy(map);
 		map2.put("X", "Y", "Z");
-		
+
 		assertEquals(map, map1);
 		assertNotEquals(map, map2);
 	}

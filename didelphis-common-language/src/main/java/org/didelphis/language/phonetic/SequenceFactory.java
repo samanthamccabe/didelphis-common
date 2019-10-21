@@ -23,6 +23,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.Value;
+
 import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.model.FeatureMapping;
@@ -45,7 +46,7 @@ import java.util.stream.Collectors;
 
 /**
  * Class {@code SequenceFactory}
- * 
+ *
  * @since 0.0.0
  */
 @ToString         (of = {"featureMapping", "formatterMode", "reservedStrings"})
@@ -57,8 +58,8 @@ public class SequenceFactory<T> implements Function<String, Sequence<T>> {
 	static {
 		DELIMITERS.put("[", "]");
 	}
-	
-	/* --------------------------------------------------------------------- <*/ 
+
+	/* --------------------------------------------------------------------- <*/
 	FeatureMapping<T>  featureMapping;
 	FormatterMode      formatterMode;
 	Collection<String> reservedStrings;

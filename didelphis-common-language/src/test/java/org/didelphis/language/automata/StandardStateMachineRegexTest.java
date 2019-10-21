@@ -26,6 +26,7 @@ import org.didelphis.language.automata.statemachines.StandardStateMachine;
 import org.didelphis.language.automata.statemachines.StateMachine;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.utilities.Templates;
+
 import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.Test;
 
@@ -34,11 +35,8 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.didelphis.language.parsing.ParseDirection.FORWARD;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.didelphis.language.parsing.ParseDirection.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
@@ -84,11 +82,11 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 		assertMatches(machine, "ab");
 		assertMatches(machine, "abc");
 	}
-	
+
 	@Test
 	void testBoundaries1() {
 		StateMachine<String> machine = getMachine("^a$");
-		
+
 		assertMatches(machine, "a");
 
 		assertNotMatches(machine, "");
@@ -102,12 +100,12 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 
 		assertMatches(machine, "a");
 		assertMatches(machine, "aa");
-		
+
 		assertNotMatches(machine, "");
 		assertNotMatches(machine, "ba");
 		assertNotMatches(machine, "x");
 	}
-	
+
 	@Test
 	void testBoundaries3() {
 		StateMachine<String> machine = getMachine("a$");
@@ -125,7 +123,7 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 		StateMachine<String> machine = getMachine("a");
 		assertMatches(machine, "a");
 		assertMatches(machine, "aa");
-		
+
 		assertNotMatches(machine, "b");
 		assertNotMatches(machine, "c");
 	}
@@ -141,16 +139,16 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 		assertNotMatches(machine, "bbb");
 		assertNotMatches(machine, "c");
 		assertNotMatches(machine, "ab");
-		
+
 		assertNotMatches(machine, "abb");
 	}
-	
+
 	@Test
 	void testBasic03() {
 		StateMachine<String> machine = getMachine("aaa?");
 		assertMatches(machine, "aa");
 		assertMatches(machine, "aaa");
-		
+
 		assertNotMatches(machine, "a");
 		assertNotMatches(machine, "b");
 		assertNotMatches(machine, "c");
@@ -303,7 +301,7 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 	@Test
 	void testSets02() {
 		StateMachine<String> machine = getMachine("[(ab)(cd)(xy)(ef)]tr");
-		
+
 		assertMatches(machine, "atr");
 		assertMatches(machine, "btr");
 		assertMatches(machine, "ctr");
@@ -314,7 +312,7 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 		assertMatches(machine, "ftr");
 		assertMatches(machine, ")tr");
 		assertMatches(machine, "(tr");
-		
+
 		assertNotMatches(machine, "abtr");
 		assertNotMatches(machine, "cdtr");
 		assertNotMatches(machine, "xytr");
@@ -323,7 +321,7 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 		assertNotMatches(machine, "a");
 		assertNotMatches(machine, "tr");
 	}
-	
+
 	@Test
 	void testSetsMultiCharacter() {
 		StateMachine<String> machine = getMachine("[cɟ]");
@@ -332,7 +330,7 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 		assertMatches(machine, "c");
 		assertNotMatches(machine, "a");
 	}
-	
+
 	@Test
 	void testNestedSquareBrackets() {
 		StateMachine<String> machine = getMachine("[ab[cd]]");
@@ -341,7 +339,7 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 		assertMatches(machine, "b");
 		assertMatches(machine, "c");
 		assertMatches(machine, "d");
-		
+
 		assertNotMatches(machine, "x");
 	}
 
@@ -350,9 +348,9 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 		String regex = "[ab[^cd]]";
 		Pattern pattern = Pattern.compile(regex);
 		StateMachine<String> machine = getMachine(regex);
-		
+
 		assertConsistant(pattern, machine, "x");
-		
+
 		assertConsistant(pattern, machine, "a");
 		assertConsistant(pattern, machine, "b");
 		assertConsistant(pattern, machine, "c");
@@ -399,7 +397,7 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 		StateMachine<String> machine = getMachine("(a+l(ham+b)*ra)+");
 
 		assertMatchesGroup(machine, "alhambraalhambra", "alhambraalhambra", 0);
-		
+
 		assertMatchesGroup(machine, "alhambra", "alhambra", 0);
 		assertMatchesGroup(machine, "alhambra", "alhambra", 1);
 		assertMatchesGroup(machine, "alhambra", "hamb", 2);
@@ -407,7 +405,7 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 		assertMatchesGroup(machine, "aalhammbhambra", "aalhammbhambra", 0);
 		assertMatchesGroup(machine, "aalhammbhambra", "aalhammbhambra", 1);
 		assertMatchesGroup(machine, "aalhammbhambra", "hammbhamb", 2);
-		
+
 		assertMatchesGroup(machine, "alra", "alra", 0);
 		assertMatchesGroup(machine, "alra", "alra", 1);
 		assertNoGroup(machine, "alra", 2);
@@ -429,7 +427,7 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 		assertNotMatches(machine, "rs");
 		assertNotMatches(machine, "ls");
 	}
-		
+
 	@Test
 	void testComplex07() {
 		Pattern pattern = Pattern.compile("[rl]?[iu]?s");
@@ -439,7 +437,7 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 
 		assertConsistant(pattern, machine, "is");
 		assertConsistant(pattern, machine, "us");
-		
+
 		assertConsistant(pattern, machine, "rs");
 		assertConsistant(pattern, machine, "ls");
 
@@ -475,7 +473,7 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 	void testComplex04() {
 		StateMachine<String> machine = getMachine(
 				"[aeoāēō][ptkc]us");
-		
+
 		assertMatches(machine, "apus");
 		assertMatches(machine, "atus");
 		assertMatches(machine, "akus");
@@ -512,14 +510,14 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 
 		assertMatchesGroup(machine, "acdb", "acdb", 0);
 		assertMatchesGroup(machine, "acdb", "c", 1);
-		
+
 		assertMatchesGroup(machine, "abdb", "abdb", 0);
 		assertMatchesGroup(machine, "abdb", "b", 1);
 
 		assertMatchesGroup(machine, "ab", "ab", 0);
 		assertNoGroup(machine, "ab", 1);
 	}
-	
+
 	@Test
 	void testDot01() {
 		StateMachine<String> machine = getMachine("..");
@@ -629,7 +627,7 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 		String regex = "[^abc]";
 		Pattern pattern = Pattern.compile(regex);
 		StateMachine<String> machine = getMachine(regex);
-		
+
 		assertConsistant(pattern, machine, "a");
 		assertConsistant(pattern, machine, "b");
 		assertConsistant(pattern, machine, "c");
@@ -662,15 +660,15 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 		assertMatches(machine, "-breathy");
 		assertMatches(machine, "−breathy");
 		assertMatches(machine, "+some_feature1");
-		
+
 		assertNotMatches(machine, "0f");
 	}
-	
+
 	@Test
 	void testNestedNegative01() {
 		String regex = "^[^abc[^d]]$";
 		StateMachine<String> machine = getMachine(regex);
-		
+
 		// it make sense that this should accept everything
 		assertAll(
 				() -> assertMatches(machine, "d"),
@@ -680,20 +678,20 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 				() -> assertNotMatches(machine, "x")
 		);
 	}
-	
+
 	@Test
 	void testParentPathCapture() {
 		String exp = "^(.*/)?[^/]+$";
 		Pattern pattern = Pattern.compile(exp);
 		StateMachine<String> machine = getMachine(exp);
-		
+
 		assertConsistant(pattern, machine, "/opt/x/z.sheet");
 		assertConsistant(pattern, machine, "/root/file.txt");
-		
+
 		assertMatch(machine, "/root/file.txt", 2, "/root/file.txt", "/root/");
 		assertMatch(machine, "/opt/x/z.sheet", 2, "/opt/x/z.sheet", "/opt/x/");
 	}
-	
+
 	@Test
 	void testGreedyCapture() {
 		String exp = "(.+)(.+)";
@@ -710,7 +708,7 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 		StateMachine<String> machine = getMachine(regex);
 
 		assertMatches(machine, "x");
-		
+
 		assertNotMatches(machine, "a");
 		assertNotMatches(machine, "b");
 		assertNotMatches(machine, "c");
@@ -719,22 +717,22 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 		assertConsistant(pattern, machine, "a");
 		assertConsistant(pattern, machine, "b");
 		assertConsistant(pattern, machine, "c");
-		
+
 		/* The behavior is not consistent with Java's Pattern class, but that is
-		 * acceptable as far as we are concerned. If 
+		 * acceptable as far as we are concerned. If
 		 *   [abc[de]]
-		 * is the same as 
+		 * is the same as
 		 *   [abcde]
 		 * then it seems to follow that
 		 *   [^abc[de]]
-		 * should be the same as 
+		 * should be the same as
 		 *   [^abcde]
-		 * so it's not entirely surprising that 
+		 * so it's not entirely surprising that
 		 *   assertConsistant(pattern, machine, "d");
 		 * would fail; the real mystery is exactly how Java actually handles it
 		 */
 	}
-	
+
 	@Test
 	void testGroupPropagation01() {
 		@Language ("RegExp")
@@ -754,15 +752,15 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 
 		assertConsistant(pattern, machine, "a");
 		assertConsistant(pattern, machine, "aa");
-		
+
 		assertMatch(machine, "a",  2, "a", null);
 		assertMatch(machine, "aa", 2, "aa", "a");
 	}
-	
+
 	@Test
 	void testCase02() {
 		StateMachine<String> machine = getMachine("^(aa(bb)?)+$");
-		
+
 		assertMatch(machine, "aabb",    3, "aabb",   "aabb", "bb");
 		assertMatch(machine, "aaaa",    3, "aaaa",   "aa",   null);
 		assertMatch(machine, "aabbaa",  3, "aabbaa", "aabb", "bb");
@@ -782,7 +780,7 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 		assertFalse(machine.matches(""));
 		assertFalse(machine.matches("a"));
 	}
-	
+
 	@Test
 	void testCase04() {
 		StateMachine<String> machine = getMachine("(aaa)?aaa");
@@ -791,12 +789,12 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 		assertMatch(machine, "aaa",    2, "aaa",    null);
 		assertMatch(machine, "aaaaaa", 2, "aaaaaa", "aaa");
 		assertMatch(machine, "aaaa",   2, "aaa",    null);
-		
+
 		assertFalse(machine.matches(""));
 		assertFalse(machine.matches("a"));
 		assertFalse(machine.matches("aa"));
 	}
-	
+
 	@Test
 	void testCase05() {
 		StateMachine<String> machine = getMachine("^(a(b)?)+$");
@@ -924,11 +922,11 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 		StateMachine<String> machine = getMachine("[,;]\\s*|\\s+");
 
 		assertEquals(
-				Arrays.asList("a", "b", "c", "d"), 
+				Arrays.asList("a", "b", "c", "d"),
 				machine.split("a, b;c d")
 		);
 	}
-	
+
 	@Test
 	void testCaseImproperExpansion() {
 		StateMachine<String> machine = getMachine("[+\\-−]");
@@ -937,7 +935,7 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 		assertMatches(machine, "-");
 		assertNotMatches(machine, "cccccd");
 	}
-	
+
 	@Test
 	void testReplace01() {
 		StateMachine<String> machine = getMachine("a");
@@ -967,7 +965,7 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 		assertEquals("bbaxa",   machine.replace("baba",  "$2$1x"));
 		assertEquals("baxbax",  machine.replace("abab",  "$2$1x"));
 	}
-	
+
 	@Test
 	void testReplace04() {
 		StateMachine<String> machine = getMachine("");
@@ -977,14 +975,14 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 		assertEquals("b/a/b/a",   machine.replace("baba",  "/"));
 		assertEquals("a/b/a/b",   machine.replace("abab",  "/"));
 	}
-	
+
 	@Test
 	void testFeatureMatching01() {
 		String exp = "([^\t]+)\t(.*)";
 		Pattern pattern = Pattern.compile(exp);
 		StateMachine<String> machine = getMachine(exp);
 		assertMatch(machine, "w\t+\t+",  3, "w\t+\t+", "w", "+\t+");
-		
+
 		assertConsistant(pattern, machine, "w\t+\t+");
 	}
 
@@ -1003,7 +1001,7 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 				patternEnd,
 				machineEnd
 		);
-		
+
 		assertEquals(patternEnd, machineEnd, supplier);
 		int groups = match.groupCount();
 		assertEquals(matcher.groupCount() + 1, groups);

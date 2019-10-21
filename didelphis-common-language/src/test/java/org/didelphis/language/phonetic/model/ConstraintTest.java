@@ -25,12 +25,11 @@ import org.didelphis.language.phonetic.SequenceFactory;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.features.SparseFeatureArray;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class ConstraintTest extends PhoneticTestBase {
@@ -118,7 +117,7 @@ class ConstraintTest extends PhoneticTestBase {
 				loader1.getFeatureMapping(),
 				FormatterMode.NONE
 		);
-		
+
 		FeatureArray<Integer> segment1 = factory.toSegment("a").getFeatures();
 		FeatureArray<Integer> segment2 = factory1.toSegment("x").getFeatures();
 

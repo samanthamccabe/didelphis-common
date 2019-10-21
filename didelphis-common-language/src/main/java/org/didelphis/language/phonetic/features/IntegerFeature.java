@@ -20,15 +20,17 @@
 package org.didelphis.language.phonetic.features;
 
 import lombok.NonNull;
+
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
+
 import org.jetbrains.annotations.Nullable;
 
+import java.text.Normalizer;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-import static java.text.Normalizer.Form;
-import static java.text.Normalizer.normalize;
+import static java.text.Normalizer.*;
 
 /**
  * Class {@code IntegerFeature}
@@ -49,7 +51,7 @@ public enum IntegerFeature implements FeatureType<Integer> {
 	@NonNull
 	@Override
 	public Integer parseValue(@NonNull String string) {
-		String normalized = normalize(string, Form.NFKC);
+		String normalized = Normalizer.normalize(string, Form.NFKC);
 		if (normalized.equals("+")) {
 			return 1;
 		} else if (normalized.equals("-")) {
@@ -76,29 +78,26 @@ public enum IntegerFeature implements FeatureType<Integer> {
 
 	@Override
 	public double difference(@Nullable Integer v1, @Nullable Integer v2) {
-		return Math.abs(checkValue(v1) - checkValue(v2));
+		return Math.abs(norm(v1) - norm(v2));
 	}
 
 	@Override
-	public int intValue(Integer value) {
+	public int intValue(@Nullable Integer value) {
 		return (value == null) ? 0 : value;
 	}
 
 	@Override
-	public double doubleValue(Integer value) {
+	public double doubleValue(@Nullable Integer value) {
 		return (value == null) ? Double.NaN : value.doubleValue();
 	}
-	
+
 	@Override
 	public String toString() {
 		return "IntegerFeature";
 	}
 
 	@NonNull
-	private Integer checkValue(@Nullable Integer value) {
-		if (value == null) {
-			return 0;
-		}
-		return isDefined(value) ? value : 0;
+	private Integer norm(@Nullable Integer value) {
+		return value != null && isDefined(value) ? value : 0;
 	}
 }

@@ -20,6 +20,7 @@
 package org.didelphis.language.automata;
 
 import lombok.NonNull;
+
 import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.phonetic.sequences.Sequence;
 
@@ -37,7 +38,7 @@ import java.util.List;
  *
  * @see org.didelphis.language.automata.statemachines.StateMachine
  * @see Regex
- * 
+ *
  */
 public interface Automaton<S> {
 
@@ -55,7 +56,7 @@ public interface Automaton<S> {
 
 	@NonNull
 	Match<S> find(@NonNull S input);
-	
+
 	/**
 	 * Splits the given input sequence around matches of this automaton.
 	 * <p>
@@ -65,9 +66,9 @@ public interface Automaton<S> {
 	 * list are in the order in which they occur in the input. If this automaton
 	 * does not match any subsequence of the input then the resulting list has
 	 * just one element, namely the input sequence itself.
-	 * 
-	 * @see java.util.regex.Pattern#split(CharSequence, int) 
-	 * 
+	 *
+	 * @see java.util.regex.Pattern#split(CharSequence, int)
+	 *
 	 * @param input the sequence to be split
 	 * @param limit the maximum number of times the automaton is applied
 	 * @return a list of sequences matched by this automaton
@@ -81,7 +82,7 @@ public interface Automaton<S> {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param input
 	 * @param replacement
 	 * @return

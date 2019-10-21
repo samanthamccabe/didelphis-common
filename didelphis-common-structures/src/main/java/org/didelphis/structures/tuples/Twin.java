@@ -20,7 +20,9 @@
 package org.didelphis.structures.tuples;
 
 import lombok.EqualsAndHashCode;
+
 import org.didelphis.utilities.Templates;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.AbstractList;

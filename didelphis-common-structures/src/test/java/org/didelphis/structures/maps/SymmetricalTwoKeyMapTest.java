@@ -20,11 +20,13 @@
 package org.didelphis.structures.maps;
 
 import lombok.NonNull;
+
 import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.maps.interfaces.TwoKeyMap;
 import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Triple;
 import org.didelphis.structures.tuples.Tuple;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -34,11 +36,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class SymmetricalTwoKeyMapTest {
@@ -62,13 +60,13 @@ class SymmetricalTwoKeyMapTest {
 	}
 
 	@Test
-	void isEmpty() {
+	void testIsEmpty() {
 		assertFalse(map.isEmpty());
 		assertTrue(new SymmetricalTwoKeyMap().isEmpty());
 	}
 
 	@Test
-	void containsKey() {
+	void testContainsKey() {
 		assertTrue(map.contains("A", "B"));
 		assertTrue(map.contains("B", "C"));
 		assertTrue(map.contains("C", "D"));
@@ -77,6 +75,7 @@ class SymmetricalTwoKeyMapTest {
 	}
 
 	@Test
+	@SuppressWarnings ("ConstantConditions")
 	void get() {
 		assertEquals(1, (int) map.get("A", "B"));
 		assertEquals(2, (int) map.get("A", "C"));
@@ -97,6 +96,7 @@ class SymmetricalTwoKeyMapTest {
 	}
 
 	@Test
+	@SuppressWarnings ("ConstantConditions")
 	void put() {
 		// E = 7
 		map.put("A", "E", 7);
@@ -117,6 +117,7 @@ class SymmetricalTwoKeyMapTest {
 	}
 
 	@Test
+	@SuppressWarnings ("ConstantConditions")
 	void putReverse() {
 		// E = 7
 		map.put("E", "A", 7);
@@ -137,7 +138,7 @@ class SymmetricalTwoKeyMapTest {
 	}
 
 	@Test
-	void contains() {
+	void testContains() {
 		assertTrue(map.contains("A", "B"));
 		assertTrue(map.contains("A", "C"));
 		assertTrue(map.contains("B", "C"));

@@ -28,12 +28,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class DataTableTest {
@@ -110,7 +105,7 @@ class DataTableTest {
 
 		assertEquals(keys, receivedKeys);
 
-		// 
+		//
 		List<String> columnX = dataTable.getColumn("X");
 		List<String> columnY = dataTable.getColumn("Y");
 

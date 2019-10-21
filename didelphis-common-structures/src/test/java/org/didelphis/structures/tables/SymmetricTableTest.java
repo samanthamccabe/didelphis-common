@@ -30,11 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class SymmetricTableTest {
@@ -49,14 +45,14 @@ class SymmetricTableTest {
 	 *   └─────────┘       *
 	 * * * * * * * * * * * */
 	private SymmetricTable<String> table;
-	
+
 	@BeforeEach
 	void init() {
 		List<String> a = new ArrayList<>();
 		Collections.addAll(a, "A", "B", "C", "D", "E", "F", "G", "H", "J", "K");
 		table = new SymmetricTable<>(4, a);
 	}
-	
+
 	@Test
 	void constructorDefaultValue() {
 		SymmetricTable<String>  table1 = new SymmetricTable<>("", 3);
@@ -64,7 +60,7 @@ class SymmetricTableTest {
 		assertEquals(3, table1.columns());
 		assertEquals(3, table1.rows());
 	}
-	
+
 	@Test
 	void constructorException() {
 		assertThrows(IllegalArgumentException.class, () -> {
@@ -73,7 +69,7 @@ class SymmetricTableTest {
 			table = new SymmetricTable<>(3, a);
 		});
 	}
-	
+
 	@Test
 	void get() {
 		assertEquals("A", table.get(0, 0));
@@ -86,7 +82,7 @@ class SymmetricTableTest {
 		assertEquals("H", table.get(3, 1));
 		assertEquals("J", table.get(3, 2));
 		assertEquals("K", table.get(3, 3));
-		
+
 		assertEquals("B", table.get(0, 1));
 		assertEquals("C", table.get(1, 1));
 		assertEquals("D", table.get(0, 2));
@@ -104,7 +100,7 @@ class SymmetricTableTest {
 		table.set(1, 1, "X");
 		table.set(2, 2, "Y");
 		table.set(3, 3, "Z");
-		
+
 		assertEquals("W",table.get(0, 0));
 		assertEquals("X",table.get(1, 1));
 		assertEquals("Y",table.get(2, 2));
@@ -120,7 +116,7 @@ class SymmetricTableTest {
 		table2.set(0, 1, "X");
 		table2.set(1, 2, "Y");
 		table2.set(2, 3, "Z");
-		
+
 		assertEquals(table.hashCode(), table1.hashCode());
 		assertNotEquals(table.hashCode(), table2.hashCode());
 	}

@@ -20,6 +20,7 @@
 package org.didelphis.language.phonetic.segments;
 
 import org.didelphis.language.phonetic.PhoneticTestBase;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -46,7 +47,7 @@ class UndefinedSegmentTest extends PhoneticTestBase {
 				.getFeatureModel()
 				.getSpecification()
 				.size();
-		
+
 		assertEquals(size, segment.getFeatures().size());
 	}
 
@@ -76,7 +77,7 @@ class UndefinedSegmentTest extends PhoneticTestBase {
 		assertEquals(segment.hashCode(), segment.hashCode());
 		assertNotEquals(getSegment("x").hashCode(), segment.hashCode());
 	}
-	
+
 	private static Segment<Integer> getSegment(String symbol) {
 		return new UndefinedSegment<>(
 				symbol,

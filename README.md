@@ -6,19 +6,29 @@ General Didelphis components for language modeling and analysis
 ### Unreleased
 
 #### Added
-- *none*
+ - Added missing `@Nullable` annotations on implementations of interfaces that
+   do use them
+ - Introdued `SemidefinedSegment` to help identify unknown diacritics in input
+   data; a feature mapping can output these if the main symbol is known (and 
+   thus well-defined in the model) but a modifier is not
 #### Changed
+ - Moved some constants for feature model loading into a single class
  - Refactored some constructors for `structures` to use more general types
- - Updated documentation to remove `@date` tags and `created by` lines
+ - Fixed several inefficiencies in feature array classes, segment, and sequence
+   classes.
+ - Implemented lazy hash-code retrieval for some phonetics classes
 #### Deprecated
-- *none*
+ - *none*
 #### Removed
-- *none*
+ - Changed `.getFirstElement()` *etc.* from `Triple` and replaced them with 
+   `.first()` *etc.* 
+ - Updated documentation to remove `@date` tags and `created by` lines
 #### Fixed
  - Fixed misuse of Lombok annotation `@FieldDefaults` which do not apply to 
    static class members; the code was written at a time when it incorrectly
    *did* affect static members
    [[68]](https://github.com/samanthamccabe/didelphis-common/issues/68)
+ - Logger was failing to output line breaks
 #### Security
 - Changed inner `Cursor` class of `StandardStateMachine` to be static; it was 
 	written to access a field of it's containing class, but this can be passed

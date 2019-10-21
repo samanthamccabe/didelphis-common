@@ -24,9 +24,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
+
 import org.didelphis.io.FileHandler;
 import org.didelphis.io.NullFileHandler;
-import org.didelphis.language.automata.Regex;
 import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.features.FeatureArray;
@@ -37,6 +37,7 @@ import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.didelphis.utilities.Logger;
 import org.didelphis.utilities.Templates;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -50,9 +51,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import static java.text.Normalizer.Form;
-import static java.text.Normalizer.normalize;
-import static org.didelphis.utilities.Splitter.lines;
+import static java.text.Normalizer.*;
+import static org.didelphis.language.phonetic.model.ModelConstants.*;
+import static org.didelphis.utilities.Splitter.*;
 
 /**
  * Class {@code FeatureModelLoader}
@@ -76,18 +77,6 @@ public final class FeatureModelLoader<T> {
 			return name().equals(string.toUpperCase());
 		}
 	}
-
-	/*-----------------------------------------------------------------------<*/
-	static final Regex FEATURES_PATTERN = new Regex("(\\w+)(\\s+(\\w*))?");
-	static final Regex TRANSFORM        = new Regex("\\s*>\\s*");
-	static final Regex BRACKETS         = new Regex("[\\[\\]]");
-	static final Regex EQUALS           = new Regex("\\s*=\\s*");
-	static final Regex IMPORT           = new Regex("import\\s+['\"]([^'\"]+)['\"]", true);
-	static final Regex COMMENT_PATTERN  = new Regex("\\s*%.*");
-	static final Regex SYMBOL_PATTERN   = new Regex("([^\t]+)\t(.*)");
-	static final Regex TAB_PATTERN      = new Regex("\t");
-	static final Regex DOTTED_CIRCLE    = new Regex("◌");
-	static final Regex PARENT_PATH      = new Regex("^(.*[\\\\/])?[^\\\\/]+$");
 
 	final MultiMap<ParseZone, String> zoneData;
 
@@ -270,7 +259,7 @@ public final class FeatureModelLoader<T> {
 						continue;
 					} catch (IOException e) {
 						LOG.error("Unexpected failure encountered: {}", e);
-						throw new ParseException("Unable to read from " 
+						throw new ParseException("Unable to read from "
 								+ filePath, e);
 					}
 				}
@@ -346,7 +335,7 @@ public final class FeatureModelLoader<T> {
 				String symbol = match.group(1);
 				List<String> values = TAB_PATTERN.split(match.group(2), -1);
 				int size = featureModel.getSpecification().size();
-				
+
 				if (size > values.size()) {
 					String message = Templates.create()
 							.add("Too few features are provided!")
@@ -356,7 +345,7 @@ public final class FeatureModelLoader<T> {
 							.build();
 					throw new ParseException(message);
 				}
-				
+
 				FeatureArray<T> features
 						= new SparseFeatureArray<>(featureModel);
 				for (int i = 0; i < size; i++) {

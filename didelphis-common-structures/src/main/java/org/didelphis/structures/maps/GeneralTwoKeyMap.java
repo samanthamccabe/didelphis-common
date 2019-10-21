@@ -23,12 +23,14 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.Delegate;
+
 import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.contracts.Delegating;
 import org.didelphis.structures.maps.interfaces.TwoKeyMap;
 import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Triple;
 import org.didelphis.structures.tuples.Tuple;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -108,7 +110,7 @@ public class GeneralTwoKeyMap<T, U, V>
 			}
 		}
 	}
-	
+
 	@Override
 	public @Nullable V get(@Nullable T k1, @Nullable U k2) {
 		Map<U, V> map = delegate.get(k1);
@@ -172,7 +174,7 @@ public class GeneralTwoKeyMap<T, U, V>
 	protected Supplier<? extends Map<U, V>> getMapSupplier() {
 		return mapSupplier;
 	}
-	
+
 	// A weird but necessary way of ensuring @Delegate works correctly; the
 	// delegated .size() call from Map will only return the size of the outer
 	// Map, but the designed behavior for a two-key map is that the size is the

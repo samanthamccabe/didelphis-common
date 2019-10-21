@@ -29,18 +29,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static java.util.Arrays.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class RectangularTableTest {
 
 	private static RectangularTable<String> table;
-	
+
 	@BeforeEach
 	void init() {
 		List<List<String>> data = new ArrayList<>();
@@ -51,7 +47,7 @@ class RectangularTableTest {
 
 		table = new RectangularTable<>(data, 4, 3);
 	}
-	
+
 	@Test
 	void constructor1() {
 		Table<String> table1 = new RectangularTable<>("X", 2, 2);
@@ -84,7 +80,7 @@ class RectangularTableTest {
 		assertEquals("4", table1.get(1, 1));
 		assertEquals("5", table1.get(1, 2));
 	}
-	
+
 	@Test
 	void constructor3() {
 		RectangularTable<String> table1 = new RectangularTable<>(table);
@@ -122,7 +118,7 @@ class RectangularTableTest {
 		table1.set(3, 0, "X");
 		table1.set(3, 1, "Y");
 		table1.set(3, 2, "Z");
-		
+
 		assertEquals("X", table1.get(3, 0));
 		assertEquals("Y", table1.get(3, 1));
 		assertEquals("Z", table1.get(3, 2));
@@ -161,7 +157,7 @@ class RectangularTableTest {
 		table2.set(3, 0, "X");
 		table2.set(3, 1, "Y");
 		table2.set(3, 2, "Z");
-		
+
 		assertEquals(table.hashCode(), table1.hashCode());
 		assertNotEquals(table.hashCode(), table2.hashCode());
 	}
@@ -215,7 +211,7 @@ class RectangularTableTest {
 		List<String> row1 = asList("@", "^", "X");
 		List<String> row2 = asList("#", "&", "Y");
 		List<String> row3 = asList("$", "*", "Z");
-		
+
 		assertEquals(asList("0", "1", "2"), table.setRow(0, row0));
 		assertEquals(asList("3", "4", "5"), table.setRow(1, row1));
 		assertEquals(asList("6", "7", "8"), table.setRow(2, row2));
@@ -238,11 +234,11 @@ class RectangularTableTest {
 		List<String> column0 = asList("X", "Y", "Z", "W");
 		List<String> column1 = asList("!", "@", "#", "$");
 		List<String> column2 = asList("%", "^", "&", "*");
-		
+
 		assertEquals(asList("0", "3", "6", "9"), table.setColumn(0, column0));
 		assertEquals(asList("1", "4", "7", "A"), table.setColumn(1, column1));
 		assertEquals(asList("2", "5", "8", "B"), table.setColumn(2, column2));
-		
+
 		assertEquals(column0, table.getColumn(0));
 		assertEquals(column1, table.getColumn(1));
 		assertEquals(column2, table.getColumn(2));
@@ -291,7 +287,7 @@ class RectangularTableTest {
 		assertEquals(4, table.rows());
 		assertEquals(3, table.columns());
 	}
-	
+
 	@Test
 	void expandThrowsIllegalArgument() {
 		assertThrows(IllegalArgumentException.class,
@@ -313,14 +309,14 @@ class RectangularTableTest {
 		assertEquals(asList("0", "3", "6"), table.getColumn(0));
 		assertEquals(asList("1", "4", "7"), table.getColumn(1));
 	}
-	
+
 	@Test
 	void shrink0By0() {
 		table.shrink(0, 0);
 		assertEquals(4, table.rows());
 		assertEquals(3, table.columns());
 	}
-	
+
 	@Test
 	void shrinkThrowsIllegalArgument() {
 		assertThrows(IllegalArgumentException.class,
@@ -328,7 +324,7 @@ class RectangularTableTest {
 		assertThrows(IllegalArgumentException.class,
 				() -> table.shrink(0, -1));
 	}
-	
+
 	@Test
 	void insertRowIndex0() {
 		List<String> data = asList("X", "Y", "Z");
@@ -364,7 +360,7 @@ class RectangularTableTest {
 		assertThrows(IllegalArgumentException.class,
 				() -> table.insertRow(0, new ArrayList<>()));
 	}
-	
+
 	@Test
 	void insertColumnIndex0() {
 		List<String> data = asList("W", "X", "Y", "Z");
@@ -399,7 +395,7 @@ class RectangularTableTest {
 	void removeRow() {
 		assertEquals(asList("0", "1", "2"), table.removeRow(0));
 		assertEquals(3, table.rows());
-		
+
 		assertEquals(asList("6", "7", "8"), table.removeRow(1));
 		assertEquals(2, table.rows());
 
@@ -429,7 +425,7 @@ class RectangularTableTest {
 		assertEquals(asList(
 				"0", "1", "2", "3", "4", "5",
 				"6", "7", "8", "9", "A", "B"
-				), 
+				),
 				table.getDelegate()
 		);
 	}

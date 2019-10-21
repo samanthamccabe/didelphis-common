@@ -22,6 +22,7 @@ package org.didelphis.structures.tables;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
+
 import org.didelphis.utilities.Templates;
 
 import java.text.DecimalFormat;
@@ -101,7 +102,7 @@ public abstract class AbstractTable<E> implements ResizeableTable<E> {
 	protected void checkColEdge(int col) {
 		if (col > columns || col < 0) {
 			String message = Templates.create()
-					.add("Column parameter ({}) is out of bounds while trying " 
+					.add("Column parameter ({}) is out of bounds while trying "
 							+ "to expand table.")
 					.with(col)
 					.add("Currently there are {} columns")

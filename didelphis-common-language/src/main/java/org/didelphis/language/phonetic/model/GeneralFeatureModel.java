@@ -22,7 +22,6 @@ package org.didelphis.language.phonetic.model;
 import lombok.NonNull;
 import lombok.ToString;
 
-import org.didelphis.language.automata.Regex;
 import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.features.FeatureArray;
@@ -30,13 +29,14 @@ import org.didelphis.language.phonetic.features.FeatureType;
 import org.didelphis.language.phonetic.features.SparseFeatureArray;
 import org.didelphis.utilities.Templates;
 
-import java.text.Normalizer.Form;
+import java.text.Normalizer.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static java.text.Normalizer.normalize;
+import static java.text.Normalizer.*;
+import static org.didelphis.language.phonetic.model.ModelConstants.*;
 
 /**
  * Class {@code GeneralFeatureModel}
@@ -45,15 +45,6 @@ import static java.text.Normalizer.normalize;
  */
 @ToString(exclude = "hash")
 public final class GeneralFeatureModel<T> implements FeatureModel<T> {
-
-	private static final String VALUE = "(-?\\d|[A-Z]+)";
-	private static final String NAME  = "(\\w+)";
-	private static final String ASSN  = "([=:><])";
-
-	private static final Regex VALUE_PATTERN   = new Regex(VALUE + ASSN + NAME);
-	private static final Regex BINARY_PATTERN  = new Regex("([+−-])" + NAME);
-	private static final Regex FEATURE_PATTERN = new Regex("[,;]\\s*|\\s+");
-	private static final Regex BRACKET_PATTERN = new Regex("\\[((?:[^\\]])+)\\]");
 
 	private int hash;
 
@@ -79,7 +70,7 @@ public final class GeneralFeatureModel<T> implements FeatureModel<T> {
 		this.constraints = Collections.unmodifiableList(constraints);
 		this.aliases = Collections.unmodifiableMap(aliases);
 	}
-	
+
 	@NonNull
 	@Override
 	public List<Constraint<T>> getConstraints() {
@@ -146,6 +137,7 @@ public final class GeneralFeatureModel<T> implements FeatureModel<T> {
 				featureType.equals(that.featureType);
 	}
 
+	@SuppressWarnings ("NonFinalFieldReferencedInHashCode")
 	@Override
 	public int hashCode() {
 		if (hash == 0) {

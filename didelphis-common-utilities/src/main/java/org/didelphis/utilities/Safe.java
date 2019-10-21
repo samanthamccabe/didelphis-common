@@ -2,6 +2,7 @@ package org.didelphis.utilities;
 
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
+
 import org.jetbrains.annotations.Nullable;
 
 @UtilityClass

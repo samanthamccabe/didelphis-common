@@ -20,6 +20,7 @@
 package org.didelphis.language.automata.statemachines;
 
 import lombok.NonNull;
+
 import org.didelphis.language.automata.Automaton;
 import org.didelphis.language.automata.matching.BasicMatch;
 import org.didelphis.language.automata.matching.Match;
@@ -30,7 +31,7 @@ import java.util.List;
 
 /**
  * Interface {@code StateMachine}
- * 
+ *
  * @param <S> the type of data matched by the state machine
  */
 public interface StateMachine<S> extends Automaton<S> {
@@ -44,11 +45,12 @@ public interface StateMachine<S> extends Automaton<S> {
 	@Override
 	default S replace(@NonNull S input, @NonNull S replacement) {
 		LanguageParser<S> parser = getParser();
-		
+
 		 S sequence = parser.transform("");
 		int size = parser.lengthOf(input);
 		int cursor = 0;
-		for (int i = 0; i < size;) {
+		int i = 0;
+		while (i < size) {
 			Match<S> match = match(input, i);
 			if (match.matches()) {
 
@@ -59,7 +61,7 @@ public interface StateMachine<S> extends Automaton<S> {
 				// Handle group references in replacement
 				S newReplacement = parser.replaceGroups(replacement, match);
 				sequence = parser.concatenate(sequence, newReplacement);
-				
+
 				i = match.end();
 				cursor = i;
 			} else {

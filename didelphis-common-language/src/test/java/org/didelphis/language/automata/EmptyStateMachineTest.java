@@ -21,13 +21,12 @@ package org.didelphis.language.automata;
 
 import org.didelphis.language.automata.parsing.RegexParser;
 import org.didelphis.language.automata.statemachines.StateMachine;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static org.didelphis.language.automata.statemachines.StandardStateMachine.create;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.didelphis.language.automata.statemachines.StandardStateMachine.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 class EmptyStateMachineTest {
 
@@ -44,12 +43,12 @@ class EmptyStateMachineTest {
 	void getParser() {
 		assertSame(parser, instance.getParser());
 	}
-	
+
 	@Test
 	void getId() {
 		assertEquals("_", instance.getId());
 	}
-	
+
 	@Test
 	void getMatchIndices() {
 		assertEquals(0, instance.match("foo", 0).end());

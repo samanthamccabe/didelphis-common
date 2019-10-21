@@ -21,12 +21,12 @@ package org.didelphis.language.phonetic.segments;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+
 import org.didelphis.language.phonetic.PhoneticTestBase;
+
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
@@ -94,7 +94,7 @@ class ImmutableSegmentTest extends PhoneticTestBase {
 		assertNotEquals(segment1.hashCode(), immutable1.hashCode());
 		assertNotEquals(segment2.hashCode(), immutable2.hashCode());
 		assertNotEquals(immutable1.hashCode(), immutable2.hashCode());
-		
+
 		assertEquals(immutable1.hashCode(), immutable3.hashCode());
 		assertEquals(immutable2.hashCode(), immutable4.hashCode());
 	}

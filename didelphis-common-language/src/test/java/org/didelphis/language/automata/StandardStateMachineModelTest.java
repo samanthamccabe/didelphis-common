@@ -31,14 +31,15 @@ import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.model.FeatureMapping;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
 import org.didelphis.language.phonetic.sequences.Sequence;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class StandardStateMachineModelTest extends StateMachineTestBase<Sequence<Integer>> {
-	
+
 	private static SequenceFactory<Integer> factory;
 	private static SequenceParser<Integer> parser;
 
@@ -56,7 +57,7 @@ class StandardStateMachineModelTest extends StateMachineTestBase<Sequence<Intege
 		FeatureMapping<Integer> featureMapping = loader.getFeatureMapping();
 		factory = new SequenceFactory<>(featureMapping, mode);
 	}
-	
+
 	@Test
 	void testBasicStateMachine00() {
 		assertThrows(ParseException.class, () -> getMachine("[]"));
@@ -80,7 +81,7 @@ class StandardStateMachineModelTest extends StateMachineTestBase<Sequence<Intege
 		StateMachine<Sequence<Integer>> machine = getMachine(".");
 		assertNotMatches(machine, "");
 	}
-	
+
 	@Test
 	void testBasicStateMachine01() {
 		String exp = "[-con, +son, -hgh, +frn, -atr, +voice]";
@@ -139,7 +140,7 @@ class StandardStateMachineModelTest extends StateMachineTestBase<Sequence<Intege
 
 		assertMatches(machine, "ācʰus");
 		assertMatches(machine, "āncʰus");
-		
+
 		assertMatches(machine, "ātʰus");
 		assertMatches(machine, "āntʰus");
 
@@ -153,7 +154,7 @@ class StandardStateMachineModelTest extends StateMachineTestBase<Sequence<Intege
 		assertNotMatches(machine, "āntus");
 		assertNotMatches(machine, "intʰus");
 	}
-	
+
 	@Test
 	void testComplex02() {
 		String exp = "{r l}?{a e o ā ē ō}{i u}?{n m l r}?{pʰ tʰ kʰ cʰ}us";
@@ -301,7 +302,7 @@ class StandardStateMachineModelTest extends StateMachineTestBase<Sequence<Intege
 		Expression expression = parser.parseExpression(exp);
 		return StandardStateMachine.create("M0", expression, parser);
 	}
-	
+
 	@Override
 	protected Sequence<Integer> transform(String input) {
 		return input.isEmpty()

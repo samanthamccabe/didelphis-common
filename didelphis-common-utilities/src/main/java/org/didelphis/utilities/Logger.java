@@ -23,13 +23,14 @@ import lombok.ToString;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Class {@code Logger}
  *
- * A fairly normal logger class; creating our own logger is not, in general, a 
+ * A fairly normal logger class; creating our own logger is not, in general, a
  * very good idea. However, there are a couple of reasons why it seems warranted
  *      1) It reduces our external dependencies
  *      2) It reduces complexity for transpilation
@@ -39,7 +40,7 @@ import java.util.Set;
 @SuppressWarnings ("UseOfSystemOutOrSystemErr")
 @ToString
 public final class Logger {
-	
+
 	@ToString
 	public enum Level {
 		ERROR ("[ERROR] ",  2),
@@ -51,16 +52,16 @@ public final class Logger {
 
 		private final String level;
 		private final int priority;
-		
+
 		Level(String level, int priority) {
 			this.level = level;
 			this.priority = priority;
 		}
-		
+
 		private String level() {
 			return level;
 		}
-		
+
 		private int priority() {
 			return priority;
 		}
@@ -69,15 +70,15 @@ public final class Logger {
 	/* TODO: load a static configuration:
 	 * this can specify class and package patterns with different log levels and
 	 * patterns
-	 * 
-	 * these configurations can be referenced whenever a logger is created via 
+	 *
+	 * these configurations can be referenced whenever a logger is created via
 	 * the #create() method
 	 */
-	
+
 	// Is a static collection a good idea? Not generally.
 	private static final Set<OutputStream> APPENDERS = new HashSet<>();
 	private static Level globalLevel = Level.INFO;
-	
+
 	private final Level logLevel;
 	private final Class<?> targetClass;
 	private final Set<OutputStream> appenders;
@@ -87,7 +88,7 @@ public final class Logger {
 		appenders = new HashSet<>(APPENDERS);
 		this.targetClass = targetClass;
 	}
-	
+
 	private Logger(Class<?> targetClass, Level level) {
 		logLevel = level;
 		appenders = new HashSet<>(APPENDERS);
@@ -109,7 +110,7 @@ public final class Logger {
 	public static void setGlobalLevel(Level level) {
 		globalLevel = level;
 	}
-	
+
 	public static void addAppender(OutputStream stream) {
 		APPENDERS.add(stream);
 	}
@@ -145,7 +146,7 @@ public final class Logger {
 	}
 
 	private void print(Level level, String template, Object... data) {
-		if (logLevel == Level.NONE 
+		if (logLevel == Level.NONE
 				&& level.priority() < globalLevel.priority()
 				|| level.priority() < logLevel.priority()) {
 			return;
@@ -153,7 +154,7 @@ public final class Logger {
 		String string = generate(level, template, data);
 		for (OutputStream appender : APPENDERS) {
 			try {
-				appender.write(string.getBytes("UTF-8"));
+				appender.write(string.getBytes(StandardCharsets.UTF_8));
 			} catch (IOException e) {
 				System.out.println("Failed to write message to output" +
 						" stream for appender " + appender + ' ' + e);

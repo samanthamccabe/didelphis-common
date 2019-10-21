@@ -23,6 +23,7 @@ import org.didelphis.io.ClassPathFileHandler;
 import org.didelphis.language.phonetic.PhoneticTestBase;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,17 +33,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class SparseFeatureArrayTest extends PhoneticTestBase {
-	
+
 	private static FeatureModel<Integer> empty;
 	private static FeatureModel<Integer> model;
 	private SparseFeatureArray<Integer> array;
@@ -104,13 +99,13 @@ class SparseFeatureArrayTest extends PhoneticTestBase {
 	void setOutOfBounds() {
 		assertThrows(IndexOutOfBoundsException.class, () -> array.set(21, 0));
 	}
-	
+
 	@Test
 	void matches() {
 		FeatureArray<Integer> array1 = new StandardFeatureArray<>(1, model);
 		array.set(2, 1);
 		array.set(4, 1);
-		
+
 		assertTrue(array.matches(array1));
 	}
 
@@ -121,7 +116,7 @@ class SparseFeatureArrayTest extends PhoneticTestBase {
 		array.set(4, 1);
 
 		array.alter(array1);
-		
+
 		assertEquals(1, (int) array.get(2));
 		assertEquals(1, (int) array.get(4));
 	}
@@ -152,9 +147,9 @@ class SparseFeatureArrayTest extends PhoneticTestBase {
 
 	@Test
 	void containsWithValues() {
-		
+
 		array.set(4, 1);
-		
+
 		assertTrue(array.contains(1));
 		assertFalse(array.contains(-1));
 	}
@@ -164,7 +159,7 @@ class SparseFeatureArrayTest extends PhoneticTestBase {
 		FeatureArray<Integer> array1 = new SparseFeatureArray<>(array);
 		FeatureArray<Integer> array2 = new SparseFeatureArray<>(array);
 		FeatureArray<Integer> array3 = new SparseFeatureArray<>(array);
-		
+
 		array1.set(0, 0);
 		array2.set(0, 0);
 		array2.set(1, 1);
@@ -172,7 +167,7 @@ class SparseFeatureArrayTest extends PhoneticTestBase {
 		array3.set(1, 1);
 		array3.set(2, 0);
 		array3.set(3, 2);
-		
+
 		assertEquals( 0, array.compareTo(array1));
 		assertEquals(-1, array.compareTo(array2));
 		assertEquals(-1, array.compareTo(array3));
@@ -182,10 +177,10 @@ class SparseFeatureArrayTest extends PhoneticTestBase {
 
 		assertEquals(-1, array1.compareTo(array2));
 		assertEquals(-1, array1.compareTo(array3));
-		
+
 		assertEquals( 1, array2.compareTo(array1));
 		assertEquals(-1, array2.compareTo(array3));
-		
+
 		assertEquals( 1, array3.compareTo(array2));
 		assertEquals( 1, array3.compareTo(array1));
 
@@ -207,9 +202,9 @@ class SparseFeatureArrayTest extends PhoneticTestBase {
 	void equals() {
 		FeatureArray<Integer> array1 = new SparseFeatureArray<>(array);
 		FeatureArray<Integer> array2 = new SparseFeatureArray<>(array);
-	
+
 		array2.set(4, 1);
-		
+
 		assertEquals(array, array1);
 		assertNotEquals(array, array2);
 	}
@@ -223,7 +218,7 @@ class SparseFeatureArrayTest extends PhoneticTestBase {
 	void getSpecification() {
 		assertEquals(model.getSpecification(),array.getSpecification());
 	}
-	
+
 	@Test
 	void testHashCode() {
 		assertEquals(array.hashCode(), new SparseFeatureArray<>(array).hashCode());

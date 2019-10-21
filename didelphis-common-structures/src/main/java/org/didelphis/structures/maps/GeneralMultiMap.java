@@ -23,12 +23,14 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.Delegate;
+
 import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.contracts.Delegating;
 import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Tuple;
 import org.didelphis.utilities.Templates;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -63,22 +65,22 @@ public class GeneralMultiMap<K, V>
 					.add("Attempting to modify an immutable, empty instance of",
 							"class {}")
 					.with(GeneralMultiMap.class)
-					.build(); 
+					.build();
 			throw new UnsupportedOperationException(message);
 			}
 	);
-	
+
 	@SuppressWarnings("unchecked")
 	public static <K, V> GeneralMultiMap<K,V> emptyMultiMap() {
 		return (GeneralMultiMap<K, V>) EMPTY;
 	}
-	
+
 	@Delegate
 	private final Map<K, Collection<V>> delegate;
 	private final Supplier<? extends Collection<V>> supplier;
 
 	/**
-	 * Default constructor which uses {@link HashMap} and {@link HashSet}   
+	 * Default constructor which uses {@link HashMap} and {@link HashSet}
 	 */
 	public GeneralMultiMap() {
 		delegate = new HashMap<>();

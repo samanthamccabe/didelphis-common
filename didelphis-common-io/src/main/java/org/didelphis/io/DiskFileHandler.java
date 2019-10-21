@@ -22,6 +22,7 @@ package org.didelphis.io;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
+
 import org.didelphis.utilities.Logger;
 
 import java.io.BufferedWriter;
@@ -45,7 +46,7 @@ import java.io.Writer;
 public final class DiskFileHandler implements FileHandler {
 
 	private static final Logger LOG = Logger.create(DiskFileHandler.class);
-	
+
 	private final String encoding;
 
 	public DiskFileHandler(String encoding) {

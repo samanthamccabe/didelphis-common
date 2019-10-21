@@ -20,10 +20,12 @@
 package org.didelphis.language.phonetic.model;
 
 import lombok.NonNull;
+
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.ModelBearer;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.segments.Segment;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -58,7 +60,7 @@ public interface FeatureMapping<T> extends ModelBearer<T> {
 	Set<String> getSymbols();
 
 	/**
-	 * 
+	 *
 	 * @param key
 	 * @return
 	 */
@@ -73,7 +75,7 @@ public interface FeatureMapping<T> extends ModelBearer<T> {
 	Map<String, FeatureArray<T>> getFeatureMap();
 
 	/**
-	 * Provides a contained maps from symbols to features for modifier and 
+	 * Provides a contained maps from symbols to features for modifier and
 	 * diacritic characters
 	 * @return a maps containing the relevant data; it is recommended that
 	 *      this not be modifiable

@@ -50,25 +50,6 @@ public class Triple<T, U, V> {
 		this.element3 = element3;
 	}
 
-	@Deprecated
-	@NonNull
-	public T getFirstElement() {
-		return element1;
-	}
-
-	@Deprecated
-	@NonNull
-	public U getSecondElement() {
-		return element2;
-	}
-
-	@Deprecated
-	@NonNull
-	public V getThirdElement() {
-		return element3;
-	}
-
-
 	@NonNull
 	public T first() {
 		return element1;

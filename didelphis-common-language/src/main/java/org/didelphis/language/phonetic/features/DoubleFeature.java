@@ -20,13 +20,15 @@
 package org.didelphis.language.phonetic.features;
 
 import lombok.NonNull;
+
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
 
-import static java.text.Normalizer.Form;
-import static java.text.Normalizer.normalize;
+import static java.text.Normalizer.*;
 
 /**
  * Enum {@code DoubleFeature}
@@ -72,34 +74,33 @@ public enum DoubleFeature implements FeatureType<Double> {
 	}
 
 	@Override
-	public int compare(Double v1, Double v2) {
+	public int compare(@Nullable Double v1, @Nullable Double v2) {
 		double x = v1 == null ? 0.0 : v1;
 		double y = v2 == null ? 0.0 : v2;
 		return Double.compare(x, y);
 	}
 
 	@Override
-	public double difference(Double v1, Double v2) {
-		return Math.abs(checkValue(v1) - (checkValue(v2)));
+	public double difference(@Nullable Double v1, @Nullable Double v2) {
+		return Math.abs(norm(v1) - (norm(v2)));
 	}
 
 	@Override
-	public int intValue(Double value) {
+	public int intValue(@Nullable Double value) {
 		return (value == null) ? 0 : value.intValue();
 	}
 
 	@Override
-	public double doubleValue(Double value) {
+	public double doubleValue(@Nullable Double value) {
 		return (value == null) ? Double.NaN : value;
 	}
-
 
 	@Override
 	public String toString() {
 		return "DoubleFeature";
 	}
 
-	private double checkValue(Double value) {
+	private double norm(Double value) {
 		return isDefined(value) ? value : 0.0;
 	}
 }

@@ -21,8 +21,10 @@ package org.didelphis.language.phonetic.features;
 
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+
 import org.didelphis.language.phonetic.model.Constraint;
 import org.didelphis.language.phonetic.model.FeatureModel;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;

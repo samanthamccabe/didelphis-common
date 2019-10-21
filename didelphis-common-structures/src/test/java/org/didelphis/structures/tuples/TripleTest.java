@@ -19,51 +19,106 @@
 
 package org.didelphis.structures.tuples;
 
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-
+@DisplayName ("Tests Triples with a variety of parameter types")
 class TripleTest {
-	
-	@Test
-	void getFirstElement() {
-		String element = new Triple<>("X", "Y", "Z").first();
-		assertEquals("X",element);
+
+	@Nested
+	@DisplayName("Tests a Triple consisting only of strings")
+	class StringTripleTest {
+
+		private final Triple<String, String, String> triple;
+
+		StringTripleTest() {
+			triple = new Triple<>("X", "Y", "Z");
+		}
+
+		@Test
+		void getFirstElement() {
+			String element = triple.first();
+			assertEquals("X",element);
+		}
+
+		@Test
+		void getSecondElement() {
+			String element = triple.second();
+			assertEquals("Y",element);
+		}
+
+		@Test
+		void getThirdElement() {
+			String element = triple.third();
+			assertEquals("Z",element);
+		}
+
+		@Test
+		void testEquals() {
+			Triple<String, String, String> expected = triple;
+			assertEquals(expected, triple);
+			Triple<String, String, String> map1 = new Triple<>("X", "Y", "X");
+			assertNotEquals(expected, map1);
+		}
+
+		@Test
+		void testHashCode() {
+			Triple<String, String, String> expected = triple;
+			assertEquals(expected.hashCode(), triple.hashCode());
+			Triple<String, String, String> map1 = new Triple<>("X", "Y", "X");
+			assertNotEquals(expected.hashCode(), map1.hashCode());
+		}
+
+		@Test
+		void testToString() {
+			assertEquals("<X, Y, Z>", triple.toString());
+		}
 	}
 
-	@Test
-	void getSecondElement() {
-		String element = new Triple<>("X", "Y", "Z").second();
-		assertEquals("Y",element);
-	}
+	@Nested
+	@DisplayName("Tests a Triple consisting only of strings")
+	class StringIntegerTripleTest {
 
-	@Test
-	void getThirdElement() {
-		String element = new Triple<>("X", "Y", "Z").third();
-		assertEquals("Z",element);
-	}
+		private final Triple<String, Integer, Integer> triple;
 
-	@Test
-	void testEquals() {
-		Triple<String, String, String> expected = new Triple<>("X", "Y", "Z");
-		assertEquals(expected, new Triple<>("X","Y","Z"));
-		Triple<String, String, String> map1 = new Triple<>("X", "Y", "X");
-		assertNotEquals(expected, map1);
-	}
+		StringIntegerTripleTest() {
+			triple = new Triple<>("X", 0, 1);
+		}
 
-	@Test
-	void testHashCode() {
-		Triple<String, String, String> expected = new Triple<>("X", "Y", "Z");
-		assertEquals(expected.hashCode(), new Triple<>("X","Y","Z").hashCode());
-		Triple<String, String, String> map1 = new Triple<>("X", "Y", "X");
-		assertNotEquals(expected.hashCode(), map1.hashCode());
-	}
+		@Test
+		void getFirstElement() {
+			String element = triple.first();
+			assertEquals("X",element);
+		}
 
-	@Test
-	void testToString() {
-		assertEquals("<X, Y, Z>", new Triple<>("X","Y","Z").toString());
-	}
+		@Test
+		void getSecondElement() {
+			assertEquals(0, triple.second());
+		}
 
+		@Test
+		void getThirdElement() {
+			assertEquals(1, triple.third());
+		}
+
+		@Test
+		void testEquals() {
+			assertEquals(triple, new Triple<>("X", 0, 1));
+			assertNotEquals(triple, new Triple<>("X", 1, 1));
+		}
+
+		@Test
+		void testHashCode() {
+			assertEquals(triple.hashCode(), new Triple<>("X", 0, 1).hashCode());
+			assertNotEquals(triple.hashCode(), new Triple<>("X", 1, 1).hashCode());
+		}
+
+		@Test
+		void testToString() {
+			assertEquals("<X, 0, 1>", triple.toString());
+		}
+	}
 }

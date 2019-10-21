@@ -20,6 +20,7 @@
 package org.didelphis.structures.tables;
 
 import lombok.NonNull;
+
 import org.didelphis.structures.Structure;
 
 import java.util.Collection;
@@ -30,7 +31,7 @@ import java.util.stream.Stream;
 
 /**
  * Interface {@code Table}
- * 
+ *
  * A general interface for two-dimensional matrix data structures
  *
  * @param <E> the type parameter

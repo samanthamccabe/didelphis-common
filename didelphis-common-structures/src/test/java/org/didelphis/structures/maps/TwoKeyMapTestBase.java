@@ -21,17 +21,14 @@ package org.didelphis.structures.maps;
 
 import org.didelphis.structures.maps.interfaces.TwoKeyMap;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 
 public abstract class TwoKeyMapTestBase {
-	
+
 	protected TwoKeyMapTestBase() {}
-	
+
 	static <T, U, V> void testGet(TwoKeyMap<T, U, V> map, T k1, U k2, V v) {
 		String string = "key (" + k1 + ',' + k2 + ") retrieved unexpected value";
 		assertEquals(v, map.get(k1, k2), string);

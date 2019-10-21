@@ -23,6 +23,7 @@ package org.didelphis.structures.tables;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;

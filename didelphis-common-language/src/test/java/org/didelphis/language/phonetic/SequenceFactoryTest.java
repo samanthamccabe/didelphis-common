@@ -22,6 +22,7 @@ package org.didelphis.language.phonetic;
 import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.sequences.Sequence;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,9 +30,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static java.util.Arrays.asList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static java.util.Arrays.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 class SequenceFactoryTest extends PhoneticTestBase {
 
@@ -134,7 +134,7 @@ class SequenceFactoryTest extends PhoneticTestBase {
 		reserved.add("kh");
 
 		SequenceFactory<Integer> factory = new SequenceFactory<>(
-				loader.getFeatureMapping(), 
+				loader.getFeatureMapping(),
 				reserved,
 				FormatterMode.NONE
 		);
