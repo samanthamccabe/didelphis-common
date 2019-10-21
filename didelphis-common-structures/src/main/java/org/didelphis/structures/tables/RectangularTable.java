@@ -55,7 +55,7 @@ public class RectangularTable<E> extends AbstractTable<E>
 		array = new ArrayList<>(row * col);
 	}
 
-	public RectangularTable(
+	protected RectangularTable(
 			@NonNull Iterable<? extends Iterable<E>> rowList, int row, int col
 	) {
 		this(row, col);

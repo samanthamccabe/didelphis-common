@@ -71,11 +71,11 @@ public class SymmetricalTwoKeyMultiMap<K, V>
 		this(delegate,mSupplier,cSupplier);
 
 		for (Triple<K, K, Collection<V>> triple : tripleIterable) {
-			K k1 = triple.getFirstElement();
-			K k2 = triple.getSecondElement();
+			K k1 = triple.first();
+			K k2 = triple.second();
 
 			Collection<V> values = cSupplier.get();
-			values.addAll(triple.getThirdElement());
+			values.addAll(triple.third());
 
 			if (delegate.containsKey(k1)) {
 				delegate.get(k1).put(k2, values);

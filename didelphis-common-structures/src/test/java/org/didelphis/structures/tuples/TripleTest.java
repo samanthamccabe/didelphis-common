@@ -29,19 +29,19 @@ class TripleTest {
 	
 	@Test
 	void getFirstElement() {
-		String element = new Triple<>("X", "Y", "Z").getFirstElement();
+		String element = new Triple<>("X", "Y", "Z").first();
 		assertEquals("X",element);
 	}
 
 	@Test
 	void getSecondElement() {
-		String element = new Triple<>("X", "Y", "Z").getSecondElement();
+		String element = new Triple<>("X", "Y", "Z").second();
 		assertEquals("Y",element);
 	}
 
 	@Test
 	void getThirdElement() {
-		String element = new Triple<>("X", "Y", "Z").getThirdElement();
+		String element = new Triple<>("X", "Y", "Z").third();
 		assertEquals("Z",element);
 	}
 

@@ -24,6 +24,7 @@ import org.didelphis.language.phonetic.PhoneticTestBase;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.segments.Segment;
+import org.didelphis.language.phonetic.segments.SemidefinedSegment;
 import org.didelphis.language.phonetic.segments.UndefinedSegment;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -69,10 +70,6 @@ class GeneralFeatureMappingTest extends PhoneticTestBase {
 	void testContainsKey() {
 		assertTrue(mapping.containsKey("p"));
 		assertFalse(mapping.containsKey("@"));
-		assertThrows(
-				NullPointerException.class,
-				() -> mapping.containsKey(null)
-		);
 	}
 	
 	@Test
@@ -95,6 +92,14 @@ class GeneralFeatureMappingTest extends PhoneticTestBase {
 
 		assertEquals(s1.getFeatures(), s2.getFeatures());
 		assertEquals(s1.getFeatures(), s3.getFeatures());
+	}
+
+	@Test
+	void testParseSegmentMissingModifier() {
+		Segment<Integer> segment1 = mapping.parseSegment("n");
+		Segment<Integer> segment2 = mapping.parseSegment("n᷄");
+		assertFalse(segment1 instanceof SemidefinedSegment);
+		assertTrue(segment2 instanceof SemidefinedSegment);
 	}
 
 	private static void testBestSymbol(String string) {

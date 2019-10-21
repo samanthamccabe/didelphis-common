@@ -69,23 +69,36 @@ public interface TwoKeyMap<T, U, V>
 	boolean contains(@Nullable T k1, @Nullable U k2);
 
 	/**
+	 * Updates the stored value using the one provided; by default this is the
+	 * same as calling {@link TwoKeyMap#put(T, U, V)} but implementations may
+	 * override this to support behavior like adding numbers, appending strings,
+	 * or calling other methods on {@param value} according to its type
+	 *
+	 * @param k1 the first key; may be {@code null}
+	 * @param k2 the second key; may be {@code null}
+	 * @param value the value with which to update the current value
+	 */
+	default void update(@Nullable T k1, @Nullable U k2, @Nullable V value) {
+		put(k1, k2, value);
+	}
+
+	/**
 	 * @return a collection of tuples containing the maps's key pairs;
 	 * 		guaranteed to not be {@code null}
 	 */
-	@NonNull
-	Collection<Tuple<T, U>> keys();
+	@NonNull Collection<Tuple<T, U>> keys();
 
 	/**
-	 * Returns the number of key-value mappings in this map.  If the
-	 * map contains more than {@code Integer.MAX_VALUE} elements, returns
-	 * {@code Integer.MAX_VALUE}.
+	 * Returns the number of key-value mappings in this map.  If the map
+	 * contains more than {@code Integer.MAX_VALUE} elements, returns {@code
+	 * Integer.MAX_VALUE}.
 	 *
 	 * @return the number of key-value mappings in this map
 	 *
 	 * @implNote for complex map structures, it is not necessarily apparent
-	 * 		what semantics of {@code size()} should be. However, one reasonable
-	 * 		and consistent solution is that {@code size()} out to return the
-	 * 		same number of items as are contained within the output of {@code 
+	 * 		what semantics of {@code size()} should be. However, one reasonable and
+	 * 		consistent solution is that {@code size()} out to return the same
+	 * 		number of items as are contained within the output of {@code
 	 * 		iterator()}
 	 */
 	@Override
@@ -100,8 +113,8 @@ public interface TwoKeyMap<T, U, V>
 	 * @param k2 the second key; may be {@code null}
 	 *
 	 * @return the value stored under the given keys; may be {@code null} if
-	 * 		either the keys have no associated value or if a {@code null} has
-	 * 		been stored explicitly
+	 * 		either the keys have no associated value or if a {@code null} has been
+	 * 		stored explicitly
 	 */
 	default @Nullable V removeKeys(@Nullable T k1, @Nullable U k2) {
 		if (contains(k1, k2)) {

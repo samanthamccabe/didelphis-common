@@ -26,10 +26,10 @@ import java.util.Iterator;
 
 /**
  * Class {@code Triple}
- *
- * A value-class which should be used judiciously. It's main purpose is to
- * help provide views of keys-value in two-key maps, and of the arcs in a graph.
- *
+ * <p>
+ * A value-class which should be used judiciously. It's main purpose is to help
+ * provide views of keys-value in two-key maps, and of the arcs in a graph.
+ * <p>
  * In many contexts, use of a class like this might indicate poor design. As it
  * is, {@code Triple} is used to provide an {@link Iterator} for two-key maps.
  *
@@ -50,18 +50,37 @@ public class Triple<T, U, V> {
 		this.element3 = element3;
 	}
 
+	@Deprecated
 	@NonNull
 	public T getFirstElement() {
 		return element1;
 	}
 
+	@Deprecated
 	@NonNull
 	public U getSecondElement() {
 		return element2;
 	}
 
+	@Deprecated
 	@NonNull
 	public V getThirdElement() {
+		return element3;
+	}
+
+
+	@NonNull
+	public T first() {
+		return element1;
+	}
+
+	@NonNull
+	public U second() {
+		return element2;
+	}
+
+	@NonNull
+	public V third() {
 		return element3;
 	}
 

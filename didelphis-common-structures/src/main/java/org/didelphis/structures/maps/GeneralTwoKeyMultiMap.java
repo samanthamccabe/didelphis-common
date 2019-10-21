@@ -82,11 +82,11 @@ public class GeneralTwoKeyMultiMap<T, U, V>
 		this(delegate, mSupplier, cSupplier);
 
 		for (Triple<T, U, Collection<V>> triple : tripleIterable) {
-			T k1 = triple.getFirstElement();
-			U k2 = triple.getSecondElement();
+			T k1 = triple.first();
+			U k2 = triple.second();
 			
 			Collection<V> values = cSupplier.get();
-			values.addAll(triple.getThirdElement());
+			values.addAll(triple.third());
 			
 			if (delegate.containsKey(k1)) {
 				delegate.get(k1).put(k2, values);

@@ -32,10 +32,21 @@ import java.util.Objects;
  * @since 0.1.0
  */
 public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
+
 	private final FeatureModel<T> featureModel;
+	private final int size;
+	private final FeatureSpecification specification;
 
 	protected AbstractFeatureArray(@NonNull FeatureModel<T> featureModel) {
 		this.featureModel = featureModel;
+
+		specification = featureModel.getSpecification();
+		size = specification.size();
+	}
+
+	@Override
+	public String toString() {
+		return "AbstractFeatureArray[" + size + "]";
 	}
 
 	@Override
@@ -58,7 +69,7 @@ public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
 
 	@Override
 	public int size() {
-		return getSpecification().size();
+		return size;
 	}
 
 	@NonNull
@@ -70,12 +81,12 @@ public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
 	@NonNull
 	@Override
 	public FeatureSpecification getSpecification() {
-		return featureModel.getSpecification();
+		return specification;
 	}
 
 	@Override
 	public int hashCode() {
-		return featureModel.getSpecification().hashCode();
+		return specification.hashCode();
 	}
 
 	@Override
@@ -83,17 +94,17 @@ public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
 		if (this == obj) return true;
 		if (!(obj instanceof AbstractFeatureArray)) return false;
 		FeatureArray<?> that = (FeatureArray<?>) obj;
-		for (int i = 0; i < getSpecification().size(); i++) {
+		for (int i = 0; i < size; i++) {
 			T t1 = get(i);
 			Object t2 = that.get(i);
 			if (!Objects.equals(t1, t2)) {
 				return false;
 			}
 		}
-		return getSpecification().equals(that.getSpecification());
+		return specification.equals(that.getSpecification());
 	}
 
-	protected void sizeCheck(@NonNull FeatureArray<T> o) {
+	protected final void sizeCheck(@NonNull FeatureArray<T> o) {
 		if (size() != o.size()) throw buildException(o);
 	}
 
