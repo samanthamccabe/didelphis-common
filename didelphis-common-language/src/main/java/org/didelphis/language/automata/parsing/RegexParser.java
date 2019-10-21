@@ -19,11 +19,10 @@
 
 package org.didelphis.language.automata.parsing;
 
-import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
-import lombok.experimental.FieldDefaults;
+
 import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.expressions.ParallelNode;
 import org.didelphis.language.automata.expressions.ParentNode;
@@ -35,6 +34,7 @@ import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.didelphis.utilities.Splitter;
 import org.didelphis.utilities.Templates;
+
 import org.intellij.lang.annotations.Language;
 
 import java.util.ArrayList;
@@ -46,15 +46,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.didelphis.language.automata.parsing.LanguageParser.getChildrenOrExpression;
-import static org.didelphis.language.automata.parsing.LanguageParser.update;
+import static org.didelphis.language.automata.parsing.LanguageParser.*;
 
 /**
  * Class {@code RegexParser}
- *
+ * <p>
  * A regular expression parser for creating expression trees that can be used to
  * construct a state machine. This is not intended to fully mimic the capability
- * of {@link java.util.regex.Pattern}; it is primarily intended to support a 
+ * of {@link java.util.regex.Pattern}; it is primarily intended to support a
  * limited set of basic functions:
  * <ul>
  *     <li>Greedy quantification only</li>
@@ -63,67 +62,24 @@ import static org.didelphis.language.automata.parsing.LanguageParser.update;
  *     <li>Negations</li>
  *     <li>Simple character ranges</li>
  * </ul>
- * 
+ *
  * @since 0.3.0
  */
 @ToString
 @EqualsAndHashCode
 public final class RegexParser implements LanguageParser<String> {
 
-	private static final Arc<String> DOT_ARC = new Arc<String>() {
-		@Override
-		public int match(String sequence, int index) {
-			int length = sequence.length();
-			return length > 0 && index < length ? index + 1 : -1;
-		}
-
-		@Override
-		public String toString() {
-			return ".";
-		}
-	};
-
-	private static final Arc<String> EPSILON_ARC = new Arc<String>() {
-		@Override
-		public int match(String sequence, int index) {
-			return index;
-		}
-
-		@Override
-		public String toString() {
-			return "";
-		}
-	};
-
-	private static final Arc<String> WORD_START_ARC = new Arc<String>() {
-		@Override
-		public int match(String sequence, int index) {
-			return index == 0 ? 0 : -1;
-		}
-
-		@Override
-		public String toString() {
-			return "^";
-		}
-	};
-
-	private static final Arc<String> WORD_END_ARC = new Arc<String>() {
-		@Override
-		public int match(String sequence, int index) {
-			int length = sequence.length();
-			return index == length ? length : -1;
-		}
-
-		@Override
-		public String toString() {
-			return "$";
-		}
-	};
+	// @Formatter:off ----------------------------------------------------------
+	private static final Arc<String> DOT_ARC        = new DotArc();
+	private static final Arc<String> EPSILON_ARC    = new EpsilonArc();
+	private static final Arc<String> WORD_START_ARC = new WordStartArc();
+	private static final Arc<String> WORD_END_ARC   = new WordEndArc();
 
 	private static final Map<String, String> DELIMITERS_ALT = new HashMap<>();
 	private static final Map<String, String> DELIMITERS     = new HashMap<>();
 	private static final Map<String, String> CLASSES        = new HashMap<>();
 	private static final Map<String, String> ESCAPES        = new HashMap<>();
+	// @Formatter:on -----------------------------------------------------------
 
 	private static final Set<String> QUANTIFIERS = new HashSet<>();
 
@@ -180,9 +136,9 @@ public final class RegexParser implements LanguageParser<String> {
 	}
 
 	/**
-	 *
-	 * @param insensitive if {@code true} the parser is set up to generate case-
-	 * insensitive state machines
+	 * @param insensitive if {@code true} the parser is set up to generate
+	 * 		case-
+	 * 		insensitive state machines
 	 */
 	public RegexParser(boolean insensitive) {
 		this.insensitive = insensitive;
@@ -288,7 +244,7 @@ public final class RegexParser implements LanguageParser<String> {
 	) {
 		return sequence1 + sequence2;
 	}
-	
+
 	@NonNull
 	@Override
 	public String replaceGroups(
@@ -303,6 +259,7 @@ public final class RegexParser implements LanguageParser<String> {
 		int i = 0;
 		while (i < input.length()) {
 			char c = input.charAt(i);
+			// ASCII digits 0-9
 			if (0x30 <= c && c < 0x3A && inGroup) {
 				number.append(c);
 				i++;
@@ -322,7 +279,7 @@ public final class RegexParser implements LanguageParser<String> {
 				if (c == '$') {
 					inGroup = true;
 					if (cursor != i) {
-						sb.append(input.substring(cursor, i));
+						sb.append(input, cursor, i);
 					}
 					i++;
 					cursor = i;
@@ -347,7 +304,7 @@ public final class RegexParser implements LanguageParser<String> {
 	}
 
 	private Expression parse(@NonNull List<String> split) {
-		Buffer buffer = new Buffer();
+		ParserBuffer buffer = new ParserBuffer();
 		List<Expression> expressions = new ArrayList<>();
 
 		if(split.contains("|")) {
@@ -541,7 +498,7 @@ public final class RegexParser implements LanguageParser<String> {
 	 * 		expression. Such errors include:
 	 * 		<ul>
 	 * 		<li>Expression consisting only of a word-start {@code ^} or -stop
-	 * 		{@code $} symbol</li>
+	 *             {@code $} symbol</li>
 	 * 		<li>Multiple quantification ({@code *?}, {@code ?+}</li>
 	 * 		<li>Quantification of a boundary {@code ^?}</li>
 	 * 		</ul>
@@ -709,6 +666,56 @@ public final class RegexParser implements LanguageParser<String> {
 		@Override
 		public String toString() {
 			return arcs.toString();
+		}
+	}
+
+	private static class EpsilonArc implements Arc<String> {
+		@Override
+		public int match(String sequence, int index) {
+			return index;
+		}
+
+		@Override
+		public String toString() {
+			return "";
+		}
+	}
+
+	private static class WordStartArc implements Arc<String> {
+		@Override
+		public int match(String sequence, int index) {
+			return index == 0 ? 0 : -1;
+		}
+
+		@Override
+		public String toString() {
+			return "^";
+		}
+	}
+
+	private static class WordEndArc implements Arc<String> {
+		@Override
+		public int match(String sequence, int index) {
+			int length = sequence.length();
+			return index == length ? length : -1;
+		}
+
+		@Override
+		public String toString() {
+			return "$";
+		}
+	}
+
+	private static class DotArc implements Arc<String> {
+		@Override
+		public int match(String sequence, int index) {
+			int length = sequence.length();
+			return length > 0 && index < length ? index + 1 : -1;
+		}
+
+		@Override
+		public String toString() {
+			return ".";
 		}
 	}
 }

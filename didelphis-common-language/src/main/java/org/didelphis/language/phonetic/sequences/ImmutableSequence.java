@@ -20,6 +20,7 @@
 package org.didelphis.language.phonetic.sequences;
 
 import lombok.NonNull;
+
 import org.didelphis.language.phonetic.segments.Segment;
 
 import java.util.Collection;
@@ -32,6 +33,7 @@ import java.util.function.UnaryOperator;
  *
  * @since 0.1.0
  */
+@SuppressWarnings ("ProhibitedExceptionThrown")
 public class ImmutableSequence<T> extends BasicSequence<T> {
 
 	public ImmutableSequence(Sequence<T> sequence) {

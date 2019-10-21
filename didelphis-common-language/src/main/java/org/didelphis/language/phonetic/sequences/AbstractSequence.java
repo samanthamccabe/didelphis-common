@@ -22,6 +22,7 @@ package org.didelphis.language.phonetic.sequences;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.experimental.Delegate;
+
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.structures.contracts.Delegating;
@@ -40,9 +41,9 @@ import java.util.List;
 public abstract class AbstractSequence<T>
 		implements Sequence<T>, Delegating<List<Segment<T>>> {
 
-	@Delegate protected final List<Segment<T>> segments;
+	@Delegate private final List<Segment<T>> segments;
 
-	protected final FeatureModel<T> featureModel;
+	private final FeatureModel<T> featureModel;
 
 	protected AbstractSequence(@NonNull Sequence<T> sequence) {
 		segments = new ArrayList<>(sequence);
@@ -51,7 +52,7 @@ public abstract class AbstractSequence<T>
 
 	protected AbstractSequence(@NonNull Segment<T> segment) {
 		this(segment.getFeatureModel());
-		segments.add(segment);
+		getSegments().add(segment);
 	}
 
 	protected AbstractSequence(@NonNull FeatureModel<T> featureModel) {
@@ -70,6 +71,16 @@ public abstract class AbstractSequence<T>
 	@NonNull
 	@Override
 	public List<Segment<T>> getDelegate() {
+		return getSegments();
+	}
+
+	protected List<Segment<T>> getSegments() {
 		return segments;
+	}
+
+	@NonNull
+	@Override
+	public final FeatureModel<T> getFeatureModel() {
+		return featureModel;
 	}
 }

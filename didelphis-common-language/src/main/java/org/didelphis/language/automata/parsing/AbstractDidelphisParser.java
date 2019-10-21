@@ -19,10 +19,9 @@
 
 package org.didelphis.language.automata.parsing;
 
-import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.ToString;
-import lombok.experimental.FieldDefaults;
+
 import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.expressions.ParentNode;
 import org.didelphis.language.automata.expressions.TerminalNode;
@@ -30,6 +29,7 @@ import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.utilities.Splitter;
 import org.didelphis.utilities.Templates;
+
 import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
@@ -39,8 +39,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import static org.didelphis.language.automata.parsing.LanguageParser.getChildrenOrExpression;
-import static org.didelphis.language.automata.parsing.LanguageParser.update;
+import static org.didelphis.language.automata.parsing.LanguageParser.*;
 
 /**
  * Abstract Class {@code DidelphisBaseParser}
@@ -70,12 +69,12 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 	}
 
 	protected abstract List<String> split(String string);
-	
+
 	@NonNull
 	@Override
 	@Contract ("_,_ -> new")
 	public Expression parseExpression(
-			@NonNull String expression, 
+			@NonNull String expression,
 			@NonNull ParseDirection direction
 	) {
 		validate(expression);
@@ -96,17 +95,17 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 					.build();
 			throw new ParseException(message, e);
 		}
-		
+
 		if (!exp.hasChildren() && "#".equals(exp.getTerminal())) {
 			return new TerminalNode("]#");
 		}
-		
+
 		// Fix the node IDs
 		return Expression.rewriteIds(exp, "0");
 	}
 
 	private Expression parse(@NonNull List<String> split) {
-		Buffer buffer = new Buffer();
+		ParserBuffer buffer = new ParserBuffer();
 		List<Expression> expressions = new ArrayList<>();
 		for (String s : split) {
 			if (s.equals("!")) {
@@ -160,7 +159,7 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 				? expressions.get(0)
 				: new ParentNode(expressions);
 	}
-	
+
 	private boolean startsDelimiter(String string) {
 		for (String s : supportedDelimiters().keySet()) {
 			if (string.startsWith(s)) return true;

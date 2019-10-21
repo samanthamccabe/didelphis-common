@@ -20,21 +20,23 @@
 package org.didelphis.structures.contracts;
 
 import lombok.NonNull;
+
 import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Tuple;
 import org.didelphis.utilities.Safe;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
 /**
  * Interface {@code SymmetricallyAccessible}
- * 
+ *
  * Designates a data structure with two keys or indices as obeying the contract
  * that the output of a method {@code M(k1, k2, ...)} is always equal to
  * {@code M(k2, k1, ...)} where only the order of {@code k1} and {@code k2}
  * differ.
- * 
+ *
  * This is used both in symmetrical two key maps where the order of the keys is
  * irrelevant or in symmetrical matrices where the contents of {@code [i,j]} are
  * guaranteed to be equal to {@code [j, i]}.
@@ -74,10 +76,10 @@ public interface SymmetricallyAccessible<K> {
 
 	/**
 	 * Retrieves the canonical ordering for the provided key pair. An ordering
-	 * is <i>canonical</i> when only one ordering is stored in an underlying 
+	 * is <i>canonical</i> when only one ordering is stored in an underlying
 	 * data structure.
 	 *
-	 * @param tuple a {@link Tuple} containing the keys whose canonical 
+	 * @param tuple a {@link Tuple} containing the keys whose canonical
 	 *      representation will be determined
 	 *
 	 * @return the canonical ordering of the key pair used in the underlying

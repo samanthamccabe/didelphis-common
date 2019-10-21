@@ -20,13 +20,12 @@
 package org.didelphis.language.phonetic.features;
 
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class BinaryFeatureTest {
 
@@ -34,7 +33,7 @@ class BinaryFeatureTest {
 	private static final BinaryFeature FEATURE = BinaryFeature.INSTANCE;
 	private static final Boolean FALSE = Boolean.FALSE;
 	private static final Boolean TRUE = Boolean.TRUE;
-	private static final Class<NumberFormatException> NUMBER_FORMAT_EXCEPTION 
+	private static final Class<NumberFormatException> NUMBER_FORMAT_EXCEPTION
 			= NumberFormatException.class;
 
 	@Test
@@ -50,7 +49,7 @@ class BinaryFeatureTest {
 		assertEquals(FALSE, FEATURE.parseValue("-"));
 		assertEquals(FALSE, FEATURE.parseValue(""));
 		assertEquals(FALSE, FEATURE.parseValue("0"));
-		
+
 		assertThrows(NUMBER_FORMAT_EXCEPTION, () -> FEATURE.parseValue("/"));
 		assertThrows(NUMBER_FORMAT_EXCEPTION, () -> FEATURE.parseValue("-1"));
 		assertThrows(NUMBER_FORMAT_EXCEPTION, () -> FEATURE.parseValue("A"));

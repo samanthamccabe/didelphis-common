@@ -20,8 +20,10 @@
 package org.didelphis.language.phonetic.features;
 
 import lombok.NonNull;
+
 import org.didelphis.language.phonetic.ModelBearer;
 import org.didelphis.structures.contracts.Streamable;
+
 import org.jetbrains.annotations.Nullable;
 
 /**

@@ -22,15 +22,13 @@ package org.didelphis.language.automata.parsing;
 import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.language.parsing.ParseException;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Class {@code RegexParserTest}
@@ -50,7 +48,7 @@ class RegexParserTest {
 	void testWordEndOnly() {
 		assertThrowsParse("$");
 	}
-	
+
 	@Test
 	void testIllegalBoundary01() {
 		assertThrowsParse("a$?");
@@ -95,26 +93,27 @@ class RegexParserTest {
 	void testUnmatchedSquare() {
 		assertThrowsParse("[a");
 	}
-	
+
 	@Test
 	void testGetQuantifiers() {
 		Set<String> set = PARSER.supportedQuantifiers();
-		
+
 		assertTrue(set.contains("?"));
 		assertTrue(set.contains("*"));
 		assertTrue(set.contains("+"));
 		assertFalse(set.contains("!"));
-		
+
+		//noinspection ConstantConditions
 		assertThrows(UnsupportedOperationException.class, () -> set.add(""));
 	}
-	
+
 	@Test
 	void testParse() {
-		
+
 		String string = "abc";
 
 		Expression expression = PARSER.parseExpression(string);
-		
+
 		assertTrue(expression.hasChildren());
 		assertFalse(expression.isParallel());
 		assertFalse(expression.isNegative());
@@ -167,7 +166,7 @@ class RegexParserTest {
 		assertTrue(expression.isCapturing());
 		assertEquals(3, expression.getChildren().size());
 	}
-	
+
 	@Test
 	void testParseNonCapturing() {
 
@@ -211,7 +210,7 @@ class RegexParserTest {
 		assertTrue(expression.hasChildren());
 		assertEquals(2, expression.getChildren().size());
 	}
-	
+
 	@Test
 	void testNestedGroups02() {
 		String string = "^(a(b)?)+$";
@@ -261,14 +260,14 @@ class RegexParserTest {
 		assertEquals(ex1, rev2);
 		assertEquals(rev1, ex2);
 	}
-	
+
 	@Test
 	void testParseEscapes() {
 		Expression expression = PARSER.parseExpression("\\[([^\\]]*)\\]");
-		
+
 		assertEquals(3, expression.getChildren().size());
 	}
-	
+
 	private static void assertThrowsParse(String expression) {
 		assertThrows(
 				ParseException.class,

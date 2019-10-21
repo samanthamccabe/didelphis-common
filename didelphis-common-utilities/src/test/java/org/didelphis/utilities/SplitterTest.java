@@ -28,9 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static java.util.Arrays.asList;
+import static java.util.Arrays.*;
 import static org.didelphis.utilities.Splitter.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class SplitterTest {
 
@@ -136,13 +136,13 @@ class SplitterTest {
 				new HashSet<>(),
 				2));
 	}
-	
+
 	@Test
 	void testParseParens04() {
 		String string = "[-con, +voice, -creaky][-son, -voice, +vot]us";
 		assertEquals(23, parseParens(string, DELIMITERS, new HashSet<>(), 0));
 	}
-	
+
 	@Test
 	void testFindClosingBracketA01() {
 		assertEquals(7, findClosingBracket("a [b c]", "[", DELIMITERS,
@@ -177,7 +177,7 @@ class SplitterTest {
 				new HashSet<>(),
 				2));
 	}
-	
+
 	@Test
 	void testEmbedded01() {
 		List<String> specials = asList(
@@ -199,7 +199,7 @@ class SplitterTest {
 		List<String> expected = Collections.singletonList("([^'\"]+)");
 		assertEquals(expected, strings);
 	}
-	
+
 	@Test
 	void testEmbedded02() {
 		List<String> specials = asList(
@@ -228,14 +228,14 @@ class SplitterTest {
 				"\\]",
 				"\\["
 		);
-		
+
 		String string = "\\[([^\\]]*)\\]";
 		List<String> strings = toList(
 				string,
 				DELIMITERS,
 				specials
 		);
-		
+
 		List<String> expected = asList("\\[","([^\\]]*)","\\]");
 		assertEquals(expected, strings);
 	}

@@ -20,6 +20,7 @@
 package org.didelphis.structures.tables;
 
 import lombok.NonNull;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -62,8 +63,8 @@ public interface ColumnTable<E> extends Table<E> {
 	 *
 	 * @param column
 	 * @return
-	 * 
-	 * @throws IndexOutOfBoundsException if 
+	 *
+	 * @throws IndexOutOfBoundsException if
 	 */
 	@NonNull
 	String getColumnName(int column);

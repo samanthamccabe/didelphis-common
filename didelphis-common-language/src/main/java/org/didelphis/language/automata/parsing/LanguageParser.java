@@ -19,21 +19,15 @@
 
 package org.didelphis.language.automata.parsing;
 
-import lombok.AccessLevel;
-import lombok.Data;
 import lombok.NonNull;
-import lombok.experimental.FieldDefaults;
+
 import org.didelphis.language.automata.expressions.Expression;
-import org.didelphis.language.automata.expressions.ParallelNode;
-import org.didelphis.language.automata.expressions.ParentNode;
-import org.didelphis.language.automata.expressions.TerminalNode;
 import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.structures.graph.Arc;
 import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.didelphis.utilities.Templates;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,73 +37,76 @@ import java.util.Set;
 
 /**
  * Interface {@code Language Parser}
+ *
  * @param <S>
- *     
+ *
  * @since 0.2.0
  */
 public interface LanguageParser<S> {
 
-	@NonNull 
-	Map<String, String> supportedDelimiters();
+	@NonNull Map<String, String> supportedDelimiters();
 
-	@NonNull
-	Set<String> supportedQuantifiers();
+	@NonNull Set<String> supportedQuantifiers();
 
 	/**
 	 * Transform an expression string into a corresponding terminal symbol, the
 	 * same as is consumed from an input while searching for a match.
-	 * 
+	 * <p>
 	 * Used in the construction of state machines, specifically when parsing
 	 * terminal symbols into objects of type {@code <T>} which form the state
 	 * transitions .
-	 * 
+	 *
 	 * @param expression
+	 *
 	 * @return
 	 */
-	@NonNull
-	S transform(String expression);
+	@NonNull S transform(String expression);
 
-	@NonNull
-	Arc<S> getArc(String arc);
-	
+	@NonNull Arc<S> getArc(String arc);
+
 	/**
 	 * Parse an expression string to a list of sub-expressions
-	 * @param expression
-	 * @return
+	 *
+	 * @param expression a string representation of an expression to be parsed
+	 *
+	 * @return an expression object parsed from the original string
+	 *
+	 * @throws ParseException if any invalid inputs are found
 	 */
-	@NonNull
-	Expression parseExpression(
-			@NonNull String expression, 
-			@NonNull ParseDirection direction);
+	@NonNull Expression parseExpression(
+			@NonNull String expression, @NonNull ParseDirection direction
+	);
 
 	/**
-	 * Provides a uniform value for epsilon transitions 
-	 * @return a uniform value for epsilon transitions 
+	 * Provides a uniform value for epsilon transitions
+	 *
+	 * @return a uniform value for epsilon transitions
 	 */
-	@NonNull
-	Arc<S> epsilon();
+	@NonNull Arc<S> epsilon();
 
 	/**
 	 * Provides a collection of supported special symbols and their
 	 * corresponding literal values
+	 *
 	 * @return a collection of supported special symbols and their
-	 * corresponding literal values
+	 * 		corresponding literal values
 	 */
-	@NonNull
-	MultiMap<String, S> getSpecialsMap();
+	@NonNull MultiMap<String, S> getSpecialsMap();
 
 	/**
 	 * Provides a uniform value for "dot" transitions, which accept any value,
 	 * corresponding to "." in traditional regular expression languages
+	 *
 	 * @return a uniform value for "dot" transitions, which accept any value
 	 */
-	@NonNull
-	Arc<S> getDot();
+	@NonNull Arc<S> getDot();
 
 	/**
 	 * Determines the length of the provided element, where applicable. In some
 	 * implementations, this may simply be 1 in all cases.
+	 *
 	 * @param t the data element whose length is to be determined
+	 *
 	 * @return the length of the provided element
 	 */
 	int lengthOf(@NonNull S t);
@@ -124,62 +121,59 @@ public interface LanguageParser<S> {
 	 * @return a subsequence of the original sequence; not null
 	 *
 	 * @throws IndexOutOfBoundsException if either {@param start} or {@param
-	 * 		end} are negative, or greater than or equal to the length of the
+	 *        end} are negative, or greater than or equal to the length of the
 	 * 		provided sequence
 	 */
-	@NonNull
-	S subSequence(@NonNull S sequence, int start, int end);
+	@NonNull S subSequence(@NonNull S sequence, int start, int end);
 
 	/**
-	 * It is critical that this function return a new object and to not mutate
-	 * and return {@param sequence1}. 
-	 * @param sequence1
-	 * @param sequence2
-	 * @return
+	 * Concatenates two sequences into a third, new sequence
+	 *
+	 * @param sequence1 a sequence to be concatenated; not null
+	 * @param sequence2 a sequence to be concatenated; not null
+	 *
+	 * @return a new object of type {@code <S>}; it should not be a mutated instance
+	 * 		of either of the provided sequences
+	 */
+	@NonNull S concatenate(@NonNull S sequence1, @NonNull S sequence2);
+
+	/**
+	 * Replaces group markers like {@code $1} with the corresponding group from
+	 * the match
+	 *
+	 * @param input a sequence including group markers
+	 * @param match a match object
+	 *
+	 * @return a new sequence where the group markers are replaced with their
+	 * 		corresponding matched content
+	 */
+	@NonNull S replaceGroups(@NonNull S input, @NonNull Match<S> match);
+
+	/**
+	 * Parse an expression string into the matching expression object
+	 *
+	 * @param exp a string representing an expression to be parsed; not-null
+	 *
+	 * @return an expression object described by the provided string; not-null
 	 */
 	@NonNull
-	S concatenate(@NonNull S sequence1, @NonNull S sequence2);
-	
-	@NonNull
-	S replaceGroups(@NonNull S input, @NonNull Match<S> match);
-	
-	default Expression parseExpression(String exp) {
+	default Expression parseExpression(@NonNull String exp) {
 		return parseExpression(exp, ParseDirection.FORWARD);
 	}
 
-	@Data
-	@FieldDefaults (level = AccessLevel.PRIVATE)
-	final class Buffer {
-
-		boolean negative;
-		boolean parallel;
-		boolean capturing;
-
-		String quantifier = "";
-		String terminal = "";
-
-		List<Expression> nodes = new ArrayList<>();
-
-		public boolean isEmpty() {
-			return nodes.isEmpty() && terminal.isEmpty();
-		}
-
-		public @Nullable Expression toExpression() {
-			if (nodes.isEmpty()) {
-				return new TerminalNode(terminal, quantifier, negative);
-			} else if (parallel) {
-				return new ParallelNode(nodes, quantifier, negative);
-			} else if (terminal == null || terminal.isEmpty()) {
-				return new ParentNode(nodes, quantifier, negative, capturing);
-			} else {
-				return null;
-			}
-		}
-	}
-
+	/**
+	 * Attempts to retrieve the children from an expression; if no children are
+	 * found, it will return a list containing only the expression itself
+	 *
+	 * @param exp an expression to be checked for children; not null
+	 *
+	 * @return a list of the expression's children or, if no children are
+	 * 		present, a list containing the expression itself; not-null
+	 */
 	@NonNull
 	static List<Expression> getChildrenOrExpression(@NonNull Expression exp) {
-		if (exp.hasChildren() && !(exp.isNegative() || exp.isParallel()) && exp.getQuantifier().isEmpty()) {
+		if (exp.hasChildren() && !(exp.isNegative() || exp.isParallel()) &&
+				exp.getQuantifier().isEmpty()) {
 			return exp.getChildren();
 		} else {
 			List<Expression> list = new ArrayList<>();
@@ -187,13 +181,15 @@ public interface LanguageParser<S> {
 			return list;
 		}
 	}
-	
+
 	@NonNull
-	static Buffer update(
-			@NonNull Buffer buffer,
+	static ParserBuffer update(
+			@NonNull ParserBuffer buffer,
 			@NonNull Collection<Expression> children
 	) {
-		if (!buffer.isEmpty()) {
+		if (buffer.isEmpty()) {
+			return buffer;
+		} else {
 			Expression ex = buffer.toExpression();
 			if (ex == null) {
 				String message = Templates.create()
@@ -203,9 +199,7 @@ public interface LanguageParser<S> {
 				throw new ParseException(message);
 			}
 			children.add(ex);
-			return new Buffer();
-		} else {
-			return buffer;
+			return new ParserBuffer();
 		}
 	}
 }

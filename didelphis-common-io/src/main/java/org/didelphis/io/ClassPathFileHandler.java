@@ -21,6 +21,7 @@ package org.didelphis.io;
 
 import lombok.NonNull;
 import lombok.ToString;
+
 import org.didelphis.utilities.Logger;
 
 import java.io.IOException;
@@ -49,11 +50,13 @@ public enum ClassPathFileHandler implements FileHandler {INSTANCE;
 	@NonNull
 	@Override
 	public String read(@NonNull String path) throws IOException {
-		try (InputStream stream = LOADER.getResourceAsStream(path);
-				Reader reader = new InputStreamReader(stream, encoding)) {
-			return FileHandler.readString(reader);
-		} catch (NullPointerException e) {
-			throw new IOException("Data not found on classpath at " + path, e);
+		try (InputStream stream = LOADER.getResourceAsStream(path)) {
+			if (stream == null) {
+				throw new IOException("Data not found on classpath at " + path);
+			}
+			try (Reader reader = new InputStreamReader(stream, encoding)) {
+				return FileHandler.readString(reader);
+			}
 		}
 	}
 

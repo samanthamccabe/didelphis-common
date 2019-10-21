@@ -20,6 +20,7 @@
 package org.didelphis.io;
 
 import org.didelphis.utilities.Logger;
+
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
@@ -31,9 +32,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class DiskFileHandlerTest {
 
@@ -70,7 +69,7 @@ class DiskFileHandlerTest {
 		String payload = "Test payload for writing";
 
 		handler.writeString(path, payload);
-		
+
 		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 			String collect = reader.lines().collect(Collectors.joining("\n"));
 			assertEquals(payload, collect);

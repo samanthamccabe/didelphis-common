@@ -22,7 +22,6 @@ package org.didelphis.language.phonetic.model;
 import lombok.NonNull;
 import lombok.ToString;
 
-import org.didelphis.language.automata.Regex;
 import org.didelphis.language.phonetic.features.EmptyFeatureArray;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.FeatureType;
@@ -45,15 +44,15 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.didelphis.language.phonetic.model.ModelConstants.*;
+
 
 @ToString(exclude = "hash")
 public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 
-	private static final Regex BINDER = new Regex("[͜-͢]");
-
 	private final FeatureSpecification specification;
 	private final FeatureModel<T> featureModel;
-	
+
 	private final Map<String, FeatureArray<T>> featureMap;
 	private final Map<String, FeatureArray<T>> modifiers;
 	private final List<String> orderedKeys;
@@ -83,7 +82,7 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 	public String findBestSymbol(@NonNull FeatureArray<T> featureArray) {
 
 		FeatureType<T> type = featureModel.getFeatureType();
-		
+
 		String bestSymbol = "";
 		double minimum = Double.MAX_VALUE;
 
@@ -101,8 +100,8 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 		String sb = "";
 		if (minimum > 0.0 && bestFeatures != null) {
 			Collection<String> collection = getBestDiacritic(
-					featureArray, 
-					bestFeatures, 
+					featureArray,
+					bestFeatures,
 					Double.MAX_VALUE
 			);
 			sb = modifiers.keySet()
@@ -118,7 +117,7 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 	public Set<String> getSymbols() {
 		return featureMap.keySet();
 	}
-	
+
 	@Override
 	public boolean containsKey(@NonNull String key) {
 		key = Normalizer.normalize(key, Normalizer.Form.NFD);
@@ -130,7 +129,7 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 	public Map<String, FeatureArray<T>> getFeatureMap() {
 		return featureMap;
 	}
-	
+
 	@NonNull
 	@Override
 	public Map<String, FeatureArray<T>> getModifiers() {
@@ -141,8 +140,8 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 	@Override
 	public FeatureArray<T> getFeatureArray(@NonNull String key) {
 		key = Normalizer.normalize(key, Normalizer.Form.NFD);
-		return featureMap.containsKey(key) 
-				? new StandardFeatureArray<>(featureMap.get(key)) 
+		return featureMap.containsKey(key)
+				? new StandardFeatureArray<>(featureMap.get(key))
 				: new SparseFeatureArray<>(featureModel);
 	}
 
@@ -203,7 +202,7 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 	public FeatureSpecification getSpecification() {
 		return specification;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		if (hash == 0) {
@@ -233,9 +232,9 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 	@NonNull
 	private String findBestPrimarySymbol(String substring) {
 		String best = "";
-		String s1 = BINDER.replace(substring, "");
+		String s1 = DASH.replace(substring, "");
 		for (String key : orderedKeys) {
-			String s2 = BINDER.replace(key, "");
+			String s2 = DASH.replace(key, "");
 			if (s1.startsWith(s2) && key.length() > best.length()) {
 				best = key;
 			}

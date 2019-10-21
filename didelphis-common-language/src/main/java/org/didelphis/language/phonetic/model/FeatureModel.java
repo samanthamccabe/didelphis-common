@@ -20,6 +20,7 @@
 package org.didelphis.language.phonetic.model;
 
 import lombok.NonNull;
+
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.SpecificationBearer;
 import org.didelphis.language.phonetic.features.FeatureArray;

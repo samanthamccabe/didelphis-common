@@ -21,6 +21,7 @@ package org.didelphis.utilities;
 
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -40,9 +41,9 @@ import java.util.Map;
  */
 @UtilityClass
 public class Splitter {
-	
+
 	/**
-	 * A simple utility method for splitting input at line breaks using the 
+	 * A simple utility method for splitting input at line breaks using the
 	 * regular expression {@code "\r?\n|\r")}
 	 *
 	 * @param string the input to be split; must not be null
@@ -54,7 +55,7 @@ public class Splitter {
 
 		List<String> lines = new ArrayList<>();
 		int index = 0;
-		int cursor = 0; // 
+		int cursor = 0; //
 		while (index < string.length()) {
 
 			if (string.startsWith("\r\n", index)) {
@@ -96,8 +97,8 @@ public class Splitter {
 	 */
 	@NonNull
 	public List<String> toList(
-			@NonNull String string, 
-			@NonNull Map<String, String> delimiters, 
+			@NonNull String string,
+			@NonNull Map<String, String> delimiters,
 			@Nullable Iterable<String> special
 	) {
 		List<String> strings = new ArrayList<>();
@@ -136,7 +137,7 @@ public class Splitter {
 	 * <p>
 	 * {@code "a b (c d) e"}
 	 * <p>
-	 * will be split into four elements: 
+	 * will be split into four elements:
 	 * <ul>
 	 *     <li>{@code "a"}</li>
 	 *     <li>{@code "b"}</li>
@@ -152,7 +153,7 @@ public class Splitter {
 	 */
 	@NonNull
 	public List<String> whitespace(
-			@NonNull String string, 
+			@NonNull String string,
 			@NonNull Map<String, String> delimiters
 	) {
 		List<String> list = new ArrayList<>();
@@ -170,14 +171,14 @@ public class Splitter {
 				i = (end > i) ? end : i + 1;
 			}
 		}
-		
+
 		if (cursor < string.length()) {
 			list.add(string.substring(cursor));
 		}
-		
+
 		return list;
 	}
-	
+
 	private boolean isWhitespace(char c) {
 		return " \t\n\f\r".indexOf(c) >= 0;
 	}
@@ -211,7 +212,7 @@ public class Splitter {
 	/**
 	 * Determines the index of the closing bracket which corresponds to the
 	 * opening bracket in {@param string}, located at {@param startIndex}
-	 * 
+	 *
 	 * @param string the input to be examined for parentheses
 	 * @param left the opening parenthesis
 	 * @param delimiters a map of opening and closing delimiters
@@ -233,7 +234,7 @@ public class Splitter {
 		for (int i = startIndex + left.length(); i < string.length(); i++) {
 			String substring = string.substring(i);
 
-			
+
 			if (specials != null) {
 				boolean matched = false;
 				for (String special : specials) {
@@ -251,7 +252,7 @@ public class Splitter {
 			for (Map.Entry<String, String> entry : delimiters.entrySet()) {
 				String key = entry.getKey();
 				String val = entry.getValue();
-				
+
 				if (substring.startsWith(key)) {
 					stack.add(key);
 					i += key.length() - 1;
@@ -271,7 +272,7 @@ public class Splitter {
 		 * because we always need the next index for a substring that includes
 		 * the closing bracket, or we need to continue operations after the
 		 * bracketed expression is closed.
-		 * 
+		 *
 		 * However, if the start and end indices are the same, then the matching
 		 * parenthesis has not been found, thus we return -1
 		 */
