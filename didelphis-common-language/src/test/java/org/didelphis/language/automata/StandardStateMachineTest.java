@@ -34,6 +34,7 @@ import org.didelphis.language.phonetic.sequences.Sequence;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
 
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -53,6 +54,15 @@ class StandardStateMachineTest extends StateMachineTestBase<Sequence<Integer>> {
 		return input.isEmpty()
 				? FACTORY.toSequence(input)
 				: parser.transform(input);
+	}
+
+	@Test
+	@SuppressWarnings ("ConstantConditions")
+	void testNullParam() {
+		assertThrows(NullPointerException.class, () -> {
+			SequenceParser<?> aParser = new SequenceParser<>(FACTORY);
+			aParser.parseExpression(null, FORWARD);
+		});
 	}
 
 	@Test
@@ -704,7 +714,8 @@ class StandardStateMachineTest extends StateMachineTestBase<Sequence<Integer>> {
 		FeatureModelLoader<Integer> loader = new FeatureModelLoader<>(
 				IntegerFeature.INSTANCE,
 				ClassPathFileHandler.INSTANCE,
-				Collections.emptyList(), ""
+				Collections.emptyList(),
+				""
 		);
 		FeatureMapping<Integer> mapping = loader.getFeatureMapping();
 		return new SequenceFactory<>(mapping, FormatterMode.INTELLIGENT);
@@ -716,24 +727,20 @@ class StandardStateMachineTest extends StateMachineTestBase<Sequence<Integer>> {
 
 	private static void assertThrowsParse(String string) {
 		parser = new SequenceParser<>(FACTORY);
-		assertThrows(
-				ParseException.class,
-				() -> {
-					Expression expression = parser.parseExpression(string);
-					StandardStateMachine.create("M0", expression, parser);
-				}
-		);
+		assertThrows(ParseException.class, () -> {
+			Expression expression = parser.parseExpression(string);
+			StandardStateMachine.create("M0", expression, parser);
+		});
 	}
 
 	private static StateMachine<Sequence<Integer>> getMachine(
 			String exp,
-			MultiMap<String, Sequence<Integer>> specials
+			@Nullable MultiMap<String, Sequence<Integer>> specials
 	) {
 		parser = specials == null
 				? new SequenceParser<>(FACTORY)
 				: new SequenceParser<>(FACTORY, specials);
 		Expression expression = parser.parseExpression(exp, FORWARD);
-		return StandardStateMachine.create("M0",
-				expression, parser);
+		return StandardStateMachine.create("M0", expression, parser);
 	}
 }

@@ -19,10 +19,12 @@
 
 package org.didelphis.language.automata;
 
+import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.parsing.RegexParser;
 import org.didelphis.language.automata.statemachines.StateMachine;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.didelphis.language.automata.statemachines.StandardStateMachine.*;
@@ -37,6 +39,25 @@ class EmptyStateMachineTest {
 	static void init() {
 		parser  = new RegexParser();
 		instance = create("_", "", parser);
+	}
+
+	@Test
+	@DisplayName("Ensure exception is thrown for null parameters on #create")
+	@SuppressWarnings ("ConstantConditions")
+	void testNullsOnCreate() {
+		Class<NullPointerException> type = NullPointerException.class;
+		assertThrows(type, () -> create(null, "", parser));
+		assertThrows(type, () -> create("_", (Expression) null, parser));
+		assertThrows(type, () -> create("_", (String) null, parser));
+		assertThrows(type, () -> create("_", "", null));
+	}
+
+	@Test
+	@DisplayName("Ensure exception is thrown for null parameters on #match")
+	@SuppressWarnings ("ConstantConditions")
+	void testNullsOnMatch() {
+		Class<NullPointerException> type = NullPointerException.class;
+		assertThrows(type, () -> instance.match(null, 1));
 	}
 
 	@Test

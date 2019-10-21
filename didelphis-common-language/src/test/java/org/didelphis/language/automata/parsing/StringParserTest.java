@@ -54,7 +54,7 @@ class StringParserTest {
 	@DisplayName ("Ensure concatenate cannot take null params")
 	@SuppressWarnings ("ConstantConditions")
 	void testConcatenateNulls() {
-		Class<IllegalArgumentException> type = IllegalArgumentException.class;
+		Class<NullPointerException> type = NullPointerException.class;
 		assertThrows(type, () -> parser.concatenate("", null));
 		assertThrows(type, () -> parser.concatenate(null, ""));
 	}

@@ -52,18 +52,16 @@ import java.util.stream.Collectors;
 @ToString         (of = {"featureMapping", "formatterMode", "reservedStrings"})
 @EqualsAndHashCode(of = {"featureMapping", "formatterMode", "reservedStrings"})
 @Value
-public class SequenceFactory<T> implements Function<String, Sequence<T>> {
+public class SequenceFactory<T> {
 
 	private static final Map<String, String> DELIMITERS = new HashMap<>();
 	static {
 		DELIMITERS.put("[", "]");
 	}
 
-	/* --------------------------------------------------------------------- <*/
 	FeatureMapping<T>  featureMapping;
 	FormatterMode      formatterMode;
 	Collection<String> reservedStrings;
-	/*> --------------------------------------------------------------------- */
 
 	public SequenceFactory(
 			@NonNull FeatureMapping<T> featureMapping,
@@ -84,20 +82,6 @@ public class SequenceFactory<T> implements Function<String, Sequence<T>> {
 		/*> ----------------------------------------------------------------- */
 	}
 
-	@Override
-	public Sequence<T> apply(String word) {
-		List<String> keys = new ArrayList<>();
-		keys.addAll(reservedStrings);
-		keys.addAll(featureMapping.getFeatureMap().keySet());
-		Sort.quicksort(keys, SequenceFactory::compare);
-		Collection<String> list = formatterMode.split(word, keys, DELIMITERS);
-		FeatureModel<T> featureModel = featureMapping.getFeatureModel();
-		List<Segment<T>> segments = list.stream()
-				.map(this::toSegment)
-				.collect(Collectors.toList());
-		return new BasicSequence<>(segments, featureModel);
-	}
-
 	public void reserve(@NonNull String reserved) {
 		reservedStrings.add(reserved);
 	}
@@ -116,8 +100,16 @@ public class SequenceFactory<T> implements Function<String, Sequence<T>> {
 
 	@NonNull
 	public Sequence<T> toSequence(@NonNull String word) {
-		return apply(word);
-	}
+		List<String> keys = new ArrayList<>();
+		keys.addAll(reservedStrings);
+		keys.addAll(featureMapping.getFeatureMap().keySet());
+		Sort.quicksort(keys, SequenceFactory::compare);
+		Collection<String> list = formatterMode.split(word, keys, DELIMITERS);
+		FeatureModel<T> featureModel = featureMapping.getFeatureModel();
+		List<Segment<T>> segments = list.stream()
+				.map(this::toSegment)
+				.collect(Collectors.toList());
+		return new BasicSequence<>(segments, featureModel);	}
 
 	@NonNull
 	public Collection<String> getSpecialStrings() {

@@ -92,9 +92,9 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	}
 
 	private StandardStateMachine(
-			@NonNull String id,
-			@NonNull Expression expression,
-			@NonNull LanguageParser<S> parser
+			String id,
+			Expression expression,
+			LanguageParser<S> parser
 	) {
 		this.id = id;
 		this.parser = parser;
@@ -121,10 +121,10 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	}
 
 	private StandardStateMachine(
-			@NonNull String id,
-			@NonNull Expression expression,
-			@NonNull LanguageParser<S> parser,
-			@NonNull List<Expression> captures
+			String id,
+			Expression expression,
+			LanguageParser<S> parser,
+			List<Expression> captures
 	) {
 		this.id = id;
 		this.parser = parser;
@@ -291,8 +291,8 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	 */
 	@NonNull
 	private List<Cursor> checkNode(
-			@NonNull S input,
-			@NonNull Cursor cursor
+			S input,
+			Cursor cursor
 	) {
 		String currentNode = cursor.getNode();
 		int index = cursor.getIndex();
@@ -338,10 +338,10 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	@NonNull
 	private String parse(
 			int startingIndex,
-			@NonNull String startNode,
-			@NonNull String prefix,
-			@NonNull Iterable<Expression> expressions,
-			@NonNull List<Expression> captures
+			String startNode,
+			String prefix,
+			Iterable<Expression> expressions,
+			List<Expression> captures
 	) {
 		int nodeId = startingIndex;
 		String previous = startNode;
@@ -396,9 +396,9 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	@NonNull
 	private String makeParallel(
 			int index,
-			@NonNull String start,
-			@NonNull Expression expression,
-			@NonNull List<Expression> captures
+			String start,
+			Expression expression,
+			List<Expression> captures
 	) {
 		int i = 0;
 		String output = start + "-Out";
@@ -420,9 +420,9 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	}
 
 	private void createNegative(
-			@NonNull Expression expression,
-			@NonNull String machineNode,
-			@NonNull List<Expression> captures
+			Expression expression,
+			String machineNode,
+			List<Expression> captures
 	) {
 		Expression negated = expression.withNegative(false).withQuantifier("");
 		StateMachine<S> stateMachine = NegativeMachine.create(machineNode,
@@ -433,10 +433,10 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	}
 
 	private String makeNegative(
-			@NonNull String start,
-			@NonNull String end,
-			@NonNull String machine,
-			@NonNull String meta
+			String start,
+			String end,
+			String machine,
+			String meta
 	) {
 		graph.add(start, parser.epsilon(), machine);
 		addToGraph(start, end, machine, meta);
@@ -444,10 +444,10 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	}
 
 	private void addToGraph(
-			@NotNull String start,
-			@NotNull String end,
-			@NotNull String machine,
-			@NotNull String meta
+			String start,
+			String end,
+			String machine,
+			String meta
 	) {
 		Arc<S> epsilon = parser.epsilon();
 		switch (meta) {
@@ -471,9 +471,9 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 
 	@NonNull
 	private String makeGroup(
-			@NonNull String start,
-			@NonNull String machine,
-			@NonNull String meta
+			String start,
+			String machine,
+			String meta
 	) {
 		String endNode = start + 'X';
 		addToGraph(start, endNode, machine, meta);
@@ -482,10 +482,10 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 
 	@NonNull
 	private String makeTerminal(
-			@NonNull String start,
-			@NonNull String end,
-			@NonNull String exp,
-			@NonNull String meta
+			String start,
+			String end,
+			String exp,
+			String meta
 	) {
 		Arc<S> sequence = parser.getArc(exp);
 		Arc<S> epsilon = parser.epsilon();
@@ -509,8 +509,8 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	}
 
 	private static void populateCaptures(
-			@NonNull Expression expression,
-			@NonNull List<Expression> captures
+			Expression expression,
+			List<Expression> captures
 	) {
 		if (expression.isCapturing()) {
 			captures.add(expression);

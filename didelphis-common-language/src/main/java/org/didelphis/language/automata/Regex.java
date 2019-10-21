@@ -76,9 +76,7 @@ public class Regex implements Automaton<String> {
 
 	@NonNull
 	@Override
-	public String replace(
-			@NonNull String input, @NonNull String replacement
-	) {
+	public String replace(@NonNull String input, @NonNull String replacement) {
 		return automaton.replace(input, replacement);
 	}
 }

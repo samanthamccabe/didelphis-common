@@ -25,11 +25,6 @@ import lombok.Value;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Class {@code TerminalNode}
- *
- * 10/12/17
- */
 @Value
 public class TerminalNode implements Expression {
 

@@ -19,7 +19,11 @@
 
 package org.didelphis.language.automata.parsing;
 
+import lombok.NonNull;
+
 import org.didelphis.language.automata.expressions.Expression;
+import org.didelphis.language.automata.matching.BasicMatch;
+import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.SequenceFactory;
@@ -272,6 +276,19 @@ class SequenceParserTest {
 			assertEquals("CH", children.get(3).getTerminal());
 			assertEquals("a",  children.get(4).getTerminal());
 			assertEquals("m",  children.get(5).getTerminal());
+		}
+
+		@Test
+		void testReplaceGroups() {
+			Sequence<Boolean> sequence = parser.transform("ao");
+			BasicMatch<Sequence<Boolean>> match = new BasicMatch<>(sequence,0,2);
+			match.addGroup(0, 2, sequence);
+			match.addGroup(0, 1, parser.transform("a"));
+			match.addGroup(1, 2, parser.transform("o"));
+			Sequence<Boolean> input = parser.transform("$1x$2");
+			Sequence<Boolean> replaced = parser.replaceGroups(input, match);
+			Sequence<Boolean> expected = parser.transform("axo");
+			assertEquals(expected, replaced);
 		}
 	}
 

@@ -48,6 +48,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Class {@code SequenceParser}
@@ -60,6 +61,8 @@ import java.util.Set;
 @ToString
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
+
+	private static final Pattern DIGIT = Pattern.compile("\\d+");
 
 	Arc<Sequence<T>> dotArc       = new DotArc<>();
 	Arc<Sequence<T>> epsilonArc   = new EpsilonArc<>();
@@ -173,21 +176,22 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 	@NonNull
 	@Override
 	public Sequence<T> replaceGroups(
-			@NonNull Sequence<T> input, @NonNull Match<Sequence<T>> match
+			@NonNull Sequence<T> input,
+			@NonNull Match<Sequence<T>> match
 	) {
 
 		FeatureModel<T> featureModel = factory.getFeatureMapping().getFeatureModel();
 		Sequence<T> sequence = new BasicSequence<>(featureModel);
 		StringBuilder number = new StringBuilder();
 
-		boolean inGroup = false;
-
-		int cursor = 0;
 		int i = 0;
+		int cursor = 0;
+		boolean inGroup = false;
 		while (i < input.size()) {
 			Segment<T> segment = input.get(i);
+			String symbol = segment.getSymbol();
 			// ASCII digits 0-9
-			if (/*0x30 <= c && c < 0x3A &&*/ inGroup) {
+			if (DIGIT.matcher(symbol).matches() && inGroup) {
 				number.append(segment);
 				i++;
 				cursor = i;
