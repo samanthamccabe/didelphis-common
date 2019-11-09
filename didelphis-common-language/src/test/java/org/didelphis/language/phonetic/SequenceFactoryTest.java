@@ -81,11 +81,11 @@ class SequenceFactoryTest {
 	@SuppressWarnings ("ConstantConditions")
 	void testParseNull() {
 		assertThrows(
-				IllegalArgumentException.class,
+				NullPointerException.class,
 				() -> factory.toSegment(null)
 		);
 		assertThrows(
-				IllegalArgumentException.class,
+				NullPointerException.class,
 				() -> factory.toSequence(null)
 		);
 	}

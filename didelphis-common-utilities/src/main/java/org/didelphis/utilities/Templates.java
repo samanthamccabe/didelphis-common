@@ -24,6 +24,7 @@ import lombok.experimental.UtilityClass;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.Iterator;
@@ -36,20 +37,20 @@ import java.util.Objects;
  *
  * This class provides a fluent API for building messages with attached data for
  * exception handling and logging purposes. It uses curly-brace-style {@code {}}
- * templates to easily insert instance data into a message template. It also 
+ * templates to easily insert instance data into a message template. It also
  * uses varargs methods to more cleanly allow concatenation of strings over
  * multiple lines, <i>e.g.</i>
- * 
- * {@code 
+ *
+ * {@code
  *  Templates.create()
  * 	    .add("Cannot create a table with",
  * 	        "negative dimensions! The",
  * 	        "dimension provided was {}")
  * 	    .with(dimension);
  * }
- * 
+ *
  * rather than
- * 
+ *
  * {@code
  *  Templates.create()
  * 	    .add("Cannot create a table with"
@@ -57,22 +58,22 @@ import java.util.Objects;
  * 	        + "dimension provided was {}")
  * 	    .with(dimension);
  * }
- * 
+ *
  * The former of these is slightly more concise and works a bit better with
  * the Didelphis code standards and formatter.
- * 
- * The only non-factory method exposed by this utility class is 
+ *
+ * The only non-factory method exposed by this utility class is
  * {@link #compile(String, Object...)}
  * which can be used for basic templating; a single message, with provided data.
  * This is used internally by the builder, but is also used by {@link Logger} to
  * create its messages, and uses the same pattern as any of its log commands.
- * 
+ *
  * see also
  * {@link Logger#info(String, Object...)},
  * {@link Logger#warn(String, Object...)},
- * {@link Logger#error(String, Object...)}, 
+ * {@link Logger#error(String, Object...)},
  * <i>etc.</i>
- * 
+ *
  */
 @UtilityClass
 public class Templates {
@@ -89,18 +90,19 @@ public class Templates {
 	/**
 	 * Template builder class
 	 */
+	@SuppressWarnings ("PublicInnerClass")
 	public static final class Builder {
 		private final Deque<String> messages;
 		private final List<Object> data;
-		
+
 		private Builder() {
 			messages = new LinkedList<>();
 			data = new ArrayList<>();
 		}
-		
+
 		public Builder add(String string, String... strings) {
 			if (strings.length > 0) {
-				List<String> list = new ArrayList<>();
+				Collection<String> list = new ArrayList<>();
 				list.add(string);
 				list.addAll(Arrays.asList(strings));
 				String message = join(" ", list);
@@ -124,7 +126,7 @@ public class Templates {
 			Collections.addAll(data, objects);
 			return this;
 		}
-		
+
 		@NonNull
 		public String build() {
 			StringBuilder sb = new StringBuilder();
@@ -158,7 +160,7 @@ public class Templates {
 			return message.toString();
 		}
 	}
-	
+
 	@NonNull
 	public String compile(String template, Object... data) {
 		StringBuilder sb = new StringBuilder();

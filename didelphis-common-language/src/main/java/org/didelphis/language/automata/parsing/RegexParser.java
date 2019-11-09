@@ -40,8 +40,8 @@ import org.intellij.lang.annotations.Language;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -69,28 +69,26 @@ import static org.didelphis.language.automata.parsing.LanguageParser.*;
 @EqualsAndHashCode
 public final class RegexParser implements LanguageParser<String> {
 
-	// @Formatter:off ----------------------------------------------------------
 	private static final Arc<String> DOT_ARC        = new DotArc();
 	private static final Arc<String> EPSILON_ARC    = new EpsilonArc();
 	private static final Arc<String> WORD_START_ARC = new WordStartArc();
 	private static final Arc<String> WORD_END_ARC   = new WordEndArc();
 
-	private static final Map<String, String> DELIMITERS_ALT = new HashMap<>();
-	private static final Map<String, String> DELIMITERS     = new HashMap<>();
-	private static final Map<String, String> CLASSES        = new HashMap<>();
-	private static final Map<String, String> ESCAPES        = new HashMap<>();
-	// @Formatter:on -----------------------------------------------------------
+	private static final Map<String, String> DELIM_ALT = new LinkedHashMap<>();
+	private static final Map<String, String> DELIM     = new LinkedHashMap<>();
+	private static final Map<String, String> CLASSES   = new LinkedHashMap<>();
+	private static final Map<String, String> ESCAPES   = new LinkedHashMap<>();
 
 	private static final Set<String> QUANTIFIERS = new HashSet<>();
 
 	static {
-		DELIMITERS.put("[", "]");
-		DELIMITERS.put("[^", "]");
-		DELIMITERS.put("(", ")");
-		DELIMITERS.put("(?:", ")");
+		DELIM.put("[", "]");
+		DELIM.put("[^", "]");
+		DELIM.put("(", ")");
+		DELIM.put("(?:", ")");
 
-		DELIMITERS_ALT.put("[", "]");
-		DELIMITERS_ALT.put("[^", "]");
+		DELIM_ALT.put("[", "]");
+		DELIM_ALT.put("[^", "]");
 
 		CLASSES.put("\\d", "[0-9]");
 		CLASSES.put("\\D", "[^0-9]");
@@ -98,8 +96,6 @@ public final class RegexParser implements LanguageParser<String> {
 		CLASSES.put("\\W", "[^a-zA-Z0-9_]");
 		CLASSES.put("\\s", "[ \t\f\r\n]");
 		CLASSES.put("\\S", "[^ \t\f\r\n]");
-		CLASSES.put("\\a", "[a-zA-Z]");  // custom
-		CLASSES.put("\\A", "[^a-zA-Z]"); // custom
 
 		CLASSES.put("[:alnum:]", "[A-Za-z0-9]");
 		CLASSES.put("[:alpha:]", "[A-Za-z]");
@@ -108,8 +104,29 @@ public final class RegexParser implements LanguageParser<String> {
 		CLASSES.put("[:lower:]", "[a-z]");
 		CLASSES.put("[:upper:]", "[A-Z]");
 		CLASSES.put("[:xdigit:]", "[A-Fa-f0-9]");
-		CLASSES.put("[:punct:]", "[!\"#$%&'=()*+,./:;><?@|\\^`{}~_-\\[\\]]");
+		CLASSES.put("[:punct:]", "[!\"#$%&'=()*+,./:;><?@|\\^`{}~_\\-\\[\\]]");
 		CLASSES.put("[:space:]", "[ \t\f\r\n\\v]");
+
+		CLASSES.put("\\p{Lower}", "[a-z]");
+		CLASSES.put("\\p{Upper}", "[A-Z]");
+		CLASSES.put("\\p{ASCII}", "[\\x00-\\x7F]");
+		CLASSES.put("\\p{Alpha}", "[a-zA-Z]");
+		CLASSES.put("\\p{Digit}", "[0-9]");
+		CLASSES.put("\\p{Alnum}", "[a-zA-Z0-9]");
+		CLASSES.put("\\p{Punct}", "[!\"#$%&'()*+,\\-./:;<=>?@\\[\\]^_`{|}~]");
+		CLASSES.put("\\p{Graph}", "[a-zA-Z0-9!\"#$%&'()*+,\\-./:;<=>?@\\[\\]^_`{|}~]");
+		CLASSES.put("\\p{Print}", "[a-zA-Z0-9!\"#$%&'()*+,\\-./:;<=>?@\\[\\]^_`{|}~\\x20]");
+		CLASSES.put("\\p{Blank}", "[ \\t]");
+		CLASSES.put("\\p{Cntrl}", "[\\x00-\\x1F\\x7F]");
+		CLASSES.put("\\p{XDigit}", "[0-9a-fA-F]");
+		CLASSES.put("\\p{Space}", "[ \\t\\n\\x0B\\f\\r]");
+
+		ESCAPES.put("\\t", "\t");
+		ESCAPES.put("\\n", "\n");
+		ESCAPES.put("\\r", "\r");
+		ESCAPES.put("\\f", "\f");
+		ESCAPES.put("\\a", "\u0007");
+		ESCAPES.put("\\e", "\u001B");
 
 		ESCAPES.put("\\$", "$");
 		ESCAPES.put("\\\\", "\\");
@@ -147,7 +164,7 @@ public final class RegexParser implements LanguageParser<String> {
 	@NonNull
 	@Override
 	public Map<String, String> supportedDelimiters() {
-		return Collections.unmodifiableMap(DELIMITERS);
+		return Collections.unmodifiableMap(DELIM);
 	}
 
 	@NonNull
@@ -186,7 +203,8 @@ public final class RegexParser implements LanguageParser<String> {
 	@NonNull
 	@Override
 	public Expression parseExpression(
-			@NonNull @Language ("RegExp") String expression,
+			@Language ("RegExp")
+			@NonNull String expression,
 			@NonNull ParseDirection direction
 	) {
 		Expression exp;
@@ -248,7 +266,8 @@ public final class RegexParser implements LanguageParser<String> {
 	@NonNull
 	@Override
 	public String replaceGroups(
-			@NonNull String input, @NonNull Match<String> match
+			@NonNull String input,
+			@NonNull Match<String> match
 	) {
 		StringBuilder sb = new StringBuilder();
 		StringBuilder number = new StringBuilder();
@@ -307,7 +326,7 @@ public final class RegexParser implements LanguageParser<String> {
 		ParserBuffer buffer = new ParserBuffer();
 		List<Expression> expressions = new ArrayList<>();
 
-		if(split.contains("|")) {
+		if (split.contains("|")) {
 			int cursor = 0;
 			for (int i = 0; i < split.size(); i++) {
 				if (split.get(i).equals("|")) {
@@ -371,13 +390,14 @@ public final class RegexParser implements LanguageParser<String> {
 	}
 
 	@NonNull
-	private Arc<String> parseRanges(String list) {
+	private Arc<String> parseRanges(String range) {
 
-		Set<String> specials = new HashSet<>();
+		Collection<String> specials = new HashSet<>();
 		specials.addAll(CLASSES.keySet());
 		specials.addAll(ESCAPES.keySet());
 
-		List<String> list1 = Splitter.toList(list, DELIMITERS_ALT, specials);
+		List<String> list = Splitter.toList(range, DELIM_ALT, specials);
+		List<String> list1 = handleHexEscapes(range, list);
 
 		Set<String> set = new HashSet<>();
 		Set<Arc<String>> arcs = new HashSet<>();
@@ -385,7 +405,7 @@ public final class RegexParser implements LanguageParser<String> {
 			String s1 = list1.get(i);
 
 			if (s1.startsWith("[^")) {
-				int i1 = Splitter.parseParens(s1, DELIMITERS_ALT, specials, 0);
+				int i1 = Splitter.parseParens(s1, DELIM_ALT, specials, 0);
 				if (i1 == s1.length()) {
 					Arc<String> arc = parseRanges(s1.substring(2, i1 - 1));
 					arcs.add(new NegativeArc(arc));
@@ -395,7 +415,7 @@ public final class RegexParser implements LanguageParser<String> {
 			}
 
 			if (s1.startsWith("[")) {
-				int i1 = Splitter.parseParens(s1, DELIMITERS_ALT, specials, 0);
+				int i1 = Splitter.parseParens(s1, DELIM_ALT, specials, 0);
 				if (i1 == s1.length()) {
 					Arc<String> arc = parseRanges(s1.substring(1, i1 - 1));
 					arcs.add(arc);
@@ -414,7 +434,7 @@ public final class RegexParser implements LanguageParser<String> {
 						if (c1 > c2) {
 							String message = Templates.create()
 									.add("Unable to parse expression {}")
-									.with(list)
+									.with(range)
 									.add("Start {} is greater than end {}")
 									.with(c1, c2)
 									.build();
@@ -430,7 +450,7 @@ public final class RegexParser implements LanguageParser<String> {
 					} else {
 						String message = Templates.create()
 								.add("Unable to parse expression {}")
-								.with(list)
+								.with(range)
 								.add("due to invalid range {}-{}")
 								.with(s1, s2)
 								.build();
@@ -474,18 +494,87 @@ public final class RegexParser implements LanguageParser<String> {
 
 	@NonNull
 	private static List<String> split(String string) {
-		Set<String> specials = new HashSet<>();
+		Collection<String> specials = new HashSet<>();
 		specials.addAll(CLASSES.keySet());
 		specials.addAll(ESCAPES.keySet());
 
-		List<String> list = Splitter.toList(string, DELIMITERS, specials);
+		// There's a bit of an edge case here where Java supports an unescaped
+		// closed square bracket if its the first or only item in a negation
+		// block; the solution is to simply detect this and escape it before
+		// proceeding the with expression parse
+		if (string.contains("[^]")) {
+			int index = string.indexOf("[^]");
+			string = string.substring(0, index) + "[^\\]" +
+					string.substring(index + 3);
+		}
+
+		List<String> list = Splitter.toList(string, DELIM, specials);
 		for (int i = 0; i < list.size(); i++) {
 			String s = list.get(i);
 			if (CLASSES.containsKey(s)) {
 				list.set(i, CLASSES.get(s));
 			}
 		}
-		return list;
+
+		return handleHexEscapes(string, list);
+	}
+
+	@NonNull
+	private static List<String> handleHexEscapes(
+			String string,
+			List<String> list
+	) {
+		List<String> list1 = new ArrayList<>();
+		int i = 0;
+		while (i < list.size()) {
+			String s = list.get(i);
+			if (s.equals("\\")) {
+				i++;
+				if (i == list.size()) {
+					String message = Templates.create()
+							.add("Dangling escape at {} in {}")
+							.with(i, string).build();
+					throw new ParseException(message);
+				}
+				s = list.get(i);
+				if (s.equals("x")) {
+					i++;
+					if (i > list.size() - 2) {
+						String message = Templates.create()
+								.add("Dangling hex escape at {} in {}")
+								.with(i, string).build();
+						throw new ParseException(message);
+					}
+					String substring = string.substring(i, i + 2);
+					int value = Integer.parseInt(substring, 16);
+					list1.add(String.valueOf((char) value));
+					i += 2;
+				} else if (s.equals("u")) {
+					i++;
+					if (i > list.size() - 4) {
+						String message = Templates.create()
+								.add("Dangling or short Unicode escape at")
+								.add("{} in {}")
+								.with(i, string).build();
+						throw new ParseException(message);
+					}
+					String substring = string.substring(i, i + 4);
+					int value = Integer.parseInt(substring, 16);
+					list1.add(String.valueOf((char) value));
+					i += 4;
+				} else {
+					String message = Templates.create()
+							.add("Unrecognized escape {} at position {} in {}")
+							.with(s, i, string).build();
+					throw new ParseException(message);
+				}
+			} else {
+				list1.add(s);
+				i++;
+			}
+		}
+
+		return list1;
 	}
 
 	/**
@@ -498,7 +587,7 @@ public final class RegexParser implements LanguageParser<String> {
 	 * 		expression. Such errors include:
 	 * 		<ul>
 	 * 		<li>Expression consisting only of a word-start {@code ^} or -stop
-	 *             {@code $} symbol</li>
+	 *                  {@code $} symbol</li>
 	 * 		<li>Multiple quantification ({@code *?}, {@code ?+}</li>
 	 * 		<li>Quantification of a boundary {@code ^?}</li>
 	 * 		</ul>
@@ -553,16 +642,37 @@ public final class RegexParser implements LanguageParser<String> {
 		}
 	}
 
+	private static boolean isHexChar(char c) {
+		return isDigit(c) || isUpper(c) || isLower(c);
+	}
+
+	private static boolean isLower(char c) {
+		//noinspection MagicNumber
+		return isInRange(c, 0x61, 0x66);
+	}
+
+	private static boolean isUpper(char c) {
+		//noinspection MagicNumber
+		return isInRange(c, 0x41, 0x46);
+	}
+
+	private static boolean isDigit(char c) {
+		//noinspection MagicNumber
+		return isInRange(c, 0x30, 0x39);
+	}
+
+	private static boolean isInRange(char c, int t, int u) {
+		return t <= c && c <= u;
+	}
+
 	private static final class LiteralArc implements Arc<String> {
 
-		private final String literal;
+		private final String  literal;
 		private final boolean insensitive;
 
 		private LiteralArc(String literal, boolean insensitive) {
 			this.insensitive = insensitive;
-			String string = ESCAPES.containsKey(literal)
-					? ESCAPES.get(literal)
-					: literal;
+			String string = ESCAPES.getOrDefault(literal, literal);
 			this.literal = insensitive ? string.toLowerCase() : string;
 		}
 
@@ -586,7 +696,7 @@ public final class RegexParser implements LanguageParser<String> {
 	private static final class SetArc implements Arc<String> {
 
 		private final Collection<String> strings;
-		private final boolean insensitive;
+		private final boolean            insensitive;
 
 		private SetArc(Collection<String> strings, boolean insensitive) {
 			this.insensitive = insensitive;

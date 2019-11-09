@@ -103,7 +103,6 @@ public class Splitter {
 	) {
 		List<String> strings = new ArrayList<>();
 		for (int i = 0; i < string.length(); i++) {
-
 			int index = parseParens(string, delimiters, special, i);
 			if (index >= 0) {
 				strings.add(string.substring(i, index));
@@ -189,11 +188,12 @@ public class Splitter {
 	 *
 	 * @param string the {@code CharSequence} to be matched for
 	 * @param parens a map of start to end characters for parentheses
-	 * @param specials
+	 * @param specials special sequences to be treated as unitary, such as
+	 *      escaped characters, and character classes
 	 * @param index of the opening bracket.
 	 *
 	 * @return the index of the corresponding closing bracket, or -1 if one is
-	 * 		not found
+	 *      not found
 	 */
 	public int parseParens(
 			@NonNull String string,
@@ -216,7 +216,8 @@ public class Splitter {
 	 * @param string the input to be examined for parentheses
 	 * @param left the opening parenthesis
 	 * @param delimiters a map of opening and closing delimiters
-	 * @param specials
+	 * @param specials  special sequences to be treated as unitary, such as
+	 *      escaped characters, and character classes
 	 * @param startIndex the index in {@param string} where to start looking
 	 *
 	 * @return the index of the closing bracket, if it was found; otherwise, -1
@@ -231,9 +232,10 @@ public class Splitter {
 		int endIndex = startIndex;
 
 		Deque<String> stack = new LinkedList<>();
+		stack.add(left);
+
 		for (int i = startIndex + left.length(); i < string.length(); i++) {
 			String substring = string.substring(i);
-
 
 			if (specials != null) {
 				boolean matched = false;
@@ -259,10 +261,13 @@ public class Splitter {
 					break;
 				} else if (substring.startsWith(val)) {
 					if (stack.isEmpty()) {
-						endIndex = i;
 						break;
 					} else if (stack.peekLast().equals(key)) {
+						endIndex = i;
 						stack.removeLast();
+						if (stack.isEmpty()) {
+							return endIndex + 1;
+						}
 						break;
 					}
 				}
@@ -276,6 +281,6 @@ public class Splitter {
 		 * However, if the start and end indices are the same, then the matching
 		 * parenthesis has not been found, thus we return -1
 		 */
-		return startIndex == endIndex ? -1 : endIndex + 1;
+		return (startIndex == endIndex || !stack.isEmpty()) ? -1 : endIndex + 1;
 	}
 }

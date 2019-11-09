@@ -121,6 +121,13 @@ class RegexParserTest {
 	}
 
 	@Test
+	void testDanglingBracket() {
+		Expression expression = PARSER.parseExpression("\\[([^]]+)]$");
+		assertTrue(expression.hasChildren());
+		assertEquals(4, expression.getChildren().size());
+	}
+
+	@Test
 	void testReplaceGroups() {
 		BasicMatch<String> match = new BasicMatch<>("ao", 0, 2);
 		match.addGroup(0, 2, "ao");
