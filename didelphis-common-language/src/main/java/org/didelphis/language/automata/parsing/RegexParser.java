@@ -115,7 +115,7 @@ public final class RegexParser implements LanguageParser<String> {
 		CLASSES.put("\\p{Alnum}", "[a-zA-Z0-9]");
 		CLASSES.put("\\p{Punct}", "[!\"#$%&'()*+,\\-./:;<=>?@\\[\\]^_`{|}~]");
 		CLASSES.put("\\p{Graph}", "[a-zA-Z0-9!\"#$%&'()*+,\\-./:;<=>?@\\[\\]^_`{|}~]");
-		CLASSES.put("\\p{Print}", "[a-zA-Z0-9!\"#$%&'()*+,\\-./:;<=>?@\\[\\]^_`{|}~\\x20]");
+		CLASSES.put("\\p{Print}", "[a-zA-Z0-9!\"#$%&'()*+,\\-./:;<=>?@\\[\\]^_`{|}~ ]");
 		CLASSES.put("\\p{Blank}", "[ \\t]");
 		CLASSES.put("\\p{Cntrl}", "[\\x00-\\x1F\\x7F]");
 		CLASSES.put("\\p{XDigit}", "[0-9a-fA-F]");
@@ -545,7 +545,7 @@ public final class RegexParser implements LanguageParser<String> {
 								.with(i, string).build();
 						throw new ParseException(message);
 					}
-					String substring = string.substring(i, i + 2);
+					String substring = String.join("", list.subList(i, i + 2));
 					int value = Integer.parseInt(substring, 16);
 					list1.add(String.valueOf((char) value));
 					i += 2;
@@ -558,7 +558,7 @@ public final class RegexParser implements LanguageParser<String> {
 								.with(i, string).build();
 						throw new ParseException(message);
 					}
-					String substring = string.substring(i, i + 4);
+					String substring = String.join("", list.subList(i, i + 4));
 					int value = Integer.parseInt(substring, 16);
 					list1.add(String.valueOf((char) value));
 					i += 4;

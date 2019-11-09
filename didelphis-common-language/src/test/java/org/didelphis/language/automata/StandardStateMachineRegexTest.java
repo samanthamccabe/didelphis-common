@@ -912,12 +912,16 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 		void testHexEscape() {
 			assertConsistant("\\x41", "A");
 			assertConsistant("\\x4F", "O");
+			assertConsistant("\\t\\x41", "\tA");
+			assertConsistant("\\t\\x4F", "\tO");
 		}
 
 		@Test
 		void testUnicodeEscape() {
 			assertConsistant("\\u0041", "A");
 			assertConsistant("\\u004F", "O");
+			assertConsistant("\\t\\u0041", "\tA");
+			assertConsistant("\\t\\u004F", "\tO");
 		}
 
 		@Test
@@ -1004,18 +1008,6 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 				}
 			}
 		}
-
-		@SuppressWarnings ({
-				"NumericCastThatLosesPrecision",
-				"UnsecureRandomNumberGeneration"
-		})
-		private void assertConsistentFuzz(@Language ("regexp") String exp) {
-			double random = Math.random();
-			int mult = (int) (random * 0x0200);
-			String string = String.valueOf((char) mult);
-			assertConsistant(exp, string);
-		}
-
 	}
 
 	@Nested
