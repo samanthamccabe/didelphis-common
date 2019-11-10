@@ -1008,6 +1008,43 @@ class StandardStateMachineStringTest extends StateMachineTestBase<String> {
 		assertMatch(machine, "[+breathy]", 2, "[+breathy]", "+breathy");
 	}
 
+
+	@Test
+	void testReplace01() {
+		StateMachine<String> machine = getMachine("a");
+		assertEquals("b,b,b", machine.replace("babab", ","));
+		assertEquals(",b,b,", machine.replace("ababa", ","));
+		assertEquals("b,b,", machine.replace("baba", ","));
+		assertEquals(",b,b", machine.replace("abab", ","));
+	}
+
+	@Test
+	void testReplace02() {
+		StateMachine<String> machine = getMachine("(a)(b)");
+		assertEquals("bbaba", machine.replace("babab", "$2$1"));
+		assertEquals("babaa", machine.replace("ababa", "$2$1"));
+		assertEquals("bbaa", machine.replace("baba", "$2$1"));
+		assertEquals("baba", machine.replace("abab", "$2$1"));
+	}
+
+	@Test
+	void testReplace03() {
+		StateMachine<String> machine = getMachine("(a)(b)");
+		assertEquals("bbaxbax", machine.replace("babab", "$2$1x"));
+		assertEquals("baxbaxa", machine.replace("ababa", "$2$1x"));
+		assertEquals("bbaxa", machine.replace("baba", "$2$1x"));
+		assertEquals("baxbax", machine.replace("abab", "$2$1x"));
+	}
+
+	@Test
+	void testReplace04() {
+		StateMachine<String> machine = getMachine("");
+		assertEquals("b/a/b/a/b", machine.replace("babab", "/"));
+		assertEquals("a/b/a/b/a", machine.replace("ababa", "/"));
+		assertEquals("b/a/b/a", machine.replace("baba", "/"));
+		assertEquals("a/b/a/b", machine.replace("abab", "/"));
+	}
+
 	@NonNull
 	private static MultiMap<String, String> parse(String string) {
 		String[] split = string.split("\\s*=\\s*");

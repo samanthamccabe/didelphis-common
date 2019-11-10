@@ -20,6 +20,7 @@
 package org.didelphis.language.automata.parsing;
 
 import org.didelphis.language.automata.expressions.Expression;
+import org.didelphis.language.automata.matching.BasicMatch;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.structures.graph.Arc;
 import org.didelphis.structures.maps.GeneralMultiMap;
@@ -319,6 +320,16 @@ class StringParserTest {
 			assertEquals(2, child.getChildren().size());
 
 		}
+	}
+
+	@Test
+	void testReplaceGroups() {
+		BasicMatch<String> match = new BasicMatch<>("ao", 0, 2);
+		match.addGroup(0, 2, "ao");
+		match.addGroup(0, 1, "a");
+		match.addGroup(1, 2, "o");
+		String replaced = parser.replaceGroups("$1x$2", match);
+		assertEquals("axo", replaced);
 	}
 
 }

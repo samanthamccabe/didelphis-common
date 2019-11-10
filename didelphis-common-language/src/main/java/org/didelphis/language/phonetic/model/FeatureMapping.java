@@ -38,7 +38,6 @@ import java.util.Set;
  * derive from the same model due to different notational standards.
  *
  * @since 0.1.0
- *
  */
 public interface FeatureMapping<T> extends ModelBearer<T> {
 
@@ -46,70 +45,73 @@ public interface FeatureMapping<T> extends ModelBearer<T> {
 	 * Computes a canonical {@code String} representation from the provided
 	 * features. Output should be deterministic and consistent with the
 	 * implementation of {@link #parseSegment}
+	 *
 	 * @param featureArray the {@code FeatureArray} to decode
-	 * @return //TODO:
+	 *
+	 * @return a {@code String} representing a human-readable symbol which
+	 *      corresponds to the provided feature array. Not Null.
 	 */
-	@NonNull
-	String findBestSymbol(@NonNull FeatureArray<T> featureArray);
+	@NonNull String findBestSymbol(@NonNull FeatureArray<T> featureArray);
 
 	/**
 	 * Returns all symbols defined in the mapping.
+	 *
 	 * @return all symbols defined in the mapping.
 	 */
-	@NonNull
-	Set<String> getSymbols();
+	@NonNull Set<String> getSymbols();
 
 	/**
+	 * @param key the primary symbol whose existence in the mapping is to be checked for. not null
 	 *
-	 * @param key
-	 * @return
+	 * @return true iff the input key exists in the SYMBOLS clause of the feature mapping
 	 */
 	boolean containsKey(@NonNull String key);
 
 	/**
 	 * Provides a contained maps from symbols to features for base symbols
+	 *
 	 * @return a maps containing the relevant data; it is recommended that
-	 *      this not be modifiable
+	 *      this not be modifiable; not null
 	 */
-	@NonNull
-	Map<String, FeatureArray<T>> getFeatureMap();
+	@NonNull Map<String, FeatureArray<T>> getFeatureMap();
 
 	/**
 	 * Provides a contained maps from symbols to features for modifier and
 	 * diacritic characters
+	 *
 	 * @return a maps containing the relevant data; it is recommended that
-	 *      this not be modifiable
+	 *      this not be modifiable; not null
 	 */
-	@NonNull
-	Map<String, FeatureArray<T>> getModifiers();
+	@NonNull Map<String, FeatureArray<T>> getModifiers();
 
 	/**
 	 * Looks up the {@code FeatureArray} stored in the mapping under the
 	 * provided string.
-	 * @param key the symbol to look up in the mapping
+	 *
+	 * @param key the symbol to look up in the mapping; not null
+	 *
 	 * @return an associated {@code FeatureArray}; may be null if not found
 	 */
-	@Nullable
-	FeatureArray<T> getFeatureArray(@NonNull String key);
+	@Nullable FeatureArray<T> getFeatureArray(@NonNull String key);
 
 	/**
 	 * Parses as string into a {@link Segment}
-	 *
+	 * <p>
 	 * If the output of this method is passed {@link #findBestSymbol}, the
 	 * output of that method should be equal to the input of this one. That is,
-	 *
+	 * <p>
 	 * {@code findBestSymbol(parseSegment(string)) == string}
 	 *
 	 * @param string a well formed {@link String} whose constituent characters
 	 *      are present in this mapping. Cannot be {@code null}.
+	 *
 	 * @return a new {@link Segment} parsed from the provided {@link String}. If
-	 * the mapping is non-empty but does not contain a valid representation,
-	 * then an {@link org.didelphis.language.phonetic.segments.UndefinedSegment}
-	 * should be returned.
-	 * @throws ParseException if the
-	 *      provided string is ill-formed or contains character not present in
-	 *      the mapping
+	 *      the mapping is non-empty but does not contain a valid representation,
+	 *      then an {@link org.didelphis.language.phonetic.segments.UndefinedSegment}
+	 *      should be returned.
+	 *
+	 * @throws ParseException if the provided string is ill-formed or contains
+	 *      character not present in the mapping
 	 */
-	@NonNull
-	Segment<T> parseSegment(@NonNull String string);
+	@NonNull Segment<T> parseSegment(@NonNull String string);
 }

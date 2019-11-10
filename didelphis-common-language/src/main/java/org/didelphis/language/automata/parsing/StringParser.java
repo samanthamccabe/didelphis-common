@@ -89,7 +89,7 @@ public class StringParser extends AbstractDidelphisParser<String> {
 		if (specials.containsKey(arc)) {
 			return new SetArc(specials.get(arc));
 		}
-		return new LiteralArc(arc); // TODO: account for special cases
+		return new LiteralArc(arc);
 	}
 
 	@NonNull
@@ -139,10 +139,60 @@ public class StringParser extends AbstractDidelphisParser<String> {
 	@NonNull
 	@Override
 	public String replaceGroups(
-			@NonNull String input, @NonNull Match<String> match
+			@NonNull String input,
+			@NonNull Match<String> match
 	) {
-		// TODO: ---------------------------------------------------------------
-		return null;
+		StringBuilder sb = new StringBuilder();
+		StringBuilder number = new StringBuilder();
+
+		boolean inGroup = false;
+
+		int cursor = 0;
+		int i = 0;
+		while (i < input.length()) {
+			char c = input.charAt(i);
+			// ASCII digits 0-9
+			if (0x30 <= c && c < 0x3A && inGroup) {
+				number.append(c);
+				i++;
+				cursor = i;
+			} else {
+				// parse and append group data
+				if (number.length() > 0) {
+					int groupNumber = Integer.parseInt(number.toString());
+					String group = match.group(groupNumber);
+					if (group != null) {
+						sb.append(group);
+					}
+					// clear buffer
+					number = new StringBuilder();
+				}
+
+				if (c == '$') {
+					inGroup = true;
+					if (cursor != i) {
+						sb.append(input, cursor, i);
+					}
+					i++;
+					cursor = i;
+				} else {
+					inGroup = false;
+					i++;
+				}
+			}
+		}
+
+		sb.append(input.substring(cursor));
+
+		// parse and append group data
+		if (number.length() > 0) {
+			int groupNumber = Integer.parseInt(number.toString());
+			String group = match.group(groupNumber);
+			if (group != null) {
+				sb.append(group);
+			}
+		}
+		return sb.toString();
 	}
 
 	private static final class LiteralArc implements Arc<String> {

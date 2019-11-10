@@ -69,6 +69,8 @@ import static org.didelphis.language.automata.parsing.LanguageParser.*;
 @EqualsAndHashCode
 public final class RegexParser implements LanguageParser<String> {
 
+	private static final int RADIX = 16;
+
 	private static final Arc<String> DOT_ARC        = new DotArc();
 	private static final Arc<String> EPSILON_ARC    = new EpsilonArc();
 	private static final Arc<String> WORD_START_ARC = new WordStartArc();
@@ -396,13 +398,13 @@ public final class RegexParser implements LanguageParser<String> {
 		specials.addAll(CLASSES.keySet());
 		specials.addAll(ESCAPES.keySet());
 
-		List<String> list = Splitter.toList(range, DELIM_ALT, specials);
-		List<String> list1 = handleHexEscapes(range, list);
+		List<String> rawList = Splitter.toList(range, DELIM_ALT, specials);
+		List<String> list = handleHexEscapes(rawList);
 
 		Set<String> set = new HashSet<>();
 		Set<Arc<String>> arcs = new HashSet<>();
-		for (int i = 0; i < list1.size(); ) {
-			String s1 = list1.get(i);
+		for (int i = 0; i < list.size(); ) {
+			String s1 = list.get(i);
 
 			if (s1.startsWith("[^")) {
 				int i1 = Splitter.parseParens(s1, DELIM_ALT, specials, 0);
@@ -425,9 +427,9 @@ public final class RegexParser implements LanguageParser<String> {
 			}
 
 			// check if there's an end range past the hyphen
-			if (i + 2 < list1.size()) {
-				if (list1.get(i + 1).equals("-")) {
-					String s2 = list1.get(i + 2);
+			if (i + 2 < list.size()) {
+				if (list.get(i + 1).equals("-")) {
+					String s2 = list.get(i + 2);
 					if (s1.length() == 1 && s2.length() == 1) {
 						char c1 = s1.charAt(0);
 						char c2 = s2.charAt(0);
@@ -502,13 +504,17 @@ public final class RegexParser implements LanguageParser<String> {
 		// closed square bracket if its the first or only item in a negation
 		// block; the solution is to simply detect this and escape it before
 		// proceeding the with expression parse
+		String escaped;
 		if (string.contains("[^]")) {
 			int index = string.indexOf("[^]");
-			string = string.substring(0, index) + "[^\\]" +
-					string.substring(index + 3);
+			String prefix = string.substring(0, index);
+			String suffix = string.substring(index + 3);
+			escaped = prefix + "[^\\]" + suffix;
+		} else {
+			escaped = string;
 		}
 
-		List<String> list = Splitter.toList(string, DELIM, specials);
+		List<String> list = Splitter.toList(escaped, DELIM, specials);
 		for (int i = 0; i < list.size(); i++) {
 			String s = list.get(i);
 			if (CLASSES.containsKey(s)) {
@@ -516,19 +522,18 @@ public final class RegexParser implements LanguageParser<String> {
 			}
 		}
 
-		return handleHexEscapes(string, list);
+		return handleHexEscapes(list);
 	}
 
 	@NonNull
-	private static List<String> handleHexEscapes(
-			String string,
-			List<String> list
-	) {
-		List<String> list1 = new ArrayList<>();
+	@SuppressWarnings ({"ReuseOfLocalVariable", "OverlyLongMethod"})
+	private static List<String> handleHexEscapes(List<String> list) {
+		String string = String.join("", list);
+		List<String> newList = new ArrayList<>();
 		int i = 0;
 		while (i < list.size()) {
-			String s = list.get(i);
-			if (s.equals("\\")) {
+			String element = list.get(i);
+			if (element.equals("\\")) {
 				i++;
 				if (i == list.size()) {
 					String message = Templates.create()
@@ -536,8 +541,8 @@ public final class RegexParser implements LanguageParser<String> {
 							.with(i, string).build();
 					throw new ParseException(message);
 				}
-				s = list.get(i);
-				if (s.equals("x")) {
+				element = list.get(i);
+				if (element.equals("x")) {
 					i++;
 					if (i > list.size() - 2) {
 						String message = Templates.create()
@@ -546,10 +551,10 @@ public final class RegexParser implements LanguageParser<String> {
 						throw new ParseException(message);
 					}
 					String substring = String.join("", list.subList(i, i + 2));
-					int value = Integer.parseInt(substring, 16);
-					list1.add(String.valueOf((char) value));
+					int value = Integer.parseInt(substring, RADIX);
+					newList.add(String.valueOf((char) value));
 					i += 2;
-				} else if (s.equals("u")) {
+				} else if (element.equals("u")) {
 					i++;
 					if (i > list.size() - 4) {
 						String message = Templates.create()
@@ -559,22 +564,21 @@ public final class RegexParser implements LanguageParser<String> {
 						throw new ParseException(message);
 					}
 					String substring = String.join("", list.subList(i, i + 4));
-					int value = Integer.parseInt(substring, 16);
-					list1.add(String.valueOf((char) value));
+					int value = Integer.parseInt(substring, RADIX);
+					newList.add(String.valueOf((char) value));
 					i += 4;
 				} else {
 					String message = Templates.create()
 							.add("Unrecognized escape {} at position {} in {}")
-							.with(s, i, string).build();
+							.with(element, i, string).build();
 					throw new ParseException(message);
 				}
 			} else {
-				list1.add(s);
+				newList.add(element);
 				i++;
 			}
 		}
-
-		return list1;
+		return newList;
 	}
 
 	/**
