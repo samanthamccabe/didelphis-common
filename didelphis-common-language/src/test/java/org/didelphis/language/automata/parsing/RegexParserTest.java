@@ -307,7 +307,6 @@ class RegexParserTest {
 	@Test
 	void testParseEscapes() {
 		Expression expression = PARSER.parseExpression("\\[([^\\]]*)\\]");
-
 		assertEquals(3, expression.getChildren().size());
 	}
 }

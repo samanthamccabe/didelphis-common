@@ -130,6 +130,7 @@ public final class RegexParser implements LanguageParser<String> {
 		ESCAPES.put("\\a", "\u0007");
 		ESCAPES.put("\\e", "\u001B");
 
+		ESCAPES.put("\\^", "^");
 		ESCAPES.put("\\$", "$");
 		ESCAPES.put("\\\\", "\\");
 		ESCAPES.put("\\|", "|");
@@ -137,6 +138,8 @@ public final class RegexParser implements LanguageParser<String> {
 		ESCAPES.put("\\]", "]");
 		ESCAPES.put("\\(", "(");
 		ESCAPES.put("\\)", ")");
+		ESCAPES.put("\\{", "{");
+		ESCAPES.put("\\}", "}");
 		ESCAPES.put("\\.", ".");
 		ESCAPES.put("\\?", "?");
 		ESCAPES.put("\\*", "*");

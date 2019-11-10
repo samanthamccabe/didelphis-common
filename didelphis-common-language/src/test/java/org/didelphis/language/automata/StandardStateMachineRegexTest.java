@@ -974,6 +974,13 @@ class StandardStateMachineRegexTest extends StateMachineTestBase<String> {
 			assertConsistant("\\p{Space}",  "\t", "\n", "a");
 		}
 
+		@Test
+		void testCaret() {
+			assertConsistant("\\^aa", "^aa");
+			assertConsistant("a\\^a", "a^a");
+			assertConsistant("aa\\^", "aa^");
+		}
+
 		/* For the sake of clarity, this method is used to test if our regex
 		 * implementation has the same behavior as Java's Pattern class.
 		 *
