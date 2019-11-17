@@ -20,7 +20,6 @@
 package org.didelphis.language.phonetic;
 
 import org.didelphis.io.ClassPathFileHandler;
-import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.model.FeatureMapping;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
@@ -28,7 +27,6 @@ import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.sequences.Sequence;
 
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;

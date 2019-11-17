@@ -37,9 +37,6 @@ import org.didelphis.structures.graph.Arc;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
 
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -236,7 +233,6 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 	}
 
 	@NonNull
-	@Contract ("_, _ -> new")
 	private static <T> Sequence<T> immutable(
 			@NonNull String symbol,
 			@NonNull FeatureModel<T> model

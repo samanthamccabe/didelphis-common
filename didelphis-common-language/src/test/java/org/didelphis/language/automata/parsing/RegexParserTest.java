@@ -23,7 +23,6 @@ import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.matching.BasicMatch;
 import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.language.parsing.ParseException;
-import org.didelphis.language.phonetic.sequences.Sequence;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

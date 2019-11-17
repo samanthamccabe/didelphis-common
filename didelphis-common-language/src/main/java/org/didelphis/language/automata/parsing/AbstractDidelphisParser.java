@@ -30,8 +30,6 @@ import org.didelphis.language.parsing.ParseException;
 import org.didelphis.utilities.Splitter;
 import org.didelphis.utilities.Templates;
 
-import org.jetbrains.annotations.Contract;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -72,7 +70,6 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 
 	@NonNull
 	@Override
-	@Contract ("_,_ -> new")
 	public Expression parseExpression(
 			@NonNull String expression,
 			@NonNull ParseDirection direction

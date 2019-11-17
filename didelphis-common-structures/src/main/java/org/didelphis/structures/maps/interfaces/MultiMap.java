@@ -24,7 +24,6 @@ import lombok.NonNull;
 import org.didelphis.structures.contracts.Streamable;
 import org.didelphis.structures.tuples.Tuple;
 
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -82,6 +81,5 @@ public interface MultiMap<K, V>
 	 * @throws NullPointerException if parameter {@code values} is null
 	 * @see Map#putAll(Map)
 	 */
-	@Contract("_, null -> fail")
 	void addAll(@Nullable K key, @NonNull Collection<V> values);
 }

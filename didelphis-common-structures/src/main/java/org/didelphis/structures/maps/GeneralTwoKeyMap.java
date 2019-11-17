@@ -44,6 +44,8 @@ import java.util.function.Supplier;
 /**
  * Class {@code GeneralTwoKeyMap}
  *
+ * A general implementation of the {@code TwoKeyMap} interface.
+ *
  * @param <T> the first key type
  * @param <U> the second key type
  * @param <V> the value type
@@ -71,7 +73,7 @@ public class GeneralTwoKeyMap<T, U, V>
 	 * Standard non-copying constructor which uses the provided delegate map and
 	 * creates new entries using the provided supplier.
 	 *
-	 * @param delegate a delegate map to be used by the new multimap
+	 * @param delegate a delegate map to be used by the new multi-map
 	 * @param mapSupplier a {@link Supplier} to provide the inner map
 	 *      instances
 	 */

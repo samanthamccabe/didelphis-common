@@ -25,7 +25,6 @@ import org.didelphis.language.phonetic.model.FeatureModelLoader;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.text.Normalizer;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
