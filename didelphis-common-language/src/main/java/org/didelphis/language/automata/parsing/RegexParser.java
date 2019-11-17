@@ -159,8 +159,8 @@ public final class RegexParser implements LanguageParser<String> {
 
 	/**
 	 * @param insensitive if {@code true} the parser is set up to generate
-	 * 		case-
-	 * 		insensitive state machines
+	 *      case-
+	 *      insensitive state machines
 	 */
 	public RegexParser(boolean insensitive) {
 		this.insensitive = insensitive;
@@ -591,13 +591,13 @@ public final class RegexParser implements LanguageParser<String> {
 	 * @param list an expression to be checked for basic errors
 	 *
 	 * @throws ParseException if basic structural errors are found in the
-	 * 		expression. Such errors include:
-	 * 		<ul>
-	 * 		<li>Expression consisting only of a word-start {@code ^} or -stop
+	 *      expression. Such errors include:
+	 *      <ul>
+	 *      <li>Expression consisting only of a word-start {@code ^} or -stop
 	 *                  {@code $} symbol</li>
-	 * 		<li>Multiple quantification ({@code *?}, {@code ?+}</li>
-	 * 		<li>Quantification of a boundary {@code ^?}</li>
-	 * 		</ul>
+	 *      <li>Multiple quantification ({@code *?}, {@code ?+}</li>
+	 *      <li>Quantification of a boundary {@code ^?}</li>
+	 *      </ul>
 	 */
 	private static void validate(@NonNull List<String> list) {
 

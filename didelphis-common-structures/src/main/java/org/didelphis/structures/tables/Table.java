@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 
 /**
  * Interface {@code Table}
- *
+ * <p>
  * A general interface for two-dimensional matrix data structures
  *
  * @param <E> the type parameter
@@ -165,13 +165,4 @@ public interface Table<E> extends Structure {
 	 */
 	@NonNull
 	Iterator<Collection<E>> columnIterator();
-
-	/**
-	 * Formatted table string.
-	 *
-	 * @return the string
-	 */
-	@Deprecated
-	@NonNull
-	String formattedTable();
 }

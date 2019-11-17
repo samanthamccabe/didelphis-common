@@ -70,8 +70,10 @@ public class GeneralTwoKeyMap<T, U, V>
 	/**
 	 * Standard non-copying constructor which uses the provided delegate map and
 	 * creates new entries using the provided supplier.
+	 *
 	 * @param delegate a delegate map to be used by the new multimap
-	 * @param mapSupplier a {@link Supplier} to provide the inner map instances
+	 * @param mapSupplier a {@link Supplier} to provide the inner map
+	 *      instances
 	 */
 	public GeneralTwoKeyMap(
 			@NonNull Map<T, Map<U, V>> delegate,
@@ -85,7 +87,8 @@ public class GeneralTwoKeyMap<T, U, V>
 	 * Copy-constructor; creates a deep copy of the provided multi-map using
 	 * the provided suppliers
 	 *
-	 * @param tripleIterable a {@link TwoKeyMap} instance whose data is to be copied
+	 * @param tripleIterable a {@link TwoKeyMap} instance whose data is to be
+	 *      copied
 	 * @param delegate a new (typically empty) delegate map
 	 * @param mapSupplier a {@link Supplier} to provide the inner collections
 	 */

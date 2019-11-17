@@ -54,7 +54,7 @@ public interface Segment<T> extends ModelBearer<T>, Comparable<Segment<T>> {
 	 *
 	 * @param segment another segment to compare to this one
 	 * @return true if all specified (non NaN) features in either segment are
-	 * 		equal
+	 *      equal
 	 */
 	default boolean matches(@NonNull Segment<T> segment) {
 		if (getFeatureModel().getSpecification().size() == 0 &&

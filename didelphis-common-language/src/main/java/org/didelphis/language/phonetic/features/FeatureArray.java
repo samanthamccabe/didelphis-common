@@ -49,9 +49,9 @@ public interface FeatureArray<T>
 	 * @throws IndexOutOfBoundsException - if the index is out of range
 	 *  	{@code (index < 0 || index >= size())}
 	 * @throws ClassCastException - if the class of the specified element
-	 * 		prevents it from being added to this array
+	 *      prevents it from being added to this array
 	 * @throws NullPointerException - if the specified element is null and
-	 * 		this array does not permit null elements
+	 *      this array does not permit null elements
 	 */
 	void set(int index, @Nullable T value);
 
@@ -60,10 +60,10 @@ public interface FeatureArray<T>
 	 *
 	 * @param index index of the element to return
 	 * @return the element at the specified position in this list; if there
-	 * 		element, return null.
+	 *      element, return null.
 	 *
 	 * @throws IndexOutOfBoundsException - if the index is out of range (index
-	 * 		< 0 || index >= size())
+	 *      < 0 || index >= size())
 	 */
 	@Nullable
 	T get(int index);
@@ -83,11 +83,11 @@ public interface FeatureArray<T>
 	 * features from the other array onto this one. Changes are done in-place
 	 *
 	 * @param array an array from which to assign values; each present or
-	 * 		non-null feature in this array will be written on to the corresponding
-	 * 		value of this segment
+	 *      non-null feature in this array will be written on to the corresponding
+	 *      value of this segment
 	 * @return true iff changes were made; applying an array to itself, or an
-	 * 		empty array (with no defined features) will make no changes and will
-	 * 		return false
+	 *      empty array (with no defined features) will make no changes and will
+	 *      return false
 	 */
 	boolean alter(@NonNull FeatureArray<T> array);
 

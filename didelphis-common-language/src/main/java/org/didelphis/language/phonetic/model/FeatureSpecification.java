@@ -26,40 +26,42 @@ import java.util.Map;
 
 /**
  * The {@code FeatureSpecification} represents a set of features and their types
- *
+ * <p>
  * This interface underpins {@link FeatureModel} and {@link FeatureMapping}
  *
  * @since 0.1.0
- *
  */
 public interface FeatureSpecification {
 
 	/**
 	 * Returns the number of features in the specification
+	 *
 	 * @return the number of features in the specification
 	 */
 	int size();
 
 	/**
 	 * Returns a map from feature name and abbreviation to it's index
+	 *
 	 * @return a map from feature name and abbreviation to it's index
 	 */
-	@NonNull
-	Map<String, Integer> getFeatureIndices();
+	@NonNull Map<String, Integer> getFeatureIndices();
 
 	/**
 	 * Returns the index of the provided feature name or code.
+	 *
 	 * @param featureName the feature name or code whose index is to be found
+	 *
 	 * @return the index of the provided feature name or -1 if
-	 *      {@code featureName} is not found in this specification
+	 *        {@code featureName} is not found in this specification
 	 */
 	int getIndex(@NonNull String featureName);
 
 	/**
 	 * Returns a list of the feature names defined in the specification
+	 *
 	 * @return a list of the feature names defined in the specification
 	 */
-	@NonNull
-	List<String> getFeatureNames();
+	@NonNull List<String> getFeatureNames();
 
 }

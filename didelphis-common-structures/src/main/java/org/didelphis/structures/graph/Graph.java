@@ -30,18 +30,23 @@ import java.util.HashMap;
 
 /**
  * Class {@code Graph}
- *
  */
 @ToString
-@EqualsAndHashCode(callSuper = true)
-public final class Graph<S> extends GeneralTwoKeyMultiMap<String, Arc<S>, String> {
+@EqualsAndHashCode (callSuper = true)
+public final class Graph<S>
+		extends GeneralTwoKeyMultiMap<String, Arc<S>, String> {
 
 	public Graph() {
 		super(new HashMap<>(), Suppliers.ofLinkedHashMap(), Suppliers.ofList());
 	}
 
 	public Graph(@NonNull GeneralTwoKeyMultiMap<String, Arc<S>, String> graph) {
-		super(graph, new HashMap<>(), Suppliers.ofLinkedHashMap(), Suppliers.ofList());
+		super(
+				graph,
+				new HashMap<>(),
+				Suppliers.ofLinkedHashMap(),
+				Suppliers.ofList()
+		);
 	}
 
 	public static class EmptyArc<S> implements Arc<S> {

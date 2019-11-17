@@ -65,21 +65,21 @@ public class DataTable<E>
 	}
 
 	@Override
-	public @Nullable List<E> getColumn(String key) {
+	public @Nullable List<E> getColumn(@NonNull String key) {
 		return hasKey(key) ? getColumn(keys.indexOf(key)) : null;
 	}
 
 	@NonNull
 	@Override
 	public
-	String setColumnName(int column, String name) {
-		return keys.set(column, name);
+	String setColumnKey(int column, @NonNull String key) {
+		return keys.set(column, key);
 	}
 
 	@NonNull
 	@Override
 	public
-	String getColumnName(int column) {
+	String getColumnKey(int column) {
 		return keys.get(column);
 	}
 

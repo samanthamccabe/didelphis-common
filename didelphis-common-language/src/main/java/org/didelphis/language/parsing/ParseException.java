@@ -26,6 +26,8 @@ package org.didelphis.language.parsing;
  */
 public class ParseException extends RuntimeException {
 
+	private static final long serialVersionUID = 4090597321376464936L;
+
 	public ParseException(String message) {
 		super(message);
 	}

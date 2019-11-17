@@ -174,15 +174,15 @@ public abstract class AbstractDidelphisParser<T> implements LanguageParser<T> {
 	 * @param string an expression to be checked for basic errors
 	 *
 	 * @throws ParseException if basic structural errors are found in the
-	 * 		expression. Such errors include:
-	 * 		<ul>
-	 * 		<li>Negation of the dot {@code . } character</li>
-	 * 		<li>Double negations ({@code !!}</li>
-	 * 		<li>Negation of a quantifier({@code !*}, {@code !?}</li>
-	 * 		<li>Multiple quantification ({@code *?}, {@code ?+}</li>
-	 * 		<li>Quantification of a boundary {@code #?}</li>
-	 * 		<li>Negation of a boundary {@code !#}</li>
-	 * 		</ul>
+	 *      expression. Such errors include:
+	 *      <ul>
+	 *      <li>Negation of the dot {@code . } character</li>
+	 *      <li>Double negations ({@code !!}</li>
+	 *      <li>Negation of a quantifier({@code !*}, {@code !?}</li>
+	 *      <li>Multiple quantification ({@code *?}, {@code ?+}</li>
+	 *      <li>Quantification of a boundary {@code #?}</li>
+	 *      <li>Negation of a boundary {@code !#}</li>
+	 *      </ul>
 	 */
 	private static void validate(@NonNull String string) {
 

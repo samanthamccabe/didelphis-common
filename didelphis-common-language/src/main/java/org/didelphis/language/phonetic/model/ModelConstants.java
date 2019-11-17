@@ -14,7 +14,7 @@ public class ModelConstants {
 	final Regex BINARY_PATTERN  = new Regex("([+−-])" + NAME);
 	final Regex VALUE_PATTERN   = new Regex(VALUE + ASSN + NAME);
 	final Regex FEATURE_PATTERN = new Regex("[,;]\\s*|\\s+");
-	final Regex BRACKET_PATTERN = new Regex("\\[((?:[^\\]])+)\\]");
+	final Regex BRACKET_PATTERN = new Regex("\\[((?:[^]])+)]");
 	final Regex DASH = new Regex("[͜-͢]");
 
 	final Regex FEATURES_PATTERN = new Regex("(\\w+)(\\s+(\\w*))?");

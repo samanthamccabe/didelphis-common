@@ -327,7 +327,7 @@ public class RectangularTable<E> extends AbstractTable<E>
 	 * @param row the row position
 	 *
 	 * @return the absolute index of the internal array based on the provided
-	 * 		coordinates.
+	 *      coordinates.
 	 */
 	private int getIndex(int row, int col) {
 		return getIndex(row, col, columns());

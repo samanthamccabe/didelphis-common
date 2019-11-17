@@ -26,46 +26,63 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 
+/**
+ * Interface {@code ColumnTable}
+ *
+ * A type of table with column headers
+ *
+ * @param <E>
+ */
 public interface ColumnTable<E> extends Table<E> {
 
 	/**
 	 * Checks if the table has the provided key
+	 *
 	 * @param key the column name to check for the presence of
+	 *
 	 * @return true iff the table contains the key
 	 */
 	boolean hasKey(@Nullable String key);
 
 	/**
-	 * Returns the
-	 * @return
+	 * Returns the column header names
+	 *
+	 * @return a list of the column header names; not {@code null}
 	 */
 	@NonNull
 	List<String> getKeys();
 
 	/**
+	 * Retrieves a column by the header key
 	 *
-	 * @param key
-	 * @return
+	 * @param key the header key of the column to return
+	 *
+	 * @return the contents of the specified column; cannot be {@code null}
 	 */
 	@Nullable
-	List<E> getColumn(@Nullable String key);
+	List<E> getColumn(@NonNull String key);
 
 	/**
+	 * Set the header key for a particular column
 	 *
-	 * @param column
-	 * @param name
-	 * @return
+	 * @param column the column index
+	 * @param key the new column key; not {@code null}
+	 *
+	 * @return the previous key; not {@code null}
 	 */
 	@NonNull
-	String setColumnName(int column, String name);
+	String setColumnKey(int column, @NonNull String key);
 
 	/**
+	 * Get the key for the specified column headers
 	 *
-	 * @param column
-	 * @return
+	 * @param column the column index
 	 *
-	 * @throws IndexOutOfBoundsException if
+	 * @return the column key for the specified index; not {@code null}
+	 *
+	 * @throws IndexOutOfBoundsException if the index is less than 0 or greater
+	 *      than the number of columns
 	 */
 	@NonNull
-	String getColumnName(int column);
+	String getColumnKey(int column);
 }

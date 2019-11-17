@@ -169,7 +169,7 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 	 *
 	 * @param sequence a segments to check against this one
 	 * @return true if, for each segment in both sequences, all defined features
-	 * 		in either segment are equal
+	 *      in either segment are equal
 	 */
 	@Override
 	public boolean matches(@NonNull Sequence<T> sequence) {

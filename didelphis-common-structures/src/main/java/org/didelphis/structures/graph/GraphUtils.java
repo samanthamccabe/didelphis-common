@@ -38,7 +38,7 @@ import java.util.Set;
 
 /**
  * Utility Class {@code GraphUtils}
- *
+ * <p>
  * Provides functionality for generating Graph Modeling Language (GML) files
  * from a number of data types. This is especially useful for debugging classes
  * in the package {@link org.didelphis.language.automata}, and for developing

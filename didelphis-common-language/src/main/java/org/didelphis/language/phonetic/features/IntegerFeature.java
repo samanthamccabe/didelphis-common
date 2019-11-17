@@ -51,7 +51,7 @@ public enum IntegerFeature implements FeatureType<Integer> {
 	@NonNull
 	@Override
 	public Integer parseValue(@NonNull String string) {
-		String normalized = Normalizer.normalize(string, Form.NFKC);
+		String normalized = normalize(string, Form.NFKC);
 		if (normalized.equals("+")) {
 			return 1;
 		} else if (normalized.equals("-")) {

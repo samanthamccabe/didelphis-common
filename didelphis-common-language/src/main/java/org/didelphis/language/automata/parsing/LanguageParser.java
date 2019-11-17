@@ -89,7 +89,7 @@ public interface LanguageParser<S> {
 	 * corresponding literal values
 	 *
 	 * @return a collection of supported special symbols and their
-	 * 		corresponding literal values
+	 *      corresponding literal values
 	 */
 	@NonNull MultiMap<String, S> getSpecialsMap();
 
@@ -122,7 +122,7 @@ public interface LanguageParser<S> {
 	 *
 	 * @throws IndexOutOfBoundsException if either {@param start} or {@param
 	 *        end} are negative, or greater than or equal to the length of the
-	 * 		provided sequence
+	 *      provided sequence
 	 */
 	@NonNull S subSequence(@NonNull S sequence, int start, int end);
 
@@ -133,7 +133,7 @@ public interface LanguageParser<S> {
 	 * @param sequence2 a sequence to be concatenated; not null
 	 *
 	 * @return a new object of type {@code <S>}; it should not be a mutated instance
-	 * 		of either of the provided sequences
+	 *      of either of the provided sequences
 	 */
 	@NonNull S concatenate(@NonNull S sequence1, @NonNull S sequence2);
 
@@ -145,7 +145,7 @@ public interface LanguageParser<S> {
 	 * @param match a match object
 	 *
 	 * @return a new sequence where the group markers are replaced with their
-	 * 		corresponding matched content
+	 *      corresponding matched content
 	 */
 	@NonNull S replaceGroups(@NonNull S input, @NonNull Match<S> match);
 
@@ -168,13 +168,12 @@ public interface LanguageParser<S> {
 	 * @param exp an expression to be checked for children; not null
 	 *
 	 * @return a list of the expression's children or, if no children are
-	 * 		present, a list containing the expression itself; not-null
+	 *      present, a list containing the expression itself; not-null
 	 */
 	@NonNull
 	static List<Expression> getChildrenOrExpression(@NonNull Expression exp) {
-		if (exp.hasChildren() &&
-				!(exp.isNegative() || exp.isParallel())
-				&& exp.getQuantifier().isEmpty()) {
+		if (exp.hasChildren() && !(exp.isNegative() || exp.isParallel()) &&
+				exp.getQuantifier().isEmpty()) {
 			return exp.getChildren();
 		} else {
 			List<Expression> list = new ArrayList<>();

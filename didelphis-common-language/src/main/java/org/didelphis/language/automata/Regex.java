@@ -38,7 +38,6 @@ import java.util.regex.Pattern;
  * Class {@code Regex}
  * <p>
  * A {@link Automaton} wrapper for the standard {@link Pattern} class.
- *
  */
 @ToString
 @EqualsAndHashCode

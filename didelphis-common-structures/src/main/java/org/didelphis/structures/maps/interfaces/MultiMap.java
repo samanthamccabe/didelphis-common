@@ -38,7 +38,7 @@ import java.util.Map;
  *
  * @param <K> the type of the map keys
  * @param <V> the type of the stored values; multiple such values are stored
- * 		per key
+ *      per key
  *
  * @see org.didelphis.structures.maps.GeneralMultiMap
  * @see org.didelphis.structures.maps.GeneralTwoKeyMultiMap
@@ -62,7 +62,7 @@ public interface MultiMap<K, V>
 	 * creates a new structure containing the new value if no such key exists.
 	 *
 	 * @param key the key whose associated collection will have the new value
-	 * 		appended; may be null
+	 *      appended; may be null
 	 * @param value the value to be added to the set stored under these keys
 	 *
 	 * @throws NullPointerException if parameter {@code value} is null
@@ -75,9 +75,9 @@ public interface MultiMap<K, V>
 	 * exist, but it is recommended.
 	 *
 	 * @param key the key whose associated collection will have have the new
-	 * 		values appended to it; may be null
+	 *      values appended to it; may be null
 	 * @param values the collection of values to be added to those present;
-	 * 		cannot be null
+	 *      cannot be null
 	 *
 	 * @throws NullPointerException if parameter {@code values} is null
 	 * @see Map#putAll(Map)

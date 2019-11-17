@@ -29,38 +29,36 @@ import org.didelphis.language.phonetic.features.FeatureType;
 import java.util.List;
 
 /**
- * Interface {@code FeatureModel} is a {@link FeatureSpecification} which
- * has value constraints and a type parameter. It also provides a specification
- * for what feature values are  "defined" or "undefined" and defines a natural
- * ordering of elements.
+ * Interface {@code FeatureModel}
+ * <p>
+ * A {@link FeatureSpecification} which has value constraints and a type
+ * parameter. It also provides a specification for what feature values are
+ * "defined" or "undefined" and defines a natural ordering of elements.
  *
  * @since 0.1.0
- *
  */
 public interface FeatureModel<T> extends SpecificationBearer {
 
 	/**
 	 * Retrieve this model's value {@link Constraint}s
+	 *
 	 * @return a list of feature value constraints; should be immutable
 	 */
-	@NonNull
-	List<Constraint<T>> getConstraints();
+	@NonNull List<Constraint<T>> getConstraints();
 
 	/**
 	 * Parses a well-formed feature {@link String} into the corresponding array
+	 *
 	 * @param string the bracketed feature string definition to parse
+	 *
 	 * @return a parsed {@link FeatureArray}
 	 *
 	 * @throws ParseException if the
-	 *
 	 */
-	@NonNull
-	FeatureArray<T> parseFeatureString(@NonNull String string);
+	@NonNull FeatureArray<T> parseFeatureString(@NonNull String string);
 
 	/**
-	 *
-	 * @return
+	 * @return the feature type used by this model
 	 */
-	@NonNull
-	FeatureType<T> getFeatureType();
+	@NonNull FeatureType<T> getFeatureType();
 }

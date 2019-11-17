@@ -53,6 +53,7 @@ public class GeneralTwoKeyMultiMap<T, U, V>
 	/**
 	 * Standard non-copying constructor which uses the provided delegate map and
 	 * creates new entries using the provided suppliers.
+	 *
 	 * @param delegate a delegate map to be used by the new instance
 	 * @param mSupplier a {@link Supplier} to provide the inner map instances
 	 * @param cSupplier a {@link Supplier} to provide the inner collections

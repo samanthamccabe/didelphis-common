@@ -62,7 +62,7 @@ public interface FeatureType<T> {
 	 * @return the value represented by the string argument
 	 *
 	 * @throws NumberFormatException if the {@code String} does not contain a
-	 * 		parseable value;.
+	 *      parseable value;.
 	 */
 	@NonNull T parseValue(@NonNull String string);
 

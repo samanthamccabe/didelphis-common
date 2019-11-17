@@ -23,7 +23,7 @@ import lombok.NonNull;
 
 /**
  * Interface {@code Delegating}
- * 
+ * <p>
  * Indicates that a data structure delegates some functionality to an inner
  * collection object and guarantees the structure is available through the API.
  *

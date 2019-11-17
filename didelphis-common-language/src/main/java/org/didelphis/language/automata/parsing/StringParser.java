@@ -37,7 +37,7 @@ import java.util.Map;
 
 /**
  * Class {@code StringParser}
- *
+ * <p>
  * A {@link String}-only companion to {@link SequenceParser} which uses the same
  * linguistics-oriented regular expression syntax.
  *
@@ -52,6 +52,7 @@ public class StringParser extends AbstractDidelphisParser<String> {
 	private static final Arc<String> WORD_END_ARC   = new WordEndArc();
 
 	private static final Map<String, String> DELIMITERS = new LinkedHashMap<>();
+
 	static {
 		DELIMITERS.put("(?:", ")");
 		DELIMITERS.put("(", ")");
@@ -130,8 +131,7 @@ public class StringParser extends AbstractDidelphisParser<String> {
 	@NonNull
 	@Override
 	public String concatenate(
-			@NonNull String sequence1,
-			@NonNull String sequence2
+			@NonNull String sequence1, @NonNull String sequence2
 	) {
 		return sequence1 + sequence2;
 	}
@@ -139,8 +139,7 @@ public class StringParser extends AbstractDidelphisParser<String> {
 	@NonNull
 	@Override
 	public String replaceGroups(
-			@NonNull String input,
-			@NonNull Match<String> match
+			@NonNull String input, @NonNull Match<String> match
 	) {
 		StringBuilder sb = new StringBuilder();
 		StringBuilder number = new StringBuilder();

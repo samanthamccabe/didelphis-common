@@ -29,7 +29,7 @@ import org.didelphis.language.phonetic.features.FeatureType;
 import org.didelphis.language.phonetic.features.SparseFeatureArray;
 import org.didelphis.utilities.Templates;
 
-import java.text.Normalizer.*;
+import java.text.Normalizer.Form;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -141,6 +141,7 @@ public final class GeneralFeatureModel<T> implements FeatureModel<T> {
 	@Override
 	public int hashCode() {
 		if (hash == 0) {
+			//noinspection ObjectInstantiationInEqualsHashCode
 			hash = Objects.hash(specification, constraints, aliases, featureType);
 		}
 		return hash;

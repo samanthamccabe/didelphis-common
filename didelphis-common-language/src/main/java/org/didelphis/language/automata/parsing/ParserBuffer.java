@@ -23,7 +23,7 @@ public final class ParserBuffer {
 	boolean capturing;
 
 	String quantifier = "";
-	String terminal = "";
+	String terminal   = "";
 
 	List<Expression> nodes = new ArrayList<>();
 

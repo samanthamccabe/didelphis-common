@@ -41,7 +41,7 @@ import org.didelphis.language.phonetic.model.FeatureSpecification;
 @EqualsAndHashCode
 public class StandardSegment<T> implements Segment<T> {
 
-	private final String symbol;
+	private final String          symbol;
 	private final FeatureArray<T> features;
 
 	/**

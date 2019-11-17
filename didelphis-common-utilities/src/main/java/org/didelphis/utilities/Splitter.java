@@ -33,7 +33,7 @@ import java.util.Map;
 
 /**
  * Utility class {@code Splitter}
- *
+ * <p>
  * General collection of String segmentation tools, including bracket matching
  * related tasks
  *
@@ -88,12 +88,12 @@ public class Splitter {
 	 *
 	 * @param string the string to be split
 	 * @param delimiters a map of parenthetical delimiters whose contents will
-	 * 		not be split
+	 *      not be split
 	 * @param special a list of special strings which will not be split. This
-	 * 		may be null; if it is, the specials are ignored, giving the same
+	 *      may be null; if it is, the specials are ignored, giving the same
 	 *
 	 * @return a new list which, if joined with no delimiter, would return the
-	 * 		original string; not {@code null}
+	 *      original string; not {@code null}
 	 */
 	@NonNull
 	public List<String> toList(
@@ -145,19 +145,18 @@ public class Splitter {
 	 * </ul>
 	 *
 	 * @param string the input that is to be split; cannot be {@code null}
-	 *
 	 * @param delimiters
+	 *
 	 * @return a new list containing elements from the provided input; will not
-	 * 		be {@code null}
+	 *      be {@code null}
 	 */
 	@NonNull
 	public List<String> whitespace(
-			@NonNull String string,
-			@NonNull Map<String, String> delimiters
+			@NonNull String string, @NonNull Map<String, String> delimiters
 	) {
 		List<String> list = new ArrayList<>();
 		int cursor = 0;
-		for (int i = 0; i < string.length();) {
+		for (int i = 0; i < string.length(); ) {
 			if (isWhitespace(string.charAt(i))) {
 				if (i != cursor) {
 					String chunk = string.substring(cursor, i);
@@ -201,7 +200,7 @@ public class Splitter {
 			@Nullable Iterable<String> specials,
 			int index
 	) {
-		for (String key: parens.keySet()) {
+		for (String key : parens.keySet()) {
 			if (string.startsWith(key, index)) {
 				return findClosingBracket(string, key, parens, specials, index);
 			}
@@ -216,7 +215,7 @@ public class Splitter {
 	 * @param string the input to be examined for parentheses
 	 * @param left the opening parenthesis
 	 * @param delimiters a map of opening and closing delimiters
-	 * @param specials  special sequences to be treated as unitary, such as
+	 * @param specials special sequences to be treated as unitary, such as
 	 *      escaped characters, and character classes
 	 * @param startIndex the index in {@param string} where to start looking
 	 *

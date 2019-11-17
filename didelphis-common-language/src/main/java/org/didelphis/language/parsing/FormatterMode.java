@@ -37,7 +37,7 @@ import static org.didelphis.utilities.Splitter.*;
 
 /**
  * Enum {@code FormatterMode}
- *
+ * <p>
  * This type is to succeed the earlier {@code SegmentationMode} and {@code
  * Normalizer} mode enums by merging their functionality. We originally
  * supported types that were entirely unnecessary and presented the user with an

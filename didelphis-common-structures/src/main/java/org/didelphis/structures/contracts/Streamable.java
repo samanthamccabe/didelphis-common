@@ -26,7 +26,7 @@ import java.util.stream.StreamSupport;
 
 /**
  * Interface {@code Streamable}
- *
+ * <p>
  * Like {@link Iterable} but for providing {@link Stream} access without the
  * need for a helper. As its only methods have default implementations, it is a
  * very simple add-on for non-collection classes which implement {@link

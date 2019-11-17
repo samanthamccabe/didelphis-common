@@ -60,8 +60,8 @@ public enum BinaryFeature implements FeatureType<Boolean> {
 		if (normalized.equals("+") || normalized.equals("1")) {
 			return Boolean.TRUE;
 		}
-		throw new NumberFormatException("Unrecognized boolean representation "
-				+ string);
+		throw new NumberFormatException(
+				"Unrecognized boolean representation " + string);
 	}
 
 	@NonNull

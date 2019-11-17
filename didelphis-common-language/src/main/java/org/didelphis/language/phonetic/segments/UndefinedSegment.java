@@ -32,23 +32,22 @@ import org.didelphis.language.phonetic.model.FeatureModel;
  * {@link org.didelphis.language.phonetic.model.FeatureMapping} and cannot be
  * defined in terms of features. It is only defined by it's symbol, but still
  * provides provenance for the model that generated it.
- *
+ * <p>
  * This is included for compatibility, and to avoid errors, namely that a {@link
  * StandardSegment} with no features will return {@code true} when {@link
  * #matches(Segment)} is called on another segment, which is not the desired
  * behavior.
- *
  */
-@EqualsAndHashCode(exclude = "model")
+@EqualsAndHashCode (exclude = "model")
 public class UndefinedSegment<T> implements Segment<T> {
 
 	private final FeatureModel<T> model;
 	private final FeatureArray<T> features;
-	private final String symbol;
+	private final String          symbol;
 
 	public UndefinedSegment(
-			@NonNull String symbol,
-			@NonNull FeatureModel<T> model) {
+			@NonNull String symbol, @NonNull FeatureModel<T> model
+	) {
 		this.model = model;
 		this.symbol = symbol;
 

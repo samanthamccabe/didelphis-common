@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  *
  * @since 0.1.0
  */
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode (callSuper = true)
 public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 
 	private final List<T> features;
@@ -153,8 +153,8 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 
 	private boolean matches(@Nullable T x, @Nullable T y) {
 		FeatureType<T> featureType = getFeatureModel().getFeatureType();
-		return !(featureType.isDefined(x) && featureType.isDefined(y))
-				|| Objects.equals(x, y);
+		return !(featureType.isDefined(x) && featureType.isDefined(y)) ||
+				Objects.equals(x, y);
 	}
 
 	private void applyConstraints(int index) {

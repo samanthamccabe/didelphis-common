@@ -285,7 +285,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	 *
 	 * @param input the input data being consumed by this automaton
 	 * @param cursor a {@link Cursor} object which store the current node and
-	 * 		its associated position in the input
+	 *      its associated position in the input
 	 *
 	 * @return a collection of new states
 	 */
@@ -324,16 +324,16 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	 * corresponding state machine.
 	 *
 	 * @param startingIndex a numerical index value used in generating
-	 * 		sequential state ids
+	 *      sequential state ids
 	 * @param startNode the node to which additional nodes will be attached
 	 * @param prefix a prefix used in the creation of new nodes
 	 * @param expressions the {@link Expression} tree from which the new
-	 * 		states will be derived
+	 *      states will be derived
 	 * @param captures the list of {@link Expression}s which are capturing;
-	 * 		this is used to assign start and end nodes to capture groups
+	 *      this is used to assign start and end nodes to capture groups
 	 *
 	 * @return the current node id, <emph>i.e.</emph> the id of the most
-	 * 		recently created node
+	 *      recently created node
 	 */
 	@NonNull
 	private String parse(

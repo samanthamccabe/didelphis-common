@@ -90,6 +90,7 @@ public class GeneralMultiMap<K, V>
 	/**
 	 * Standard non-copying constructor which uses the provided delegate map and
 	 * creates new entries using the provided supplier.
+	 *
 	 * @param delegate a delegate map to be used by the new multimap
 	 * @param supplier a {@link Supplier} to provide the inner collections
 	 */

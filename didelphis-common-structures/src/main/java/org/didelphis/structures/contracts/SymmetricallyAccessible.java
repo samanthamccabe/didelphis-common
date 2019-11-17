@@ -57,7 +57,7 @@ public interface SymmetricallyAccessible<K> {
 	 * @param k2 another key
 	 *
 	 * @return the canonical ordering of the key pair used in the underlying
-	 * 		structure.
+	 *      structure.
 	 */
 	@NonNull
 	default Tuple<K, K> canonicalKeyPair(@Nullable K k1, @Nullable K k2) {
@@ -83,7 +83,7 @@ public interface SymmetricallyAccessible<K> {
 	 *      representation will be determined
 	 *
 	 * @return the canonical ordering of the key pair used in the underlying
-	 * 		structure.
+	 *      structure.
 	 */
 	@NonNull
 	default Tuple<K, K> canonicalKeyPair(

@@ -194,30 +194,30 @@ class DataTableTest {
 
 	@Test
 	void setColumnName() {
-		assertEquals("X", table.setColumnName(0, "P"));
-		assertEquals("Y", table.setColumnName(1, "Q"));
-		assertEquals("Z", table.setColumnName(2, "R"));
+		assertEquals("X", table.setColumnKey(0, "P"));
+		assertEquals("Y", table.setColumnKey(1, "Q"));
+		assertEquals("Z", table.setColumnKey(2, "R"));
 
-		assertEquals("P", table.getColumnName(0));
-		assertEquals("Q", table.getColumnName(1));
-		assertEquals("R", table.getColumnName(2));
+		assertEquals("P", table.getColumnKey(0));
+		assertEquals("Q", table.getColumnKey(1));
+		assertEquals("R", table.getColumnKey(2));
 	}
 
 	@Test
 	void getColumnName() {
-		assertEquals("X", table.getColumnName(0));
-		assertEquals("Y", table.getColumnName(1));
-		assertEquals("Z", table.getColumnName(2));
+		assertEquals("X", table.getColumnKey(0));
+		assertEquals("Y", table.getColumnKey(1));
+		assertEquals("Z", table.getColumnKey(2));
 	}
 
 	@Test
 	void setColumnName_IndexOutOfBounds() {
-		assertThrows(IndexOutOfBoundsException.class, ()-> table.setColumnName(3, ""));
+		assertThrows(IndexOutOfBoundsException.class, ()-> table.setColumnKey(3, ""));
 	}
 
 	@Test
 	void getColumnName_IndexOutOfBounds() {
-		assertThrows(IndexOutOfBoundsException.class, ()-> table.getColumnName(3));
+		assertThrows(IndexOutOfBoundsException.class, ()-> table.getColumnKey(3));
 	}
 
 	private static DataTable<String> createTable() {

@@ -33,8 +33,8 @@ import java.util.List;
  * automata.
  *
  * @param <S> Usually a sequential data type, such as {@link String} or {@link
- * 		Sequence}; this is the type of object provided to the automaton to be
- * 		checked
+ *      Sequence}; this is the type of object provided to the automaton to be
+ *      checked
  *
  * @see org.didelphis.language.automata.statemachines.StateMachine
  * @see Regex

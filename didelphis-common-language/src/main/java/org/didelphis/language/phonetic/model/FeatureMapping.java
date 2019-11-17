@@ -32,10 +32,12 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * The {@code FeatureMapping} provides a mapping between symbols and feature
- * arrays. It is an extension of {@link ModelBearer} rather than
- * {@link FeatureModel} in order to express the fact that multiple mappings can
- * derive from the same model due to different notational standards.
+ * Interface {@code FeatureMapping}
+ *
+ * Provides a mapping between symbols and feature arrays. It is an extension of
+ * {@link ModelBearer} rather than {@link FeatureModel} in order to express the
+ * fact that multiple mappings can derive from the same model due to different
+ * notational standards.
  *
  * @since 0.1.0
  */
@@ -61,9 +63,11 @@ public interface FeatureMapping<T> extends ModelBearer<T> {
 	@NonNull Set<String> getSymbols();
 
 	/**
-	 * @param key the primary symbol whose existence in the mapping is to be checked for. not null
+	 * @param key the primary symbol whose existence in the mapping is to be
+	 *      checked for. not null
 	 *
-	 * @return true iff the input key exists in the SYMBOLS clause of the feature mapping
+	 * @return true iff the input key exists in the SYMBOLS clause of the
+	 *      feature mapping
 	 */
 	boolean containsKey(@NonNull String key);
 
