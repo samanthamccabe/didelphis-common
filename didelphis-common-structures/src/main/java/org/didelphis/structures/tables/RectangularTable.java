@@ -194,22 +194,6 @@ public class RectangularTable<E> extends AbstractTable<E>
 		return new ColumnIterator<>(array, rows(), columns());
 	}
 
-	@NonNull
-	@Deprecated
-	@Override
-	public String formattedTable() {
-		StringBuilder sb = new StringBuilder(array.size() * 8);
-		int i = 1;
-		for (E e : array) {
-			if (e instanceof Double) {
-				sb.append(DECIMAL_FORMAT.format(e));
-				sb.append((i % columns() == 0) ? "\n" : "  ");
-				i++;
-			}
-		}
-		return sb.toString();
-	}
-
 	@Override
 	public int size() {
 		return array.size();
