@@ -23,7 +23,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 
-import org.didelphis.structures.contracts.Delegating;
 import org.didelphis.utilities.Templates;
 
 import org.jetbrains.annotations.Nullable;
@@ -48,8 +47,7 @@ import java.util.stream.Stream;
  */
 @ToString
 @EqualsAndHashCode(callSuper = true)
-public class RectangularTable<E> extends AbstractTable<E>
-		implements Delegating<List<E>> {
+public class RectangularTable<E> extends AbstractTable<E> {
 
 	private final List<E> array;
 
@@ -74,11 +72,6 @@ public class RectangularTable<E> extends AbstractTable<E>
 		for (int i = 0; i < row * col; i++) {
 			array.add(defaultValue);
 		}
-	}
-
-	public RectangularTable(int row, int column, Collection<E> delegate) {
-		super(row, column);
-		array = new ArrayList<>(delegate);
 	}
 
 	public RectangularTable(@NonNull RectangularTable<E> table) {
@@ -295,12 +288,6 @@ public class RectangularTable<E> extends AbstractTable<E>
 		}
 		setColumns(columns() - 1);
 		return list;
-	}
-
-	@NonNull
-	@Override
-	public List<E> getDelegate() {
-		return Collections.unmodifiableList(array);
 	}
 
 	/**

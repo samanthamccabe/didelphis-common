@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -105,7 +104,7 @@ public class Templates {
 				Collection<String> list = new ArrayList<>();
 				list.add(string);
 				list.addAll(Arrays.asList(strings));
-				String message = join(" ", list);
+				String message = String.join(" ", list);
 				messages.add(message);
 			} else {
 				messages.add(string);
@@ -132,7 +131,7 @@ public class Templates {
 			StringBuilder sb = new StringBuilder();
 			String baseMessage = messages.isEmpty()
 					? "No message provided."
-					: join(" ", messages);
+					: String.join(" ", messages);
 			sb.append(baseMessage);
 			if (!data.isEmpty()) {
 				sb.append("\nWith Data:\n");
@@ -145,19 +144,6 @@ public class Templates {
 				sb.append('\n');
 			}
 			return sb.toString();
-		}
-
-		@NonNull
-		private static String join(String delimiter, Iterable<String> list) {
-			StringBuilder message = new StringBuilder();
-			Iterator<String> iterator = list.iterator();
-			while (iterator.hasNext()) {
-				message.append(iterator.next());
-				if (iterator.hasNext()) {
-					message.append(delimiter);
-				}
-			}
-			return message.toString();
 		}
 	}
 
