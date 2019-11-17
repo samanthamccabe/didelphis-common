@@ -26,14 +26,12 @@ import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.segments.SemidefinedSegment;
 import org.didelphis.language.phonetic.segments.UndefinedSegment;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class GeneralFeatureMappingTest extends PhoneticTestBase {
 
@@ -65,13 +63,13 @@ class GeneralFeatureMappingTest extends PhoneticTestBase {
 		assertFalse(model.getFeatureMap().isEmpty());
 		assertFalse(model.getModifiers().isEmpty());
 	}
-	
+
 	@Test
 	void testContainsKey() {
 		assertTrue(mapping.containsKey("p"));
 		assertFalse(mapping.containsKey("@"));
 	}
-	
+
 	@Test
 	void testBestSymbol01()  {
 		testBestSymbol("g");

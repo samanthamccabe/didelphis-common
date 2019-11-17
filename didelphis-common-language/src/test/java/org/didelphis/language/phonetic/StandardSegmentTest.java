@@ -23,16 +23,15 @@ import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.SparseFeatureArray;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.segments.StandardSegment;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.regex.Pattern;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class StandardSegmentTest extends PhoneticTestBase {
-	
+
 	private static final Pattern INFINITY_PATTERN = Pattern.compile("([-+])?Infinity");
 	private static final Pattern DECIMAL_PATTERN = Pattern.compile("([^\\-])(\\d\\.\\d)");
 
@@ -123,7 +122,7 @@ class StandardSegmentTest extends PhoneticTestBase {
 		assertMatches(a, g);
 		assertMatches(g, a);
 	}
-	
+
 	@Test
 	void testMatch04() {
 		Segment<Integer> x = factory.toSegment("x");
@@ -132,21 +131,21 @@ class StandardSegmentTest extends PhoneticTestBase {
 		assertFalse(e.matches(x));
 		assertFalse(x.matches(e));
 	}
-	
+
 	@Test
 	void testSegmentsNotInModel() {
 		Segment<Integer> z1 = factory.toSegment("ʓ");
 		Segment<Integer> z2 = factory.toSegment("ʓ");
 		Segment<Integer> a = factory.toSegment("a");
 
-		// Make sure that 
+		// Make sure that
 		assertNotMatches(z2, a);
 		assertNotMatches(a, z2);
-		
+
 		assertMatches(z2, z1);
 		assertMatches(z1, z2);
 	}
-	
+
 	@Test
 	void testOrdering01() {
 		Segment<Integer> p = factory.toSegment("p");
@@ -154,7 +153,7 @@ class StandardSegmentTest extends PhoneticTestBase {
 
 		assertEquals(-1, p.compareTo(b));
 	}
-	
+
 	@Test
 	void testOrdering02() {
 		Segment<Integer> p = factory.toSegment("p");
@@ -200,7 +199,7 @@ class StandardSegmentTest extends PhoneticTestBase {
 		assertEquals(0, t1.compareTo(t2));
 		assertEquals(0, t2.compareTo(t1));
 	}
-	
+
 	@Test
 	void testConstraintLateralToNasal01() {
 		Segment<Integer> segment = factory.toSegment("l");

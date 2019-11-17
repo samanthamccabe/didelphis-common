@@ -22,9 +22,11 @@ package org.didelphis.structures.maps;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
+
 import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.maps.interfaces.TwoKeyMultiMap;
 import org.didelphis.structures.tuples.Triple;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -51,6 +53,7 @@ public class GeneralTwoKeyMultiMap<T, U, V>
 	/**
 	 * Standard non-copying constructor which uses the provided delegate map and
 	 * creates new entries using the provided suppliers.
+	 *
 	 * @param delegate a delegate map to be used by the new instance
 	 * @param mSupplier a {@link Supplier} to provide the inner map instances
 	 * @param cSupplier a {@link Supplier} to provide the inner collections
@@ -67,7 +70,7 @@ public class GeneralTwoKeyMultiMap<T, U, V>
 	/**
 	 * Copy-constructor; creates a deep copy of the map using the provided
 	 * delegate and suppliers.
-	 * 
+	 *
 	 * @param tripleIterable triples whose data is to be copied
 	 * @param delegate a delegate map to be used by the new instance
 	 * @param mSupplier a {@link Supplier} to provide the inner map instances
@@ -84,10 +87,10 @@ public class GeneralTwoKeyMultiMap<T, U, V>
 		for (Triple<T, U, Collection<V>> triple : tripleIterable) {
 			T k1 = triple.first();
 			U k2 = triple.second();
-			
+
 			Collection<V> values = cSupplier.get();
 			values.addAll(triple.third());
-			
+
 			if (delegate.containsKey(k1)) {
 				delegate.get(k1).put(k2, values);
 			} else {

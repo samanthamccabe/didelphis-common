@@ -20,9 +20,11 @@
 package org.didelphis.structures.maps.interfaces;
 
 import lombok.NonNull;
+
 import org.didelphis.structures.contracts.Streamable;
 import org.didelphis.structures.tuples.Triple;
 import org.didelphis.structures.tuples.Tuple;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -44,8 +46,8 @@ public interface TwoKeyMap<T, U, V>
 	 * @param k2 the second key; may be {@code null}
 	 *
 	 * @return the value stored under the given keys; may be {@code null} if
-	 * 		either the keys have no associated value or if a {@code null} has
-	 * 		been stored explicitly
+	 *      either the keys have no associated value or if a {@code null} has
+	 *      been stored explicitly
 	 */
 	@Nullable V get(@Nullable T k1, @Nullable U k2);
 
@@ -84,7 +86,7 @@ public interface TwoKeyMap<T, U, V>
 
 	/**
 	 * @return a collection of tuples containing the maps's key pairs;
-	 * 		guaranteed to not be {@code null}
+	 *      guaranteed to not be {@code null}
 	 */
 	@NonNull Collection<Tuple<T, U>> keys();
 
@@ -96,10 +98,10 @@ public interface TwoKeyMap<T, U, V>
 	 * @return the number of key-value mappings in this map
 	 *
 	 * @implNote for complex map structures, it is not necessarily apparent
-	 * 		what semantics of {@code size()} should be. However, one reasonable and
-	 * 		consistent solution is that {@code size()} out to return the same
-	 * 		number of items as are contained within the output of {@code
-	 * 		iterator()}
+	 *      what semantics of {@code size()} should be. However, one reasonable and
+	 *      consistent solution is that {@code size()} out to return the same
+	 *      number of items as are contained within the output of {@code
+	 *      iterator()}
 	 */
 	@Override
 	default int size() {
@@ -113,8 +115,8 @@ public interface TwoKeyMap<T, U, V>
 	 * @param k2 the second key; may be {@code null}
 	 *
 	 * @return the value stored under the given keys; may be {@code null} if
-	 * 		either the keys have no associated value or if a {@code null} has been
-	 * 		stored explicitly
+	 *      either the keys have no associated value or if a {@code null} has
+	 *      been stored explicitly
 	 */
 	default @Nullable V removeKeys(@Nullable T k1, @Nullable U k2) {
 		if (contains(k1, k2)) {
@@ -131,7 +133,7 @@ public interface TwoKeyMap<T, U, V>
 	 * @param k2 the second key; may be {@code null}
 	 *
 	 * @return true iff the map contains a non-{@code null} value under the two
-	 * 		keys
+	 *      keys
 	 */
 	default boolean containsNotNull(@Nullable T k1, @Nullable U k2) {
 		return contains(k1, k2) && get(k1, k2) != null;
@@ -144,7 +146,7 @@ public interface TwoKeyMap<T, U, V>
 	 * @param k1 the first key; may be null
 	 *
 	 * @return a collection of the second keys associated with the provided key;
-	 * 		null if the provided key is not present
+	 *      null if the provided key is not present
 	 */
 	@NonNull
 	default Collection<U> getAssociatedKeys(@Nullable T k1) {
@@ -158,11 +160,11 @@ public interface TwoKeyMap<T, U, V>
 	 *
 	 * @param k1 the first key; may be null
 	 * @param k2 the second key; may be null
-	 * @param value the default value to be returned in case to stored value
-	 * 		is found or is null
+	 * @param value the default value to be returned in case to stored value is
+	 *      found or is null
 	 *
 	 * @return the retrieved value if present and not null, or the provided
-	 * 		default if not.
+	 *      default if not.
 	 */
 	@NonNull
 	default V getOrDefault(@Nullable T k1, @Nullable U k2, @NonNull V value) {

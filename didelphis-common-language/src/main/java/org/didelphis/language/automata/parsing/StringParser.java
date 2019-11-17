@@ -19,10 +19,9 @@
 
 package org.didelphis.language.automata.parsing;
 
-import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.ToString;
-import lombok.experimental.FieldDefaults;
+
 import org.didelphis.language.automata.matching.Match;
 import org.didelphis.structures.graph.Arc;
 import org.didelphis.structures.maps.GeneralMultiMap;
@@ -38,7 +37,7 @@ import java.util.Map;
 
 /**
  * Class {@code StringParser}
- *
+ * <p>
  * A {@link String}-only companion to {@link SequenceParser} which uses the same
  * linguistics-oriented regular expression syntax.
  *
@@ -47,64 +46,20 @@ import java.util.Map;
 @ToString
 public class StringParser extends AbstractDidelphisParser<String> {
 
-	private static final Arc<String> DOT_ARC = new Arc<String>() {
-		@Override
-		public int match(String sequence, int index) {
-			int length = sequence.length();
-			return length > 0 && index < length ? index + 1 : -1;
-		}
+	private static final Arc<String> DOT_ARC        = new DotArc();
+	private static final Arc<String> EPSILON_ARC    = new EpsilonArc();
+	private static final Arc<String> WORD_START_ARC = new WordStartArc();
+	private static final Arc<String> WORD_END_ARC   = new WordEndArc();
 
-		@Override
-		public String toString() {
-			return ".";
-		}
-	};
-
-	private static final Arc<String> EPSILON_ARC = new Arc<String>() {
-		@Override
-		public int match(String sequence, int index) {
-			return index;
-		}
-
-		@Override
-		public String toString() {
-			return "";
-		}
-	};
-
-	private static final Arc<String> WORD_START_ARC = new Arc<String>() {
-		@Override
-		public int match(String sequence, int index) {
-			return index == 0 ? 0 : -1;
-		}
-
-		@Override
-		public String toString() {
-			return "^";
-		}
-	};
-
-	private static final Arc<String> WORD_END_ARC = new Arc<String>() {
-		@Override
-		public int match(String sequence, int index) {
-			int length = sequence.length();
-			return index == length ? length : -1;
-		}
-
-		@Override
-		public String toString() {
-			return "$";
-		}
-	};
-	
 	private static final Map<String, String> DELIMITERS = new LinkedHashMap<>();
+
 	static {
 		DELIMITERS.put("(?:", ")");
 		DELIMITERS.put("(", ")");
 		DELIMITERS.put("{", "}");
 	}
-	
-	MultiMap<String, String> specials;
+
+	private final MultiMap<String, String> specials;
 
 	public StringParser() {
 		this(new GeneralMultiMap<>());
@@ -135,7 +90,7 @@ public class StringParser extends AbstractDidelphisParser<String> {
 		if (specials.containsKey(arc)) {
 			return new SetArc(specials.get(arc));
 		}
-		return new LiteralArc(arc); // TODO: account for special cases
+		return new LiteralArc(arc);
 	}
 
 	@NonNull
@@ -176,8 +131,7 @@ public class StringParser extends AbstractDidelphisParser<String> {
 	@NonNull
 	@Override
 	public String concatenate(
-			@NonNull String sequence1,
-			@NonNull String sequence2
+			@NonNull String sequence1, @NonNull String sequence2
 	) {
 		return sequence1 + sequence2;
 	}
@@ -187,8 +141,57 @@ public class StringParser extends AbstractDidelphisParser<String> {
 	public String replaceGroups(
 			@NonNull String input, @NonNull Match<String> match
 	) {
-		// TODO: ---------------------------------------------------------------
-		return null;
+		StringBuilder sb = new StringBuilder();
+		StringBuilder number = new StringBuilder();
+
+		boolean inGroup = false;
+
+		int cursor = 0;
+		int i = 0;
+		while (i < input.length()) {
+			char c = input.charAt(i);
+			// ASCII digits 0-9
+			if (0x30 <= c && c < 0x3A && inGroup) {
+				number.append(c);
+				i++;
+				cursor = i;
+			} else {
+				// parse and append group data
+				if (number.length() > 0) {
+					int groupNumber = Integer.parseInt(number.toString());
+					String group = match.group(groupNumber);
+					if (group != null) {
+						sb.append(group);
+					}
+					// clear buffer
+					number = new StringBuilder();
+				}
+
+				if (c == '$') {
+					inGroup = true;
+					if (cursor != i) {
+						sb.append(input, cursor, i);
+					}
+					i++;
+					cursor = i;
+				} else {
+					inGroup = false;
+					i++;
+				}
+			}
+		}
+
+		sb.append(input.substring(cursor));
+
+		// parse and append group data
+		if (number.length() > 0) {
+			int groupNumber = Integer.parseInt(number.toString());
+			String group = match.group(groupNumber);
+			if (group != null) {
+				sb.append(group);
+			}
+		}
+		return sb.toString();
 	}
 
 	private static final class LiteralArc implements Arc<String> {
@@ -234,6 +237,56 @@ public class StringParser extends AbstractDidelphisParser<String> {
 		@Override
 		public String toString() {
 			return strings.toString();
+		}
+	}
+
+	private static class DotArc implements Arc<String> {
+		@Override
+		public int match(String sequence, int index) {
+			int length = sequence.length();
+			return length > 0 && index < length ? index + 1 : -1;
+		}
+
+		@Override
+		public String toString() {
+			return ".";
+		}
+	}
+
+	private static class EpsilonArc implements Arc<String> {
+		@Override
+		public int match(String sequence, int index) {
+			return index;
+		}
+
+		@Override
+		public String toString() {
+			return "";
+		}
+	}
+
+	private static class WordStartArc implements Arc<String> {
+		@Override
+		public int match(String sequence, int index) {
+			return index == 0 ? 0 : -1;
+		}
+
+		@Override
+		public String toString() {
+			return "^";
+		}
+	}
+
+	private static class WordEndArc implements Arc<String> {
+		@Override
+		public int match(String sequence, int index) {
+			int length = sequence.length();
+			return index == length ? length : -1;
+		}
+
+		@Override
+		public String toString() {
+			return "$";
 		}
 	}
 }

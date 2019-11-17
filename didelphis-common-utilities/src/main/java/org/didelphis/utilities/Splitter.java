@@ -21,6 +21,7 @@ package org.didelphis.utilities;
 
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ import java.util.Map;
 
 /**
  * Utility class {@code Splitter}
- *
+ * <p>
  * General collection of String segmentation tools, including bracket matching
  * related tasks
  *
@@ -40,9 +41,9 @@ import java.util.Map;
  */
 @UtilityClass
 public class Splitter {
-	
+
 	/**
-	 * A simple utility method for splitting input at line breaks using the 
+	 * A simple utility method for splitting input at line breaks using the
 	 * regular expression {@code "\r?\n|\r")}
 	 *
 	 * @param string the input to be split; must not be null
@@ -54,7 +55,7 @@ public class Splitter {
 
 		List<String> lines = new ArrayList<>();
 		int index = 0;
-		int cursor = 0; // 
+		int cursor = 0; //
 		while (index < string.length()) {
 
 			if (string.startsWith("\r\n", index)) {
@@ -87,22 +88,21 @@ public class Splitter {
 	 *
 	 * @param string the string to be split
 	 * @param delimiters a map of parenthetical delimiters whose contents will
-	 * 		not be split
+	 *      not be split
 	 * @param special a list of special strings which will not be split. This
-	 * 		may be null; if it is, the specials are ignored, giving the same
+	 *      may be null; if it is, the specials are ignored, giving the same
 	 *
 	 * @return a new list which, if joined with no delimiter, would return the
-	 * 		original string; not {@code null}
+	 *      original string; not {@code null}
 	 */
 	@NonNull
 	public List<String> toList(
-			@NonNull String string, 
-			@NonNull Map<String, String> delimiters, 
+			@NonNull String string,
+			@NonNull Map<String, String> delimiters,
 			@Nullable Iterable<String> special
 	) {
 		List<String> strings = new ArrayList<>();
 		for (int i = 0; i < string.length(); i++) {
-
 			int index = parseParens(string, delimiters, special, i);
 			if (index >= 0) {
 				strings.add(string.substring(i, index));
@@ -136,7 +136,7 @@ public class Splitter {
 	 * <p>
 	 * {@code "a b (c d) e"}
 	 * <p>
-	 * will be split into four elements: 
+	 * will be split into four elements:
 	 * <ul>
 	 *     <li>{@code "a"}</li>
 	 *     <li>{@code "b"}</li>
@@ -145,19 +145,18 @@ public class Splitter {
 	 * </ul>
 	 *
 	 * @param string the input that is to be split; cannot be {@code null}
-	 *
 	 * @param delimiters
+	 *
 	 * @return a new list containing elements from the provided input; will not
-	 * 		be {@code null}
+	 *      be {@code null}
 	 */
 	@NonNull
 	public List<String> whitespace(
-			@NonNull String string, 
-			@NonNull Map<String, String> delimiters
+			@NonNull String string, @NonNull Map<String, String> delimiters
 	) {
 		List<String> list = new ArrayList<>();
 		int cursor = 0;
-		for (int i = 0; i < string.length();) {
+		for (int i = 0; i < string.length(); ) {
 			if (isWhitespace(string.charAt(i))) {
 				if (i != cursor) {
 					String chunk = string.substring(cursor, i);
@@ -170,14 +169,14 @@ public class Splitter {
 				i = (end > i) ? end : i + 1;
 			}
 		}
-		
+
 		if (cursor < string.length()) {
 			list.add(string.substring(cursor));
 		}
-		
+
 		return list;
 	}
-	
+
 	private boolean isWhitespace(char c) {
 		return " \t\n\f\r".indexOf(c) >= 0;
 	}
@@ -188,11 +187,12 @@ public class Splitter {
 	 *
 	 * @param string the {@code CharSequence} to be matched for
 	 * @param parens a map of start to end characters for parentheses
-	 * @param specials
+	 * @param specials special sequences to be treated as unitary, such as
+	 *      escaped characters, and character classes
 	 * @param index of the opening bracket.
 	 *
 	 * @return the index of the corresponding closing bracket, or -1 if one is
-	 * 		not found
+	 *      not found
 	 */
 	public int parseParens(
 			@NonNull String string,
@@ -200,7 +200,7 @@ public class Splitter {
 			@Nullable Iterable<String> specials,
 			int index
 	) {
-		for (String key: parens.keySet()) {
+		for (String key : parens.keySet()) {
 			if (string.startsWith(key, index)) {
 				return findClosingBracket(string, key, parens, specials, index);
 			}
@@ -211,11 +211,12 @@ public class Splitter {
 	/**
 	 * Determines the index of the closing bracket which corresponds to the
 	 * opening bracket in {@param string}, located at {@param startIndex}
-	 * 
+	 *
 	 * @param string the input to be examined for parentheses
 	 * @param left the opening parenthesis
 	 * @param delimiters a map of opening and closing delimiters
-	 * @param specials
+	 * @param specials special sequences to be treated as unitary, such as
+	 *      escaped characters, and character classes
 	 * @param startIndex the index in {@param string} where to start looking
 	 *
 	 * @return the index of the closing bracket, if it was found; otherwise, -1
@@ -230,10 +231,11 @@ public class Splitter {
 		int endIndex = startIndex;
 
 		Deque<String> stack = new LinkedList<>();
+		stack.add(left);
+
 		for (int i = startIndex + left.length(); i < string.length(); i++) {
 			String substring = string.substring(i);
 
-			
 			if (specials != null) {
 				boolean matched = false;
 				for (String special : specials) {
@@ -251,17 +253,20 @@ public class Splitter {
 			for (Map.Entry<String, String> entry : delimiters.entrySet()) {
 				String key = entry.getKey();
 				String val = entry.getValue();
-				
+
 				if (substring.startsWith(key)) {
 					stack.add(key);
 					i += key.length() - 1;
 					break;
 				} else if (substring.startsWith(val)) {
 					if (stack.isEmpty()) {
-						endIndex = i;
 						break;
 					} else if (stack.peekLast().equals(key)) {
+						endIndex = i;
 						stack.removeLast();
+						if (stack.isEmpty()) {
+							return endIndex + 1;
+						}
 						break;
 					}
 				}
@@ -271,10 +276,10 @@ public class Splitter {
 		 * because we always need the next index for a substring that includes
 		 * the closing bracket, or we need to continue operations after the
 		 * bracketed expression is closed.
-		 * 
+		 *
 		 * However, if the start and end indices are the same, then the matching
 		 * parenthesis has not been found, thus we return -1
 		 */
-		return startIndex == endIndex ? -1 : endIndex + 1;
+		return (startIndex == endIndex || !stack.isEmpty()) ? -1 : endIndex + 1;
 	}
 }

@@ -25,6 +25,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.UtilityClass;
+
 import org.didelphis.structures.maps.interfaces.TwoKeyMultiMap;
 import org.didelphis.structures.tuples.Triple;
 
@@ -37,7 +38,7 @@ import java.util.Set;
 
 /**
  * Utility Class {@code GraphUtils}
- *
+ * <p>
  * Provides functionality for generating Graph Modeling Language (GML) files
  * from a number of data types. This is especially useful for debugging classes
  * in the package {@link org.didelphis.language.automata}, and for developing
@@ -77,15 +78,15 @@ public class GraphUtils {
 		for (Node node : nodes) {
 			sb.append(node);
 		}
-		
+
 		for (Edge edge : edges) {
 			sb.append(edge);
 		}
-		
+
 		// Close and return
 		return sb.append(']').toString();
 	}
-	
+
 	@NonNull
 	private static <T> String buildGML(
 			@NonNull Set<String> nodes,
@@ -98,7 +99,7 @@ public class GraphUtils {
 		sb.append("\thierarchic\t1\n");
 		sb.append("\tlabel\t\"\"\n");
 		sb.append("\tdirected\t1\n");
-		
+
 		int index = 0;
 		Map<String, Integer> indices = new HashMap<>();
 		for (String node : nodes) {
@@ -119,7 +120,7 @@ public class GraphUtils {
 			T arc = edge.second();
 
 			String rawString = Objects.toString(arc);
-			
+
 			if (rawString.equals("\t")) {
 				rawString = "\\t";
 			} else if (rawString.equals("\n")) {
@@ -131,7 +132,7 @@ public class GraphUtils {
 			} else if (rawString.equals("\f")) {
 				rawString = "\\f";
 			}
-			
+
 			String string = rawString.replaceAll("\\s+\\(\\w+\\)", "");
 
 			sb.append("\tedge [\n");
@@ -163,16 +164,16 @@ public class GraphUtils {
 			return sb.toString();
 		}
 	}
-	
+
 	@Data
 	@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 	@RequiredArgsConstructor
 	private static final class Edge {
-		
+
 		int source;
 		int target;
 		String arc;
-		
+
 		@Override
 		public String toString() {
 			StringBuilder sb = new StringBuilder();

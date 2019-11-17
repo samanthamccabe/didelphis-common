@@ -22,6 +22,7 @@ package org.didelphis.language.phonetic.features;
 import org.didelphis.language.phonetic.PhoneticTestBase;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.segments.Segment;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,31 +30,27 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class StandardFeatureArrayTest extends PhoneticTestBase {
 
 	private static final Integer NULL = null;
 	private static FeatureModel<Integer> empty;
 	private static FeatureModel<Integer> model;
-	
+
 	private StandardFeatureArray<Integer> array;
-	
+
 	@BeforeAll
 	static void initModel() {
 		model = loader.getFeatureModel();
 		empty = IntegerFeature.INSTANCE.emptyLoader().getFeatureModel();
 	}
-	
+
 	@BeforeEach
 	void initArray() {
 		array = new StandardFeatureArray<>(1, model);
 	}
-	
+
 	@Test
 	void testConstructor() {
 
@@ -72,7 +69,7 @@ class StandardFeatureArrayTest extends PhoneticTestBase {
 		);
 		assertEquals(features, array);
 	}
-	
+
 	@Test
 	void size() {
 		assertEquals(20, array.size());
@@ -82,7 +79,7 @@ class StandardFeatureArrayTest extends PhoneticTestBase {
 	void set() {
 		array.set(0, -1);
 		array.set(4, -2);
-		
+
 		assertEquals(-1, (int) array.get(0));
 		assertEquals(-2, (int) array.get(4));
 	}
@@ -103,7 +100,7 @@ class StandardFeatureArrayTest extends PhoneticTestBase {
 		FeatureArray<Integer> mask = new StandardFeatureArray<>(NULL, model);
 		mask.set(10, 9);
 		array.alter(mask);
-		
+
 		assertEquals(9, (int) array.get(10));
 		assertEquals(1, (int) array.get(5));
 	}
@@ -131,7 +128,7 @@ class StandardFeatureArrayTest extends PhoneticTestBase {
 				() -> array.compareTo(new StandardFeatureArray<>(0, empty))
 		);
 	}
-	
+
 	@Test
 	void contains() {
 		assertFalse(array.contains(-1));
@@ -143,25 +140,25 @@ class StandardFeatureArrayTest extends PhoneticTestBase {
 		FeatureArray<Integer> array1 = new StandardFeatureArray<>(array);
 		FeatureArray<Integer> array2 = new StandardFeatureArray<>(array);
 		FeatureArray<Integer> array3 = new StandardFeatureArray<>(array);
-		
+
 		array1.set(0, -1);
 		array2.set(0, 3);
-		
+
 		assertEquals(1, array.compareTo(array1));
 		assertEquals(0, array.compareTo(array3));
 		assertEquals(-1, array.compareTo(array2));
 	}
-	
+
 	@Test
 	void compareToNulls() {
 		FeatureArray<Integer> array1 = new StandardFeatureArray<>(0, model);
 		FeatureArray<Integer> array2 = new StandardFeatureArray<>(NULL, model);
 		FeatureArray<Integer> array3 = new StandardFeatureArray<>(array);
-		
+
 		array1.set(3, NULL);
 		array1.set(5, NULL);
 		array1.set(7, NULL);
-		
+
 		assertEquals(1, array.compareTo(array1));
 		assertEquals(1, array.compareTo(array2));
 		assertEquals(1, array1.compareTo(array2));
@@ -175,7 +172,7 @@ class StandardFeatureArrayTest extends PhoneticTestBase {
 		assertEquals(array, new StandardFeatureArray<>(1, model));
 		assertNotEquals(array, new StandardFeatureArray<>(-1, model));
 	}
-	
+
 	@Test
 	void iterator() {
 		assertTrue(array.iterator().hasNext());

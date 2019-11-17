@@ -22,13 +22,14 @@ package org.didelphis.language.phonetic.model;
 import org.didelphis.io.ClassPathFileHandler;
 import org.didelphis.language.phonetic.PhoneticTestBase;
 import org.didelphis.language.phonetic.features.IntegerFeature;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class FeatureSpecificationTest extends PhoneticTestBase {
-	
+
 	private static FeatureSpecification specification;
 
 	@BeforeEach

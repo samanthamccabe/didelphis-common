@@ -22,9 +22,11 @@ package org.didelphis.structures.maps;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
+
 import org.didelphis.structures.contracts.SymmetricallyAccessible;
 import org.didelphis.structures.tuples.Triple;
 import org.didelphis.structures.tuples.Tuple;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -49,8 +51,10 @@ public class SymmetricalTwoKeyMap<K, V> extends GeneralTwoKeyMap<K, K, V>
 	/**
 	 * Standard non-copying constructor which uses the provided delegate map and
 	 * creates new entries using the provided supplier.
+	 *
 	 * @param delegate a delegate map to be used by the new multimap
-	 * @param mapSupplier a {@link Supplier} to provide the inner map instances
+	 * @param mapSupplier a {@link Supplier} to provide the inner map
+	 *      instances
 	 */
 	public SymmetricalTwoKeyMap(
 			@NonNull Map<K, Map<K, V>> delegate,

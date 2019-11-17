@@ -23,32 +23,34 @@ package org.didelphis.structures;
  * This interface defines a general contract for a set of methods used in many
  * classes. It can be used to indicate some behavior found in
  * {@link java.util.Collection} but is more general.
- * 
+ *
  * Specifically, these are objects which can be said to have a size, and be
  * emptied of contents.
- * 
+ *
  * Implementing classes are very likely to be {@link Iterable} but
- * 
  */
 public interface Structure {
-	
+
 	/**
 	 * Returns the size of the structure, based on the total number of values or
 	 * unique key pairs
+	 *
 	 * @return the number of values in this structure
 	 */
 	int size();
 
 	/**
 	 * Tests if the structure is empty.
+	 *
 	 * @return true iff {@code size > 0}
 	 */
 	boolean isEmpty();
 
 	/**
 	 * Deletes all contents from the structure.
+	 *
 	 * @return true iff contents were deleted; if the structure was already
-	 * empty, this operation will return false.
+	 *      empty, this operation will return false.
 	 */
 	boolean clear();
 }

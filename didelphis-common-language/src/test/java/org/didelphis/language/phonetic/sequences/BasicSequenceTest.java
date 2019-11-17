@@ -24,26 +24,23 @@ import org.didelphis.language.phonetic.PhoneticTestBase;
 import org.didelphis.language.phonetic.SequenceFactory;
 import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.segments.Segment;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class BasicSequenceTest extends PhoneticTestBase {
-	
+
 	@Test
 	void testEquals() {
 		Sequence<Integer> sequence1 = factory.toSequence("z");
 		Sequence<Integer> sequence2 = factory.toSequence("y");
 		Sequence<Integer> sequence3 = factory.toSequence("y");
-		
+
 		assertEquals(sequence1, sequence1);
 		assertEquals(sequence3, sequence2);
 		assertNotEquals(sequence2, sequence1);
@@ -79,7 +76,7 @@ class BasicSequenceTest extends PhoneticTestBase {
 		assertEquals(-1, sequence4.compareTo(sequence2));
 		assertEquals(-1, sequence4.compareTo(sequence3));
 	}
-	
+
 	@Test
 	void testMatches01() {
 		Sequence<Integer> sequence = factory.toSequence("an");
@@ -145,24 +142,24 @@ class BasicSequenceTest extends PhoneticTestBase {
 		assertMatches(sequence, emptyFactory.toSequence("an"));
 		assertNotMatches(sequence, emptyFactory.toSequence("aa"));
 	}
-	
+
 	@Test
 	void testReverse() {
 		Sequence<Integer> sequence1 = factory.toSequence("foo");
 		Sequence<Integer> sequence2 = factory.toSequence("oof");
 		Sequence<Integer> sequence3 = factory.toSequence("nan");
-		
+
 		assertEquals(sequence1, sequence2.getReverseSequence());
 		assertEquals(sequence2, sequence1.getReverseSequence());
 		assertEquals(sequence3, sequence3.getReverseSequence());
 	}
-	
+
 	@Test
 	void testDelegate() {
 		List<Segment<Integer>> list = new ArrayList<>();
 		Sequence<Integer> sequence1 = factory.toSequence("foo");
 		BasicSequence<Integer> sequence2 = new BasicSequence<>(sequence1);
-		
+
 		for (Segment<Integer> segment : sequence1) {
 			list.add(segment);
 		}
@@ -215,7 +212,7 @@ class BasicSequenceTest extends PhoneticTestBase {
 		assertTrue(sequence1.contains(sequence2));
 		assertFalse(sequence1.contains(sequence3));
 	}
-	
+
 	@Test
 	void testContainsWrongModel() {
 
@@ -279,7 +276,7 @@ class BasicSequenceTest extends PhoneticTestBase {
 
 		assertFalse(sequence.startsWith(segment));
 	}
-	
+
 	@Test
 	void testIndexOfSequenceWrongModel() {
 
@@ -290,7 +287,7 @@ class BasicSequenceTest extends PhoneticTestBase {
 
 		Sequence<Integer> sequence1 = factory.toSequence("Sequence");
 		Sequence<Integer> sequence2 = factory1.toSequence("ence");
-		
+
 		assertEquals(-1, sequence1.indexOf(sequence2));
 	}
 
@@ -411,7 +408,7 @@ class BasicSequenceTest extends PhoneticTestBase {
 
 	@Test
 	void testIndexOfEmpty() {
-		
+
 		Sequence<Integer> sequence = factory.toSequence("subverterunt");
 
 		assertEquals(-1,  sequence.indexOf(factory.toSequence("s"), 2));
@@ -593,7 +590,7 @@ class BasicSequenceTest extends PhoneticTestBase {
 		Sequence<Integer> testSequence = factory.toSequence(string);
 		assertTrue(sequence.startsWith(testSequence));
 	}
-	
+
 	private static <T> void assertMatches(Sequence<T> exp, Sequence<T> act) {
 		boolean matches = exp.matches(act);
 		assertTrue(matches, "\'" + exp + "\' does not match " + act);

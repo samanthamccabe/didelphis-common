@@ -23,12 +23,14 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.Delegate;
+
 import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.contracts.Delegating;
 import org.didelphis.structures.maps.interfaces.TwoKeyMap;
 import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Triple;
 import org.didelphis.structures.tuples.Tuple;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -41,6 +43,8 @@ import java.util.function.Supplier;
 
 /**
  * Class {@code GeneralTwoKeyMap}
+ *
+ * A general implementation of the {@code TwoKeyMap} interface.
  *
  * @param <T> the first key type
  * @param <U> the second key type
@@ -68,8 +72,10 @@ public class GeneralTwoKeyMap<T, U, V>
 	/**
 	 * Standard non-copying constructor which uses the provided delegate map and
 	 * creates new entries using the provided supplier.
-	 * @param delegate a delegate map to be used by the new multimap
-	 * @param mapSupplier a {@link Supplier} to provide the inner map instances
+	 *
+	 * @param delegate a delegate map to be used by the new multi-map
+	 * @param mapSupplier a {@link Supplier} to provide the inner map
+	 *      instances
 	 */
 	public GeneralTwoKeyMap(
 			@NonNull Map<T, Map<U, V>> delegate,
@@ -83,7 +89,8 @@ public class GeneralTwoKeyMap<T, U, V>
 	 * Copy-constructor; creates a deep copy of the provided multi-map using
 	 * the provided suppliers
 	 *
-	 * @param tripleIterable a {@link TwoKeyMap} instance whose data is to be copied
+	 * @param tripleIterable a {@link TwoKeyMap} instance whose data is to be
+	 *      copied
 	 * @param delegate a new (typically empty) delegate map
 	 * @param mapSupplier a {@link Supplier} to provide the inner collections
 	 */
@@ -108,7 +115,7 @@ public class GeneralTwoKeyMap<T, U, V>
 			}
 		}
 	}
-	
+
 	@Override
 	public @Nullable V get(@Nullable T k1, @Nullable U k2) {
 		Map<U, V> map = delegate.get(k1);
@@ -172,7 +179,7 @@ public class GeneralTwoKeyMap<T, U, V>
 	protected Supplier<? extends Map<U, V>> getMapSupplier() {
 		return mapSupplier;
 	}
-	
+
 	// A weird but necessary way of ensuring @Delegate works correctly; the
 	// delegated .size() call from Map will only return the size of the outer
 	// Map, but the designed behavior for a two-key map is that the size is the

@@ -25,26 +25,25 @@ import java.util.List;
 
 /**
  * Interface {@code Expression}
- *
- *
- * 	Expression creates and stores a compact representation of a regular
- * 	expression string and is used as a preprocessor for the creation of
- * 	state-automata for regex matching
+ * <p>
+ * Expression creates and stores a compact representation of a regular
+ * expression string and is used as a preprocessor for the creation of
+ * state-automata for regex matching
  */
 public interface Expression {
 
 	boolean hasChildren();
 
 	boolean isNegative();
-	
+
 	boolean isParallel();
 
 	boolean isCapturing();
-	
+
 	boolean isTerminal();
-	
+
 	@NonNull String getId();
-	
+
 	@NonNull String getTerminal();
 
 	@NonNull List<Expression> getChildren();
@@ -54,11 +53,11 @@ public interface Expression {
 	@NonNull Expression reverse();
 
 	@NonNull Expression withId(String id);
-	
+
 	@NonNull Expression withNegative(boolean isNegative);
-	
+
 	@NonNull Expression withQuantifier(String newQuantifier);
-	
+
 	@NonNull default Expression withTerminal(String newTerminal) {
 		throw new UnsupportedOperationException(
 				"Cannot add terminal " + newTerminal +
@@ -86,7 +85,7 @@ public interface Expression {
 	 * </ul>
 	 *
 	 * @param expression any {@code Expression} whose ID and whose children's
-	 * 		IDs are to be rewritten
+	 *      IDs are to be rewritten
 	 * @param root the ID that will be assigned to {@param expression}
 	 *
 	 * @return the new rewritten expression hierarchy

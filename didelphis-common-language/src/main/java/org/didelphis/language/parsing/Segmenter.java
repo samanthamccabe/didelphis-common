@@ -44,8 +44,8 @@ public interface Segmenter {
 	 * @param string string to be segmented
 	 * @param special reserved characters to be treated as unitary
 	 * @param delimiters a map of opening and closing delimiters which will
-	 * 		not be split; that is, everything between the matching start and end
-	 * 		delimiters will be preserved intact
+	 *      not be split; that is, everything between the matching start and end
+	 *      delimiters will be preserved intact
 	 *
 	 * @return a list of strings; not {@code null}
 	 */

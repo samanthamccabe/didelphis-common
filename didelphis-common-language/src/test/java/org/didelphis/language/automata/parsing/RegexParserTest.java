@@ -20,17 +20,18 @@
 package org.didelphis.language.automata.parsing;
 
 import org.didelphis.language.automata.expressions.Expression;
+import org.didelphis.language.automata.matching.BasicMatch;
 import org.didelphis.language.parsing.ParseDirection;
 import org.didelphis.language.parsing.ParseException;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Class {@code RegexParserTest}
@@ -41,80 +42,120 @@ class RegexParserTest {
 
 	private static final RegexParser PARSER = new RegexParser();
 
-	@Test
-	void testWordStartOnly() {
-		assertThrowsParse("^");
+	@Nested
+	@DisplayName("Ensure exceptions are thrown under appropriate conditions")
+	class TestParseErrors{
+
+		@Test
+		void testWordStartOnly() {
+			assertThrowsParse("^");
+		}
+
+		@Test
+		void testWordEndOnly() {
+			assertThrowsParse("$");
+		}
+
+		@Test
+		void testIllegalBoundary01() {
+			assertThrowsParse("a$?");
+		}
+
+		@Test
+		void testIllegalBoundary02() {
+			assertThrowsParse("a$+");
+		}
+
+		@Test
+		void testIllegalBoundary03() {
+			assertThrowsParse("a$*");
+		}
+
+		@Test
+		void testIllegalBoundary04() {
+			assertThrowsParse("^*a");
+		}
+
+		@Test
+		void testStarQuestionMark() {
+			assertThrowsParse("a*?");
+		}
+
+		@Test
+		void testPlusQuestionMark() {
+			assertThrowsParse("a+?");
+		}
+
+		@Test
+		void testPlusStarMark() {
+			assertThrowsParse("a+*");
+		}
+
+		@Test
+		void testUnmatchedParen() {
+			assertThrowsParse("(a");
+		}
+
+		@Test
+		void testUnmatchedSquare() {
+			assertThrowsParse("[a");
+		}
+
+		@Test
+		@SuppressWarnings ("ConstantConditions")
+		void testNullExpression() {
+			assertThrows(
+					NullPointerException.class,
+					() -> PARSER.parseExpression(null)
+			);
+			assertThrows(
+					NullPointerException.class,
+					() -> PARSER.parseExpression(null, ParseDirection.BACKWARD)
+			);
+		}
+
+		private void assertThrowsParse(String e) {
+			assertThrows(ParseException.class, () -> PARSER.parseExpression(e));
+		}
 	}
 
 	@Test
-	void testWordEndOnly() {
-		assertThrowsParse("$");
-	}
-	
-	@Test
-	void testIllegalBoundary01() {
-		assertThrowsParse("a$?");
+	void testDanglingBracket() {
+		Expression expression = PARSER.parseExpression("\\[([^]]+)]$");
+		assertTrue(expression.hasChildren());
+		assertEquals(4, expression.getChildren().size());
 	}
 
 	@Test
-	void testIllegalBoundary02() {
-		assertThrowsParse("a$+");
+	void testReplaceGroups() {
+		BasicMatch<String> match = new BasicMatch<>("ao", 0, 2);
+		match.addGroup(0, 2, "ao");
+		match.addGroup(0, 1, "a");
+		match.addGroup(1, 2, "o");
+		String replaced = PARSER.replaceGroups("$1x$2", match);
+		assertEquals("axo", replaced);
 	}
 
-	@Test
-	void testIllegalBoundary03() {
-		assertThrowsParse("a$*");
-	}
-
-	@Test
-	void testIllegalBoundary04() {
-		assertThrowsParse("^*a");
-	}
-
-	@Test
-	void testStarQuestionMark() {
-		assertThrowsParse("a*?");
-	}
-
-	@Test
-	void testPlusQuestionMark() {
-		assertThrowsParse("a+?");
-	}
-
-	@Test
-	void testPlusStarMark() {
-		assertThrowsParse("a+*");
-	}
-
-	@Test
-	void testUnmatchedParen() {
-		assertThrowsParse("(a");
-	}
-
-	@Test
-	void testUnmatchedSquare() {
-		assertThrowsParse("[a");
-	}
-	
 	@Test
 	void testGetQuantifiers() {
 		Set<String> set = PARSER.supportedQuantifiers();
-		
+
 		assertTrue(set.contains("?"));
 		assertTrue(set.contains("*"));
 		assertTrue(set.contains("+"));
 		assertFalse(set.contains("!"));
-		
+
+		//noinspection ConstantConditions
 		assertThrows(UnsupportedOperationException.class, () -> set.add(""));
 	}
-	
+
 	@Test
 	void testParse() {
-		
+
 		String string = "abc";
 
 		Expression expression = PARSER.parseExpression(string);
-		
+
 		assertTrue(expression.hasChildren());
 		assertFalse(expression.isParallel());
 		assertFalse(expression.isNegative());
@@ -167,7 +208,7 @@ class RegexParserTest {
 		assertTrue(expression.isCapturing());
 		assertEquals(3, expression.getChildren().size());
 	}
-	
+
 	@Test
 	void testParseNonCapturing() {
 
@@ -211,7 +252,7 @@ class RegexParserTest {
 		assertTrue(expression.hasChildren());
 		assertEquals(2, expression.getChildren().size());
 	}
-	
+
 	@Test
 	void testNestedGroups02() {
 		String string = "^(a(b)?)+$";
@@ -261,18 +302,10 @@ class RegexParserTest {
 		assertEquals(ex1, rev2);
 		assertEquals(rev1, ex2);
 	}
-	
+
 	@Test
 	void testParseEscapes() {
 		Expression expression = PARSER.parseExpression("\\[([^\\]]*)\\]");
-		
 		assertEquals(3, expression.getChildren().size());
-	}
-	
-	private static void assertThrowsParse(String expression) {
-		assertThrows(
-				ParseException.class,
-				() -> PARSER.parseExpression(expression)
-		);
 	}
 }

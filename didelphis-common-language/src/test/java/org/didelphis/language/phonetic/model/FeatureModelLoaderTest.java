@@ -27,28 +27,25 @@ import org.didelphis.language.phonetic.features.BinaryFeature;
 import org.didelphis.language.phonetic.features.DoubleFeature;
 import org.didelphis.language.phonetic.features.FeatureType;
 import org.didelphis.language.phonetic.features.IntegerFeature;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class FeatureModelLoaderTest extends PhoneticTestBase {
 
-	private static final FeatureModelLoader<Integer> LOADER 
+	private static final FeatureModelLoader<Integer> LOADER
 			= IntegerFeature.INSTANCE.emptyLoader();
 
 	@Test
 	void testConstructorFeatureType() {
-		FeatureModelLoader<?> loader1 
+		FeatureModelLoader<?> loader1
 				= new FeatureModelLoader<>(IntegerFeature.INSTANCE);
-		FeatureModelLoader<?> loader2 
+		FeatureModelLoader<?> loader2
 				= new FeatureModelLoader<>(BinaryFeature.INSTANCE);
 
 		assertEquals(LOADER, loader1);
@@ -124,7 +121,7 @@ class FeatureModelLoaderTest extends PhoneticTestBase {
 				"bad_link"
 		));
 	}
-	
+
 	@Test
 	void testBadImport() {
 		List<String> lines = Collections.singletonList("import 'bad_link'");

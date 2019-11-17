@@ -20,6 +20,7 @@
 package org.didelphis.language.phonetic.features;
 
 import lombok.NonNull;
+
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureSpecification;
 import org.didelphis.utilities.Templates;
@@ -109,12 +110,14 @@ public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
 	}
 
 	@NonNull
-	private RuntimeException buildException(@NonNull FeatureArray<T> o) {
+	private IllegalArgumentException buildException(
+			@NonNull FeatureArray<T> featureArray
+	) {
 		String message = Templates.create()
 				.add("Attempting to compare objects with different specified")
 				.add("feature sizes. This: {} vs {}")
-				.with(size(), o.size())
-				.data(this, o)
+				.with(size(), featureArray.size())
+				.data(this, featureArray)
 				.build();
 		return new IllegalArgumentException(message);
 	}

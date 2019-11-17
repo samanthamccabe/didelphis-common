@@ -24,6 +24,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;
 import lombok.experimental.FieldDefaults;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -37,12 +38,12 @@ import java.util.List;
 @EqualsAndHashCode
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class BasicMatch<S> implements Match<S> {
-	
+
 	int start;
 	int end;
-	
+
 	S input;
-	
+
 	List<MatchGroup<S>> groups;
 
 	public static <S> BasicMatch<S> empty(int size) {
@@ -52,19 +53,19 @@ public class BasicMatch<S> implements Match<S> {
 		}
 		return match;
 	}
-	
+
 	public BasicMatch(@Nullable S input, int start, int end) {
 		this.start = start;
 		this.end = end;
 		this.input = input;
-		
+
 		groups = new ArrayList<>();
 	}
-	
+
 	public void addGroup(int start, int end, @Nullable S input) {
 		groups.add(new MatchGroup<>(start, end , input));
 	}
-	
+
 	@Override
 	public int start() {
 		return start;
@@ -94,7 +95,7 @@ public class BasicMatch<S> implements Match<S> {
 	public int groupCount() {
 		return groups.size();
 	}
-	
+
 	@Value
 	private static final class MatchGroup<T> {
 		int start;

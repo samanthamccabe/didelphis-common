@@ -20,15 +20,14 @@
 package org.didelphis.language.phonetic.sequences;
 
 import lombok.NonNull;
+
 import org.didelphis.language.phonetic.ModelBearer;
 import org.didelphis.language.phonetic.segments.Segment;
 
 import java.util.List;
 
 public interface Sequence<T>
-	  extends ModelBearer<T>,
-	          List<Segment<T>>,
-	          Comparable<Sequence<T>> {
+		extends ModelBearer<T>, List<Segment<T>>, Comparable<Sequence<T>> {
 
 	void add(@NonNull Sequence<T> sequence);
 
@@ -38,8 +37,10 @@ public interface Sequence<T>
 
 	int indexOf(@NonNull Sequence<T> target, int start);
 
-	@NonNull
-	Sequence<T> replaceAll(@NonNull Sequence<T> source, @NonNull Sequence<T> target);
+	@NonNull Sequence<T> replaceAll(
+			@NonNull Sequence<T> source,
+			@NonNull Sequence<T> target
+	);
 
 	boolean contains(@NonNull Sequence<T> sequence);
 
@@ -47,20 +48,15 @@ public interface Sequence<T>
 
 	boolean startsWith(@NonNull Sequence<T> sequence);
 
-	@NonNull
-	Sequence<T> remove(int start, int end);
+	@NonNull Sequence<T> remove(int start, int end);
 
 	boolean matches(@NonNull Sequence<T> sequence);
 
-	@NonNull
-	Sequence<T> subsequence(int from, int to);
+	@NonNull Sequence<T> subsequence(int from, int to);
 
-	@NonNull
-	Sequence<T> subsequence(int from);
+	@NonNull Sequence<T> subsequence(int from);
 
-	@NonNull
-	List<Integer> indicesOf(@NonNull Sequence<T> sequence);
+	@NonNull List<Integer> indicesOf(@NonNull Sequence<T> sequence);
 
-	@NonNull
-	Sequence<T> getReverseSequence();
+	@NonNull Sequence<T> getReverseSequence();
 }

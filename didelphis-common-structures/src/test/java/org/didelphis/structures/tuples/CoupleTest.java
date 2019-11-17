@@ -19,57 +19,119 @@
 
 package org.didelphis.structures.tuples;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 
+@DisplayName("Tests Couples with a variety of parameter types")
 class CoupleTest {
 
-	private static Couple<String, String> tuple;
+	@Nested
+	@DisplayName("Tests on a Couple with Integer and String elements")
+	class IntegerStringCoupleTest {
 
-	@BeforeAll
-	static void init() {
-		tuple = new Couple<>("x", "Y");
+		private final Couple<Integer, String> tuple = new Couple<>(7, "Z");
+
+		@Test
+		void getLeft() {
+			assertEquals(7, tuple.getLeft());
+		}
+
+		@Test
+		void getRight() {
+			assertEquals("Z", tuple.getRight());
+		}
+
+		@Test
+		void testHashCode() {
+			Tuple<Integer, String> tuple1 = new Couple<>(tuple);
+			Tuple<Integer, String> tuple2 = new Couple<>(7, "!");
+
+			assertEquals(tuple.hashCode(), tuple1.hashCode());
+			assertNotEquals(tuple2.hashCode(), tuple.hashCode());
+		}
+
+		@Test
+		void testEquals() {
+			Tuple<Integer, String> tuple1 = new Couple<>(tuple);
+			Tuple<Integer, String> tuple2 = new Couple<>(7, "!");
+
+			assertEquals(tuple, tuple1);
+			assertNotEquals(tuple2, tuple);
+		}
+
+		@Test
+		void testToString() {
+			Tuple<Integer, String> tuple1 = new Couple<>(tuple);
+			Tuple<Integer, String> tuple2 = new Couple<>(7, "!");
+
+			assertEquals(tuple.toString(), tuple1.toString());
+			assertNotEquals(tuple2.toString(), tuple.toString());
+		}
+
+		@Test
+		void testContains() {
+			assertTrue(tuple.contains(7));
+			assertTrue(tuple.contains("Z"));
+			assertFalse(tuple.contains(1));
+			assertFalse(tuple.contains("z"));
+			assertFalse(tuple.contains("7"));
+		}
 	}
 
-	@Test
-	void getLeft() {
-		assertEquals("x", tuple.getLeft());
-	}
+	@Nested
+	@DisplayName("Tests on a Couple with only String elements")
+	class StringCoupleTest {
 
-	@Test
-	void getRight() {
-		assertEquals("Y", tuple.getRight());
-	}
+		private final Couple<String, String> tuple = new Couple<>("x", "Y");
 
-	@Test
-	void testHashCode() {
-		Tuple<String,String> tuple1 = new Couple<>(tuple);
-		Tuple<String,String> tuple2 = new Couple<>("y", "Y");
+		@Test
+		void getLeft() {
+			assertEquals("x", tuple.getLeft());
+		}
 
-		assertEquals(tuple.hashCode(), tuple1.hashCode());
-		assertNotEquals(tuple2.hashCode(), tuple.hashCode());
-	}
+		@Test
+		void getRight() {
+			assertEquals("Y", tuple.getRight());
+		}
 
-	@Test
-	void testEquals() {
-		Tuple<String,String> tuple1 = new Couple<>(tuple);
-		Tuple<String,String> tuple2 = new Couple<>("y", "Y");
+		@Test
+		void testHashCode() {
+			Tuple<String, String> tuple1 = new Couple<>(tuple);
+			Tuple<String, String> tuple2 = new Couple<>("y", "Y");
 
-		assertEquals(tuple, tuple1);
-		assertNotEquals(tuple2, tuple);
-	}
+			assertEquals(tuple.hashCode(), tuple1.hashCode());
+			assertNotEquals(tuple2.hashCode(), tuple.hashCode());
+		}
 
-	@Test
-	void testToString() {
-		Tuple<String,String> tuple1 = new Couple<>(tuple);
-		Tuple<String,String> tuple2 = new Couple<>("y", "Y");
+		@Test
+		void testEquals() {
+			Tuple<String, String> tuple1 = new Couple<>(tuple);
+			Tuple<String, String> tuple2 = new Couple<>("y", "Y");
 
-		assertEquals(tuple.toString(), tuple1.toString());
-		assertNotEquals(tuple2.toString(), tuple.toString());
+			assertEquals(tuple, tuple1);
+			assertNotEquals(tuple2, tuple);
+		}
+
+		@Test
+		void testToString() {
+			Tuple<String, String> tuple1 = new Couple<>(tuple);
+			Tuple<String, String> tuple2 = new Couple<>("y", "Y");
+
+			assertEquals(tuple.toString(), tuple1.toString());
+			assertNotEquals(tuple2.toString(), tuple.toString());
+		}
+
+		@Test
+		void testContains() {
+			assertTrue(tuple.contains("x"));
+			assertTrue(tuple.contains("Y"));
+			assertFalse(tuple.contains("y"));
+			assertFalse(tuple.contains("X"));
+		}
 	}
 
 }

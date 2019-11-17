@@ -20,6 +20,7 @@
 package org.didelphis.language.phonetic.segments;
 
 import lombok.NonNull;
+
 import org.didelphis.language.phonetic.ModelBearer;
 import org.didelphis.language.phonetic.features.FeatureArray;
 
@@ -53,10 +54,10 @@ public interface Segment<T> extends ModelBearer<T>, Comparable<Segment<T>> {
 	 *
 	 * @param segment another segment to compare to this one
 	 * @return true if all specified (non NaN) features in either segment are
-	 * 		equal
+	 *      equal
 	 */
 	default boolean matches(@NonNull Segment<T> segment) {
-		if (getFeatureModel().getSpecification().size() == 0 && 
+		if (getFeatureModel().getSpecification().size() == 0 &&
 				segment.getFeatureModel().getSpecification().size() == 0) {
 			return getSymbol().equals(segment.getSymbol());
 		}
@@ -81,14 +82,14 @@ public interface Segment<T> extends ModelBearer<T>, Comparable<Segment<T>> {
 	FeatureArray<T> getFeatures();
 
 	/**
-	 * Indicates whether a segment is properly defined it's {@link 
+	 * Indicates whether a segment is properly defined it's {@link
 	 * org.didelphis.language.phonetic.model.FeatureModel} of origin and has
 	 * an associated feature structure, or if it is defined only in terms of its
 	 * symbol.
 	 * @return
 	 */
 	boolean isDefinedInModel();
-	
+
 	@Override
 	default int compareTo(@NonNull Segment<T> o) {
 		if (equals(o)) {

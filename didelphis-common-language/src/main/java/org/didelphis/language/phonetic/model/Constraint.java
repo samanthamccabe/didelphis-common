@@ -24,12 +24,13 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
+
 import org.didelphis.language.phonetic.ModelBearer;
 import org.didelphis.language.phonetic.features.FeatureArray;
 
 /**
  * Class {@code Constraint}
- * 
+ *
  * @since 0.1.0
  */
 @EqualsAndHashCode(exclude = "featureModel")
@@ -52,7 +53,7 @@ public class Constraint<T> implements ModelBearer<T> {
 		target = constraint.target;
 		featureModel = constraint.featureModel;
 	}
-	
+
 	@Override
 	public String toString() {
 		return source + " -> " + target;

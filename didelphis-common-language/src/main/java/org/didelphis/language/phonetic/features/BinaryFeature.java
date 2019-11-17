@@ -20,14 +20,16 @@
 package org.didelphis.language.phonetic.features;
 
 import lombok.NonNull;
+
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-import static java.text.Normalizer.Form;
-import static java.text.Normalizer.normalize;
+import static java.text.Normalizer.*;
 
 /**
  * Enum {@code BinaryFeatureType}
@@ -44,7 +46,7 @@ public enum BinaryFeature implements FeatureType<Boolean> {
 	public FeatureModelLoader<Boolean> emptyLoader() {
 		return new FeatureModelLoader<>(INSTANCE);
 	}
-	
+
 	@NonNull
 	@Override
 	public Boolean parseValue(@NonNull String string) {
@@ -58,8 +60,8 @@ public enum BinaryFeature implements FeatureType<Boolean> {
 		if (normalized.equals("+") || normalized.equals("1")) {
 			return Boolean.TRUE;
 		}
-		throw new NumberFormatException("Unrecognized boolean representation "
-				+ string);
+		throw new NumberFormatException(
+				"Unrecognized boolean representation " + string);
 	}
 
 	@NonNull
@@ -69,30 +71,31 @@ public enum BinaryFeature implements FeatureType<Boolean> {
 	}
 
 	@Override
-	public int compare(Boolean v1, Boolean v2) {
-		return Boolean.compare(validate(v1), validate(v2));
+	public int compare(@Nullable Boolean v1, @Nullable Boolean v2) {
+		return Boolean.compare(isValid(v1), isValid(v2));
 	}
 
 	@Override
-	public double difference(Boolean v1, Boolean v2) {
-		return validate(v1) ^ validate(v2) ? 1.0 : 0.0;
+	public double difference(@Nullable Boolean v1, @Nullable Boolean v2) {
+		return isValid(v1) ^ isValid(v2) ? 1.0 : 0.0;
 	}
 
 	@Override
-	public int intValue(Boolean value) {
-		return (validate(value) && value) ? 1 : 0;
+	public int intValue(@Nullable Boolean value) {
+		return (isValid(value) && value) ? 1 : 0;
 	}
 
 	@Override
-	public double doubleValue(Boolean value) {
+	public double doubleValue(@Nullable Boolean value) {
 		return intValue(value);
 	}
-	
+
 	@Override
 	public String toString() {
 		return "BinaryFeature";
 	}
-	private boolean validate(Boolean v) {
-		return isDefined(v) ? v : false;
+
+	private boolean isValid(@Nullable Boolean v) {
+		return v != null && isDefined(v) ? v : false;
 	}
 }

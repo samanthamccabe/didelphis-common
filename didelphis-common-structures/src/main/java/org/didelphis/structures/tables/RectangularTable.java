@@ -22,8 +22,11 @@ package org.didelphis.structures.tables;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
+
 import org.didelphis.structures.contracts.Delegating;
 import org.didelphis.utilities.Templates;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,7 +69,7 @@ public class RectangularTable<E> extends AbstractTable<E>
 		}
 	}
 
-	public RectangularTable(E defaultValue, int row, int col) {
+	public RectangularTable(@Nullable E defaultValue, int row, int col) {
 		this(row, col);
 		for (int i = 0; i < row * col; i++) {
 			array.add(defaultValue);
@@ -90,7 +93,7 @@ public class RectangularTable<E> extends AbstractTable<E>
 	 * @param col the index for column
 	 *
 	 * @return the object stored at these coordinates
-	 * 
+	 *
 	 * @throws IndexOutOfBoundsException if either row or column is negative
 	 */
 	@NonNull
@@ -107,9 +110,9 @@ public class RectangularTable<E> extends AbstractTable<E>
 	 * @param row the index for row
 	 * @param col the index for column
 	 * @param element the object to place at the specified coordinates
-	 * 
+	 *
 	 * @return the previous value
-	 * 
+	 *
 	 * @throws IndexOutOfBoundsException if either row or column is negative
 	 */
 	@NonNull
@@ -189,22 +192,6 @@ public class RectangularTable<E> extends AbstractTable<E>
 	@Override
 	public Iterator<Collection<E>> columnIterator() {
 		return new ColumnIterator<>(array, rows(), columns());
-	}
-
-	@NonNull
-	@Deprecated
-	@Override
-	public String formattedTable() {
-		StringBuilder sb = new StringBuilder(array.size() * 8);
-		int i = 1;
-		for (E e : array) {
-			if (e instanceof Double) {
-				sb.append(DECIMAL_FORMAT.format(e));
-				sb.append((i % columns() == 0) ? "\n" : "  ");
-				i++;
-			}
-		}
-		return sb.toString();
 	}
 
 	@Override
@@ -324,7 +311,7 @@ public class RectangularTable<E> extends AbstractTable<E>
 	 * @param row the row position
 	 *
 	 * @return the absolute index of the internal array based on the provided
-	 * 		coordinates.
+	 *      coordinates.
 	 */
 	private int getIndex(int row, int col) {
 		return getIndex(row, col, columns());

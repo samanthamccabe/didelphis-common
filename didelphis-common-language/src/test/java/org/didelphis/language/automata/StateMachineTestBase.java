@@ -20,20 +20,18 @@
 package org.didelphis.language.automata;
 
 import lombok.NonNull;
+
 import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.automata.statemachines.StateMachine;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Class {@code StateMachineTestBase}
  *
  */
 abstract class StateMachineTestBase<S> {
-	
+
 	void assertMatches(Automaton<S> machine, String input) {
 		S target = transform(input);
 		assertTrue(
@@ -41,7 +39,7 @@ abstract class StateMachineTestBase<S> {
 				"Machine failed to accept an input it should have: " + target
 		);
 	}
-	
+
 	void assertNotMatches(Automaton<S> machine, String input) {
 		S target = transform(input);
 		assertFalse(
@@ -66,8 +64,8 @@ abstract class StateMachineTestBase<S> {
 
 	void assertMatchesGroup(
 			@NonNull StateMachine<S> machine,
-			@NonNull String input, 
-			@NonNull String expected, 
+			@NonNull String input,
+			@NonNull String expected,
 			int group
 	) {
 		S target = transform(input);

@@ -20,6 +20,7 @@
 package org.didelphis.language.phonetic.segments;
 
 import lombok.NonNull;
+
 import org.didelphis.language.phonetic.features.EmptyFeatureArray;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.model.FeatureModel;
@@ -49,7 +50,7 @@ public class ImmutableSegment<T> extends StandardSegment<T> {
 	public ImmutableSegment(String symbol, FeatureArray<T> featureArray) {
 		super(symbol, featureArray);
 	}
-	
+
 	public ImmutableSegment(String symbol, FeatureModel<T> model) {
 		this(symbol, new EmptyFeatureArray<>(model));
 	}

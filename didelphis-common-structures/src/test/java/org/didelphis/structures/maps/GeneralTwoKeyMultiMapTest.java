@@ -21,6 +21,7 @@ package org.didelphis.structures.maps;
 
 import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.maps.interfaces.TwoKeyMultiMap;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,16 +29,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class GeneralTwoKeyMultiMapTest extends TwoKeyMapTestBase {
-	
+
 	private TwoKeyMultiMap<String, String, String> map;
 	private TwoKeyMultiMap<String, String, String> map1;
 	private TwoKeyMultiMap<String, String, String> map2;
-	
+
 	@BeforeEach
 	void init() {
 		map = new GeneralTwoKeyMultiMap<>();
@@ -56,7 +56,7 @@ class GeneralTwoKeyMultiMapTest extends TwoKeyMapTestBase {
 		map2 = new GeneralTwoKeyMultiMap<>(map, new HashMap<>(), Suppliers.ofHashMap(), Suppliers.ofHashSet());
 		map2.add("x", "y", "z");
 	}
-	
+
 	@Test
 	void testHashCode() {
 		assertEquals(map.hashCode(), map1.hashCode());
@@ -74,14 +74,14 @@ class GeneralTwoKeyMultiMapTest extends TwoKeyMapTestBase {
 		assertEquals(map.toString(), map1.toString());
 		assertNotEquals(map.toString(), map2.toString());
 	}
-	
+
 	@Test
 	void testAdd() {
 		Set<String> objects = new HashSet<>();
 		objects.add("y1");
 		objects.add("y2");
 		objects.add("y3");
-		
+
 		testGet(map, "a", "b", objects);
 		testNullGet(map, "c", "a");
 		testNullGet(map, "b", "c");

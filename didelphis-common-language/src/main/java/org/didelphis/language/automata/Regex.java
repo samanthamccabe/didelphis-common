@@ -22,11 +22,13 @@ package org.didelphis.language.automata;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
+
 import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.automata.parsing.RegexParser;
 import org.didelphis.language.automata.statemachines.StandardStateMachine;
 import org.didelphis.language.automata.statemachines.StateMachine;
+
 import org.intellij.lang.annotations.Language;
 
 import java.util.List;
@@ -36,7 +38,6 @@ import java.util.regex.Pattern;
  * Class {@code Regex}
  * <p>
  * A {@link Automaton} wrapper for the standard {@link Pattern} class.
- *
  */
 @ToString
 @EqualsAndHashCode
@@ -74,9 +75,7 @@ public class Regex implements Automaton<String> {
 
 	@NonNull
 	@Override
-	public String replace(
-			@NonNull String input, @NonNull String replacement
-	) {
+	public String replace(@NonNull String input, @NonNull String replacement) {
 		return automaton.replace(input, replacement);
 	}
 }

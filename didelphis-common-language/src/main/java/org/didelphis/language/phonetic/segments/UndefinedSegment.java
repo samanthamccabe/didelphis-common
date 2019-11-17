@@ -21,45 +21,45 @@ package org.didelphis.language.phonetic.segments;
 
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+
 import org.didelphis.language.phonetic.features.EmptyFeatureArray;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.model.FeatureModel;
 
 /**
  * Class {@code UndefinedSegment}
- * Stores segments which are not identifiable within a {@link FeatureModel} or 
+ * Stores segments which are not identifiable within a {@link FeatureModel} or
  * {@link org.didelphis.language.phonetic.model.FeatureMapping} and cannot be
  * defined in terms of features. It is only defined by it's symbol, but still
  * provides provenance for the model that generated it.
- * 
+ * <p>
  * This is included for compatibility, and to avoid errors, namely that a {@link
- * StandardSegment} with no features will return {@code true} when {@link 
+ * StandardSegment} with no features will return {@code true} when {@link
  * #matches(Segment)} is called on another segment, which is not the desired
  * behavior.
- * 
  */
-@EqualsAndHashCode(exclude = "model")
+@EqualsAndHashCode (exclude = "model")
 public class UndefinedSegment<T> implements Segment<T> {
 
 	private final FeatureModel<T> model;
 	private final FeatureArray<T> features;
-	private final String symbol;
+	private final String          symbol;
 
 	public UndefinedSegment(
-			@NonNull String symbol,
-			@NonNull FeatureModel<T> model) {
+			@NonNull String symbol, @NonNull FeatureModel<T> model
+	) {
 		this.model = model;
 		this.symbol = symbol;
-		
+
 		features = new EmptyFeatureArray<>(model);
 	}
-	
+
 	@Override
 	public boolean alter(@NonNull Segment<T> segment) {
 		// no-op
 		return false;
 	}
-	
+
 	@NonNull
 	@Override
 	public String getSymbol() {

@@ -37,12 +37,11 @@ import java.util.stream.Stream;
 
 /**
  * Class {@code SymmetricTable}
- *
+ * <p>
  * Note: as of version {@code 0.3.1} it is recommended that this class be used
  * judiciously. Testing has indicated substantial runtime costs in repeated
  * index lookups which is probably proportional to the size of the table. In
  * the future, a different implementation of this class will be adopted.
- *
  */
 public class SymmetricTable<E> extends AbstractTable<E> {
 
@@ -78,7 +77,7 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 		this(otherTable.rows());
 		array.addAll(otherTable.array);
 	}
-	
+
 	@NonNull
 	@Override
 	public E get(int row, int col) {
@@ -158,25 +157,6 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 	@Override
 	public Iterator<Collection<E>> columnIterator() {
 		return new ColumnIterator<>(array, columns());
-	}
-
-	@NonNull
-	@Deprecated
-	@Override
-	public String formattedTable() {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < rows(); i++) {
-			for (int j = 0; j <= i; j++) {
-				sb.append(get(j, i));
-				if (j < i) {
-					sb.append('\t');
-				}
-			}
-			if (i < (rows() - 1)) {
-				sb.append('\n');
-			}
-		}
-		return sb.toString();
 	}
 
 	@Override

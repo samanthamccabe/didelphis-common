@@ -21,6 +21,7 @@ package org.didelphis.language.phonetic.sequences;
 
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+
 import org.didelphis.language.phonetic.SpecificationBearer;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureSpecification;
@@ -61,13 +62,13 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 	@Override
 	public void add(@NonNull Sequence<T> sequence) {
 		validateModelOrFail(sequence);
-		segments.addAll(sequence);
+		getSegments().addAll(sequence);
 	}
 
 	@Override
 	public void insert(@NonNull Sequence<T> sequence, int index) {
 		validateModelOrFail(sequence);
-		segments.addAll(index, sequence);
+		getSegments().addAll(index, sequence);
 	}
 
 	@Override
@@ -133,7 +134,7 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 		if (validateModelOrWarn(segment)) {
 			return false;
 		}
-		return !isEmpty() && segments.get(0).matches(segment);
+		return !isEmpty() && getSegments().get(0).matches(segment);
 	}
 
 	@Override
@@ -153,7 +154,7 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 	@NonNull
 	@Override
 	public BasicSequence<T> remove(int start, int end) {
-		BasicSequence<T> q = new BasicSequence<>(featureModel);
+		BasicSequence<T> q = new BasicSequence<>(getFeatureModel());
 		for (int i = 0; i < end - start; i++) {
 			q.add(remove(start));
 		}
@@ -168,7 +169,7 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 	 *
 	 * @param sequence a segments to check against this one
 	 * @return true if, for each segment in both sequences, all defined features
-	 * 		in either segment are equal
+	 *      in either segment are equal
 	 */
 	@Override
 	public boolean matches(@NonNull Sequence<T> sequence) {
@@ -192,13 +193,15 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 	@NonNull
 	@Override
 	public Sequence<T> subsequence(int from, int to) {
-		return new BasicSequence<>(subList(from, to), featureModel);
+		return new BasicSequence<>(subList(from, to), getFeatureModel());
 	}
 
 	@NonNull
 	@Override
 	public Sequence<T> subsequence(int from) {
-		return new BasicSequence<>(subList(from, size()), featureModel);
+		return new BasicSequence<>(subList(from, size()),
+				getFeatureModel()
+		);
 	}
 
 	@NonNull
@@ -216,7 +219,7 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		for (Segment<T> segment : segments) {
+		for (Segment<T> segment : getSegments()) {
 			String symbol = segment.getSymbol();
 			sb.append(symbol);
 		}
@@ -236,7 +239,7 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 	@Override
 	public boolean add(Segment<T> segment) {
 		validateModelOrFail(segment);
-		return segments.add(segment);
+		return getSegments().add(segment);
 	}
 
 	@Override
@@ -252,21 +255,14 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 
 	@NonNull
 	@Override
-	public FeatureModel<T> getFeatureModel() {
-		return featureModel;
-	}
-
-	@NonNull
-	@Override
 	public FeatureSpecification getSpecification() {
-		return featureModel.getSpecification();
+		return getFeatureModel().getSpecification();
 	}
 
 	private boolean validateModelOrWarn(@NonNull SpecificationBearer that) {
 		if (!getSpecification().equals(that.getSpecification())) {
-			LOG.warn("Attempting to check a {} with an incompatible model!" +
-							"" + "\n\t{}\t{}\n\t{}\t{}", that.getClass(), this, that,
-					featureModel, that.getSpecification());
+			LOG.warn("Attempting to check a {} with an incompatible model!\n\t{}\t{}\n\t{}\t{}",
+					that.getClass(), this, that, getFeatureModel(), that.getSpecification());
 			return true;
 		}
 		return false;
@@ -276,7 +272,7 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 		if (!getSpecification().equals(that.getSpecification())) {
 			throw new IllegalArgumentException("Attempting to add " + that.getClass() +
 					" with an incompatible model!\n" + '\t' + this + '\t' +
-					featureModel + '\n' + '\t' + that + '\t' +
+					getFeatureModel() + '\n' + '\t' + that + '\t' +
 					that.getSpecification());
 		}
 	}

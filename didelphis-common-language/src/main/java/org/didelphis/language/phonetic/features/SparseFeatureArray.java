@@ -20,6 +20,7 @@
 package org.didelphis.language.phonetic.features;
 
 import lombok.NonNull;
+
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.utilities.Templates;
 
@@ -31,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -109,7 +109,7 @@ public final class SparseFeatureArray<T> extends AbstractFeatureArray<T> {
 		SparseFeatureArray<?> array = (SparseFeatureArray<?>) obj;
 		return super.equals(obj) && features.equals(array.features);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		int code = super.hashCode();
@@ -120,7 +120,7 @@ public final class SparseFeatureArray<T> extends AbstractFeatureArray<T> {
 				.reduce(1, (a, b) -> a * b);
 		return code;
 	}
-	
+
 	@Override
 	public boolean matches(@NonNull FeatureArray<T> array) {
 		sizeCheck(array);

@@ -25,6 +25,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
+
 import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.matching.BasicMatch;
 import org.didelphis.language.automata.matching.Match;
@@ -34,7 +35,6 @@ import org.didelphis.structures.graph.Graph;
 import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.didelphis.structures.tuples.Tuple;
 import org.didelphis.structures.tuples.Twin;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,16 +48,16 @@ import java.util.Map.Entry;
 @EqualsAndHashCode
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public final class StandardStateMachine<S> implements StateMachine<S> {
-	
+
 	LanguageParser<S> parser;
-	
+
 	String id;
 	String startStateId;
 	Collection<String> acceptingStates;
 	Map<String, StateMachine<S>> machinesMap;
-	
+
 	List<Tuple<String, String>> groups;
-	
+
 	// {String (Node ID), Sequence (Arc)} --> String (Node ID)
 	Graph<S> graph;
 
@@ -75,7 +75,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 					parser);
 		}
 	}
-	
+
 	@NonNull
 	public static <T> StateMachine<T> create(
 			@NonNull String id,
@@ -88,21 +88,21 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 			return new StandardStateMachine<>(id, expression, parser);
 		}
 	}
-	
+
 	private StandardStateMachine(
-			@NonNull String id,
-			@NonNull Expression expression,
-			@NonNull LanguageParser<S> parser
+			String id,
+			Expression expression,
+			LanguageParser<S> parser
 	) {
 		this.id = id;
 		this.parser = parser;
 
 		startStateId = this.id + "-S";
-	
+
 		machinesMap = new HashMap<>();
 		acceptingStates = new HashSet<>();
 		graph = new Graph<>();
-		
+
 		// build machine
 		List<Expression> captures = new ArrayList<>();
 		captures.add(null); // null element is a placeholder for group zero
@@ -119,10 +119,10 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	}
 
 	private StandardStateMachine(
-			@NonNull String id,
-			@NonNull Expression expression,
-			@NonNull LanguageParser<S> parser,
-			@NonNull List<Expression> captures
+			String id,
+			Expression expression,
+			LanguageParser<S> parser,
+			List<Expression> captures
 	) {
 		this.id = id;
 		this.parser = parser;
@@ -283,14 +283,14 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	 *
 	 * @param input the input data being consumed by this automaton
 	 * @param cursor a {@link Cursor} object which store the current node and
-	 * 		its associated position in the input
+	 *      its associated position in the input
 	 *
 	 * @return a collection of new states
 	 */
 	@NonNull
 	private List<Cursor> checkNode(
-			@NonNull S input,
-			@NonNull Cursor cursor
+			S input,
+			Cursor cursor
 	) {
 		String currentNode = cursor.getNode();
 		int index = cursor.getIndex();
@@ -322,24 +322,24 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	 * corresponding state machine.
 	 *
 	 * @param startingIndex a numerical index value used in generating
-	 * 		sequential state ids
+	 *      sequential state ids
 	 * @param startNode the node to which additional nodes will be attached
 	 * @param prefix a prefix used in the creation of new nodes
 	 * @param expressions the {@link Expression} tree from which the new
-	 * 		states will be derived
+	 *      states will be derived
 	 * @param captures the list of {@link Expression}s which are capturing;
-	 * 		this is used to assign start and end nodes to capture groups
+	 *      this is used to assign start and end nodes to capture groups
 	 *
 	 * @return the current node id, <emph>i.e.</emph> the id of the most
-	 * 		recently created node
+	 *      recently created node
 	 */
 	@NonNull
 	private String parse(
 			int startingIndex,
-			@NonNull String startNode,
-			@NonNull String prefix,
-			@NonNull Iterable<Expression> expressions, 
-			@NonNull List<Expression> captures
+			String startNode,
+			String prefix,
+			Iterable<Expression> expressions,
+			List<Expression> captures
 	) {
 		int nodeId = startingIndex;
 		String previous = startNode;
@@ -383,7 +383,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 						groups.set(index, new Twin<>(current, previous));
 					}
 				}
-			} else { 
+			} else {
 				String terminal = expression.getTerminal();
 				previous = makeTerminal(current, "T-"+current, terminal, meta);
 			}
@@ -394,9 +394,9 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	@NonNull
 	private String makeParallel(
 			int index,
-			@NonNull String start,
-			@NonNull Expression expression,
-			@NonNull List<Expression> captures
+			String start,
+			Expression expression,
+			List<Expression> captures
 	) {
 		int i = 0;
 		String output = start + "-Out";
@@ -418,9 +418,9 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	}
 
 	private void createNegative(
-			@NonNull Expression expression,
-			@NonNull String machineNode,
-			@NonNull List<Expression> captures
+			Expression expression,
+			String machineNode,
+			List<Expression> captures
 	) {
 		Expression negated = expression.withNegative(false).withQuantifier("");
 		StateMachine<S> stateMachine = NegativeMachine.create(machineNode,
@@ -431,10 +431,10 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	}
 
 	private String makeNegative(
-			@NonNull String start,
-			@NonNull String end,
-			@NonNull String machine,
-			@NonNull String meta
+			String start,
+			String end,
+			String machine,
+			String meta
 	) {
 		graph.add(start, parser.epsilon(), machine);
 		addToGraph(start, end, machine, meta);
@@ -442,10 +442,10 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	}
 
 	private void addToGraph(
-			@NotNull String start,
-			@NotNull String end,
-			@NotNull String machine,
-			@NotNull String meta
+			String start,
+			String end,
+			String machine,
+			String meta
 	) {
 		Arc<S> epsilon = parser.epsilon();
 		switch (meta) {
@@ -469,9 +469,9 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 
 	@NonNull
 	private String makeGroup(
-			@NonNull String start,
-			@NonNull String machine, 
-			@NonNull String meta
+			String start,
+			String machine,
+			String meta
 	) {
 		String endNode = start + 'X';
 		addToGraph(start, endNode, machine, meta);
@@ -480,10 +480,10 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 
 	@NonNull
 	private String makeTerminal(
-			@NonNull String start,
-			@NonNull String end,
-			@NonNull String exp,
-			@NonNull String meta
+			String start,
+			String end,
+			String exp,
+			String meta
 	) {
 		Arc<S> sequence = parser.getArc(exp);
 		Arc<S> epsilon = parser.epsilon();
@@ -507,8 +507,8 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	}
 
 	private static void populateCaptures(
-			@NonNull Expression expression, 
-			@NonNull List<Expression> captures
+			Expression expression,
+			List<Expression> captures
 	) {
 		if (expression.isCapturing()) {
 			captures.add(expression);
@@ -523,11 +523,11 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 	@EqualsAndHashCode
 	@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 	private static final class NegativeMachine<S> implements StateMachine<S> {
-	
+
 		String id;
 		StateMachine<S> negative;
 		StateMachine<S> positive;
-	
+
 		private NegativeMachine(
 				@NonNull String id,
 				@NonNull StateMachine<S> negative,
@@ -561,7 +561,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		}
 
 		private static <S> Expression replaceDots(
-				Expression expression, 
+				Expression expression,
 				LanguageParser<S> parser
 		) {
 			if (expression.hasChildren()) {
@@ -587,7 +587,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 							max = length;
 						}
 					}
-					
+
 					StringBuilder sb = new StringBuilder();
 
 					for (int i = 0; i < min; i++) {
@@ -605,7 +605,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 			}
 			return expression;
 		}
-		
+
 		@NonNull
 		@Override
 		public LanguageParser<S> getParser() {
@@ -644,7 +644,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		LanguageParser<S> parser;
 
 		private EmptyMachine(
-				@NonNull String id, 
+				@NonNull String id,
 				@NonNull LanguageParser<S> parser
 		) {
 			this.id = id;
@@ -661,7 +661,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		public String getId() {
 			return id;
 		}
-		
+
 		@NonNull
 		@Override
 		public Match<S> match(@NonNull S input, int start) {

@@ -21,6 +21,7 @@ package org.didelphis.language.phonetic;
 
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.didelphis.structures.contracts.Streamable;
 

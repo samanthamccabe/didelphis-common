@@ -7,7 +7,7 @@ import org.didelphis.language.phonetic.features.FeatureArray;
 
 /**
  * Class {@code SemidefinedSegment}
- *
+ * <p>
  * An extension of {@code StandardSegment} mainly used to identify segments
  * with a valid primary symbol but where one or more modifier symbols could not
  * be resolved.

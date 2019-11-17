@@ -26,14 +26,13 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class MockFileHandlerTest {
-	
+
 	private static Map<String, String> map;
 	private static FileHandler handler;
-	
+
 	@BeforeAll
 	static void init() {
 		map = new HashMap<>();
@@ -43,7 +42,7 @@ class MockFileHandlerTest {
 		map.put("file4", "payloadX: 00");
 		handler = new MockFileHandler(map);
 	}
-	
+
 	@Test
 	void testHashCode() {
 		assertEquals(handler.hashCode(), new MockFileHandler(map).hashCode());

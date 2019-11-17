@@ -24,23 +24,27 @@ import lombok.NonNull;
 import java.util.Collection;
 
 /**
+ * Interface {@code ResizeableTable}
  *
  * A general interface for two-dimensional matrix data structures
+ *
  * @param <E> the type parameter
  */
 public interface ResizeableTable<E> extends Table<E> {
 
 	/**
 	 * Expands the dimensions of the table by the amounts provided.
+	 *
 	 * @param rows number of rows by which to expand the table; must be >= 0
 	 * @param cols number of columns by which to expand the table; must be >= 0
-	 * @param fillerValue
+	 * @param fillerValue the value used to fill the new columns
 	 */
 	void expand(int rows, int cols, E fillerValue);
 
 	/**
 	 * Reduces the dimensions of the table by the amounts provided. Any values
 	 * outside the table's new dimensions are discarded.
+	 *
 	 * @param rows number of rows by which to shrink the table; must be >= 0
 	 * @param cols number of columns by which to shrink the table; must be >= 0
 	 */
@@ -48,6 +52,7 @@ public interface ResizeableTable<E> extends Table<E> {
 
 	/**
 	 * Insert a new row into the table; grows the table by one row
+	 *
 	 * @param row the row into which to insert the data; must be >= 0
 	 * @param data the data to insert into the table
 	 */
@@ -55,6 +60,7 @@ public interface ResizeableTable<E> extends Table<E> {
 
 	/**
 	 * Insert a new column into the table; grows the table by one column
+	 *
 	 * @param col the column into which to insert the data; must be >= 0
 	 * @param data the data to insert into the table
 	 */
@@ -63,19 +69,21 @@ public interface ResizeableTable<E> extends Table<E> {
 	/**
 	 * Removes and returns a collection containing the contents of the specified
 	 * row; this shrinks the table by one row
+	 *
 	 * @param row the row whose contents are removed; must be >= 0
+	 *
 	 * @return a collection containing the contents of the specified row
 	 */
-	@NonNull
-	Collection<E> removeRow(int row);
+	@NonNull Collection<E> removeRow(int row);
 
 	/**
 	 * Removes and returns a collection containing the contents of the specified
 	 * columns; this shrinks the table by one column
+	 *
 	 * @param col the row whose contents are removed; must be >= 0
+	 *
 	 * @return a collection containing the contents of the specified column
 	 */
-	@NonNull
-	Collection<E> removeColumn(int col);
+	@NonNull Collection<E> removeColumn(int col);
 
 }

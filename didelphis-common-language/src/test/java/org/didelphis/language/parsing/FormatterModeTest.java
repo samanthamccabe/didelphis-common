@@ -26,14 +26,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Arrays.asList;
-import static org.didelphis.language.parsing.FormatterMode.COMPOSITION;
-import static org.didelphis.language.parsing.FormatterMode.DECOMPOSITION;
-import static org.didelphis.language.parsing.FormatterMode.INTELLIGENT;
-import static org.didelphis.language.parsing.FormatterMode.NONE;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static java.util.Arrays.*;
+import static org.didelphis.language.parsing.FormatterMode.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class FormatterModeTest {
@@ -90,7 +85,7 @@ class FormatterModeTest {
 		List<String> expected = asList("r", "a\u0306", "s");
 		List<String> received = INTELLIGENT.split("răs");
 		assertEquals(expected, received);
-		
+
 	}
 
 	@Test
@@ -115,11 +110,11 @@ class FormatterModeTest {
 
 		List<String> expected = asList("[-voice]", "[+con, -son, -voice]");
 		List<String> received = INTELLIGENT.split(
-				"[-voice][+con, -son, -voice]", 
+				"[-voice][+con, -son, -voice]",
 				Collections.emptyList(),
 				map
 		);
-		
+
 		assertEquals(expected, received);
 	}
 

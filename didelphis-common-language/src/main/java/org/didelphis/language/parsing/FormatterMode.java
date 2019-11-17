@@ -20,8 +20,10 @@
 package org.didelphis.language.parsing;
 
 import lombok.NonNull;
+
 import org.didelphis.language.automata.Regex;
 import org.didelphis.language.automata.matching.Match;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.text.Normalizer;
@@ -31,14 +33,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import static org.didelphis.utilities.Splitter.parseParens;
-import static org.didelphis.utilities.Splitter.toList;
+import static org.didelphis.utilities.Splitter.*;
 
 /**
  * Enum {@code FormatterMode}
- *
- * This type is to succeed the earlier {@code SegmentationMode} and {@code 
- * Normalizer} mode enums by merging their functionality. We originally 
+ * <p>
+ * This type is to succeed the earlier {@code SegmentationMode} and {@code
+ * Normalizer} mode enums by merging their functionality. We originally
  * supported types that were entirely unnecessary and presented the user with an
  * excess of options, most of where were of no value (compatibility modes, or
  * segmentation with composition e.g.)
@@ -103,16 +104,17 @@ public enum FormatterMode implements Segmenter, Formatter {
 
 		@NonNull
 		@Override
+		@SuppressWarnings ({"OverlyComplexMethod", "OverlyLongMethod"})
 		public List<String> split(
 				@NonNull String string,
 				@NonNull Iterable<String> special,
 				@NonNull Map<String, String> delimiters
 		) {
 			String word = normalize(string);
-
 			List<String> strings = new ArrayList<>();
 			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < word.length(); ) {
+			int i = 0;
+			while (i < word.length()) {
 				// Get the word from current position on
 				int index = parseParens(word, delimiters, new HashSet<>(), i);
 				if (index > 0) {
@@ -125,13 +127,13 @@ public enum FormatterMode implements Segmenter, Formatter {
 					i = index;
 				} else {
 					String substring = word.substring(i);
-					// Find the longest string in keys which the substring 
+					// Find the longest string in keys which the substring
 					// starts
 					String key = getBestMatch(substring, special);
 					if (sb.length() == 0) {
 						// Assume that the first sb must be a base-character
-						// This doesn't universally work (pre-nasalized, 
-						// pre-aspirated), but we don't support this in our 
+						// This doesn't universally work (pre-nasalized,
+						// pre-aspirated), but we don't support this in our
 						// model yet
 						if (key.isEmpty()) {
 							// No special error handling if word starts with
@@ -143,7 +145,7 @@ public enum FormatterMode implements Segmenter, Formatter {
 						}
 					} else {
 						char ch = word.charAt(i);
-						if (isDoubleWidthBinder(ch)) {
+						if (isBinder(ch)) {
 							sb.append(ch);
 							if (i + 1 < word.length()) {
 								sb.append(word.charAt(i + 1));
@@ -197,34 +199,30 @@ public enum FormatterMode implements Segmenter, Formatter {
 			return bestMatch;
 		}
 
-		private boolean isAttachable(char ch) {
-			return isSuperscriptAsciiDigit(ch) 
-					|| isMathematicalSubOrSuper(ch)
-					|| isCombiningClass(ch);
+		private boolean isAttachable(char c) {
+			return isSuperAscii(c) || isMathSubOrSuper(c) || isCombining(c);
 		}
 
-		private boolean isDoubleWidthBinder(char ch) {
-			return BINDER_START <= ch && ch <= BINDER_END;
+		private boolean isBinder(char c) {
+			return BINDER_START <= c && c <= BINDER_END;
 		}
 
-		private boolean isSuperscriptAsciiDigit(char value) {
-			return value == SUPER_TWO 
-					|| value == SUPER_THREE 
-					|| value == SUPER_ONE;
+		private boolean isSuperAscii(char c) {
+			return c == SUPER_TWO || c == SUPER_THREE || c == SUPER_ONE;
 		}
 
-		private boolean isMathematicalSubOrSuper(char value) {
-			return SUPER_ZERO <= value && value <= SUB_SMALL_T;
+		private boolean isMathSubOrSuper(char c) {
+			return SUPER_ZERO <= c && c <= SUB_SMALL_T;
 		}
 
-		private boolean isCombiningClass(char ch) {
+		private boolean isCombining(char c) {
 			for (int[] range : COMBINING_RANGES) {
-				if (range[0] <= ch && ch <= range [1]) {
+				if (range[0] <= c && c <= range [1]) {
 					return true;
 				}
 			}
 			for (int aChar : MISC_COMBINING_CHARS) {
-				if (aChar == ch) {
+				if (aChar == c) {
 					return true;
 				}
 			}
@@ -258,22 +256,23 @@ public enum FormatterMode implements Segmenter, Formatter {
 			{ 0xA700, 0xA721 }, // Tone Marks
 			{ 0xFE20, 0xFE26 }, // Combining Half Marks
 			{ 0x0483, 0x0489 }  // Combining Cyrillic marks
-	}; 
+	};
+
 	private static final int[] MISC_COMBINING_CHARS = {
-			0x005E, 0x0060, 0x00A8, 0x00AF, 0x00B4, 0x00B8, 
-			
+			0x005E, 0x0060, 0x00A8, 0x00AF, 0x00B4, 0x00B8,
+
 			0x0374, // GREEK NUMERAL SIGN
 			0x0375, // GREEK LOWER NUMERAL SIGN
 			0x037A, // GREEK YPOGEGRAMMENI
 			0x0384, // GREEK TONOS
 			0x0385, // GREEK DIALYTIKA TONOS
-			
+
 			0x1D78, // MODIFIER LETTER CYRILLIC EN
-			
+
 			// Greek Extended
-			0x1FBD, 0x1FBF, 0x1FC0, 0x1FC1, 0x1FCD, 0x1FCE, 0x1FCF, 0x1FDD, 
+			0x1FBD, 0x1FBF, 0x1FC0, 0x1FC1, 0x1FCD, 0x1FCE, 0x1FCF, 0x1FDD,
 			0x1FDE, 0x1FDF, 0x1FED, 0x1FEE, 0x1FEF, 0x1FFD, 0x1FFE,
-			
+
 			0x2C7C, // LATIN SUBSCRIPT SMALL LETTER J
 			0x2C7D, // MODIFIER LETTER CAPITAL V
 			0x2E2F, // VERTICAL TILDE

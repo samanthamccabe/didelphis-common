@@ -20,6 +20,7 @@
 package org.didelphis.language.automata;
 
 import lombok.NonNull;
+
 import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.parsing.StringParser;
 import org.didelphis.language.automata.statemachines.StandardStateMachine;
@@ -28,6 +29,7 @@ import org.didelphis.language.parsing.ParseException;
 import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -36,9 +38,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.didelphis.language.parsing.ParseDirection.FORWARD;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.didelphis.language.parsing.ParseDirection.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 class StandardStateMachineStringTest extends StateMachineTestBase<String> {
 
@@ -93,21 +94,21 @@ class StandardStateMachineStringTest extends StateMachineTestBase<String> {
 	@Test
 	void testBoundaries1() {
 		StateMachine<String> machine = getMachine("#a#");
-		
+
 		assertMatches(machine, "a");
 
 		assertNotMatches(machine, "");
 		assertNotMatches(machine, "aa");
 		assertNotMatches(machine, "x");
 	}
-	
+
 	@Test
 	void testBoundaries2() {
 		StateMachine<String> machine = getMachine("#a");
 
 		assertMatches(machine, "a");
 		assertMatches(machine, "aa");
-		
+
 		assertNotMatches(machine, "");
 		assertNotMatches(machine, "ba");
 		assertNotMatches(machine, "x");
@@ -130,11 +131,11 @@ class StandardStateMachineStringTest extends StateMachineTestBase<String> {
 		StateMachine<String> machine = getMachine("a");
 		assertMatches(machine, "a");
 		assertMatches(machine, "aa");
-		
+
 		assertNotMatches(machine, "b");
 		assertNotMatches(machine, "c");
 	}
-	
+
 	@Test
 	void testBasic02() {
 		StateMachine<String> machine = getMachine("aaa");
@@ -146,7 +147,7 @@ class StandardStateMachineStringTest extends StateMachineTestBase<String> {
 		assertNotMatches(machine, "bbb");
 		assertNotMatches(machine, "c");
 		assertNotMatches(machine, "ab");
-		
+
 		assertNotMatches(machine, "abb");
 	}
 
@@ -155,7 +156,7 @@ class StandardStateMachineStringTest extends StateMachineTestBase<String> {
 		StateMachine<String> machine = getMachine("aaa?");
 		assertMatches(machine, "aa");
 		assertMatches(machine, "aaa");
-		
+
 		assertNotMatches(machine, "a");
 		assertNotMatches(machine, "b");
 		assertNotMatches(machine, "c");
@@ -304,7 +305,7 @@ class StandardStateMachineStringTest extends StateMachineTestBase<String> {
 		assertNotMatches(machine, " ");
 		assertNotMatches(machine, "a");
 	}
-	
+
 	@Test
 	void testSets02() {
 		String exp = "{ab {cd xy} ef}tr";
@@ -370,7 +371,7 @@ class StandardStateMachineStringTest extends StateMachineTestBase<String> {
 		StateMachine<String> machine = getMachine(exp);
 
 		assertMatchesGroup(machine, "alhambraalhambra", "alhambraalhambra", 0);
-		
+
 		assertMatchesGroup(machine, "alhambra", "alhambra", 0);
 		assertMatchesGroup(machine, "alhambra", "alhambra", 1);
 		assertMatchesGroup(machine, "alhambra", "hamb", 2);
@@ -378,12 +379,12 @@ class StandardStateMachineStringTest extends StateMachineTestBase<String> {
 		assertMatchesGroup(machine, "aalhammbhambra", "aalhammbhambra", 0);
 		assertMatchesGroup(machine, "aalhammbhambra", "aalhammbhambra", 1);
 		assertMatchesGroup(machine, "aalhammbhambra", "hammbhamb", 2);
-		
+
 		assertMatchesGroup(machine, "alra", "alra", 0);
 		assertMatchesGroup(machine, "alra", "alra", 1);
 		assertNoGroup(machine, "alra", 2);
 	}
-		
+
 	@Test
 	void testComplex06() {
 		StateMachine<String> machine = getMachine("{r l}{i u}s");
@@ -409,7 +410,7 @@ class StandardStateMachineStringTest extends StateMachineTestBase<String> {
 
 		assertMatches(machine, "is");
 		assertMatches(machine, "us");
-		
+
 		assertMatches(machine, "rs");
 		assertMatches(machine, "ls");
 
@@ -465,7 +466,7 @@ class StandardStateMachineStringTest extends StateMachineTestBase<String> {
 	void testComplex04() {
 		String exp = "{a e o ā ē ō}{pʰ tʰ kʰ cʰ}us";
 		StateMachine<String> machine = getMachine(exp);
-		
+
 		assertMatches(machine, "apʰus");
 		assertMatches(machine, "atʰus");
 		assertMatches(machine, "akʰus");
@@ -502,7 +503,7 @@ class StandardStateMachineStringTest extends StateMachineTestBase<String> {
 
 		assertMatchesGroup(machine, "acdb", "acdb", 0);
 		assertMatchesGroup(machine, "acdb", "c", 1);
-		
+
 		assertMatchesGroup(machine, "abdb", "abdb", 0);
 		assertMatchesGroup(machine, "abdb", "b", 1);
 
@@ -533,7 +534,7 @@ class StandardStateMachineStringTest extends StateMachineTestBase<String> {
 
 		assertNotMatches(machine, "a");
 	}
-	
+
 	@Test
 	void testComplexCaptureGroup() {
 
@@ -555,7 +556,7 @@ class StandardStateMachineStringTest extends StateMachineTestBase<String> {
 
 		assertMatchesGroup(machine, "ftr", "ftr", 0);
 		assertMatchesGroup(machine, "ftr", "f", 2);
-		
+
 		assertNoGroup(machine, "ftr", 1);
 		assertNoGroup(machine, "ftr", 3);
 
@@ -673,7 +674,7 @@ class StandardStateMachineStringTest extends StateMachineTestBase<String> {
 		assertNotMatches(machine, "xaa");
 		assertNotMatches(machine, "xab");
 	}
-	
+
 	@Test
 	void testSpecials01() {
 
@@ -681,7 +682,7 @@ class StandardStateMachineStringTest extends StateMachineTestBase<String> {
 		multiMap.add("CH", "ph");
 		multiMap.add("CH", "th");
 		multiMap.add("CH", "kh");
-		
+
 		StateMachine<String> machine = getMachine("aCHa", multiMap);
 
 		assertMatches(machine, "apha");
@@ -1006,7 +1007,44 @@ class StandardStateMachineStringTest extends StateMachineTestBase<String> {
 		StateMachine<String> machine = getMachine("[(!]+)]");
 		assertMatch(machine, "[+breathy]", 2, "[+breathy]", "+breathy");
 	}
-	
+
+
+	@Test
+	void testReplace01() {
+		StateMachine<String> machine = getMachine("a");
+		assertEquals("b,b,b", machine.replace("babab", ","));
+		assertEquals(",b,b,", machine.replace("ababa", ","));
+		assertEquals("b,b,", machine.replace("baba", ","));
+		assertEquals(",b,b", machine.replace("abab", ","));
+	}
+
+	@Test
+	void testReplace02() {
+		StateMachine<String> machine = getMachine("(a)(b)");
+		assertEquals("bbaba", machine.replace("babab", "$2$1"));
+		assertEquals("babaa", machine.replace("ababa", "$2$1"));
+		assertEquals("bbaa", machine.replace("baba", "$2$1"));
+		assertEquals("baba", machine.replace("abab", "$2$1"));
+	}
+
+	@Test
+	void testReplace03() {
+		StateMachine<String> machine = getMachine("(a)(b)");
+		assertEquals("bbaxbax", machine.replace("babab", "$2$1x"));
+		assertEquals("baxbaxa", machine.replace("ababa", "$2$1x"));
+		assertEquals("bbaxa", machine.replace("baba", "$2$1x"));
+		assertEquals("baxbax", machine.replace("abab", "$2$1x"));
+	}
+
+	@Test
+	void testReplace04() {
+		StateMachine<String> machine = getMachine("");
+		assertEquals("b/a/b/a/b", machine.replace("babab", "/"));
+		assertEquals("a/b/a/b/a", machine.replace("ababa", "/"));
+		assertEquals("b/a/b/a", machine.replace("baba", "/"));
+		assertEquals("a/b/a/b", machine.replace("abab", "/"));
+	}
+
 	@NonNull
 	private static MultiMap<String, String> parse(String string) {
 		String[] split = string.split("\\s*=\\s*");
@@ -1015,7 +1053,7 @@ class StandardStateMachineStringTest extends StateMachineTestBase<String> {
 		map.put(split[0], strings);
 		return new GeneralMultiMap<>(map, Suppliers.ofHashSet());
 	}
-	
+
 	private static StateMachine<String> getMachine(String expression) {
 		return getMachine(expression, null);
 	}
@@ -1034,7 +1072,7 @@ class StandardStateMachineStringTest extends StateMachineTestBase<String> {
 			String exp,
 			MultiMap<String, String> specials
 	) {
-		parser = specials == null 
+		parser = specials == null
 				? new StringParser()
 				: new StringParser(specials);
 		Expression expression = parser.parseExpression(exp, FORWARD);

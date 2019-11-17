@@ -20,6 +20,7 @@
 package org.didelphis.language.phonetic;
 
 import org.didelphis.language.phonetic.sequences.Sequence;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -28,8 +29,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class LexiconTest extends PhoneticTestBase {
