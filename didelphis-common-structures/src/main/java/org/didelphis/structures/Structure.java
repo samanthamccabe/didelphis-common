@@ -52,5 +52,6 @@ public interface Structure {
 	 * @return true iff contents were deleted; if the structure was already
 	 *      empty, this operation will return false.
 	 */
+	@SuppressWarnings ("BooleanMethodNameMustStartWithQuestion")
 	boolean clear();
 }

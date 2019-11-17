@@ -6,6 +6,8 @@ General Didelphis components for language modeling and analysis
 ### 0.4.0
 
 #### Added
+ - Added an actual readme file describing the modules and major packages of
+   the project
  - Added missing `@Nullable` annotations on implementations of interfaces that
    do use them
  - Introdued `SemidefinedSegment` to help identify unknown diacritics in input
@@ -18,12 +20,14 @@ General Didelphis components for language modeling and analysis
    classes.
  - Implemented lazy hash-code retrieval for some phonetics classes
  - Improved compatibility between `Regex` and Java's `Pattern` classes
- - Improved bracket matching algorithm used by `Splitter` 
+ - Improved bracket matching algorithm used by `Splitter`
+  - Changed `.getFirstElement()` *etc.* from `Triple` and replaced them with 
+    `.first()` *etc.*  
 #### Deprecated
  - *none*
 #### Removed
- - Changed `.getFirstElement()` *etc.* from `Triple` and replaced them with 
-   `.first()` *etc.* 
+ - `RectangularTable` no longer implements `Delegate` and no longer uses a
+   constructor which exposes the object's internals
  - Updated documentation to remove `@date` tags and `created by` lines
 #### Fixed
  - Fixed misuse of Lombok annotation `@FieldDefaults` which do not apply to 
