@@ -19,7 +19,7 @@
 
 package org.didelphis.structures.maps;
 
-import org.didelphis.structures.Suppliers;
+import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.didelphis.structures.tuples.Tuple;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -31,16 +31,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 
+@SuppressWarnings ("rawtypes")
 class GeneralMultiMapTest {
 
-	private GeneralMultiMap<String, String> map;
-	private GeneralMultiMap<String, String> map1;
+	private static final Class<HashMap> MAP_TYPE = HashMap.class;
+	private static final Class<HashSet> SET_TYPE = HashSet.class;
+
+	MultiMap<String, String> map;
+	MultiMap<String, String> map1;
 
 	@BeforeEach
 	void init() {
@@ -52,11 +55,7 @@ class GeneralMultiMapTest {
 		map.add("Z", "e");
 		map.add("Z", "f");
 
-		map1 = new GeneralMultiMap<>(
-				map,
-				new HashMap<>(),
-				Suppliers.ofHashSet()
-		);
+		map1 = new GeneralMultiMap<>(MAP_TYPE, SET_TYPE, map);
 		map1.add("X", "1");
 		map1.add("X", "2");
 	}
@@ -123,18 +122,7 @@ class GeneralMultiMapTest {
 	@Test
 	void addAll() {
 		map.addAll("X", Arrays.asList("1", "2", "3"));
-		assertEquals(new HashSet<>(Arrays.asList("a", "1", "2", "3")),
-				map.get("X")
-		);
-	}
-
-	@Test
-	void getDelegate() {
-		Map<String, Collection<String>> delegate = new HashMap<>();
-		delegate.put("X", new HashSet<>(Collections.singletonList("a")));
-		delegate.put("Y", new HashSet<>(Arrays.asList("b", "c")));
-		delegate.put("Z", new HashSet<>(Arrays.asList("d", "e", "f")));
-		assertEquals(delegate, map.getDelegate());
+		assertEquals(new HashSet<>(Arrays.asList("a", "1", "2", "3")), map.get("X"));
 	}
 
 	@Test
@@ -145,7 +133,7 @@ class GeneralMultiMapTest {
 	@Test
 	void isEmpty() {
 		assertFalse(map.isEmpty());
-		assertTrue(new GeneralMultiMap<>().isEmpty());
+		assertTrue(new GeneralMultiMap<>(MAP_TYPE, SET_TYPE).isEmpty());
 	}
 
 	@Test
@@ -163,40 +151,29 @@ class GeneralMultiMapTest {
 
 	@Test
 	void equals() {
-		assertEquals(
-				map,
-				new GeneralMultiMap<>(map,
-						new HashMap<>(),
-						Suppliers.ofHashSet()
-				)
-		);
+		MultiMap<?, ?> m1 = new GeneralMultiMap<>(MAP_TYPE, SET_TYPE, map);
+		assertEquals(map, m1);
 		assertNotEquals(map, new GeneralMultiMap<>());
 		assertNotEquals(map, map1);
 	}
 
 	@Test
 	void testHashCode() {
-		assertEquals(
-				map.hashCode(),
-				new GeneralMultiMap<>(map,
-						new HashMap<>(),
-						Suppliers.ofHashSet()
-				).hashCode()
-		);
-		assertNotEquals(map.hashCode(), new GeneralMultiMap<>().hashCode());
+		MultiMap<?, ?> m1 = new GeneralMultiMap<>(MAP_TYPE, SET_TYPE, map);
+		MultiMap<?, ?> m2 = new GeneralMultiMap<>(MAP_TYPE, SET_TYPE);
+
+		assertEquals(map.hashCode(), m1.hashCode());
+		assertNotEquals(map.hashCode(), m2.hashCode());
 		assertNotEquals(map.hashCode(), map1.hashCode());
 	}
 
 	@Test
 	void testToString() {
-		assertEquals(
-				map.toString(),
-				new GeneralMultiMap<>(map,
-						new HashMap<>(),
-						Suppliers.ofHashSet()
-				).toString()
-		);
-		assertNotEquals(map.toString(), new GeneralMultiMap<>().toString());
+		MultiMap<?, ?> m1 = new GeneralMultiMap<>(MAP_TYPE, SET_TYPE, map);
+		MultiMap<?, ?> m2 = new GeneralMultiMap<>(MAP_TYPE, SET_TYPE);
+
+		assertEquals(map.toString(), m1.toString());
+		assertNotEquals(map.toString(), m2.toString());
 		assertNotEquals(map.toString(), map1.toString());
 	}
 

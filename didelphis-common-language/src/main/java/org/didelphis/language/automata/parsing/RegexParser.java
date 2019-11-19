@@ -82,6 +82,7 @@ public final class RegexParser implements LanguageParser<String> {
 	private static final Map<String, String> ESCAPES   = new LinkedHashMap<>();
 
 	private static final Set<String> QUANTIFIERS = new HashSet<>();
+	private static final MultiMap<String, String> EMPTY_SPECIALS = new GeneralMultiMap<>();
 
 	static {
 		DELIM.put("[", "]");
@@ -239,7 +240,7 @@ public final class RegexParser implements LanguageParser<String> {
 	@NonNull
 	@Override
 	public MultiMap<String, String> getSpecialsMap() {
-		return GeneralMultiMap.emptyMultiMap();
+		return EMPTY_SPECIALS;
 	}
 
 	@NonNull

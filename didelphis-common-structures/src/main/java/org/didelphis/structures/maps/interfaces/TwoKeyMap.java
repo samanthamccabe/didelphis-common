@@ -21,6 +21,7 @@ package org.didelphis.structures.maps.interfaces;
 
 import lombok.NonNull;
 
+import org.didelphis.structures.Structure;
 import org.didelphis.structures.contracts.Streamable;
 import org.didelphis.structures.tuples.Triple;
 import org.didelphis.structures.tuples.Tuple;
@@ -28,7 +29,6 @@ import org.didelphis.structures.tuples.Tuple;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -36,8 +36,8 @@ import java.util.Map;
  *
  * @since 0.1.0
  */
-public interface TwoKeyMap<T, U, V>
-		extends Map<T, Map<U, V>>, Streamable<Triple<T, U, V>> {
+public interface TwoKeyMap<T, U, V> extends Streamable<Triple<T, U, V>>,
+		Structure {
 
 	/**
 	 * Return the value stored under the two keys
@@ -71,6 +71,36 @@ public interface TwoKeyMap<T, U, V>
 	boolean contains(@Nullable T k1, @Nullable U k2);
 
 	/**
+	 * Checks whether a key is present as part of a key-pair in the first
+	 * position
+	 *
+	 * @param k1 the first key; may be {@code null}
+	 *
+	 * @return true if a key is present as part of a key-pair
+	 */
+	boolean containsFirstKey(@Nullable T k1);
+
+	/**
+	 * Checks whether a key is present as part of a key-pair in the second
+	 * position
+	 *
+	 * @param k2 the first key; may be {@code null}
+	 *
+	 * @return true if a key is present as part of a key-pair
+	 */
+	boolean containsSecondKey(@Nullable U k2);
+
+	/**
+	 * Returns {@code true} if any keys map to the provided value.
+	 *
+	 * @param value value whose presence in this map is to be tested
+	 *
+	 * @return {@code true} if this map maps one or more keys to the
+	 *      specified value
+	 */
+	boolean containsValue(@Nullable V value);
+
+	/**
 	 * Updates the stored value using the one provided; by default this is the
 	 * same as calling {@link TwoKeyMap#put(T, U, V)} but implementations may
 	 * override this to support behavior like adding numbers, appending strings,
@@ -91,22 +121,13 @@ public interface TwoKeyMap<T, U, V>
 	@NonNull Collection<Tuple<T, U>> keys();
 
 	/**
-	 * Returns the number of key-value mappings in this map.  If the map
-	 * contains more than {@code Integer.MAX_VALUE} elements, returns {@code
+	 * Returns the number of key pairs in this map.  If the map contains more
+	 * than {@code Integer.MAX_VALUE} key pairs, this returns {@code
 	 * Integer.MAX_VALUE}.
 	 *
-	 * @return the number of key-value mappings in this map
-	 *
-	 * @implNote for complex map structures, it is not necessarily apparent
-	 *      what semantics of {@code size()} should be. However, one reasonable and
-	 *      consistent solution is that {@code size()} out to return the same
-	 *      number of items as are contained within the output of {@code
-	 *      iterator()}
+	 * @return the number of key pairs in this map
 	 */
-	@Override
-	default int size() {
-		return Math.toIntExact(stream().count());
-	}
+	int size();
 
 	/**
 	 * Remove and return the value stored under the two keys
@@ -118,13 +139,8 @@ public interface TwoKeyMap<T, U, V>
 	 *      either the keys have no associated value or if a {@code null} has
 	 *      been stored explicitly
 	 */
-	default @Nullable V removeKeys(@Nullable T k1, @Nullable U k2) {
-		if (contains(k1, k2)) {
-			Map<U, V> map = get(k1);
-			return map.remove(k2);
-		}
-		return null;
-	}
+	@Nullable
+	V removeKeys(@Nullable T k1, @Nullable U k2);
 
 	/**
 	 * A null-safe version of {@link #contains(T, U)}
@@ -137,20 +153,6 @@ public interface TwoKeyMap<T, U, V>
 	 */
 	default boolean containsNotNull(@Nullable T k1, @Nullable U k2) {
 		return contains(k1, k2) && get(k1, k2) != null;
-	}
-
-	/**
-	 * Returns all keys associated with the provided key such that, together,
-	 * they have an associated value
-	 *
-	 * @param k1 the first key; may be null
-	 *
-	 * @return a collection of the second keys associated with the provided key;
-	 *      null if the provided key is not present
-	 */
-	@NonNull
-	default Collection<U> getAssociatedKeys(@Nullable T k1) {
-		return containsKey(k1) ? get(k1).keySet() : Collections.emptySet();
 	}
 
 	/**
@@ -170,11 +172,25 @@ public interface TwoKeyMap<T, U, V>
 	default V getOrDefault(@Nullable T k1, @Nullable U k2, @NonNull V value) {
 		if (contains(k1, k2)) {
 			V v = get(k1, k2);
-			if (v == null) {
-				return value;
-			}
-			return v;
+			return v == null ? value : v;
 		}
 		return value;
 	}
+
+	/**
+	 * Copies all of the mappings from the specified map to this map
+	 * (optional operation).  The effect of this call is equivalent to that
+	 * of calling {@link #put(T, U, V)} on this map once for each mapping from
+	 * each key pair to value in the map.
+	 *
+	 * @param map mappings to be stored in this map; not {@code null}
+	 *
+	 * @throws UnsupportedOperationException if the {@code putAll} operation
+	 * 		is not supported by this map
+	 * @throws ClassCastException if the class of a key or value in the
+	 * 		specified map prevents it from being stored in this map
+	 * @throws IllegalArgumentException if some property of a key or value in
+	 * 		the specified map prevents it from being stored in this map
+	 */
+	void putAll(@NonNull TwoKeyMap<T, U, V> map);
 }

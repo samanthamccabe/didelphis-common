@@ -40,8 +40,8 @@ import java.util.function.Supplier;
  *
  * @since 0.1.0
  */
-@ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@ToString (callSuper = true, exclude = "collectionSupplier")
+@EqualsAndHashCode (callSuper = true, exclude = "collectionSupplier")
 public class SymmetricalTwoKeyMultiMap<K, V>
 		extends SymmetricalTwoKeyMap<K, Collection<V>>
 		implements TwoKeyMultiMap<K, K, V> {
@@ -52,31 +52,57 @@ public class SymmetricalTwoKeyMultiMap<K, V>
 	 * Default constructor which uses {@link HashMap} and {@link HashSet}
 	 */
 	public SymmetricalTwoKeyMultiMap() {
-		collectionSupplier = Suppliers.ofHashSet();
+		collectionSupplier = HashSet::new;
 	}
 
 	/**
-	 * Copy-constructor; creates a deep copy of the map using the provided
-	 * delegate and suppliers.
+	 * General constructor, allowing the user to specify which {@link Map} and
+	 * {@link Collection} implementations that the two-key multi-map should use
 	 *
-	 * @param tripleIterable triples whose data is to be copied
-	 * @param delegate a delegate map to be used by the new instance
-	 * @param mSupplier a {@link Supplier} to provide the inner map instances
-	 * @param cSupplier a {@link Supplier} to provide the inner collections
+	 * @param mapType the type of map used to construct the two-key-map
+	 * @param collType the type of collection used to construct the multi-map
 	 */
+	@SuppressWarnings ({"rawtypes", "unchecked"})
 	public SymmetricalTwoKeyMultiMap(
-			@NonNull Iterable<Triple<K, K, Collection<V>>> tripleIterable,
-			@NonNull Map<K, Map<K, Collection<V>>> delegate,
-			@NonNull Supplier<? extends Map<K, Collection<V>>> mSupplier,
-			@NonNull Supplier<? extends Collection<V>> cSupplier
+			@NonNull Class<? extends Map> mapType,
+			@NonNull Class<? extends Collection> collType
 	) {
-		this(delegate,mSupplier,cSupplier);
+		super(mapType);
+		Class<? extends Collection<?>> type =
+				(Class<? extends Collection<?>>) collType;
 
-		for (Triple<K, K, Collection<V>> triple : tripleIterable) {
+		collectionSupplier = Suppliers.collectionOf(type);
+	}
+
+	/**
+	 * Copy constructor, allowing the user to specify which {@link Map} and
+	 * {@link Collection} implementations that the two-key multi-map should use,
+	 * and copy the contents of another two-key multi-map
+	 *
+	 * @param mapType the type of map used to construct the multi-map
+	 * @param collType the type of collection used to construct the multi-map
+	 * @param iterable the data to be copied into the new instance
+	 */
+	@SuppressWarnings ({"rawtypes", "unchecked"})
+	public SymmetricalTwoKeyMultiMap(
+			@NonNull Class<? extends Map> mapType,
+			@NonNull Class<? extends Collection> collType,
+			@NonNull Iterable<Triple<K, K, Collection<V>>> iterable
+	) {
+		super(mapType);
+
+		Class<? extends Collection<?>> type =
+				(Class<? extends Collection<?>>) collType;
+		collectionSupplier = Suppliers.collectionOf(type);
+
+		// Populate
+		Supplier<? extends Map<K, Collection<V>>> mSupplier = getMapSupplier();
+		Map<K, Map<K, Collection<V>>> delegate = getDelegate();
+		for (Triple<K, K, Collection<V>> triple : iterable) {
 			K k1 = triple.first();
 			K k2 = triple.second();
 
-			Collection<V> values = cSupplier.get();
+			Collection<V> values = collectionSupplier.get();
 			values.addAll(triple.third());
 
 			if (delegate.containsKey(k1)) {
@@ -87,15 +113,6 @@ public class SymmetricalTwoKeyMultiMap<K, V>
 				delegate.put(k1, map);
 			}
 		}
-	}
-
-	public SymmetricalTwoKeyMultiMap(
-			@NonNull Map<K, Map<K, Collection<V>>> delegate,
-			@NonNull Supplier<? extends Map<K, Collection<V>>> mSupplier,
-			@NonNull Supplier<? extends Collection<V>> cSupplier
-	) {
-		super(delegate, mSupplier);
-		collectionSupplier = cSupplier;
 	}
 
 	@Override

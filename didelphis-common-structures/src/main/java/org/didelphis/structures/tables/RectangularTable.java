@@ -198,12 +198,10 @@ public class RectangularTable<E> extends AbstractTable<E> {
 	}
 
 	@Override
-	public boolean clear() {
-		boolean clear = !isEmpty();
+	public void clear() {
 		array.clear();
 		setRows(0);
 		setColumns(0);
-		return clear;
 	}
 
 	@Override

@@ -32,7 +32,6 @@ import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.FeatureType;
 import org.didelphis.language.phonetic.features.SparseFeatureArray;
-import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.didelphis.utilities.Logger;
@@ -42,9 +41,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -125,11 +122,10 @@ public final class FeatureModelLoader<T> {
 		featureIndices = new HashMap<>();
 		basePath = path;
 
-		Map<ParseZone, Collection<String>> map = new EnumMap<>(ParseZone.class);
+		zoneData = new GeneralMultiMap<>(HashMap.class, ArrayList.class);
 		for (ParseZone zone : ParseZone.values()) {
-			map.put(zone, new ArrayList<>());
+			zoneData.put(zone, new ArrayList<>());
 		}
-		zoneData = new GeneralMultiMap<>(map, Suppliers.ofList());
 
 		try {
 			String read = fileHandler.read(path);
@@ -154,11 +150,10 @@ public final class FeatureModelLoader<T> {
 		featureNames = new ArrayList<>();
 		featureIndices = new HashMap<>();
 
-		Map<ParseZone, Collection<String>> map = new EnumMap<>(ParseZone.class);
+		zoneData = new GeneralMultiMap<>(HashMap.class, ArrayList.class);
 		for (ParseZone zone : ParseZone.values()) {
-			map.put(zone, new ArrayList<>());
+			zoneData.put(zone, new ArrayList<>());
 		}
-		zoneData = new GeneralMultiMap<>(map, Suppliers.ofList());
 
 		parse(lines);
 		populate();

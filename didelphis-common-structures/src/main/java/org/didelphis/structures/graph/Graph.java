@@ -23,10 +23,13 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 
-import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.maps.GeneralTwoKeyMultiMap;
+import org.didelphis.structures.maps.interfaces.TwoKeyMap;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Class {@code Graph}
@@ -37,20 +40,18 @@ public final class Graph<S>
 		extends GeneralTwoKeyMultiMap<String, Arc<S>, String> {
 
 	public Graph() {
-		super(new HashMap<>(), Suppliers.ofLinkedHashMap(), Suppliers.ofList());
+		super(LinkedHashMap.class, ArrayList.class);
 	}
 
-	public Graph(@NonNull GeneralTwoKeyMultiMap<String, Arc<S>, String> graph) {
-		super(
-				graph,
-				new HashMap<>(),
-				Suppliers.ofLinkedHashMap(),
-				Suppliers.ofList()
-		);
+	public Graph(@NonNull TwoKeyMap<String, Arc<S>, Collection<String>> graph) {
+		super(LinkedHashMap.class, ArrayList.class, graph);
+	}
+
+	public Map<Arc<S>, Collection<String>> get(String key) {
+		return getDelegate().get(key);
 	}
 
 	public static class EmptyArc<S> implements Arc<S> {
-
 		@Override
 		public String toString() {
 			return "";

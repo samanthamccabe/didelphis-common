@@ -23,23 +23,25 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 
-import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.maps.interfaces.TwoKeyMultiMap;
 import org.didelphis.structures.tuples.Triple;
 
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.function.Supplier;
+
+import static org.didelphis.structures.Suppliers.*;
 
 /**
  * Class {@code GeneralTwoKeyMultiMap}
  *
  * @since 0.1.0
  */
-@ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@ToString (callSuper = true, exclude = "collectionSupplier")
+@EqualsAndHashCode (callSuper = true, exclude = "collectionSupplier")
 public class GeneralTwoKeyMultiMap<T, U, V>
 		extends GeneralTwoKeyMap<T, U, Collection<V>>
 		implements TwoKeyMultiMap<T, U, V> {
@@ -47,48 +49,57 @@ public class GeneralTwoKeyMultiMap<T, U, V>
 	private final Supplier<? extends Collection<V>> collectionSupplier;
 
 	public GeneralTwoKeyMultiMap() {
-		collectionSupplier = Suppliers.ofHashSet();
+		collectionSupplier = HashSet::new;
 	}
 
 	/**
-	 * Standard non-copying constructor which uses the provided delegate map and
-	 * creates new entries using the provided suppliers.
+	 * General constructor, allowing the user to specify which {@link Map} and
+	 * {@link Collection} implementations that the two-key multi-map should use
 	 *
-	 * @param delegate a delegate map to be used by the new instance
-	 * @param mSupplier a {@link Supplier} to provide the inner map instances
-	 * @param cSupplier a {@link Supplier} to provide the inner collections
+	 * @param mapType the type of map used to construct the two-key-map
+	 * @param collType the type of collection used to construct the multi-map
 	 */
+	@SuppressWarnings ({"rawtypes", "unchecked"})
 	public GeneralTwoKeyMultiMap(
-			@NonNull Map<T, Map<U, Collection<V>>> delegate,
-			@NonNull Supplier<? extends Map<U, Collection<V>>> mSupplier,
-			@NonNull Supplier<? extends Collection<V>> cSupplier
+			@NonNull Class<? extends Map> mapType,
+			@NonNull Class<? extends Collection> collType
 	) {
-		super(delegate, mSupplier);
-		collectionSupplier = cSupplier;
+		super(mapType);
+		Class<? extends Collection<?>> type =
+				(Class<? extends Collection<?>>) collType;
+
+		collectionSupplier = collectionOf(type);
 	}
 
 	/**
-	 * Copy-constructor; creates a deep copy of the map using the provided
-	 * delegate and suppliers.
+	 * Copy constructor, allowing the user to specify which {@link Map} and
+	 * {@link Collection} implementations that the two-key multi-map should use,
+	 * and copy the contents of another two-key multi-map
 	 *
-	 * @param tripleIterable triples whose data is to be copied
-	 * @param delegate a delegate map to be used by the new instance
-	 * @param mSupplier a {@link Supplier} to provide the inner map instances
-	 * @param cSupplier a {@link Supplier} to provide the inner collections
+	 * @param mapType the type of map used to construct the multi-map
+	 * @param collType the type of collection used to construct the multi-map
+	 * @param iterable the data to be copied into the new instance
 	 */
+	@SuppressWarnings ({"rawtypes", "unchecked"})
 	public GeneralTwoKeyMultiMap(
-			@NonNull Iterable<Triple<T, U, Collection<V>>> tripleIterable,
-			@NonNull Map<T, Map<U, Collection<V>>> delegate,
-			@NonNull Supplier<? extends Map<U, Collection<V>>> mSupplier,
-			@NonNull Supplier<? extends Collection<V>> cSupplier
+			@NonNull Class<? extends Map> mapType,
+			@NonNull Class<? extends Collection> collType,
+			@NonNull Iterable<Triple<T, U, Collection<V>>> iterable
 	) {
-		this(delegate, mSupplier, cSupplier);
+		super(mapType);
+		Class<? extends Collection<?>> type =
+				(Class<? extends Collection<?>>) collType;
 
-		for (Triple<T, U, Collection<V>> triple : tripleIterable) {
+		collectionSupplier = collectionOf(type);
+
+		// Populate
+		Supplier<? extends Map<U, Collection<V>>> mSupplier = getMapSupplier();
+		Map<T, Map<U, Collection<V>>> delegate = getDelegate();
+		for (Triple<T, U, Collection<V>> triple : iterable) {
 			T k1 = triple.first();
 			U k2 = triple.second();
 
-			Collection<V> values = cSupplier.get();
+			Collection<V> values = collectionSupplier.get();
 			values.addAll(triple.third());
 
 			if (delegate.containsKey(k1)) {
