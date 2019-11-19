@@ -21,7 +21,6 @@ package org.didelphis.structures.maps;
 
 import lombok.NonNull;
 
-import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.maps.interfaces.TwoKeyMap;
 import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Triple;
@@ -62,7 +61,7 @@ class SymmetricalTwoKeyMapTest {
 	@Test
 	void testIsEmpty() {
 		assertFalse(map.isEmpty());
-		assertTrue(new SymmetricalTwoKeyMap().isEmpty());
+		assertTrue(new SymmetricalTwoKeyMap<>().isEmpty());
 	}
 
 	@Test
@@ -171,11 +170,11 @@ class SymmetricalTwoKeyMapTest {
 			hashMap.put("X", "Y");
 
 			@SuppressWarnings("unchecked")
-			Map<String, String> map = HashMap.class.getConstructor(Map.class)
-					.newInstance(hashMap);
+			Map<String, String> map = HashMap.class.getConstructor(Map.class).newInstance(hashMap);
 
 			assertEquals("Y", map.get("X"));
 		} catch (Exception ignored) {
+
 		}
 
 		assertEquals(expected, map.keys());
@@ -212,15 +211,6 @@ class SymmetricalTwoKeyMapTest {
 		assertNotEquals(map, map1);
 	}
 
-	@NonNull
-	private static <K,V> SymmetricalTwoKeyMap<K, V> copy(
-			SymmetricalTwoKeyMap<K, V> map) {
-		return new SymmetricalTwoKeyMap<>(map,
-				new HashMap<>(),
-				Suppliers.ofHashMap()
-		);
-	}
-
 	@Test
 	void testToString() {
 		assertEquals(map.toString(), copy(map).toString());
@@ -235,5 +225,12 @@ class SymmetricalTwoKeyMapTest {
 		SymmetricalTwoKeyMap<String, Integer> map1 = copy(map);
 		map1.put("X", "Y", 333);
 		assertNotEquals(map.hashCode(), map1.hashCode());
+	}
+
+	@NonNull
+	private static <K,V> SymmetricalTwoKeyMap<K, V> copy(
+			SymmetricalTwoKeyMap<K, V> map
+	) {
+		return new SymmetricalTwoKeyMap<>(HashMap.class, map);
 	}
 }

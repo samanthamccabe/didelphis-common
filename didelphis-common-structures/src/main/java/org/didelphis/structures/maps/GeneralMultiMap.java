@@ -24,17 +24,14 @@ import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.Delegate;
 
-import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.contracts.Delegating;
 import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Tuple;
-import org.didelphis.utilities.Templates;
 
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -43,9 +40,11 @@ import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static org.didelphis.structures.Suppliers.*;
+
 /**
  * Class {@code GeneralMultiMap}
- *
+ * <p>
  * A general-purpose multi-map, associating a single key with a collection of
  * values.
  *
@@ -54,73 +53,64 @@ import java.util.stream.Collectors;
  *
  * @since 0.1.0
  */
-@ToString
-@EqualsAndHashCode
+@ToString (exclude = "mapSupplier")
+@EqualsAndHashCode (exclude = "mapSupplier")
 public class GeneralMultiMap<K, V>
 		implements MultiMap<K, V>, Delegating<Map<K, ? extends Collection<V>>> {
 
-	private static final GeneralMultiMap<?, ?> EMPTY = new GeneralMultiMap<>(
-			Collections.emptyMap(),
-			() -> { String message = Templates.create()
-					.add("Attempting to modify an immutable, empty instance of",
-							"class {}")
-					.with(GeneralMultiMap.class)
-					.build();
-			throw new UnsupportedOperationException(message);
-			}
-	);
-
-	@SuppressWarnings("unchecked")
-	public static <K, V> GeneralMultiMap<K,V> emptyMultiMap() {
-		return (GeneralMultiMap<K, V>) EMPTY;
-	}
-
 	@Delegate
 	private final Map<K, Collection<V>> delegate;
-	private final Supplier<? extends Collection<V>> supplier;
+	private final Supplier<? extends Collection<V>> mapSupplier;
 
 	/**
 	 * Default constructor which uses {@link HashMap} and {@link HashSet}
 	 */
 	public GeneralMultiMap() {
 		delegate = new HashMap<>();
-		supplier = Suppliers.ofHashSet();
+		mapSupplier = HashSet::new;
 	}
 
 	/**
-	 * Standard non-copying constructor which uses the provided delegate map and
-	 * creates new entries using the provided supplier.
+	 * Standard constructor, allowing the user to specify which {@link Map} and
+	 * {@link Collection} implementations that the multi-map should use.
 	 *
-	 * @param delegate a delegate map to be used by the new multimap
-	 * @param supplier a {@link Supplier} to provide the inner collections
+	 * @param mapType the type of map used to construct the multi-map
+	 * @param collType the type of collection used to construct the multi-map
 	 */
+	@SuppressWarnings ({"unchecked", "rawtypes"})
 	public GeneralMultiMap(
-			@NonNull Map<K, Collection<V>> delegate,
-			@NonNull Supplier<? extends Collection<V>> supplier
+			@NonNull Class<? extends Map> mapType,
+			@NonNull Class<? extends Collection> collType
 	) {
-		this.delegate = delegate;
-		this.supplier = supplier;
+		Class<? extends Map<?, ?>> type = (Class<? extends Map<?, ?>>) mapType;
+		Supplier<? extends Map<?, ?>> supplier = mapOf(type);
+
+		delegate = (Map<K, Collection<V>>) supplier.get();
+		mapSupplier = collectionOf((Class<? extends Collection<?>>) collType);
 	}
 
 	/**
-	 * Copy-constructor; creates a deep copy of the provided multi-map using
-	 * the provided suppliers
+	 * Copy constructor, allowing the user to specify which {@link Map} and
+	 * {@link Collection} implementations that the multi-map should use, and
+	 * copy the contents of another multi-map
 	 *
-	 * @param tupleIterable an instance whose data is to be copied
-	 * @param delegate a new (typically empty) delegate map
-	 * @param supplier a {@link Supplier} to provide the inner collections
+	 * @param mapType the type of map used to construct the multi-map
+	 * @param collType the type of collection used to construct the multi-map
+	 * @param map the data to be copied into the new instance
 	 */
+	@SuppressWarnings ("rawtypes")
 	public GeneralMultiMap(
-			@NonNull Iterable<Tuple<K, Collection<V>>> tupleIterable,
-			@NonNull Map<K, Collection<V>> delegate,
-			@NonNull Supplier<? extends Collection<V>> supplier
+			@NonNull Class<? extends Map> mapType,
+			@NonNull Class<? extends Collection> collType,
+			@NonNull Map<K, Collection<V>> map
 	) {
-		this.delegate = delegate;
-		this.supplier = supplier;
-		for (Tuple<K, Collection<V>> tuple : tupleIterable) {
-			Collection<V> collection = supplier.get();
-			collection.addAll(Objects.requireNonNull(tuple.getRight()));
-			delegate.put(tuple.getLeft(), collection);
+		this(mapType, collType);
+
+		// Populate
+		for (Entry<K, Collection<V>> entry : map.entrySet()) {
+			Collection<V> collection = mapSupplier.get();
+			collection.addAll(Objects.requireNonNull(entry.getValue()));
+			delegate.put(entry.getKey(), collection);
 		}
 	}
 
@@ -135,7 +125,7 @@ public class GeneralMultiMap<K, V>
 		if (delegate.containsKey(key)) {
 			delegate.get(key).add(value);
 		} else {
-			Collection<V> set = supplier.get();
+			Collection<V> set = mapSupplier.get();
 			set.add(value);
 			delegate.put(key, set);
 		}

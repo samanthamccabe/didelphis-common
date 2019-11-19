@@ -189,12 +189,10 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 	}
 
 	@Override
-	public boolean clear() {
-		boolean contentsRemoved = !isEmpty();
+	public void clear() {
 		array.clear();
 		setRows(0);
 		setColumns(0);
-		return contentsRemoved;
 	}
 
 	@Override

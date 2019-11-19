@@ -214,7 +214,7 @@ class SymmetricTableTest {
 
 	@Test
 	void clear() {
-		assertTrue(table.clear());
+		table.clear();
 		assertTrue(table.isEmpty());
 	}
 
@@ -278,7 +278,6 @@ class SymmetricTableTest {
 	void shrink_4_4() {
 		table.shrink(4, 4);
 		assertTrue(table.isEmpty());
-		assertFalse(table.clear());
 	}
 
 	@Test

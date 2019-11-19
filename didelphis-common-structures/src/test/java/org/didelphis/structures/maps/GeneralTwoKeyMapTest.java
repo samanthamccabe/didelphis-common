@@ -19,7 +19,6 @@
 
 package org.didelphis.structures.maps;
 
-import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.maps.interfaces.TwoKeyMap;
 import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Triple;
@@ -29,7 +28,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -37,12 +35,18 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 
 
+class GeneralTwoKeyMapTest extends TwoKeyMapTestBase<String, String, String> {
 
-class GeneralTwoKeyMapTest extends TwoKeyMapTestBase {
+	@Test
+	void testByClassConstructor() {
+		TwoKeyMap<String, String, String> map = new GeneralTwoKeyMap<>(HashMap.class);
+		map.put("A", "A", "A");
+		assertEquals("A", map.get("A", "A"));
+	}
 
 	@Test
 	void iterator() {
-		TwoKeyMap<String, String, String> map = new GeneralTwoKeyMap<>();
+		TwoKeyMap<String, String, String> map = new GeneralTwoKeyMap<>(HashMap.class);
 		map.put("a1", "b1", "v1");
 		map.put("a2", "b2", "v2");
 		map.put("a3", "b3", "v3");
@@ -62,7 +66,7 @@ class GeneralTwoKeyMapTest extends TwoKeyMapTestBase {
 
 	@Test
 	void testPutAndGet() {
-		TwoKeyMap<String, String, String> map = new GeneralTwoKeyMap<>();
+		TwoKeyMap<String, String, String> map = new GeneralTwoKeyMap<>(HashMap.class);
 		map.put("a", "b", "c");
 
 		testGet(map, "a", "b", "c");
@@ -72,7 +76,7 @@ class GeneralTwoKeyMapTest extends TwoKeyMapTestBase {
 
 	@Test
 	void testContains() {
-		TwoKeyMap<String, String, String> map = new GeneralTwoKeyMap<>();
+		TwoKeyMap<String, String, String> map = new GeneralTwoKeyMap<>(HashMap.class);
 		map.put("a1", "b1", "v1");
 		map.put("a2", "b2", "v2");
 		map.put("a3", "b3", "v3");
@@ -88,12 +92,12 @@ class GeneralTwoKeyMapTest extends TwoKeyMapTestBase {
 
 	@Test
 	void testKeys() {
-		TwoKeyMap<String, String, String> map = new GeneralTwoKeyMap<>();
+		TwoKeyMap<String, String, String> map = new GeneralTwoKeyMap<>(HashMap.class);
 		map.put("a1", "b1", "v1");
 		map.put("a2", "b2", "v2");
 		map.put("a3", "b3", "v3");
 
-		Collection<Tuple<String,String>> expected = new ArrayList<>();
+		Collection<Tuple<String, String>> expected = new ArrayList<>();
 		expected.add(new Couple<>("a1", "b1"));
 		expected.add(new Couple<>("a2", "b2"));
 		expected.add(new Couple<>("a3", "b3"));
@@ -102,26 +106,8 @@ class GeneralTwoKeyMapTest extends TwoKeyMapTestBase {
 	}
 
 	@Test
-	void testAssociatedKeys() {
-		TwoKeyMap<String, String, String> map = new GeneralTwoKeyMap<>();
-		map.put("A", "1a", "v1a");
-
-		map.put("B", "2a", "v2a");
-		map.put("B", "2b", "v2b");
-
-		map.put("C", "3a", "v3a");
-		map.put("C", "3b", "v3b");
-		map.put("C", "3c", "v3c");
-
-		assertEquals(1,map.getAssociatedKeys("A").size());
-		assertEquals(2,map.getAssociatedKeys("B").size());
-		assertEquals(3,map.getAssociatedKeys("C").size());
-		assertEquals(Collections.emptySet(), map.getAssociatedKeys("X"));
-	}
-
-	@Test
 	void testEquals() {
-		GeneralTwoKeyMap<String, String, String> map = new GeneralTwoKeyMap<>();
+		GeneralTwoKeyMap<String, String, String> map = new GeneralTwoKeyMap<>(HashMap.class);
 		map.put("a1", "b1", "v1");
 		map.put("a2", "b2", "v2");
 		map.put("a3", "b3", "v3");
@@ -136,7 +122,7 @@ class GeneralTwoKeyMapTest extends TwoKeyMapTestBase {
 
 	@Test
 	void testToString() {
-		GeneralTwoKeyMap<String, String, String> map = new GeneralTwoKeyMap<>();
+		GeneralTwoKeyMap<String, String, String> map = new GeneralTwoKeyMap<>(HashMap.class);
 		map.put("a1", "b1", "v1");
 		map.put("a2", "b2", "v2");
 		map.put("a3", "b3", "v3");
@@ -151,7 +137,7 @@ class GeneralTwoKeyMapTest extends TwoKeyMapTestBase {
 
 	@Test
 	void testHashCode() {
-		GeneralTwoKeyMap<String, String, String> map = new GeneralTwoKeyMap<>();
+		GeneralTwoKeyMap<String, String, String> map = new GeneralTwoKeyMap<>(HashMap.class);
 		map.put("a1", "b1", "v1");
 		map.put("a2", "b2", "v2");
 		map.put("a3", "b3", "v3");
@@ -165,7 +151,8 @@ class GeneralTwoKeyMapTest extends TwoKeyMapTestBase {
 	}
 
 	private static GeneralTwoKeyMap<String, String, String> copy(
-			GeneralTwoKeyMap<String, String, String> map) {
-		return new GeneralTwoKeyMap<>(map, new HashMap<>(), Suppliers.ofHashMap());
+			GeneralTwoKeyMap<String, String, String> map
+	) {
+		return new GeneralTwoKeyMap<>(HashMap.class, map);
 	}
 }

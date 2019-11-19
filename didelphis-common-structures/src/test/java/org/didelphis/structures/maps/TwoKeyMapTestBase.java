@@ -24,28 +24,25 @@ import org.didelphis.structures.maps.interfaces.TwoKeyMap;
 import static org.junit.jupiter.api.Assertions.*;
 
 
+class TwoKeyMapTestBase<T,U,V> {
 
-public abstract class TwoKeyMapTestBase {
-
-	protected TwoKeyMapTestBase() {}
-
-	static <T, U, V> void testGet(TwoKeyMap<T, U, V> map, T k1, U k2, V v) {
-		String string = "key (" + k1 + ',' + k2 + ") retrieved unexpected value";
-		assertEquals(v, map.get(k1, k2), string);
+	void testGet(TwoKeyMap<T, U, V> map, T k1, U k2, V v) {
+		assertEquals(v, map.get(k1, k2), () ->
+				"key (" + k1 + ", " + k2 + ") retrieved unexpected value");
 	}
 
-	static <T, U, V> void testNullGet(TwoKeyMap<T, U, V> map, T k1, U k2) {
-		String string = "key (" + k1 + ',' + k2 + ") should not exist";
-		assertNull(map.get(k1, k2), string);
+	void testNullGet(TwoKeyMap<T, U, V> map, T k1, U k2) {
+		assertNull(map.get(k1, k2), () ->
+				"key (" + k1 + ", " + k2 + ") should not exist");
 	}
 
-	static <T, U, V> void testContains(TwoKeyMap<T, U, V> map, T k1, U k2) {
-		String string = "key (" + k1 + ',' + k2 + ") should be found in maps";
-		assertTrue(map.contains(k1, k2),string);
+	void testContains(TwoKeyMap<T, U, V> map, T k1, U k2) {
+		assertTrue(map.contains(k1, k2), () ->
+				"key (" + k1 + ", " + k2 + ") should be found in maps");
 	}
 
-	static <T, U, V> void testNotContains(TwoKeyMap<T, U, V> map, T k1, U k2) {
-		String string = "key (" + k1 + ',' + k2 + ") should *not* be found in maps";
-		assertFalse(map.contains(k1, k2),string);
+	void testNotContains(TwoKeyMap<T, U, V> map, T k1, U k2) {
+		assertFalse(map.contains(k1, k2), () ->
+				"key (" + k1 + ", " + k2 + ") should *not* be found in maps");
 	}
 }

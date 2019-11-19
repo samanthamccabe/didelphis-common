@@ -48,10 +48,6 @@ public interface Structure {
 
 	/**
 	 * Deletes all contents from the structure.
-	 *
-	 * @return true iff contents were deleted; if the structure was already
-	 *      empty, this operation will return false.
 	 */
-	@SuppressWarnings ("BooleanMethodNameMustStartWithQuestion")
-	boolean clear();
+	void clear();
 }

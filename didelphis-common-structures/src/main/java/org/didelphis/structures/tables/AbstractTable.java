@@ -25,7 +25,6 @@ import lombok.ToString;
 
 import org.didelphis.utilities.Templates;
 
-import java.text.DecimalFormat;
 import java.util.Collection;
 
 /**
@@ -36,9 +35,6 @@ import java.util.Collection;
 @ToString
 @EqualsAndHashCode
 public abstract class AbstractTable<E> implements ResizeableTable<E> {
-
-	@Deprecated protected static final DecimalFormat DECIMAL_FORMAT
-			= new DecimalFormat(" 0.000;-0.000");
 
 	private int rows;
 	private int columns;

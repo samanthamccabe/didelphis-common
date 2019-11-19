@@ -22,10 +22,8 @@ package org.didelphis.structures.maps;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
-import lombok.experimental.Delegate;
 
 import org.didelphis.structures.Suppliers;
-import org.didelphis.structures.contracts.Delegating;
 import org.didelphis.structures.maps.interfaces.TwoKeyMap;
 import org.didelphis.structures.tuples.Couple;
 import org.didelphis.structures.tuples.Triple;
@@ -35,7 +33,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -52,12 +49,10 @@ import java.util.function.Supplier;
  *
  * @since 0.1.0
  */
-@ToString
-@EqualsAndHashCode
-public class GeneralTwoKeyMap<T, U, V>
-		implements TwoKeyMap<T, U, V>, Delegating<Map<T, ? extends Map<U, V>>> {
+@ToString (of = "delegate")
+@EqualsAndHashCode (of = "delegate")
+public class GeneralTwoKeyMap<T, U, V> implements TwoKeyMap<T, U, V> {
 
-	@Delegate(excludes = Size.class)
 	private final Map<T, Map<U, V>> delegate;
 	private final Supplier<? extends Map<U, V>> mapSupplier;
 
@@ -66,42 +61,40 @@ public class GeneralTwoKeyMap<T, U, V>
 	 */
 	public GeneralTwoKeyMap() {
 		delegate = new HashMap<>();
-		mapSupplier = Suppliers.ofHashMap();
+		mapSupplier = HashMap::new;
 	}
 
 	/**
-	 * Standard non-copying constructor which uses the provided delegate map and
-	 * creates new entries using the provided supplier.
+	 * Standard constructor, allows the user to specify which type of {@link
+	 * Map} the two-key-map should use
 	 *
-	 * @param delegate a delegate map to be used by the new multi-map
-	 * @param mapSupplier a {@link Supplier} to provide the inner map
-	 *      instances
+	 * @param mapType the type of map used to construct the two-key-map
 	 */
-	public GeneralTwoKeyMap(
-			@NonNull Map<T, Map<U, V>> delegate,
-			@NonNull Supplier<? extends Map<U, V>> mapSupplier
-	) {
-		this.delegate = delegate;
-		this.mapSupplier = mapSupplier;
+	@SuppressWarnings ({"rawtypes", "unchecked"})
+	public GeneralTwoKeyMap(@NonNull Class<? extends Map> mapType) {
+		Class<? extends Map<?, ?>> type = (Class<? extends Map<?, ?>>) mapType;
+		Supplier<? extends Map<?, ?>> supplier = Suppliers.mapOf(type);
+
+		delegate = (Map<T, Map<U, V>>) supplier.get();
+		mapSupplier = (Supplier<? extends Map<U, V>>) supplier;
 	}
 
 	/**
-	 * Copy-constructor; creates a deep copy of the provided multi-map using
-	 * the provided suppliers
+	 * Copy constructor, allows the user to specify which type of {@link Map}
+	 * the two-key-map should use, and what data to copy into this instance
 	 *
-	 * @param tripleIterable a {@link TwoKeyMap} instance whose data is to be
-	 *      copied
-	 * @param delegate a new (typically empty) delegate map
-	 * @param mapSupplier a {@link Supplier} to provide the inner collections
+	 * @param mapType the type of map used to construct the two-key-map
+	 * @param iterable the data to copy into the new instance
 	 */
+	@SuppressWarnings ("rawtypes")
 	public GeneralTwoKeyMap(
-			@NonNull Iterable<Triple<T, U, V>> tripleIterable,
-			@NonNull Map<T, Map<U, V>> delegate,
-			@NonNull Supplier<? extends Map<U, V>> mapSupplier
+			@NonNull Class<? extends Map> mapType,
+			@NonNull Iterable<Triple<T, U, V>> iterable
 	) {
-		this(delegate, mapSupplier);
+		this(mapType);
 
-		for (Triple<T, U, V> triple : tripleIterable) {
+		// Populate
+		for (Triple<T, U, V> triple : iterable) {
 			T k1 = triple.first();
 			U k2 = triple.second();
 			V value = triple.third();
@@ -136,11 +129,29 @@ public class GeneralTwoKeyMap<T, U, V>
 		return delegate.containsKey(k1) && delegate.get(k1).containsKey(k2);
 	}
 
+	@Override
+	public boolean containsFirstKey(@Nullable T k1) {
+		return delegate.containsKey(k1);
+	}
+
+	@Override
+	public boolean containsSecondKey(@Nullable U k2) {
+		for (Map<U, V> uvMap : delegate.values()) {
+			if (uvMap.containsKey(k2)) return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean containsValue(@Nullable V value) {
+		return false;
+	}
+
 	@NonNull
 	@Override
 	public Collection<Tuple<T, U>> keys() {
 		Collection<Tuple<T, U>> keys = new ArrayList<>();
-		for (Entry<T, ? extends Map<U, V>> entry : delegate.entrySet()) {
+		for (Map.Entry<T, ? extends Map<U, V>> entry : delegate.entrySet()) {
 			T k1 = entry.getKey();
 			for (U k2 : entry.getValue().keySet()) {
 				keys.add(new Couple<>(k1, k2));
@@ -149,21 +160,41 @@ public class GeneralTwoKeyMap<T, U, V>
 		return keys;
 	}
 
-	@NonNull
 	@Override
-	public Collection<U> getAssociatedKeys(T k1) {
-		return delegate.containsKey(k1)
-				? delegate.get(k1).keySet()
-				: Collections.emptySet();
+	public int size() {
+		return delegate.values().stream().mapToInt(Map::size).sum();
+	}
+
+	@Nullable
+	@Override
+	public V removeKeys(@Nullable T k1, @Nullable U k2) {
+		return delegate.get(k1).remove(k2);
+	}
+
+	@Override
+	public void putAll(@NonNull TwoKeyMap<T, U, V> map) {
+		for (Triple<T, U, V> triple : map) {
+			put(triple.first(), triple.second(), triple.third());
+		}
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return delegate.isEmpty();
+	}
+
+	@Override
+	public void clear() {
+		delegate.clear();
 	}
 
 	@NonNull
 	@Override
 	public Iterator<Triple<T, U, V>> iterator() {
 		Collection<Triple<T, U, V>> triples = new ArrayList<>();
-		for (Entry<T, Map<U, V>> e1 : delegate.entrySet()) {
+		for (Map.Entry<T, Map<U, V>> e1 : delegate.entrySet()) {
 			T k1 = e1.getKey();
-			for (Entry<U, V> e2 : e1.getValue().entrySet()) {
+			for (Map.Entry<U, V> e2 : e1.getValue().entrySet()) {
 				triples.add(new Triple<>(k1, e2.getKey(), e2.getValue()));
 			}
 		}
@@ -171,24 +202,11 @@ public class GeneralTwoKeyMap<T, U, V>
 	}
 
 	@NonNull
-	@Override
-	public Map<T, Map<U, V>> getDelegate() {
+	protected final Map<T, Map<U, V>> getDelegate() {
 		return delegate;
 	}
 
-	protected Supplier<? extends Map<U, V>> getMapSupplier() {
+	protected final Supplier<? extends Map<U, V>> getMapSupplier() {
 		return mapSupplier;
-	}
-
-	// A weird but necessary way of ensuring @Delegate works correctly; the
-	// delegated .size() call from Map will only return the size of the outer
-	// Map, but the designed behavior for a two-key map is that the size is the
-	// total number of entries
-	@SuppressWarnings({
-			"InterfaceNeverImplemented",
-			"InterfaceMayBeAnnotatedFunctional"
-	})
-	private interface Size {
-		int size();
 	}
 }

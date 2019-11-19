@@ -21,12 +21,11 @@ package org.didelphis.structures.maps;
 
 import lombok.NonNull;
 
-import org.didelphis.structures.Suppliers;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -79,12 +78,7 @@ class SymmetricalTwoKeyMultiMapTest {
 	}
 
 	@NonNull
-	private static <K,V> SymmetricalTwoKeyMultiMap<K, V> copy(
-			SymmetricalTwoKeyMultiMap<K, V> map) {
-		return new SymmetricalTwoKeyMultiMap<>(map,
-				new HashMap<>(),
-				Suppliers.ofHashMap(),
-				Suppliers.ofHashSet()
-		);
+	private static <K,V> SymmetricalTwoKeyMultiMap<K, V> copy(SymmetricalTwoKeyMultiMap<K, V> map) {
+		return new SymmetricalTwoKeyMultiMap<>(HashMap.class, HashSet.class, map);
 	}
 }

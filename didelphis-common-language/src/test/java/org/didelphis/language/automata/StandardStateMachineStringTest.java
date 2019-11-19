@@ -26,7 +26,6 @@ import org.didelphis.language.automata.parsing.StringParser;
 import org.didelphis.language.automata.statemachines.StandardStateMachine;
 import org.didelphis.language.automata.statemachines.StateMachine;
 import org.didelphis.language.parsing.ParseException;
-import org.didelphis.structures.Suppliers;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
 
@@ -35,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -1051,7 +1051,7 @@ class StandardStateMachineStringTest extends StateMachineTestBase<String> {
 		List<String> strings = Arrays.asList(split[1].split("\\s+"));
 		Map<String, Collection<String>> map = new HashMap<>();
 		map.put(split[0], strings);
-		return new GeneralMultiMap<>(map, Suppliers.ofHashSet());
+		return new GeneralMultiMap<>(HashMap.class, HashSet.class, map);
 	}
 
 	private static StateMachine<String> getMachine(String expression) {

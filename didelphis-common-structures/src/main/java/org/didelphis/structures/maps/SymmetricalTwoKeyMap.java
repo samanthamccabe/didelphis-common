@@ -29,12 +29,8 @@ import org.didelphis.structures.tuples.Tuple;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 
 @ToString(callSuper = true)
@@ -45,38 +41,32 @@ public class SymmetricalTwoKeyMap<K, V> extends GeneralTwoKeyMap<K, K, V>
 	/**
 	 * Default constructor which uses a {@link HashMap} delegate
 	 */
-	public SymmetricalTwoKeyMap() {
+	public SymmetricalTwoKeyMap() {}
+
+	/**
+	 * Standard constructor, allows the user to specify which type of {@link
+	 * Map} the two-key-map should use
+	 *
+	 * @param mapType the type of map used to construct the two-key-map
+	 */
+	@SuppressWarnings ("rawtypes")
+	public SymmetricalTwoKeyMap(Class<? extends Map> mapType) {
+		super(mapType);
 	}
 
 	/**
-	 * Standard non-copying constructor which uses the provided delegate map and
-	 * creates new entries using the provided supplier.
+	 * Copy constructor, allows the user to specify which type of {@link Map}
+	 * the two-key-map should use, and what data to copy into this instance
 	 *
-	 * @param delegate a delegate map to be used by the new multimap
-	 * @param mapSupplier a {@link Supplier} to provide the inner map
-	 *      instances
+	 * @param mapType the type of map used to construct the two-key-map
+	 * @param iterable the data to copy into the new instance
 	 */
+	@SuppressWarnings ("rawtypes")
 	public SymmetricalTwoKeyMap(
-			@NonNull Map<K, Map<K, V>> delegate,
-			@NonNull Supplier<? extends Map<K, V>> mapSupplier
+			@NonNull Class<? extends Map> mapType,
+			@NonNull Iterable<Triple<K, K, V>> iterable
 	) {
-		super(delegate, mapSupplier);
-	}
-
-	/**
-	 * Copy-constructor; creates a deep copy of the provided multi-map using
-	 * the provided suppliers
-	 *
-	 * @param tripleIterable triples whose data is to be copied
-	 * @param delegate a (typically empty) delegate map
-	 * @param mapSupplier a {@link Supplier} to provide the inner map
-	 */
-	public SymmetricalTwoKeyMap(
-			@NonNull Iterable<Triple<K, K, V>> tripleIterable,
-			@NonNull Map<K, Map<K, V>> delegate,
-			@NonNull Supplier<? extends Map<K, V>> mapSupplier
-	) {
-		super(tripleIterable, delegate, mapSupplier);
+		super(mapType, iterable);
 	}
 
 	@Override
@@ -95,16 +85,5 @@ public class SymmetricalTwoKeyMap<K, V> extends GeneralTwoKeyMap<K, K, V>
 	public boolean contains(@Nullable K k1, @Nullable K k2) {
 		Tuple<K, K> tuple = canonicalKeyPair(k1, k2);
 		return super.contains(tuple.getLeft(), tuple.getRight());
-	}
-
-	@NonNull
-	@Override
-	public Collection<K> getAssociatedKeys(@Nullable K k1) {
-		return keys().stream()
-				.filter(tuple -> tuple.contains(k1))
-				.map(tuple -> Objects.equals(tuple.getLeft(), k1)
-						? tuple.getRight()
-						: tuple.getLeft())
-				.collect(Collectors.toSet());
 	}
 }

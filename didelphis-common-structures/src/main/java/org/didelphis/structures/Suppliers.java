@@ -19,10 +19,14 @@
 
 package org.didelphis.structures;
 
+import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.UtilityClass;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -66,5 +70,89 @@ public final class Suppliers {
 
 	public <K, V> Supplier<NavigableMap<K, V>> ofTreeMap() {
 		return TreeMap::new;
+	}
+
+	public <K, V> Supplier<Map<K, V>> mapOf(
+			@NonNull Class<? extends Map<?, ?>> type
+	) {
+		return new MapSupplier<>(type);
+	}
+
+	public <E> Supplier<Collection<E>> collectionOf(
+			@NonNull Class<? extends Collection<?>> type
+	) {
+		return new CollectionSupplier<>(type);
+	}
+
+	private static final class CollectionSupplier<E>
+			implements Supplier<Collection<E>> {
+
+		private final Class<? extends Collection<?>> type;
+
+		private CollectionSupplier(Class<? extends Collection<?>> type) {
+			this.type = type;
+		}
+
+		@Override
+		@SuppressWarnings ("unchecked")
+		public Collection<E> get() {
+			try {
+				Constructor<? extends Collection<?>> constructor =
+						type.getConstructor();
+				return (Collection<E>) constructor.newInstance();
+			} catch (NoSuchMethodException e) {
+				throw new IllegalArgumentException("Unable to create new two " +
+						"key map using the provided class; it does not have " +
+						"a default constructor.", e);
+			} catch (IllegalAccessException e) {
+				throw new IllegalArgumentException("Unable to create new two " +
+						"key map using the provided class; it does not have " +
+						"access to the class definition.", e);
+			} catch (InstantiationException e) {
+				throw new IllegalArgumentException("Unable to create new two " +
+						"key map using the provided class; it cannot be " +
+						"instantiated.", e);
+			} catch (InvocationTargetException e) {
+				throw new IllegalArgumentException("Unable to create new two " +
+						"key map using the provided class; an error occurred " +
+						"while instantiating it.", e);
+			}
+		}
+	}
+
+	private static final class MapSupplier<K, V>
+			implements Supplier<Map<K, V>> {
+
+		private final Class<? extends Map<?, ?>> type;
+
+		private MapSupplier(Class<? extends Map<?, ?>> type) {
+			this.type = type;
+		}
+
+		@Override
+		@SuppressWarnings ("unchecked")
+		public Map<K, V> get() {
+			try {
+				Constructor<? super Map<?, ?>> constructor =
+						(Constructor<? super Map<?, ?>>) type.getConstructor();
+				return (Map<K, V>) constructor.newInstance();
+			} catch (NoSuchMethodException e) {
+				throw new IllegalArgumentException("Unable to create new two " +
+						"key map using the provided class; it does not have " +
+						"a default constructor.", e);
+			} catch (IllegalAccessException e) {
+				throw new IllegalArgumentException("Unable to create new two " +
+						"key map using the provided class; it does not have " +
+						"access to the class definition.", e);
+			} catch (InstantiationException e) {
+				throw new IllegalArgumentException("Unable to create new two " +
+						"key map using the provided class; it cannot be " +
+						"instantiated.", e);
+			} catch (InvocationTargetException e) {
+				throw new IllegalArgumentException("Unable to create new two " +
+						"key map using the provided class; an error occurred " +
+						"while instantiating it.", e);
+			}
+		}
 	}
 }

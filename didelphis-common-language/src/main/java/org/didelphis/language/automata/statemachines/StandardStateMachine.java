@@ -227,7 +227,7 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 				// This check is done because not all nodes are keys in the
 				// graph; if a node is terminal, with no outgoing arcs, then
 				// the node will not be a key in the graph
-				if (graph.containsKey(currentNode)) {
+				if (graph.containsFirstKey(currentNode)) {
 					if (cursor.getIndex() > parser.lengthOf(input)) {
 						continue;
 					}
