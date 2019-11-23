@@ -85,4 +85,5 @@ public final class DiskFileHandler implements FileHandler {
 		File file = new File(path);
 		return file.exists() && file.canWrite();
 	}
+
 }

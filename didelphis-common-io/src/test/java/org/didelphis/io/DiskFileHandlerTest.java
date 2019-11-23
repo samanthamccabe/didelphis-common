@@ -98,25 +98,53 @@ class DiskFileHandlerTest {
 
 	@Test
 	void testEquals() {
-		assertEquals(handler, new DiskFileHandler("UTF-8"));
-		assertNotEquals(handler, new DiskFileHandler("ISO-8869-1"));
+		assertEquals(new DiskFileHandler("UTF-8"), handler);
+		assertNotEquals(new DiskFileHandler("ISO-8869-1"), handler);
 	}
 
 	@Test
 	void test_hashCode() {
-		assertEquals(handler.hashCode(), new DiskFileHandler("UTF-8").hashCode());
-		assertNotEquals(handler.hashCode(), new DiskFileHandler("UTF-16").hashCode());
+		assertEquals(new DiskFileHandler("UTF-8").hashCode(), handler.hashCode());
+		assertNotEquals(new DiskFileHandler("UTF-16").hashCode(), handler.hashCode());
 	}
 
 	@Test
 	void test_equals() {
-		assertEquals(handler, new DiskFileHandler("UTF-8"));
-		assertNotEquals(handler, new DiskFileHandler("UTF-16"));
+		assertEquals(new DiskFileHandler("UTF-8"), handler);
+		assertNotEquals(new DiskFileHandler("UTF-16"), handler);
 	}
 
 	@Test
 	void test_toString() {
 		assertEquals(handler.toString(), new DiskFileHandler("UTF-8").toString());
 		assertNotEquals(handler.toString(), new DiskFileHandler("UTF-16").toString());
+	}
+
+	@Test
+	void testValidForRead() {
+		String path1 = "didelphis-common-io/src/test/resources/testFile.txt";
+		String path2 = "didelphis-common-io/src/test/resources/testFile_doesntExist.txt";
+
+		assertTrue(handler.validForRead(path1));
+		assertFalse(handler.validForRead(path2));
+
+		assertThrows(
+				NullPointerException.class,
+				() -> handler.validForRead(null)
+		);
+	}
+
+	@Test
+	void testValidForWrite() {
+		String path1 = "didelphis-common-io/src/test/resources/testFile.txt";
+		String path2 = "didelphis-common-io/src/test/resources/testFile_doesntExist.txt";
+
+		assertTrue(handler.validForWrite(path1));
+		assertFalse(handler.validForWrite(path2));
+
+		assertThrows(
+				NullPointerException.class,
+				() -> handler.validForWrite(null)
+		);
 	}
 }
