@@ -34,9 +34,10 @@ import org.didelphis.language.phonetic.features.FeatureType;
 import org.didelphis.language.phonetic.features.SparseFeatureArray;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
-import org.didelphis.utilities.Logger;
 import org.didelphis.utilities.Templates;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -62,7 +63,7 @@ import static org.didelphis.utilities.Splitter.*;
 @EqualsAndHashCode
 public final class FeatureModelLoader<T> {
 
-	private static final Logger LOG = Logger.create(FeatureModelLoader.class);
+	private static final Logger LOG = LogManager.getLogger(FeatureModelLoader.class);
 
 	/**
 	 * Enum {@code ParseZone}

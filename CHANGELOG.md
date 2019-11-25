@@ -29,6 +29,7 @@ General Didelphis components for language modeling and analysis
  - `RectangularTable` no longer implements `Delegate` and no longer uses a
    constructor which exposes the object's internals
  - Updated documentation to remove `@date` tags and `created by` lines
+ - Removed customer logger implementation and transitioned to Log4J 2
 #### Fixed
  - Fixed misuse of Lombok annotation `@FieldDefaults` which do not apply to 
    static class members; the code was written at a time when it incorrectly

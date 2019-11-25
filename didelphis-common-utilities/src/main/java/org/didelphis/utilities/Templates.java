@@ -64,14 +64,6 @@ import java.util.Objects;
  * The only non-factory method exposed by this utility class is
  * {@link #compile(String, Object...)}
  * which can be used for basic templating; a single message, with provided data.
- * This is used internally by the builder, but is also used by {@link Logger} to
- * create its messages, and uses the same pattern as any of its log commands.
- *
- * see also
- * {@link Logger#info(String, Object...)},
- * {@link Logger#warn(String, Object...)},
- * {@link Logger#error(String, Object...)},
- * <i>etc.</i>
  *
  */
 @UtilityClass

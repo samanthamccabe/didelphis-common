@@ -26,7 +26,9 @@ import org.didelphis.language.phonetic.SpecificationBearer;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureSpecification;
 import org.didelphis.language.phonetic.segments.Segment;
-import org.didelphis.utilities.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,7 +43,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public class BasicSequence<T> extends AbstractSequence<T> {
 
-	private static final Logger LOG = Logger.create(BasicSequence.class);
+	private static final Logger LOG = LogManager.getLogger(BasicSequence.class);
 
 	public BasicSequence(Sequence<T> sequence) {
 		super(sequence);

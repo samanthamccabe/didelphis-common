@@ -22,7 +22,8 @@ package org.didelphis.io;
 import lombok.NonNull;
 import lombok.ToString;
 
-import org.didelphis.utilities.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,8 +38,8 @@ import java.io.Reader;
 @ToString
 public enum ClassPathFileHandler implements FileHandler {INSTANCE;
 
-	private static final Class<?> CLASS = ClassPathFileHandler.class;
-	private static final Logger LOG = Logger.create(CLASS);
+	private static final Class<?>    CLASS  = ClassPathFileHandler.class;
+	private static final Logger      LOG    = LogManager.getLogger(CLASS);
 	private static final ClassLoader LOADER = CLASS.getClassLoader();
 
 	private final String encoding;
