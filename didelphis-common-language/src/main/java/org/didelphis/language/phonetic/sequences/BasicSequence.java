@@ -29,48 +29,59 @@ import org.didelphis.language.phonetic.segments.Segment;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Class {@code BasicSequence}
  * @param <T>
  */
-@EqualsAndHashCode(callSuper = true)
-public class BasicSequence<T> extends AbstractSequence<T> {
+@EqualsAndHashCode
+public class BasicSequence<T> implements Sequence<T> {
 
 	private static final Logger LOG = LogManager.getLogger(BasicSequence.class);
 
+	private final List<Segment<T>> segments;
+	private final FeatureModel<T> featureModel;
+
 	public BasicSequence(Sequence<T> sequence) {
-		super(sequence);
+		segments = new ArrayList<>(sequence);
+		featureModel = sequence.getFeatureModel();
 	}
 
 	public BasicSequence(Segment<T> segment) {
-		super(segment);
+		featureModel = segment.getFeatureModel();
+		segments = new LinkedList<>();
+		segments.add(segment);
 	}
 
-	public BasicSequence(FeatureModel<T> featureSpecification) {
-		super(featureSpecification);
+	public BasicSequence(FeatureModel<T> model) {
+		segments = new LinkedList<>();
+		featureModel = model;
 	}
 
 	public BasicSequence(Collection<Segment<T>> segments, FeatureModel<T> model) {
-		super(segments, model);
+		this.segments = new LinkedList<>(segments);
+		featureModel = model;
 	}
 
 	@Override
 	public void add(@NonNull Sequence<T> sequence) {
 		validateModelOrFail(sequence);
-		getSegments().addAll(sequence);
+		segments.addAll(sequence);
 	}
 
 	@Override
 	public void insert(@NonNull Sequence<T> sequence, int index) {
 		validateModelOrFail(sequence);
-		getSegments().addAll(index, sequence);
+		segments.addAll(index, sequence);
 	}
 
 	@Override
@@ -136,7 +147,7 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 		if (validateModelOrWarn(segment)) {
 			return false;
 		}
-		return !isEmpty() && getSegments().get(0).matches(segment);
+		return !isEmpty() && segments.get(0).matches(segment);
 	}
 
 	@Override
@@ -156,7 +167,7 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 	@NonNull
 	@Override
 	public BasicSequence<T> remove(int start, int end) {
-		BasicSequence<T> q = new BasicSequence<>(getFeatureModel());
+		BasicSequence<T> q = new BasicSequence<>(featureModel);
 		for (int i = 0; i < end - start; i++) {
 			q.add(remove(start));
 		}
@@ -195,14 +206,13 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 	@NonNull
 	@Override
 	public Sequence<T> subsequence(int from, int to) {
-		return new BasicSequence<>(subList(from, to), getFeatureModel());
+		return new BasicSequence<>(subList(from, to), featureModel);
 	}
 
 	@NonNull
 	@Override
 	public Sequence<T> subsequence(int from) {
-		return new BasicSequence<>(subList(from, size()),
-				getFeatureModel()
+		return new BasicSequence<>(subList(from, size()), featureModel
 		);
 	}
 
@@ -218,30 +228,148 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 		return indices;
 	}
 
+	@NonNull
+	@Override
+	public BasicSequence<T> getReverseSequence() {
+		Deque<Segment<T>> linkedList = new LinkedList<>();
+		for (Segment<T> segment : segments) {
+			linkedList.addFirst(segment);
+		}
+		return new BasicSequence<>(linkedList, featureModel);
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		for (Segment<T> segment : getSegments()) {
+		for (Segment<T> segment : segments) {
 			String symbol = segment.getSymbol();
 			sb.append(symbol);
 		}
 		return sb.toString();
 	}
 
-	@NonNull
 	@Override
-	public BasicSequence<T> getReverseSequence() {
-		Deque<Segment<T>> linkedList = new LinkedList<>();
-		for (Segment<T> segment : getDelegate()) {
-			linkedList.addFirst(segment);
-		}
-		return new BasicSequence<>(linkedList, getFeatureModel());
+	public int size() {
+		return segments.size();
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return segments.isEmpty();
+	}
+
+	@Override
+	public boolean contains(Object object) {
+		return segments.contains(object);
+	}
+
+	@NotNull
+	@Override
+	public Iterator<Segment<T>> iterator() {
+		return segments.iterator();
+	}
+
+	@NotNull
+	@Override
+	public Object[] toArray() {
+		return segments.toArray();
+	}
+
+	@NotNull
+	@Override
+	public <E> E[] toArray(@NotNull E[] array) {
+		return segments.toArray(array);
 	}
 
 	@Override
 	public boolean add(Segment<T> segment) {
 		validateModelOrFail(segment);
-		return getSegments().add(segment);
+		return segments.add(segment);
+	}
+
+	@Override
+	public boolean remove(Object object) {
+		return segments.remove(object);
+	}
+
+	@Override
+	public boolean containsAll(@NotNull Collection<?> objects) {
+		return segments.containsAll(objects);
+	}
+
+	@Override
+	public boolean addAll(@NotNull Collection<? extends Segment<T>> objects) {
+		return segments.addAll(objects);
+	}
+
+	@Override
+	public boolean addAll(
+			int index, @NotNull Collection<? extends Segment<T>> objects
+	) {
+		return segments.addAll(index, objects);
+	}
+
+	@Override
+	public boolean removeAll(@NotNull Collection<?> objects) {
+		return segments.removeAll(objects);
+	}
+
+	@Override
+	public boolean retainAll(@NotNull Collection<?> objects) {
+		return segments.retainAll(objects);
+	}
+
+	@Override
+	public void clear() {
+		segments.clear();
+	}
+
+	@Override
+	public Segment<T> get(int index) {
+		return segments.get(index);
+	}
+
+	@Override
+	public Segment<T> set(int index, Segment<T> element) {
+		return segments.set(index, element);
+	}
+
+	@Override
+	public void add(int index, Segment<T> element) {
+		segments.add(index, element);
+	}
+
+	@Override
+	public Segment<T> remove(int index) {
+		return segments.remove(index);
+	}
+
+	@Override
+	public int indexOf(Object object) {
+		return segments.indexOf(object);
+	}
+
+	@Override
+	public int lastIndexOf(Object object) {
+		return segments.lastIndexOf(object);
+	}
+
+	@NotNull
+	@Override
+	public ListIterator<Segment<T>> listIterator() {
+		return segments.listIterator();
+	}
+
+	@NotNull
+	@Override
+	public ListIterator<Segment<T>> listIterator(int index) {
+		return segments.listIterator(index);
+	}
+
+	@NotNull
+	@Override
+	public List<Segment<T>> subList(int fromIndex, int toIndex) {
+		return segments.subList(fromIndex, toIndex);
 	}
 
 	@Override
@@ -255,16 +383,22 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 		return size() > o.size() ? 1 : -1;
 	}
 
+	@Override
+	@NonNull
+	public FeatureModel<T> getFeatureModel() {
+		return featureModel;
+	}
+
 	@NonNull
 	@Override
 	public FeatureSpecification getSpecification() {
-		return getFeatureModel().getSpecification();
+		return featureModel.getSpecification();
 	}
 
 	private boolean validateModelOrWarn(@NonNull SpecificationBearer that) {
 		if (!getSpecification().equals(that.getSpecification())) {
 			LOG.warn("Attempting to check a {} with an incompatible model!\n\t{}\t{}\n\t{}\t{}",
-					that.getClass(), this, that, getFeatureModel(), that.getSpecification());
+					that.getClass(), this, that, featureModel, that.getSpecification());
 			return true;
 		}
 		return false;
@@ -274,7 +408,7 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 		if (!getSpecification().equals(that.getSpecification())) {
 			throw new IllegalArgumentException("Attempting to add " + that.getClass() +
 					" with an incompatible model!\n" + '\t' + this + '\t' +
-					getFeatureModel() + '\n' + '\t' + that + '\t' +
+					featureModel + '\n' + '\t' + that + '\t' +
 					that.getSpecification());
 		}
 	}

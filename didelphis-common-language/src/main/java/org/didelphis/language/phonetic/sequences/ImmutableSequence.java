@@ -61,7 +61,7 @@ public class ImmutableSequence<T> extends BasicSequence<T> {
 	}
 
 	@Override
-	public boolean remove(Object o) {
+	public boolean remove(Object object) {
 		throw unsupported();
 	}
 
@@ -72,17 +72,17 @@ public class ImmutableSequence<T> extends BasicSequence<T> {
 	}
 
 	@Override
-	public boolean addAll(@NonNull Collection<? extends Segment<T>> c) {
+	public boolean addAll(@NonNull Collection<? extends Segment<T>> objects) {
 		throw unsupported();
 	}
 
 	@Override
-	public boolean retainAll(@NonNull Collection<?> c) {
+	public boolean retainAll(@NonNull Collection<?> objects) {
 		throw unsupported();
 	}
 
 	@Override
-	public boolean removeAll(@NonNull Collection<?> c) {
+	public boolean removeAll(@NonNull Collection<?> objects) {
 		throw unsupported();
 	}
 
@@ -98,7 +98,7 @@ public class ImmutableSequence<T> extends BasicSequence<T> {
 
 	@Override
 	public boolean addAll(
-			int index, @NonNull Collection<? extends Segment<T>> c
+			int index, @NonNull Collection<? extends Segment<T>> objects
 	) {
 		throw unsupported();
 	}

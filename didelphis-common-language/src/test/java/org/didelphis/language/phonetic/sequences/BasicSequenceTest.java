@@ -155,19 +155,6 @@ class BasicSequenceTest extends PhoneticTestBase {
 	}
 
 	@Test
-	void testDelegate() {
-		List<Segment<Integer>> list = new ArrayList<>();
-		Sequence<Integer> sequence1 = factory.toSequence("foo");
-		BasicSequence<Integer> sequence2 = new BasicSequence<>(sequence1);
-
-		for (Segment<Integer> segment : sequence1) {
-			list.add(segment);
-		}
-
-		assertEquals(list, sequence2.getDelegate());
-	}
-
-	@Test
 	void testGet() {
 		Sequence<Integer> received = factory.toSequence("Sequences");
 
@@ -593,12 +580,11 @@ class BasicSequenceTest extends PhoneticTestBase {
 
 	private static <T> void assertMatches(Sequence<T> exp, Sequence<T> act) {
 		boolean matches = exp.matches(act);
-		assertTrue(matches, "\'" + exp + "\' does not match " + act);
+		assertTrue(matches, "'" + exp + "' does not match " + act);
 	}
 
 	private static <T> void assertNotMatches(Sequence<T> exp, Sequence<T> act) {
-		assertFalse(exp.matches(act),
-				"\'" + exp + "\' should not match " + act);
+		assertFalse(exp.matches(act), "'" + exp + "' should not match " + act);
 	}
 }
 
