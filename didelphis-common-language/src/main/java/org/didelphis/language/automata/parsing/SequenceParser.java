@@ -30,8 +30,8 @@ import org.didelphis.language.phonetic.SequenceFactory;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.segments.UndefinedSegment;
-import org.didelphis.language.phonetic.sequences.BasicSequence;
 import org.didelphis.language.phonetic.sequences.ImmutableSequence;
+import org.didelphis.language.phonetic.sequences.PhoneticSequence;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.didelphis.structures.graph.Arc;
 import org.didelphis.structures.maps.GeneralMultiMap;
@@ -178,7 +178,7 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 	) {
 
 		FeatureModel<T> featureModel = factory.getFeatureMapping().getFeatureModel();
-		Sequence<T> sequence = new BasicSequence<>(featureModel);
+		Sequence<T> sequence = new PhoneticSequence<>(featureModel);
 		StringBuilder number = new StringBuilder();
 
 		int i = 0;

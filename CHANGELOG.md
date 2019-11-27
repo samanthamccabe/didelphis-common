@@ -14,8 +14,11 @@ General Didelphis components for language modeling and analysis
    data; a feature mapping can output these if the main symbol is known (and 
    thus well-defined in the model) but a modifier is not
 #### Changed
+ - Renamed `BasicSequence` to `PhoneticSequence`
+   [[81]](https://github.com/samanthamccabe/didelphis-common/issues/81)
  - Moved some constants for feature model loading into a single class
  - Refactored some constructors for `structures` to use more general types
+   [[78]](https://github.com/samanthamccabe/didelphis-common/issues/78)
  - Fixed several inefficiencies in feature array classes, segment, and sequence
    classes.
  - Implemented lazy hash-code retrieval for some phonetics classes
@@ -30,6 +33,7 @@ General Didelphis components for language modeling and analysis
    constructor which exposes the object's internals
  - Updated documentation to remove `@date` tags and `created by` lines
  - Removed customer logger implementation and transitioned to Log4J 2
+   [[80]](https://github.com/samanthamccabe/didelphis-common/issues/80)
 #### Fixed
  - Fixed misuse of Lombok annotation `@FieldDefaults` which do not apply to 
    static class members; the code was written at a time when it incorrectly

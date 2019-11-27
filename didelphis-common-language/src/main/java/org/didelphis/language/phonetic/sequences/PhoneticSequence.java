@@ -40,34 +40,38 @@ import java.util.List;
 import java.util.ListIterator;
 
 /**
- * Class {@code BasicSequence}
+ * Class {@code PhoneticSequence}
+ *
  * @param <T>
  */
 @EqualsAndHashCode
-public class BasicSequence<T> implements Sequence<T> {
+public class PhoneticSequence<T> implements Sequence<T> {
 
-	private static final Logger LOG = LogManager.getLogger(BasicSequence.class);
+	private static final Logger LOG = LogManager.getLogger(PhoneticSequence.class);
 
 	private final List<Segment<T>> segments;
-	private final FeatureModel<T> featureModel;
+	private final FeatureModel<T>  featureModel;
 
-	public BasicSequence(Sequence<T> sequence) {
+	public PhoneticSequence(Sequence<T> sequence) {
 		segments = new ArrayList<>(sequence);
 		featureModel = sequence.getFeatureModel();
 	}
 
-	public BasicSequence(Segment<T> segment) {
+	public PhoneticSequence(Segment<T> segment) {
 		featureModel = segment.getFeatureModel();
 		segments = new LinkedList<>();
 		segments.add(segment);
 	}
 
-	public BasicSequence(FeatureModel<T> model) {
+	public PhoneticSequence(FeatureModel<T> model) {
 		segments = new LinkedList<>();
 		featureModel = model;
 	}
 
-	public BasicSequence(Collection<Segment<T>> segments, FeatureModel<T> model) {
+	public PhoneticSequence(
+			Collection<Segment<T>> segments,
+			FeatureModel<T> model
+	) {
 		this.segments = new LinkedList<>(segments);
 		featureModel = model;
 	}
@@ -112,10 +116,13 @@ public class BasicSequence<T> implements Sequence<T> {
 
 	@NonNull
 	@Override
-	public Sequence<T> replaceAll(@NonNull Sequence<T> source, @NonNull Sequence<T> target) {
+	public Sequence<T> replaceAll(
+			@NonNull Sequence<T> source,
+			@NonNull Sequence<T> target
+	) {
 		validateModelOrFail(source);
 		validateModelOrFail(target);
-		Sequence<T> result = new BasicSequence<>(this);
+		Sequence<T> result = new PhoneticSequence<>(this);
 
 		int index = result.indexOf(source);
 		while (index >= 0) {
@@ -166,8 +173,8 @@ public class BasicSequence<T> implements Sequence<T> {
 
 	@NonNull
 	@Override
-	public BasicSequence<T> remove(int start, int end) {
-		BasicSequence<T> q = new BasicSequence<>(featureModel);
+	public PhoneticSequence<T> remove(int start, int end) {
+		PhoneticSequence<T> q = new PhoneticSequence<>(featureModel);
 		for (int i = 0; i < end - start; i++) {
 			q.add(remove(start));
 		}
@@ -181,8 +188,9 @@ public class BasicSequence<T> implements Sequence<T> {
 	 * each sequence, all corresponding features are equal OR one is undefined.
 	 *
 	 * @param sequence a segments to check against this one
+	 *
 	 * @return true if, for each segment in both sequences, all defined features
-	 *      in either segment are equal
+	 * 		in either segment are equal
 	 */
 	@Override
 	public boolean matches(@NonNull Sequence<T> sequence) {
@@ -206,14 +214,13 @@ public class BasicSequence<T> implements Sequence<T> {
 	@NonNull
 	@Override
 	public Sequence<T> subsequence(int from, int to) {
-		return new BasicSequence<>(subList(from, to), featureModel);
+		return new PhoneticSequence<>(subList(from, to), featureModel);
 	}
 
 	@NonNull
 	@Override
 	public Sequence<T> subsequence(int from) {
-		return new BasicSequence<>(subList(from, size()), featureModel
-		);
+		return new PhoneticSequence<>(subList(from, size()), featureModel);
 	}
 
 	@NonNull
@@ -230,12 +237,12 @@ public class BasicSequence<T> implements Sequence<T> {
 
 	@NonNull
 	@Override
-	public BasicSequence<T> getReverseSequence() {
+	public PhoneticSequence<T> getReverseSequence() {
 		Deque<Segment<T>> linkedList = new LinkedList<>();
 		for (Segment<T> segment : segments) {
 			linkedList.addFirst(segment);
 		}
-		return new BasicSequence<>(linkedList, featureModel);
+		return new PhoneticSequence<>(linkedList, featureModel);
 	}
 
 	@Override
@@ -406,10 +413,8 @@ public class BasicSequence<T> implements Sequence<T> {
 
 	private void validateModelOrFail(@NonNull SpecificationBearer that) {
 		if (!getSpecification().equals(that.getSpecification())) {
-			throw new IllegalArgumentException("Attempting to add " + that.getClass() +
-					" with an incompatible model!\n" + '\t' + this + '\t' +
-					featureModel + '\n' + '\t' + that + '\t' +
-					that.getSpecification());
+			throw new IllegalArgumentException(String.format("Attempting to add %s with an incompatible model!\n\t%s\t%s\n\t%s\t%s",
+					that.getClass(), this, featureModel, that, that.getSpecification()));
 		}
 	}
 }

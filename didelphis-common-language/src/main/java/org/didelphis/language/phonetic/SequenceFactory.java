@@ -31,7 +31,7 @@ import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureSpecification;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.segments.StandardSegment;
-import org.didelphis.language.phonetic.sequences.BasicSequence;
+import org.didelphis.language.phonetic.sequences.PhoneticSequence;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.didelphis.utilities.Sort;
 
@@ -108,7 +108,7 @@ public class SequenceFactory<T> {
 		List<Segment<T>> segments = list.stream()
 				.map(this::toSegment)
 				.collect(Collectors.toList());
-		return new BasicSequence<>(segments, featureModel);	}
+		return new PhoneticSequence<>(segments, featureModel);	}
 
 	@NonNull
 	public Collection<String> getSpecialStrings() {

@@ -34,7 +34,7 @@ import java.util.function.UnaryOperator;
  * @since 0.1.0
  */
 @SuppressWarnings ("ProhibitedExceptionThrown")
-public class ImmutableSequence<T> extends BasicSequence<T> {
+public class ImmutableSequence<T> extends PhoneticSequence<T> {
 
 	public ImmutableSequence(Sequence<T> sequence) {
 		super(sequence);
@@ -128,7 +128,7 @@ public class ImmutableSequence<T> extends BasicSequence<T> {
 
 	@NonNull
 	@Override
-	public BasicSequence<T> remove(int start, int end) {
+	public PhoneticSequence<T> remove(int start, int end) {
 		throw unsupported();
 	}
 

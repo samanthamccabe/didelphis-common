@@ -33,7 +33,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class BasicSequenceTest extends PhoneticTestBase {
+class PhoneticSequenceTest extends PhoneticTestBase {
 
 	@Test
 	void testEquals() {
@@ -435,7 +435,7 @@ class BasicSequenceTest extends PhoneticTestBase {
 		Sequence<Integer> sequence = factory.toSequence("abcdefghijk");
 		Sequence<Integer> expected = factory.toSequence("cdefghijk");
 
-		Sequence<Integer> received = new BasicSequence<>(sequence);
+		Sequence<Integer> received = new PhoneticSequence<>(sequence);
 		Sequence<Integer> removed = received.remove(0, 2);
 
 		assertEquals(expected, received);
@@ -447,7 +447,7 @@ class BasicSequenceTest extends PhoneticTestBase {
 		Sequence<Integer> sequence = factory.toSequence("abcdefghijk");
 		Sequence<Integer> expected = factory.toSequence("defghijk");
 
-		Sequence<Integer> received = new BasicSequence<>(sequence);
+		Sequence<Integer> received = new PhoneticSequence<>(sequence);
 		Sequence<Integer> removed = received.remove(0, 3);
 
 		assertEquals(expected, received);
@@ -459,7 +459,7 @@ class BasicSequenceTest extends PhoneticTestBase {
 		Sequence<Integer> sequence = factory.toSequence("abcdefghijk");
 		Sequence<Integer> expected = factory.toSequence("adefghijk");
 
-		Sequence<Integer> received = new BasicSequence<>(sequence);
+		Sequence<Integer> received = new PhoneticSequence<>(sequence);
 		Sequence<Integer> removed = received.remove(1, 3);
 
 		assertEquals(expected, received);
@@ -471,7 +471,7 @@ class BasicSequenceTest extends PhoneticTestBase {
 		Sequence<Integer> sequence = factory.toSequence("abcdefghijk");
 		Sequence<Integer> expected = factory.toSequence("abcghijk");
 
-		Sequence<Integer> received = new BasicSequence<>(sequence);
+		Sequence<Integer> received = new PhoneticSequence<>(sequence);
 		Sequence<Integer> removed = received.remove(3, 6);
 
 		assertEquals(expected, received);
@@ -483,7 +483,7 @@ class BasicSequenceTest extends PhoneticTestBase {
 		Sequence<Integer> sequence = factory.toSequence("abcdefghijk");
 		Sequence<Integer> expected = factory.toSequence("abcdhijk");
 
-		Sequence<Integer> received = new BasicSequence<>(sequence);
+		Sequence<Integer> received = new PhoneticSequence<>(sequence);
 		Sequence<Integer> removed = received.remove(4, 7);
 
 		assertEquals(expected, received);
