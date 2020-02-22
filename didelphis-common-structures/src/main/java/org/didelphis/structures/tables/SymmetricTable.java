@@ -23,8 +23,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 
+import org.didelphis.utilities.Templates;
+
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -43,7 +44,8 @@ import java.util.stream.Stream;
  * index lookups which is probably proportional to the size of the table. In
  * the future, a different implementation of this class will be adopted.
  */
-public class SymmetricTable<E> extends AbstractTable<E> {
+public class SymmetricTable<E>
+		extends AbstractTable<E, TableRow<E>, TableColumn<E>> {
 
 	private final List<E> array;
 
@@ -94,44 +96,27 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 	@NonNull
 	@Override
 	public
-	List<E> getRow(int row) {
+	TableRow<E> getRow(int row) {
 		checkRow(row);
 		int index = getIndex(row, 0);
-		List<E> collection = new ArrayList<>(array.subList(index, index + row + 1));
+		List<E> list = new ArrayList<>(array.subList(index, index + row + 1));
 		for (int i = row + 1; i < rows(); i++) {
-			collection.add(get(row, i));
+			list.add(get(row, i));
 		}
-		return collection;
+		return new Row<>(row, list, this);
 	}
 
 	@NonNull
 	@Override
 	public
-	List<E> getColumn(int col) {
-		return getRow(col);
-	}
-
-	@NonNull
-	@Override
-	public
-	List<E> setRow(int row, @NonNull List<E> data) {
-		checkRow(row);
-		checkRowData(data);
-		List<E> original = new ArrayList<>();
-		int col = 0;
-		for (E datum : data) {
-			original.add(get(row, col));
-			set(row, col, datum);
-			col++;
+	TableColumn<E> getColumn(int col) {
+		checkRow(col);
+		int index = getIndex(col, 0);
+		List<E> list = new ArrayList<>(array.subList(index, index + col + 1));
+		for (int i = col + 1; i < rows(); i++) {
+			list.add(get(col, i));
 		}
-		return original;
-	}
-
-	@NonNull
-	@Override
-	public
-	List<E> setColumn(int col, @NonNull List<E> data) {
-		return setRow(col, data);
+		return new Column<>(col, list, this);
 	}
 
 	@NonNull
@@ -149,14 +134,14 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 
 	@NonNull
 	@Override
-	public Iterator<Collection<E>> rowIterator() {
-		return new ColumnIterator<>(array, columns());
+	public Iterable<TableRow<E>> rowIterator() {
+		return () -> new RowIterator<E>(this, array, columns());
 	}
 
 	@NonNull
 	@Override
-	public Iterator<Collection<E>> columnIterator() {
-		return new ColumnIterator<>(array, columns());
+	public Iterable<TableColumn<E>> columnIterator() {
+		return () -> new ColumnIterator<E>(this, array, columns());
 	}
 
 	@Override
@@ -228,14 +213,63 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 	}
 
 	@Override
-	public void insertRow(int row, @NonNull Collection<E> data) {
+	public void insertRow(int row, @NonNull List<E> data) {
 		checkRow(row);
 		int size = columns() + 1;
 		if (data.size() != size) {
-			throw new IllegalArgumentException("New row data is the wrong " +
-					"size: " + data.size() + " but there are " + size +
-					" columns.");
+			String message = Templates.create()
+					.add("New row is the wrong size:",
+							" {} but there are {} columns.")
+					.with(data.size(), size).build();
+			throw new IllegalArgumentException(message);
 		}
+		insertEntries(row, data);
+
+		setRows(size);
+		setColumns(size);
+	}
+
+	@Override
+	public void insertColumn(int col, @NonNull List<E> data) {
+		checkRow(col);
+		int size = columns() + 1;
+		if (data.size() != size) {
+			String message = Templates.create()
+					.add("New column is the wrong size:",
+							" {} but there are {} rows.")
+					.with(data.size(), size).build();
+			throw new IllegalArgumentException(message);
+		}
+		insertEntries(col, data);
+
+		setRows(size);
+		setColumns(size);
+	}
+
+	@NonNull
+	@Override
+	public TableRow<E> removeRow(int row) {
+		checkRow(row);
+		List<E> list = getEntries(row);
+
+		setRows(rows() - 1);
+		setColumns(columns() - 1);
+
+		return new Row<>(row, list, this);
+	}
+
+	@NonNull
+	@Override
+	public TableColumn<E> removeColumn(int col) {
+		checkRow(col);
+		List<E> list = getEntries(col);
+
+		setRows(rows() - 1);
+		setColumns(columns() - 1);
+
+		return new Column<>(col, list, this);	}
+
+	private void insertEntries(int row, @NonNull List<E> data) {
 		List<E> list = new ArrayList<>(data);
 		// Get index to start
 		int start = getIndex(row, 0);
@@ -250,23 +284,14 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 			array.add(index, list.remove(0));
 			i++;
 		}
-		setRows(size);
-		setColumns(size);
-	}
-
-	@Override
-	public void insertColumn(int col, @NonNull Collection<E> data) {
-		insertRow(col, data);
 	}
 
 	@NonNull
-	@Override
-	public Collection<E> removeRow(int row) {
-		checkRow(row);
+	private List<E> getEntries(int row) {
 		// Get index to start
 		int start = getIndex(row, 0);
 		// Remove r+1 elements
-		Collection<E> list = IntStream.range(0, row + 1)
+		List<E> list = IntStream.range(0, row + 1)
 				.mapToObj(i -> array.remove(start))
 				.collect(Collectors.toList());
 		// While elements remain:
@@ -276,17 +301,7 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 			list.add(array.remove(index));
 			i++;
 		}
-
-		setRows(rows() - 1);
-		setColumns(columns() - 1);
-
 		return list;
-	}
-
-	@NonNull
-	@Override
-	public Collection<E> removeColumn(int col) {
-		return removeRow(col);
 	}
 
 	private static int getIndex(int i, int j) {
@@ -301,18 +316,19 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 		return sum;
 	}
 
-	@ToString
-	@EqualsAndHashCode
 	private static final class ColumnIterator<E>
-			implements Iterator<Collection<E>> {
+			implements Iterator<TableColumn<E>> {
 
-		private final List<E> array;
+		private final Table<E, TableRow<E>, TableColumn<E>> table;
+		private final List<E>  list;
+
 		private final int columns;
-		private int i;
+		private       int i;
 
-		private ColumnIterator(List<E> list, int columns) {
+		private ColumnIterator(Table<E, TableRow<E>, TableColumn<E>> table, List<E> list, int columns) {
 			i = 0;
-			array = list;
+			this.table = table;
+			this.list = list;
 			this.columns = columns;
 		}
 
@@ -322,16 +338,52 @@ public class SymmetricTable<E> extends AbstractTable<E> {
 		}
 
 		@Override
-		public Collection<E> next() {
+		public Column<E> next() {
 			if (i >= columns) {
 				throw new NoSuchElementException(
 						"No element exists at column index " + i
 				);			}
-			Collection<E> list = IntStream.range(0, columns)
-					.mapToObj(j -> array.get(getIndex(i, j)))
+			List<E> data = IntStream.range(0, columns)
+					.mapToObj(j -> list.get(getIndex(i, j)))
 					.collect(Collectors.toList());
 			i++;
-			return list;
+			return new Column<>(i, data, table);
+		}
+	}
+
+	@ToString
+	@EqualsAndHashCode
+	private static final class RowIterator<E>
+			implements Iterator<TableRow<E>> {
+
+		private final Table<E, TableRow<E>, TableColumn<E>> table;
+		private final List<E>  list;
+
+		private final int rows;
+		private       int i;
+
+		private RowIterator(Table<E, TableRow<E>, TableColumn<E>> table, List<E> list, int rows) {
+			i = 0;
+			this.table = table;
+			this.list = list;
+			this.rows = rows;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return i < rows;
+		}
+
+		@Override
+		public Row<E> next() {
+			if (i >= rows) {
+				throw new NoSuchElementException("No element exists at row index " + i);
+			}
+			List<E> data = IntStream.range(0, rows)
+					.mapToObj(j -> list.get(getIndex(i, j)))
+					.collect(Collectors.toList());
+			i++;
+			return new Row<>(i, data, table);
 		}
 	}
 }

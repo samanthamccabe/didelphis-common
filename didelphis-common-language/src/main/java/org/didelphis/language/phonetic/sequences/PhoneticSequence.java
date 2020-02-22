@@ -47,7 +47,16 @@ import java.util.ListIterator;
 @EqualsAndHashCode
 public class PhoneticSequence<T> implements Sequence<T> {
 
-	private static final Logger LOG = LogManager.getLogger(PhoneticSequence.class);
+	private static final Logger LOG
+			= LogManager.getLogger(PhoneticSequence.class);
+
+	private static final String VALIDATE_OR_FAIL_MESSAGE =
+			"Attempting to add %s with an incompatible model!"
+					+ "\n\t%s\t%s\n\t%s\t%s";
+
+	private static final String VALIDATE_OR_WARN_MESSAGE =
+			"Attempting to check a {} with an incompatible model!"
+					+ "\n\t{}\t{}\n\t{}\t{}";
 
 	private final List<Segment<T>> segments;
 	private final FeatureModel<T>  featureModel;
@@ -63,14 +72,14 @@ public class PhoneticSequence<T> implements Sequence<T> {
 		segments.add(segment);
 	}
 
-	public PhoneticSequence(FeatureModel<T> model) {
+	public PhoneticSequence(@NonNull FeatureModel<T> model) {
 		segments = new LinkedList<>();
 		featureModel = model;
 	}
 
 	public PhoneticSequence(
-			Collection<Segment<T>> segments,
-			FeatureModel<T> model
+			@NonNull Collection<Segment<T>> segments,
+			@NonNull FeatureModel<T> model
 	) {
 		this.segments = new LinkedList<>(segments);
 		featureModel = model;
@@ -95,7 +104,7 @@ public class PhoneticSequence<T> implements Sequence<T> {
 
 	@Override
 	public int indexOf(@NonNull Sequence<T> target, int start) {
-		if (validateModelOrWarn(target)) {
+		if (isInconsistent(target)) {
 			return -1;
 		}
 		int size = target.size();
@@ -117,8 +126,7 @@ public class PhoneticSequence<T> implements Sequence<T> {
 	@NonNull
 	@Override
 	public Sequence<T> replaceAll(
-			@NonNull Sequence<T> source,
-			@NonNull Sequence<T> target
+			@NonNull Sequence<T> source, @NonNull Sequence<T> target
 	) {
 		validateModelOrFail(source);
 		validateModelOrFail(target);
@@ -130,7 +138,7 @@ public class PhoneticSequence<T> implements Sequence<T> {
 				result.remove(index, index + source.size());
 				result.insert(target, index);
 			}
-			int from = index + target.size();
+			int         from        = index + target.size();
 			Sequence<T> subsequence = result.subsequence(from);
 			index = subsequence.indexOf(source);
 			if (index < 0) {
@@ -143,7 +151,7 @@ public class PhoneticSequence<T> implements Sequence<T> {
 
 	@Override
 	public boolean contains(@NonNull Sequence<T> sequence) {
-		if (validateModelOrWarn(sequence)) {
+		if (isInconsistent(sequence)) {
 			return false;
 		}
 		return indexOf(sequence) >= 0;
@@ -151,7 +159,7 @@ public class PhoneticSequence<T> implements Sequence<T> {
 
 	@Override
 	public boolean startsWith(@NonNull Segment<T> segment) {
-		if (validateModelOrWarn(segment)) {
+		if (isInconsistent(segment)) {
 			return false;
 		}
 		return !isEmpty() && segments.get(0).matches(segment);
@@ -169,6 +177,22 @@ public class PhoneticSequence<T> implements Sequence<T> {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public boolean endsWith(@NonNull Segment<T> segment) {
+		if (isInconsistent(segment)) {
+			return false;
+		}
+		return !isEmpty() && segments.get(size() - 1).matches(segment);
+	}
+
+	@Override
+	public boolean endsWith(@NonNull Sequence<T> sequence) {
+		if (sequence.size() > size()) {
+			return false;
+		}
+		return sequence.matches(subsequence(size() - sequence.size()));
 	}
 
 	@NonNull
@@ -199,7 +223,7 @@ public class PhoneticSequence<T> implements Sequence<T> {
 			return equals(sequence);
 		}
 		boolean matches = false;
-		int size = size();
+		int     size    = size();
 		if (size >= sequence.size()) {
 			matches = true;
 			for (int i = 0; i < size && matches; i++) {
@@ -227,7 +251,7 @@ public class PhoneticSequence<T> implements Sequence<T> {
 	@Override
 	public List<Integer> indicesOf(@NonNull Sequence<T> sequence) {
 		List<Integer> indices = new ArrayList<>();
-		int index = indexOf(sequence);
+		int           index   = indexOf(sequence);
 		while (index >= 0) {
 			indices.add(index);
 			index = indexOf(sequence, index + sequence.size());
@@ -285,6 +309,7 @@ public class PhoneticSequence<T> implements Sequence<T> {
 	@NotNull
 	@Override
 	public <E> E[] toArray(@NotNull E[] array) {
+		//noinspection SuspiciousToArrayCall
 		return segments.toArray(array);
 	}
 
@@ -402,19 +427,30 @@ public class PhoneticSequence<T> implements Sequence<T> {
 		return featureModel.getSpecification();
 	}
 
-	private boolean validateModelOrWarn(@NonNull SpecificationBearer that) {
-		if (!getSpecification().equals(that.getSpecification())) {
-			LOG.warn("Attempting to check a {} with an incompatible model!\n\t{}\t{}\n\t{}\t{}",
-					that.getClass(), this, that, featureModel, that.getSpecification());
-			return true;
+	private boolean isInconsistent(@NonNull SpecificationBearer bearer) {
+		if (bearer.getSpecification().equals(getSpecification())) {
+			return false;
 		}
-		return false;
+		LOG.warn(VALIDATE_OR_WARN_MESSAGE,
+				bearer.getClass(),
+				this,
+				bearer,
+				featureModel,
+				bearer.getSpecification()
+		);
+		return true;
 	}
 
-	private void validateModelOrFail(@NonNull SpecificationBearer that) {
-		if (!getSpecification().equals(that.getSpecification())) {
-			throw new IllegalArgumentException(String.format("Attempting to add %s with an incompatible model!\n\t%s\t%s\n\t%s\t%s",
-					that.getClass(), this, featureModel, that, that.getSpecification()));
+	private void validateModelOrFail(@NonNull SpecificationBearer bearer) {
+		if (!getSpecification().equals(bearer.getSpecification())) {
+			String message = String.format(VALIDATE_OR_FAIL_MESSAGE,
+					bearer.getClass(),
+					this,
+					featureModel,
+					bearer,
+					bearer.getSpecification()
+			);
+			throw new IllegalArgumentException(message);
 		}
 	}
 }

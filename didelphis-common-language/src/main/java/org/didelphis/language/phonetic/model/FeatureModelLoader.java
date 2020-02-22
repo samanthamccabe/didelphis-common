@@ -133,7 +133,6 @@ public final class FeatureModelLoader<T> {
 			parse(lines(read));
 			populate();
 		} catch (IOException e) {
-			LOG.error("Unexpected failure encountered: {}", e);
 			throw new ParseException("Failed to read from path " + path, e);
 		}
 	}
@@ -254,7 +253,6 @@ public final class FeatureModelLoader<T> {
 						parse(list);
 						continue;
 					} catch (IOException e) {
-						LOG.error("Unexpected failure encountered: {}", e);
 						throw new ParseException("Unable to read from "
 								+ filePath, e);
 					}

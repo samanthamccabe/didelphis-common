@@ -1,4 +1,3 @@
-
 /******************************************************************************
  * General components for language modeling and analysis                      *
  *                                                                            *
@@ -18,69 +17,76 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package org.didelphis.structures.tables;
+package org.didelphis.structures.frames;
 
-import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import lombok.ToString;
+
+import org.didelphis.structures.tables.Table;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
-@ToString(callSuper = true)
-@EqualsAndHashCode (callSuper = true)
-public class DataTable<E>
-		extends RectangularTable<E>
-		implements ColumnTable<E> {
 
-	private final List<String> keys;
+/**
+ * Interface {@code Frame}
+ *
+ * A type of table with column headers
+ *
+ * @param <E>
+ */
+public interface Frame<E, R extends FrameRow<E>, C extends FrameColumn<E>>
+		extends Table<E, R, C> {
 
-	public DataTable(@NonNull DataTable<E> table) {
-		super(table);
-		keys = table.keys;
-	}
+	/**
+	 * Checks if the table has the provided key
+	 *
+	 * @param key the column name to check for the presence of
+	 *
+	 * @return true iff the table contains the key
+	 */
+	boolean hasKey(@Nullable String key);
 
-	public DataTable(@NonNull List<String> keys) {
-		super((E) null, 0, keys.size());
-		this.keys = keys;
-	}
-
-	public DataTable(@NonNull List<String> keys, @NonNull Collection<? extends Collection<E>> rowList) {
-		super(rowList, rowList.size(), keys.size());
-		this.keys = keys;
-	}
-
-	@Override
-	public boolean hasKey(String key) {
-		return keys.contains(key);
-	}
-
+	/**
+	 * Returns the column header names
+	 *
+	 * @return a list of the column header names; not {@code null}
+	 */
 	@NonNull
-	@Override
-	public List<String> getKeys() {
-		return Collections.unmodifiableList(keys);
-	}
+	List<String> getKeys();
 
-	@Override
-	public @Nullable List<E> getColumn(@NonNull String key) {
-		return hasKey(key) ? getColumn(keys.indexOf(key)) : null;
-	}
+	/**
+	 * Retrieves a column by the header key
+	 *
+	 * @param key the header key of the column to return
+	 *
+	 * @return the contents of the specified column; cannot be {@code null}
+	 */
+	@Nullable
+	List<E> getColumn(@NonNull String key);
 
+	/**
+	 * Set the header key for a particular column
+	 *
+	 * @param column the column index
+	 * @param key the new column key; not {@code null}
+	 *
+	 * @return the previous key; not {@code null}
+	 */
 	@NonNull
-	@Override
-	public
-	String setColumnKey(int column, @NonNull String key) {
-		return keys.set(column, key);
-	}
+	String setColumnKey(int column, @NonNull String key);
 
+	/**
+	 * Get the key for the specified column headers
+	 *
+	 * @param column the column index
+	 *
+	 * @return the column key for the specified index; not {@code null}
+	 *
+	 * @throws IndexOutOfBoundsException if the index is less than 0 or greater
+	 *      than the number of columns
+	 */
 	@NonNull
-	@Override
-	public
-	String getColumnKey(int column) {
-		return keys.get(column);
-	}
+	String getColumnKey(int column);
 
 }

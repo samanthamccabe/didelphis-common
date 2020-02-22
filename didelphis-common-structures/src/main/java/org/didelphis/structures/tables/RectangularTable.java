@@ -28,7 +28,6 @@ import org.didelphis.utilities.Templates;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -47,7 +46,8 @@ import java.util.stream.Stream;
  */
 @ToString
 @EqualsAndHashCode(callSuper = true)
-public class RectangularTable<E> extends AbstractTable<E> {
+public class RectangularTable<E>
+		extends AbstractTable<E, TableRow<E>, TableColumn<E>> {
 
 	private final List<E> array;
 
@@ -118,48 +118,22 @@ public class RectangularTable<E> extends AbstractTable<E> {
 
 	@NonNull
 	@Override
-	public List<E> getRow(int row) {
+	public TableRow<E> getRow(int row) {
 		checkRow(row);
 		int startIndex = getIndex(row, 0);
 		int endIndex = getIndex(row, columns());
-		return array.subList(startIndex, endIndex);
+		List<E> list = array.subList(startIndex, endIndex);
+		return new Row<>(row, list, this);
 	}
 
 	@NonNull
 	@Override
-	public List<E> getColumn(int col) {
+	public TableColumn<E> getColumn(int col) {
 		checkCol(col);
-		return IntStream.range(0, rows())
+		List<E> collect = IntStream.range(0, rows())
 				.mapToObj(i -> get(i, col))
 				.collect(Collectors.toList());
-	}
-
-	@NonNull
-	@Override
-	public List<E> setRow(int row, @NonNull List<E> data) {
-		checkRow(row);
-		checkRowData(data);
-		List<E> oldEntries = new ArrayList<>(getRow(row));
-		int i = 0;
-		for (E e : data) {
-			set(row, i, e);
-			i++;
-		}
-		return oldEntries;
-	}
-
-	@NonNull
-	@Override
-	public List<E> setColumn(int col, @NonNull List<E> data) {
-		checkCol(col);
-		checkColumnData(data);
-		List<E> oldEntries = getColumn(col);
-		int i = 0;
-		for (E e : data) {
-			set(i, col, e);
-			i++;
-		}
-		return oldEntries;
+		return new Column<>(col, collect, this);
 	}
 
 	@NonNull
@@ -177,14 +151,14 @@ public class RectangularTable<E> extends AbstractTable<E> {
 
 	@NonNull
 	@Override
-	public Iterator<Collection<E>> rowIterator() {
-		return new RowIterator<>(array, rows(), columns());
+	public Iterable<TableRow<E>> rowIterator() {
+		return () -> new RowIterator<>(this, array, rows(), columns());
 	}
 
 	@NonNull
 	@Override
-	public Iterator<Collection<E>> columnIterator() {
-		return new ColumnIterator<>(array, rows(), columns());
+	public Iterable<TableColumn<E>> columnIterator() {
+		return () -> new ColumnIterator<>(this, array, rows(), columns());
 	}
 
 	@Override
@@ -208,14 +182,14 @@ public class RectangularTable<E> extends AbstractTable<E> {
 	public void expand(int rows, int cols, E fillerValue) {
 		negativeCheck(rows, cols);
 
-		Collection<E> newRow = Collections.nCopies(columns(), fillerValue);
+		List<E> newRow = Collections.nCopies(columns(), fillerValue);
 		for (int i = 0; i < rows; i++) {
-			insertRow(rows(), newRow);
+			insertRow(rows(), new Row<>(i, newRow, this));
 		}
 
-		Collection<E> newColumn = Collections.nCopies(rows(), fillerValue);
+		List<E> newColumn = Collections.nCopies(rows(), fillerValue);
 		for (int i = 0; i < cols; i++) {
-			insertColumn(columns(), newColumn);
+			insertColumn(columns(), new Column<>(i, newColumn, this));
 		}
 	}
 
@@ -242,7 +216,7 @@ public class RectangularTable<E> extends AbstractTable<E> {
 	}
 
 	@Override
-	public void insertRow(int row, @NonNull Collection<E> data) {
+	public void insertRow(int row, @NonNull List<E> data) {
 		checkRowEdge(row);
 		checkRowData(data);
 		array.addAll(getIndex(row, 0), data);
@@ -250,7 +224,7 @@ public class RectangularTable<E> extends AbstractTable<E> {
 	}
 
 	@Override
-	public void insertColumn(int col, @NonNull Collection<E> data) {
+	public void insertColumn(int col, @NonNull List<E> data) {
 		checkColEdge(col);
 		checkColumnData(data);
 		int index = getIndex(0, col);
@@ -263,29 +237,29 @@ public class RectangularTable<E> extends AbstractTable<E> {
 
 	@NonNull
 	@Override
-	public Collection<E> removeRow(int row) {
+	public TableRow<E> removeRow(int row) {
 		checkRow(row);
 		int index = getIndex(row, 0);
-		Collection<E> list = new ArrayList<>();
+		List<E> list = new ArrayList<>();
 		while (list.size() < columns()) {
 			list.add(array.remove(index));
 		}
 		setRows(rows() - 1);
-		return list;
+		return new Row<>(row, list, this);
 	}
 
 	@NonNull
 	@Override
-	public Collection<E> removeColumn(int col) {
+	public TableColumn<E> removeColumn(int col) {
 		checkCol(col);
 		int index = getIndex(0, col);
-		Collection<E> list = new ArrayList<>();
+		List<E> list = new ArrayList<>();
 		while (list.size() < rows()) {
 			list.add(array.remove(index));
 			index += columns() - 1;
 		}
 		setColumns(columns() - 1);
-		return list;
+		return new Column<E>(col, list, this);
 	}
 
 	/**
@@ -309,15 +283,18 @@ public class RectangularTable<E> extends AbstractTable<E> {
 	@ToString
 	@EqualsAndHashCode
 	private static final class RowIterator<E>
-			implements Iterator<Collection<E>> {
+			implements Iterator<TableRow<E>> {
 
-		private final List<E> list;
+		private final Table<E, TableRow<E>, TableColumn<E>> table;
+		private final List<E>  list;
+
 		private final int rows;
 		private final int columns;
-		private int i;
+		private       int i;
 
-		private RowIterator(List<E> list, int rows, int columns) {
+		private RowIterator(Table<E, TableRow<E>, TableColumn<E>> table, List<E> list, int rows, int columns) {
 			i = 0;
+			this.table = table;
 			this.list = list;
 			this.rows = rows;
 			this.columns = columns;
@@ -329,7 +306,7 @@ public class RectangularTable<E> extends AbstractTable<E> {
 		}
 
 		@Override
-		public Collection<E> next() {
+		public TableRow<E> next() {
 			if (i >= rows) {
 				throw new NoSuchElementException(
 						"No element exists at row index " + i
@@ -338,23 +315,32 @@ public class RectangularTable<E> extends AbstractTable<E> {
 			int index1 = getIndex(i, 0, columns);
 			int index2 = getIndex(i + 1, 0, columns);
 			i++;
-			return list.subList(index1, index2);
+			List<E> subList = list.subList(index1, index2);
+			return new Row<>(i, subList, table);
 		}
 	}
 
 	@ToString
 	@EqualsAndHashCode
 	private static final class ColumnIterator<E>
-			implements Iterator<Collection<E>> {
+			implements Iterator<TableColumn<E>> {
 
-		private final List<E> array;
+		private final Table<E, TableRow<E>, TableColumn<E>> table;
+		private final List<E>  list;
+
 		private final int rows;
 		private final int columns;
-		private int i;
+		private       int i;
 
-		private ColumnIterator(List<E> list, int rows, int columns) {
+		private ColumnIterator(
+				Table<E, TableRow<E>, TableColumn<E>> table,
+				List<E> list,
+				int rows,
+				int columns
+		) {
 			i = 0;
-			array = list;
+			this.table = table;
+			this.list = list;
 			this.rows = rows;
 			this.columns = columns;
 		}
@@ -365,17 +351,17 @@ public class RectangularTable<E> extends AbstractTable<E> {
 		}
 
 		@Override
-		public Collection<E> next() {
+		public TableColumn<E> next() {
 			if (i >= columns) {
 				throw new NoSuchElementException(
 						"No element exists at column index " + i
 				);
 			}
-			Collection<E> list = IntStream.range(0, rows)
-					.mapToObj(r -> array.get(getIndex(r, i, columns)))
+			List<E> list = IntStream.range(0, rows)
+					.mapToObj(r -> this.list.get(getIndex(r, i, columns)))
 					.collect(Collectors.toList());
 			i++;
-			return list;
+			return new Column<>(i, list, table);
 		}
 	}
 }

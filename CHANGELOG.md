@@ -24,8 +24,9 @@ General Didelphis components for language modeling and analysis
  - Implemented lazy hash-code retrieval for some phonetics classes
  - Improved compatibility between `Regex` and Java's `Pattern` classes
  - Improved bracket matching algorithm used by `Splitter`
-  - Changed `.getFirstElement()` *etc.* from `Triple` and replaced them with 
-    `.first()` *etc.*  
+ - Changed `.getFirstElement()` *etc.* from `Triple` and replaced them with 
+   `.first()` *etc.*  
+ - Changed `ColumnTable` 
 #### Deprecated
  - *none*
 #### Removed

@@ -19,6 +19,9 @@
 
 package org.didelphis.structures.tables;
 
+import org.didelphis.structures.frames.DataTable;
+import org.didelphis.structures.frames.Frame;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -43,7 +46,7 @@ class DataTableTest {
 	@Test
 	void testConstructor_keys() {
 		List<String> keys = Arrays.asList("W", "X", "Y", "Z");
-		Table<?> table = new DataTable<>(keys);
+		Table<?, T, T1> table = new DataTable<>(keys);
 		assertEquals(0, table.rows());
 		assertEquals(4, table.columns());
 	}
@@ -115,8 +118,8 @@ class DataTableTest {
 
 	@Test
 	void testEquals() {
-		ColumnTable<String> table1 = createTable();
-		ColumnTable<String> table2 = createTable();
+		Frame<String> table1 = createTable();
+		Frame<String> table2 = createTable();
 
 		assertEquals(table1, table2);
 	}

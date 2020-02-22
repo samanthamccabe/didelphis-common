@@ -232,9 +232,9 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 	@NonNull
 	private String findBestPrimarySymbol(String substring) {
 		String best = "";
-		String s1 = DASH.replace(substring, "");
+		String s1 = DASH_PATTERN.replace(substring, "");
 		for (String key : orderedKeys) {
-			String s2 = DASH.replace(key, "");
+			String s2 = DASH_PATTERN.replace(key, "");
 			if (s1.startsWith(s2) && key.length() > best.length()) {
 				best = key;
 			}

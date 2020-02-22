@@ -21,7 +21,7 @@ package org.didelphis.structures.tables;
 
 import lombok.NonNull;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * Interface {@code ResizeableTable}
@@ -30,7 +30,8 @@ import java.util.Collection;
  *
  * @param <E> the type parameter
  */
-public interface ResizeableTable<E> extends Table<E> {
+public interface ResizeableTable<E, R extends TableRow<E>, C extends TableColumn<E>>
+		extends Table<E, R, C> {
 
 	/**
 	 * Expands the dimensions of the table by the amounts provided.
@@ -56,15 +57,14 @@ public interface ResizeableTable<E> extends Table<E> {
 	 * @param row the row into which to insert the data; must be >= 0
 	 * @param data the data to insert into the table
 	 */
-	void insertRow(int row, @NonNull Collection<E> data);
+	void insertRow(int row, @NonNull List<E> data);
 
 	/**
 	 * Insert a new column into the table; grows the table by one column
-	 *
-	 * @param col the column into which to insert the data; must be >= 0
+	 *  @param col the column into which to insert the data; must be >= 0
 	 * @param data the data to insert into the table
 	 */
-	void insertColumn(int col, @NonNull Collection<E> data);
+	void insertColumn(int col, @NonNull List<E> data);
 
 	/**
 	 * Removes and returns a collection containing the contents of the specified
@@ -74,7 +74,7 @@ public interface ResizeableTable<E> extends Table<E> {
 	 *
 	 * @return a collection containing the contents of the specified row
 	 */
-	@NonNull Collection<E> removeRow(int row);
+	@NonNull R removeRow(int row);
 
 	/**
 	 * Removes and returns a collection containing the contents of the specified
@@ -84,6 +84,6 @@ public interface ResizeableTable<E> extends Table<E> {
 	 *
 	 * @return a collection containing the contents of the specified column
 	 */
-	@NonNull Collection<E> removeColumn(int col);
+	@NonNull C removeColumn(int col);
 
 }

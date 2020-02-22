@@ -50,7 +50,7 @@ class RectangularTableTest {
 
 	@Test
 	void constructor1() {
-		Table<String> table1 = new RectangularTable<>("X", 2, 2);
+		RectangularTable<String> table1 = new RectangularTable<>("X", 2, 2);
 		assertEquals("X", table1.get(0, 0));
 		assertEquals("X", table1.get(0, 1));
 		assertEquals("X", table1.get(1, 0));
@@ -72,7 +72,7 @@ class RectangularTableTest {
 		Collections.addAll(row2, "3", "4", "5");
 		Collections.addAll(data, row1, row2);
 
-		Table<String> table1 = new RectangularTable<>(data, 2, 3);
+		RectangularTable<String> table1 = new RectangularTable<>(data, 2, 3);
 		assertEquals("0", table1.get(0, 0));
 		assertEquals("1", table1.get(0, 1));
 		assertEquals("2", table1.get(0, 2));
@@ -114,7 +114,7 @@ class RectangularTableTest {
 
 	@Test
 	void set() {
-		Table<String> table1 = new RectangularTable<>(table);
+		RectangularTable<String> table1 = new RectangularTable<>(table);
 		table1.set(3, 0, "X");
 		table1.set(3, 1, "Y");
 		table1.set(3, 2, "Z");

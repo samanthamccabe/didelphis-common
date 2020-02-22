@@ -48,6 +48,10 @@ public interface Sequence<T>
 
 	boolean startsWith(@NonNull Sequence<T> sequence);
 
+	boolean endsWith(@NonNull Segment<T> segment);
+
+	boolean endsWith(@NonNull Sequence<T> sequence);
+
 	@NonNull Sequence<T> remove(int start, int end);
 
 	boolean matches(@NonNull Sequence<T> sequence);

@@ -265,6 +265,52 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 	}
 
 	@Test
+	void testEndsWith() {
+		Sequence<Integer> sequence1 = factory.toSequence("Sequence");
+
+		assertThrows(
+				NullPointerException.class,
+				() -> sequence1.endsWith((Sequence<Integer>) null)
+		);
+
+		assertFalse(sequence1.endsWith(factory.toSequence("XSequence")));
+
+		assertFalse(sequence1.endsWith(factory.toSequence("X")));
+		assertFalse(sequence1.endsWith(factory.toSequence("Xe")));
+		assertFalse(sequence1.endsWith(factory.toSequence("Xce")));
+		assertFalse(sequence1.endsWith(factory.toSequence("Xnce")));
+		assertFalse(sequence1.endsWith(factory.toSequence("Xence")));
+		assertFalse(sequence1.endsWith(factory.toSequence("Xuence")));
+		assertFalse(sequence1.endsWith(factory.toSequence("Xquence")));
+		assertFalse(sequence1.endsWith(factory.toSequence("Xequence")));
+
+		assertTrue(sequence1.endsWith(factory.toSequence("e")));
+		assertTrue(sequence1.endsWith(factory.toSequence("ce")));
+		assertTrue(sequence1.endsWith(factory.toSequence("nce")));
+		assertTrue(sequence1.endsWith(factory.toSequence("ence")));
+		assertTrue(sequence1.endsWith(factory.toSequence("uence")));
+		assertTrue(sequence1.endsWith(factory.toSequence("quence")));
+		assertTrue(sequence1.endsWith(factory.toSequence("equence")));
+		assertTrue(sequence1.endsWith(factory.toSequence("Sequence")));
+	}
+
+	@Test
+	void testEndsWithSegment() {
+
+		Sequence<Integer> sequence = factory.toSequence("Sequence");
+		Segment<Integer> segment1 = factory.toSegment("e");
+		Segment<Integer> segment2 = factory.toSegment("a");
+
+		assertThrows(
+				NullPointerException.class,
+				() -> sequence.endsWith((Segment<Integer>) null)
+		);
+
+		assertTrue(sequence.endsWith(segment1));
+		assertFalse(sequence.endsWith(segment2));
+	}
+
+	@Test
 	void testIndexOfSequenceWrongModel() {
 
 		SequenceFactory<Integer> factory1 = new SequenceFactory<>(

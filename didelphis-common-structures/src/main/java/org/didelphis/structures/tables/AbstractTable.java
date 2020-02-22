@@ -19,13 +19,17 @@
 
 package org.didelphis.structures.tables;
 
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
+import lombok.experimental.FieldDefaults;
 
 import org.didelphis.utilities.Templates;
 
+import java.util.AbstractList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Abstract Class {@code AbstractTable}
@@ -34,7 +38,8 @@ import java.util.Collection;
  */
 @ToString
 @EqualsAndHashCode
-public abstract class AbstractTable<E> implements ResizeableTable<E> {
+public abstract class AbstractTable<E, R extends TableRow<E>, C extends TableColumn<E>>
+		implements ResizeableTable<E, R, C> {
 
 	private int rows;
 	private int columns;
@@ -160,6 +165,79 @@ public abstract class AbstractTable<E> implements ResizeableTable<E> {
 					.with(rows, cols)
 					.build();
 			throw new IllegalArgumentException(message);
+		}
+	}
+
+	@SuppressWarnings ("ProtectedInnerClass")
+	@FieldDefaults (level = AccessLevel.PRIVATE, makeFinal = true)
+	protected static final class Row<E> extends AbstractList<E> implements TableRow<E> {
+
+		int      tableIndex;
+		List<E>  row;
+
+		Table<E, TableRow<E>, TableColumn<E>> table;
+
+		public Row(int tableIndex, List<E> row, Table<E, TableRow<E>, TableColumn<E>> table) {
+			this.tableIndex = tableIndex;
+			this.row = row;
+			this.table = table;
+		}
+
+		@Override
+		public E get(int index) {
+			return row.get(index);
+		}
+
+		@Override
+		public int size() {
+			return row.size();
+		}
+
+		@Override
+		public int getIndex() {
+			return tableIndex;
+		}
+
+		@Override
+		@NonNull
+		public Table<E, TableRow<E>, TableColumn<E>> getTable() {
+			return table;
+		}
+	}
+
+	@SuppressWarnings ("ProtectedInnerClass")
+	@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+	protected static final class Column<E> extends AbstractList<E> implements TableColumn<E> {
+
+		int     tableIndex;
+		List<E> column;
+		Table<E, TableRow<E>, TableColumn<E>> table;
+
+		public Column(int tableIndex, List<E> column, Table<E, TableRow<E>, TableColumn<E>> table) {
+			this.tableIndex = tableIndex;
+			this.column = column;
+			this.table = table;
+		}
+
+		@Override
+		public E get(int index) {
+			return column.get(index);
+		}
+
+		@Override
+		public int size() {
+			return column.size();
+		}
+
+		@Override
+		public int getIndex() {
+			return tableIndex;
+		}
+
+		@Override
+		@NonNull
+		public Table<E, TableRow<E>, TableColumn<E>> getTable() {
+			return table;
 		}
 	}
 }

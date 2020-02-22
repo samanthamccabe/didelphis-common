@@ -38,7 +38,8 @@ import java.util.stream.Stream;
  *
  * @since 0.1.0
  */
-public interface Table<E> extends Structure {
+public interface Table<E, R extends TableRow<E>, C extends TableColumn<E>>
+		extends Structure {
 
 	/**
 	 * Retrieves the value at the specified indices
@@ -91,7 +92,7 @@ public interface Table<E> extends Structure {
 	 * @throws IndexOutOfBoundsException if parameter is less than 0
 	 */
 	@NonNull
-	List<E> getRow(int row);
+	R getRow(int row);
 
 	/**
 	 * Returns a collection containing the contents of the specified column
@@ -103,7 +104,7 @@ public interface Table<E> extends Structure {
 	 * @throws IndexOutOfBoundsException if parameter is less than 0
 	 */
 	@NonNull
-	List<E> getColumn(int col);
+	C getColumn(int col);
 
 	/**
 	 * Inserts data into the specified row and returns a collection of its
@@ -131,6 +132,7 @@ public interface Table<E> extends Structure {
 	@NonNull
 	List<E> setColumn(int col, @NonNull List<E> data);
 
+
 	/**
 	 * Provides a {@link Stream} of all the elements in the table
 	 *
@@ -155,7 +157,7 @@ public interface Table<E> extends Structure {
 	 * @return an {@link Iterator} over the row of the table
 	 */
 	@NonNull
-	Iterator<Collection<E>> rowIterator();
+	Iterable<R> rowIterator();
 
 	/**
 	 * Provides an {@link Iterator} over the columns of the table, each column
@@ -164,5 +166,5 @@ public interface Table<E> extends Structure {
 	 * @return an {@link Iterator} over the columns of the table
 	 */
 	@NonNull
-	Iterator<Collection<E>> columnIterator();
+	Iterable<C> columnIterator();
 }
