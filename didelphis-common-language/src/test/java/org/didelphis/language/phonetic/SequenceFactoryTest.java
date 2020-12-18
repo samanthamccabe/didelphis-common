@@ -20,7 +20,6 @@
 package org.didelphis.language.phonetic;
 
 import org.didelphis.io.ClassPathFileHandler;
-import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.model.FeatureMapping;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
 import org.didelphis.language.phonetic.segments.Segment;
@@ -39,17 +38,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SequenceFactoryTest {
 
-	private final FeatureModelLoader<Integer> loader;
-	private final SequenceFactory<Integer> factory;
-	private final FeatureMapping<Integer> featureMapping;
+	private final FeatureModelLoader loader;
+	private final SequenceFactory factory;
+	private final FeatureMapping featureMapping;
 
 	SequenceFactoryTest() {
-		loader = new FeatureModelLoader<>(
-				IntegerFeature.INSTANCE,
+		loader = new FeatureModelLoader(
 				ClassPathFileHandler.INSTANCE,
 				"AT_hybrid.model"
 		);
-		factory = new SequenceFactory<>(
+		factory = new SequenceFactory(
 				loader.getFeatureMapping(),
 				INTELLIGENT
 		);
@@ -99,7 +97,7 @@ class SequenceFactoryTest {
 
 	@Test
 	void toSequence() {
-		Sequence<Integer> sequence = factory.toSequence("");
+		Sequence sequence = factory.toSequence("");
 		sequence.add(factory.toSegment("a"));
 		assertEquals(factory.toSequence("a"), sequence);
 	}
@@ -134,9 +132,9 @@ class SequenceFactoryTest {
 
 	@Test
 	void testEquals() {
-		FeatureMapping<Integer> mapping = loader.getFeatureMapping();
-		assertEquals(factory, new SequenceFactory<>(mapping, INTELLIGENT));
-		assertNotEquals(factory, new SequenceFactory<>(mapping, COMPOSITION));
+		FeatureMapping mapping = loader.getFeatureMapping();
+		assertEquals(factory, new SequenceFactory(mapping, INTELLIGENT));
+		assertNotEquals(factory, new SequenceFactory(mapping, COMPOSITION));
 	}
 
 	@Test
@@ -147,7 +145,7 @@ class SequenceFactoryTest {
 	@Test
 	void testGetSequence01() {
 		String word = "avaːm";
-		Sequence<Integer> sequence = factory.toSequence(word);
+		Sequence sequence = factory.toSequence(word);
 		assertFalse(sequence.isEmpty());
 	}
 
@@ -158,23 +156,23 @@ class SequenceFactoryTest {
 		reserved.add("th");
 		reserved.add("kh");
 
-		SequenceFactory<Integer> aFactory = new SequenceFactory<>(
+		SequenceFactory aFactory = new SequenceFactory(
 				loader.getFeatureMapping(),
 				reserved,
 				NONE
 		);
 
 		List<String> strings = asList("a", "ph", "a", "th", "a", "kh", "a");
-		Sequence<Integer> expected = aFactory.toSequence("");
+		Sequence expected = aFactory.toSequence("");
 		for (String string : strings) {
 			expected.add(aFactory.toSequence(string));
 		}
 
-		Sequence<Integer> received = aFactory.toSequence("aphathakha");
+		Sequence received = aFactory.toSequence("aphathakha");
 
 		for (int i = 0; i < expected.size(); i++) {
-			Segment<Integer> ex = expected.get(i);
-			Segment<Integer> re = received.get(i);
+			Segment ex = expected.get(i);
+			Segment re = received.get(i);
 			assertEquals(ex, re, "index: " + i);
 		}
 
@@ -184,7 +182,7 @@ class SequenceFactoryTest {
 	@Test
 	void testReservedMethod() {
 
-		SequenceFactory<Integer> aFactory = new SequenceFactory<>(
+		SequenceFactory aFactory = new SequenceFactory(
 				loader.getFeatureMapping(),
 				NONE
 		);
@@ -194,16 +192,16 @@ class SequenceFactoryTest {
 		aFactory.reserve("kh");
 
 		List<String> strings = asList("a", "ph", "a", "th", "a", "kh", "a");
-		Sequence<Integer> expected = aFactory.toSequence("");
+		Sequence expected = aFactory.toSequence("");
 		for (String string : strings) {
 			expected.add(aFactory.toSequence(string));
 		}
 
-		Sequence<Integer> received = aFactory.toSequence("aphathakha");
+		Sequence received = aFactory.toSequence("aphathakha");
 
 		for (int i = 0; i < expected.size(); i++) {
-			Segment<Integer> ex = expected.get(i);
-			Segment<Integer> re = received.get(i);
+			Segment ex = expected.get(i);
+			Segment re = received.get(i);
 			assertEquals(ex, re, "index: " + i);
 		}
 

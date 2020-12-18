@@ -26,6 +26,7 @@ import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.FeatureType;
+import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.features.SparseFeatureArray;
 import org.didelphis.utilities.Templates;
 
@@ -44,28 +45,26 @@ import static org.didelphis.language.phonetic.model.ModelConstants.*;
  * @since 0.1.0
  */
 @ToString(exclude = "hash")
-public final class GeneralFeatureModel<T> implements FeatureModel<T> {
+public final class GeneralFeatureModel implements FeatureModel {
 
 	private int hash;
 
 	private final FeatureSpecification specification;
-	private final List<Constraint<T>> constraints;
-	private final Map<String, FeatureArray<T>> aliases;
-	private final FeatureType<T> featureType;
+	private final List<Constraint> constraints;
+	private final Map<String, FeatureArray> aliases;
+	private final FeatureType featureType;
 
 	/**
-	 * @param featureType
 	 * @param specification
 	 * @param constraints
 	 * @param aliases
 	 */
 	public GeneralFeatureModel(
-			@NonNull FeatureType<T> featureType,
 			@NonNull FeatureSpecification specification,
-			@NonNull List<Constraint<T>> constraints,
-			@NonNull Map<String, FeatureArray<T>> aliases
+			@NonNull List<Constraint> constraints,
+			@NonNull Map<String, FeatureArray> aliases
 	) {
-		this.featureType = featureType;
+		featureType = IntegerFeature.INSTANCE;
 		this.specification = specification;
 		this.constraints = Collections.unmodifiableList(constraints);
 		this.aliases = Collections.unmodifiableMap(aliases);
@@ -73,16 +72,16 @@ public final class GeneralFeatureModel<T> implements FeatureModel<T> {
 
 	@NonNull
 	@Override
-	public List<Constraint<T>> getConstraints() {
+	public List<Constraint> getConstraints() {
 		return constraints;
 	}
 
 	@NonNull
 	@Override
-	public FeatureArray<T> parseFeatureString(@NonNull String string) {
+	public FeatureArray parseFeatureString(@NonNull String string) {
 		String normal = normalize(string, Form.NFKC);
 		String pattern = BRACKET_PATTERN.replace(normal, "$1");
-		FeatureArray<T> arr = new SparseFeatureArray<>(this);
+		FeatureArray arr = new SparseFeatureArray(this);
 		Map<String, Integer> indices = specification.getFeatureIndices();
 		for (String element : FEATURE_PATTERN.split(pattern)) {
 			Match<String> valueMatcher = VALUE_PATTERN.match(element);
@@ -116,7 +115,7 @@ public final class GeneralFeatureModel<T> implements FeatureModel<T> {
 
 	@NonNull
 	@Override
-	public FeatureType<T> getFeatureType() {
+	public FeatureType getFeatureType() {
 		return featureType;
 	}
 
@@ -130,7 +129,7 @@ public final class GeneralFeatureModel<T> implements FeatureModel<T> {
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
-		GeneralFeatureModel<?> that = (GeneralFeatureModel<?>) o;
+		GeneralFeatureModel that = (GeneralFeatureModel) o;
 		return specification.equals(that.specification) &&
 				constraints.equals(that.constraints) &&
 				aliases.equals(that.aliases) &&

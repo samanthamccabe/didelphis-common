@@ -21,7 +21,6 @@ package org.didelphis.language.phonetic.sequences;
 
 import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.phonetic.SequenceFactory;
-import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -39,15 +38,14 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class ImmutableSequenceTest {
 
-	private static Sequence<Integer> sequence;
-	private static SequenceFactory<Integer> factory;
+	private static Sequence sequence;
+	private static SequenceFactory factory;
 
 	@BeforeAll
 	static void init() {
-		FeatureModelLoader<Integer> loader = new FeatureModelLoader<>(
-				IntegerFeature.INSTANCE);
-		factory = new SequenceFactory<>(loader.getFeatureMapping(), FormatterMode.NONE);
-		sequence = new ImmutableSequence<>(factory.toSequence("foob"));
+		FeatureModelLoader loader = new FeatureModelLoader();
+		factory = new SequenceFactory(loader.getFeatureMapping(), FormatterMode.NONE);
+		sequence = new ImmutableSequence(factory.toSequence("foob"));
 	}
 
 	@Test
@@ -122,7 +120,7 @@ class ImmutableSequenceTest {
 
 	@Test
 	void equals() {
-		Sequence<Integer> foob = new ImmutableSequence<>(factory.toSequence("foob"));
+		Sequence foob = new ImmutableSequence(factory.toSequence("foob"));
 		assertEquals(sequence, foob);
 		assertNotEquals(sequence, factory.toSequence("foob"));
 	}
@@ -165,14 +163,14 @@ class ImmutableSequenceTest {
 
 	@Test
 	void testHashCode() {
-		Sequence<Integer> foob = new ImmutableSequence<>(factory.toSequence("foob"));
+		Sequence foob = new ImmutableSequence(factory.toSequence("foob"));
 		assertEquals(sequence.hashCode(), foob.hashCode());
 		assertNotEquals(sequence.hashCode(), factory.toSequence("foob").hashCode());
 	}
 
 	@Test
 	void testToString() {
-		Sequence<Integer> foob = new ImmutableSequence<>(factory.toSequence("foob"));
+		Sequence foob = new ImmutableSequence(factory.toSequence("foob"));
 		assertEquals(sequence.toString(), foob.toString());
 		assertNotEquals(sequence.toString(), factory.toSequence("foob").toString());
 	}

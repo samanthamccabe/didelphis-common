@@ -27,11 +27,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UndefinedSegmentTest extends PhoneticTestBase {
 
-	private final Segment<Integer> segment = getSegment("segment");
+	private final Segment segment = getSegment("segment");
 
 	@Test
 	void testAlter() {
-		Segment<Integer> mod = factory.toSegment("[-voice]");
+		Segment mod = factory.toSegment("[-voice]");
 		assertFalse(segment.alter(mod));
 		assertEquals(segment, segment);
 	}
@@ -78,8 +78,8 @@ class UndefinedSegmentTest extends PhoneticTestBase {
 		assertNotEquals(getSegment("x").hashCode(), segment.hashCode());
 	}
 
-	private static Segment<Integer> getSegment(String symbol) {
-		return new UndefinedSegment<>(
+	private static Segment getSegment(String symbol) {
+		return new UndefinedSegment(
 				symbol,
 				factory.getFeatureMapping().getFeatureModel()
 		);

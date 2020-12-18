@@ -41,16 +41,16 @@ import java.util.stream.Collectors;
  * @since 0.1.0
  */
 @EqualsAndHashCode (callSuper = true)
-public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
+public final class StandardFeatureArray extends AbstractFeatureArray {
 
-	private final List<T> features;
+	private final List<Integer> features;
 
 	/**
 	 * @param value
 	 * @param featureModel
 	 */
 	public StandardFeatureArray(
-			@Nullable T value, @NonNull FeatureModel<T> featureModel
+			@Nullable Integer value, @NonNull FeatureModel featureModel
 	) {
 		super(featureModel);
 		int size = getSpecification().size();
@@ -65,7 +65,7 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	 * @param featureModel
 	 */
 	public StandardFeatureArray(
-			@NonNull List<T> list, @NonNull FeatureModel<T> featureModel
+			@NonNull List<Integer> list, @NonNull FeatureModel featureModel
 	) {
 		super(featureModel);
 		features = new ArrayList<>(list);
@@ -74,7 +74,7 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	/**
 	 * @param array
 	 */
-	public StandardFeatureArray(@NonNull StandardFeatureArray<T> array) {
+	public StandardFeatureArray(@NonNull StandardFeatureArray array) {
 		super(array.getFeatureModel());
 		features = new ArrayList<>(array.features);
 	}
@@ -82,7 +82,7 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	/**
 	 * @param array
 	 */
-	public StandardFeatureArray(@NonNull FeatureArray<T> array) {
+	public StandardFeatureArray(@NonNull FeatureArray array) {
 		super(array.getFeatureModel());
 		features = new ArrayList<>(size());
 		for (int i = 0; i < size(); i++) {
@@ -91,23 +91,23 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	}
 
 	@Override
-	public void set(int index, @Nullable T value) {
+	public void set(int index, @Nullable Integer value) {
 		features.set(index, value);
 		applyConstraints(index);
 	}
 
 	@Override
-	public @Nullable T get(int index) {
+	public @Nullable Integer get(int index) {
 		return features.get(index);
 	}
 
 	@Override
-	public boolean matches(@NonNull FeatureArray<T> array) {
+	public boolean matches(@NonNull FeatureArray array) {
 		sizeCheck(array);
 
 		for (int i = 0; i < size(); i++) {
-			T x = get(i);
-			T y = array.get(i);
+			Integer x = get(i);
+			Integer y = array.get(i);
 			if (!matches(x, y)) {
 				return false;
 			}
@@ -116,13 +116,13 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	}
 
 	@Override
-	public boolean alter(@NonNull FeatureArray<T> array) {
+	public boolean alter(@NonNull FeatureArray array) {
 		sizeCheck(array);
 
-		FeatureType<T> featureType = getFeatureModel().getFeatureType();
+		FeatureType featureType = getFeatureModel().getFeatureType();
 		Collection<Integer> alteredIndices = new HashSet<>();
 		for (int i = 0; i < features.size(); i++) {
-			T v = array.get(i);
+			Integer v = array.get(i);
 			if (featureType.isDefined(v) && !Objects.equals(get(i), v)) {
 				alteredIndices.add(i);
 				features.set(i, v);
@@ -135,7 +135,7 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	}
 
 	@Override
-	public boolean contains(@Nullable T value) {
+	public boolean contains(@Nullable Integer value) {
 		return features.contains(value);
 	}
 
@@ -147,19 +147,19 @@ public final class StandardFeatureArray<T> extends AbstractFeatureArray<T> {
 	}
 
 	@Override
-	public Iterator<T> iterator() {
+	public Iterator<Integer> iterator() {
 		return features.iterator();
 	}
 
-	private boolean matches(@Nullable T x, @Nullable T y) {
-		FeatureType<T> featureType = getFeatureModel().getFeatureType();
+	private boolean matches(@Nullable Integer x, @Nullable Integer y) {
+		FeatureType featureType = getFeatureModel().getFeatureType();
 		return !(featureType.isDefined(x) && featureType.isDefined(y)) ||
 				Objects.equals(x, y);
 	}
 
 	private void applyConstraints(int index) {
-		for (Constraint<T> constraint : getFeatureModel().getConstraints()) {
-			FeatureArray<T> source = constraint.getSource();
+		for (Constraint constraint : getFeatureModel().getConstraints()) {
+			FeatureArray source = constraint.getSource();
 			if (source.get(index) != null && matches(source)) {
 				alter(constraint.getTarget());
 			}

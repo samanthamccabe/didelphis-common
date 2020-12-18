@@ -37,9 +37,9 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 
 	@Test
 	void testEquals() {
-		Sequence<Integer> sequence1 = factory.toSequence("z");
-		Sequence<Integer> sequence2 = factory.toSequence("y");
-		Sequence<Integer> sequence3 = factory.toSequence("y");
+		Sequence sequence1 = factory.toSequence("z");
+		Sequence sequence2 = factory.toSequence("y");
+		Sequence sequence3 = factory.toSequence("y");
 
 		assertEquals(sequence1, sequence1);
 		assertEquals(sequence3, sequence2);
@@ -50,9 +50,9 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 
 	@Test
 	void testHashcode() {
-		Sequence<Integer> sequence1 = factory.toSequence("z");
-		Sequence<Integer> sequence2 = factory.toSequence("y");
-		Sequence<Integer> sequence3 = factory.toSequence("y");
+		Sequence sequence1 = factory.toSequence("z");
+		Sequence sequence2 = factory.toSequence("y");
+		Sequence sequence3 = factory.toSequence("y");
 
 		assertEquals(sequence1.hashCode(), sequence1.hashCode());
 		assertEquals(sequence3.hashCode(), sequence2.hashCode());
@@ -62,10 +62,10 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 
 	@Test
 	void testCompareTo() {
-		Sequence<Integer> sequence1 = factory.toSequence("k");
-		Sequence<Integer> sequence2 = factory.toSequence("g");
-		Sequence<Integer> sequence3 = factory.toSequence("x");
-		Sequence<Integer> sequence4 = factory.toSequence("kx");
+		Sequence sequence1 = factory.toSequence("k");
+		Sequence sequence2 = factory.toSequence("g");
+		Sequence sequence3 = factory.toSequence("x");
+		Sequence sequence4 = factory.toSequence("kx");
 
 		assertEquals(-1, sequence1.compareTo(sequence2));
 		assertEquals(-1, sequence1.compareTo(sequence3));
@@ -79,14 +79,14 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 
 	@Test
 	void testMatches01() {
-		Sequence<Integer> sequence = factory.toSequence("an");
+		Sequence sequence = factory.toSequence("an");
 		assertMatches(sequence, factory.toSequence("an"));
 		assertNotMatches(sequence, factory.toSequence("aa"));
 	}
 
 	@Test
 	void testMatches02() {
-		Sequence<Integer> sequence = factory.toSequence("a");
+		Sequence sequence = factory.toSequence("a");
 
 		assertMatches(sequence, factory.toSequence("a"));
 		assertNotMatches(sequence, factory.toSequence("an"));
@@ -98,7 +98,7 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 
 	@Test
 	void testMatches03() {
-		Sequence<Integer> sequence = factory.toSequence("a[-continuant, -son]");
+		Sequence sequence = factory.toSequence("a[-continuant, -son]");
 
 		assertMatches(sequence, factory.toSequence("ap"));
 		assertMatches(sequence, factory.toSequence("at"));
@@ -109,7 +109,7 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 
 	@Test
 	void testMatches04() {
-		Sequence<Integer> sequence = factory.toSequence("a[-cnt,+rel,-vce]");
+		Sequence sequence = factory.toSequence("a[-cnt,+rel,-vce]");
 
 		assertMatches(sequence, factory.toSequence("ap͜f"));
 		assertMatches(sequence, factory.toSequence("at͜s"));
@@ -133,21 +133,21 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 	@Test
 	void testMatchesEmptyModel() {
 
-		SequenceFactory<Integer> emptyFactory = new SequenceFactory<>(
+		SequenceFactory emptyFactory = new SequenceFactory(
 				IntegerFeature.INSTANCE.emptyLoader().getFeatureMapping(),
 				FormatterMode.NONE
 		);
 
-		Sequence<Integer> sequence = emptyFactory.toSequence("an");
+		Sequence sequence = emptyFactory.toSequence("an");
 		assertMatches(sequence, emptyFactory.toSequence("an"));
 		assertNotMatches(sequence, emptyFactory.toSequence("aa"));
 	}
 
 	@Test
 	void testReverse() {
-		Sequence<Integer> sequence1 = factory.toSequence("foo");
-		Sequence<Integer> sequence2 = factory.toSequence("oof");
-		Sequence<Integer> sequence3 = factory.toSequence("nan");
+		Sequence sequence1 = factory.toSequence("foo");
+		Sequence sequence2 = factory.toSequence("oof");
+		Sequence sequence3 = factory.toSequence("nan");
 
 		assertEquals(sequence1, sequence2.getReverseSequence());
 		assertEquals(sequence2, sequence1.getReverseSequence());
@@ -156,7 +156,7 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 
 	@Test
 	void testGet() {
-		Sequence<Integer> received = factory.toSequence("Sequences");
+		Sequence received = factory.toSequence("Sequences");
 
 		assertEquals(factory.toSegment("S"), received.get(0));
 		assertEquals(factory.toSegment("e"), received.get(1));
@@ -166,9 +166,9 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 
 	@Test
 	void testAddSequence() {
-		Sequence<Integer> received = factory.toSequence("Sequ");
-		Sequence<Integer> addition = factory.toSequence("ence");
-		Sequence<Integer> expected = factory.toSequence("Sequence");
+		Sequence received = factory.toSequence("Sequ");
+		Sequence addition = factory.toSequence("ence");
+		Sequence expected = factory.toSequence("Sequence");
 
 		received.add(addition);
 
@@ -178,13 +178,13 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 	@Test
 	void testAddSequenceWrongModel() {
 
-		SequenceFactory<Integer> factory1 = new SequenceFactory<>(
+		SequenceFactory factory1 = new SequenceFactory(
 				IntegerFeature.INSTANCE.emptyLoader().getFeatureMapping(),
 				FormatterMode.NONE
 		);
 
-		Sequence<Integer> received = factory.toSequence("Sequ");
-		Sequence<Integer> addition = factory1.toSequence("ence");
+		Sequence received = factory.toSequence("Sequ");
+		Sequence addition = factory1.toSequence("ence");
 
 		assertThrows(IllegalArgumentException.class, () -> received.add(addition));
 	}
@@ -192,9 +192,9 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 	@Test
 	void testContains() {
 
-		Sequence<Integer> sequence1 = factory.toSequence("Sequence");
-		Sequence<Integer> sequence2 = factory.toSequence("ence");
-		Sequence<Integer> sequence3 = factory.toSequence("a");
+		Sequence sequence1 = factory.toSequence("Sequence");
+		Sequence sequence2 = factory.toSequence("ence");
+		Sequence sequence3 = factory.toSequence("a");
 
 		assertTrue(sequence1.contains(sequence2));
 		assertFalse(sequence1.contains(sequence3));
@@ -203,13 +203,13 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 	@Test
 	void testContainsWrongModel() {
 
-		SequenceFactory<Integer> factory1 = new SequenceFactory<>(
+		SequenceFactory factory1 = new SequenceFactory(
 				IntegerFeature.INSTANCE.emptyLoader().getFeatureMapping(),
 				FormatterMode.NONE
 		);
 
-		Sequence<Integer> sequence1 = factory.toSequence("Sequence");
-		Sequence<Integer> sequence2 = factory1.toSequence("ence");
+		Sequence sequence1 = factory.toSequence("Sequence");
+		Sequence sequence2 = factory1.toSequence("ence");
 
 		assertFalse(sequence1.contains(sequence2));
 	}
@@ -217,9 +217,9 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 	@Test
 	void testStartsWith() {
 
-		Sequence<Integer> sequence1 = factory.toSequence("Sequence");
-		Sequence<Integer> sequence2 = factory.toSequence("Seq");
-		Sequence<Integer> sequence3 = factory.toSequence("a");
+		Sequence sequence1 = factory.toSequence("Sequence");
+		Sequence sequence2 = factory.toSequence("Seq");
+		Sequence sequence3 = factory.toSequence("a");
 
 		assertTrue(sequence1.startsWith(sequence2));
 		assertFalse(sequence1.startsWith(sequence3));
@@ -228,9 +228,9 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 	@Test
 	void testStartsWithSegment() {
 
-		Sequence<Integer> sequence = factory.toSequence("Sequence");
-		Segment<Integer> segment1 = factory.toSegment("S");
-		Segment<Integer> segment2 = factory.toSegment("a");
+		Sequence sequence = factory.toSequence("Sequence");
+		Segment segment1 = factory.toSegment("S");
+		Segment segment2 = factory.toSegment("a");
 
 		assertTrue(sequence.startsWith(segment1));
 		assertFalse(sequence.startsWith(segment2));
@@ -239,13 +239,13 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 	@Test
 	void testStartsWithWrongModel() {
 
-		SequenceFactory<Integer> factory1 = new SequenceFactory<>(
+		SequenceFactory factory1 = new SequenceFactory(
 				IntegerFeature.INSTANCE.emptyLoader().getFeatureMapping(),
 				FormatterMode.NONE
 		);
 
-		Sequence<Integer> sequence1 = factory.toSequence("Sequence");
-		Sequence<Integer> sequence2 = factory1.toSequence("Seq");
+		Sequence sequence1 = factory.toSequence("Sequence");
+		Sequence sequence2 = factory1.toSequence("Seq");
 
 		assertFalse(sequence1.startsWith(sequence2));
 	}
@@ -253,13 +253,13 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 	@Test
 	void testStartsWithSegmentWrongModel() {
 
-		SequenceFactory<Integer> factory1 = new SequenceFactory<>(
+		SequenceFactory factory1 = new SequenceFactory(
 				IntegerFeature.INSTANCE.emptyLoader().getFeatureMapping(),
 				FormatterMode.NONE
 		);
 
-		Sequence<Integer> sequence = factory.toSequence("Sequence");
-		Segment<Integer> segment = factory1.toSegment("S");
+		Sequence sequence = factory.toSequence("Sequence");
+		Segment segment = factory1.toSegment("S");
 
 		assertFalse(sequence.startsWith(segment));
 	}
@@ -267,13 +267,13 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 	@Test
 	void testIndexOfSequenceWrongModel() {
 
-		SequenceFactory<Integer> factory1 = new SequenceFactory<>(
+		SequenceFactory factory1 = new SequenceFactory(
 				IntegerFeature.INSTANCE.emptyLoader().getFeatureMapping(),
 				FormatterMode.NONE
 		);
 
-		Sequence<Integer> sequence1 = factory.toSequence("Sequence");
-		Sequence<Integer> sequence2 = factory1.toSequence("ence");
+		Sequence sequence1 = factory.toSequence("Sequence");
+		Sequence sequence2 = factory1.toSequence("ence");
 
 		assertEquals(-1, sequence1.indexOf(sequence2));
 	}
@@ -281,13 +281,13 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 	@Test
 	void testAddArray() {
 
-		Sequence<Integer> received = factory.toSequence("a");
+		Sequence received = factory.toSequence("a");
 		received.add(factory.toSegment("w"));
 		received.add(factory.toSegment("o"));
 		received.add(factory.toSegment("r"));
 		received.add(factory.toSegment("d"));
 
-		Sequence<Integer> expected = factory.toSequence("aword");
+		Sequence expected = factory.toSequence("aword");
 
 		assertEquals(expected, received);
 	}
@@ -312,31 +312,31 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 
 	@Test
 	void testSubsequence01() {
-		Sequence<Integer> sequence = factory.toSequence("expiated");
-		Sequence<Integer> expected = factory.toSequence("iated");
-		Sequence<Integer> received = sequence.subsequence(3);
+		Sequence sequence = factory.toSequence("expiated");
+		Sequence expected = factory.toSequence("iated");
+		Sequence received = sequence.subsequence(3);
 		assertEquals(expected, received);
 	}
 
 	@Test
 	void testSubsequence02() {
-		Sequence<Integer> sequence = factory.toSequence("expiated");
-		Sequence<Integer> expected = factory.toSequence("iat");
-		Sequence<Integer> received = sequence.subsequence(3, 6);
+		Sequence sequence = factory.toSequence("expiated");
+		Sequence expected = factory.toSequence("iat");
+		Sequence received = sequence.subsequence(3, 6);
 		assertEquals(expected, received);
 	}
 
 	@Test
 	void testSubsequence03() {
-		Sequence<Integer> sequence = factory.toSequence("expiated");
-		Sequence<Integer> expected = factory.toSequence("xpiat");
-		Sequence<Integer> received = sequence.subsequence(1, 6);
+		Sequence sequence = factory.toSequence("expiated");
+		Sequence expected = factory.toSequence("xpiat");
+		Sequence received = sequence.subsequence(1, 6);
 		assertEquals(expected, received);
 	}
 
 	@Test
 	void testIndexOf01() {
-		Sequence<Integer> sequence = factory.toSequence("expiated");
+		Sequence sequence = factory.toSequence("expiated");
 
 		assertIndexOf("e", sequence, 0);
 		assertIndexOf("ex", sequence, 0);
@@ -383,7 +383,7 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 
 	@Test
 	void testIndexOf02() {
-		Sequence<Integer> sequence = factory.toSequence("subverterunt");
+		Sequence sequence = factory.toSequence("subverterunt");
 
 		assertEquals(-1,  sequence.indexOf(factory.toSequence("s"), 2));
 		assertEquals( 0,  sequence.indexOf(factory.toSequence("s"), 0));
@@ -396,7 +396,7 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 	@Test
 	void testIndexOfEmpty() {
 
-		Sequence<Integer> sequence = factory.toSequence("subverterunt");
+		Sequence sequence = factory.toSequence("subverterunt");
 
 		assertEquals(-1,  sequence.indexOf(factory.toSequence("s"), 2));
 		assertEquals( 0,  sequence.indexOf(factory.toSequence("s"), 0));
@@ -407,7 +407,7 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 
 	@Test
 	void testIndices03() {
-		Sequence<Integer> sequence = factory.toSequence("subverterunt");
+		Sequence sequence = factory.toSequence("subverterunt");
 
 		Collection<Integer> expected = new ArrayList<>();
 		expected.add(4);
@@ -420,7 +420,7 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 
 	@Test
 	void testIndices04() {
-		Sequence<Integer> sequence = factory.toSequence("aonaontada");
+		Sequence sequence = factory.toSequence("aonaontada");
 
 		Collection<Integer> expected = new ArrayList<>();
 		expected.add(0);
@@ -432,11 +432,11 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 
 	@Test
 	void testRemove01() {
-		Sequence<Integer> sequence = factory.toSequence("abcdefghijk");
-		Sequence<Integer> expected = factory.toSequence("cdefghijk");
+		Sequence sequence = factory.toSequence("abcdefghijk");
+		Sequence expected = factory.toSequence("cdefghijk");
 
-		Sequence<Integer> received = new PhoneticSequence<>(sequence);
-		Sequence<Integer> removed = received.remove(0, 2);
+		Sequence received = new PhoneticSequence(sequence);
+		Sequence removed = received.remove(0, 2);
 
 		assertEquals(expected, received);
 		assertEquals(removed, factory.toSequence("ab"));
@@ -444,11 +444,11 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 
 	@Test
 	void testRemove02() {
-		Sequence<Integer> sequence = factory.toSequence("abcdefghijk");
-		Sequence<Integer> expected = factory.toSequence("defghijk");
+		Sequence sequence = factory.toSequence("abcdefghijk");
+		Sequence expected = factory.toSequence("defghijk");
 
-		Sequence<Integer> received = new PhoneticSequence<>(sequence);
-		Sequence<Integer> removed = received.remove(0, 3);
+		Sequence received = new PhoneticSequence(sequence);
+		Sequence removed = received.remove(0, 3);
 
 		assertEquals(expected, received);
 		assertEquals(removed, factory.toSequence("abc"));
@@ -456,11 +456,11 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 
 	@Test
 	void testRemove03() {
-		Sequence<Integer> sequence = factory.toSequence("abcdefghijk");
-		Sequence<Integer> expected = factory.toSequence("adefghijk");
+		Sequence sequence = factory.toSequence("abcdefghijk");
+		Sequence expected = factory.toSequence("adefghijk");
 
-		Sequence<Integer> received = new PhoneticSequence<>(sequence);
-		Sequence<Integer> removed = received.remove(1, 3);
+		Sequence received = new PhoneticSequence(sequence);
+		Sequence removed = received.remove(1, 3);
 
 		assertEquals(expected, received);
 		assertEquals(removed, factory.toSequence("bc"));
@@ -468,11 +468,11 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 
 	@Test
 	void testRemove04() {
-		Sequence<Integer> sequence = factory.toSequence("abcdefghijk");
-		Sequence<Integer> expected = factory.toSequence("abcghijk");
+		Sequence sequence = factory.toSequence("abcdefghijk");
+		Sequence expected = factory.toSequence("abcghijk");
 
-		Sequence<Integer> received = new PhoneticSequence<>(sequence);
-		Sequence<Integer> removed = received.remove(3, 6);
+		Sequence received = new PhoneticSequence(sequence);
+		Sequence removed = received.remove(3, 6);
 
 		assertEquals(expected, received);
 		assertEquals(removed, factory.toSequence("def"));
@@ -480,11 +480,11 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 
 	@Test
 	void testRemove05() {
-		Sequence<Integer> sequence = factory.toSequence("abcdefghijk");
-		Sequence<Integer> expected = factory.toSequence("abcdhijk");
+		Sequence sequence = factory.toSequence("abcdefghijk");
+		Sequence expected = factory.toSequence("abcdhijk");
 
-		Sequence<Integer> received = new PhoneticSequence<>(sequence);
-		Sequence<Integer> removed = received.remove(4, 7);
+		Sequence received = new PhoneticSequence(sequence);
+		Sequence removed = received.remove(4, 7);
 
 		assertEquals(expected, received);
 		assertEquals(removed, factory.toSequence("efg"));
@@ -492,9 +492,9 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 
 	@Test
 	void testReplaceAllSequences01() {
-		Sequence<Integer> sequence = factory.toSequence("aoSaontada");
-		Sequence<Integer> expected = factory.toSequence("ouSountada");
-		Sequence<Integer> received = sequence.replaceAll(factory.toSequence("ao"),
+		Sequence sequence = factory.toSequence("aoSaontada");
+		Sequence expected = factory.toSequence("ouSountada");
+		Sequence received = sequence.replaceAll(factory.toSequence("ao"),
 				factory.toSequence("ou"));
 
 		assertEquals(expected, received);
@@ -502,9 +502,9 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 
 	@Test
 	void testReplaceAllSequences02() {
-		Sequence<Integer> sequence = factory.toSequence("farcical");
-		Sequence<Integer> expected = factory.toSequence("faarcicaal");
-		Sequence<Integer> received = sequence.replaceAll(factory.toSequence("a"),
+		Sequence sequence = factory.toSequence("farcical");
+		Sequence expected = factory.toSequence("faarcicaal");
+		Sequence received = sequence.replaceAll(factory.toSequence("a"),
 				factory.toSequence("aa"));
 
 		assertEquals(expected, received);
@@ -512,9 +512,9 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 
 	@Test
 	void testReplaceAllSequences03() {
-		Sequence<Integer> sequence = factory.toSequence("farcical");
-		Sequence<Integer> expected = factory.toSequence("faearcicaeal");
-		Sequence<Integer> received = sequence.replaceAll(factory.toSequence("a"),
+		Sequence sequence = factory.toSequence("farcical");
+		Sequence expected = factory.toSequence("faearcicaeal");
+		Sequence received = sequence.replaceAll(factory.toSequence("a"),
 				factory.toSequence("aea"));
 
 		assertEquals(expected, received);
@@ -522,9 +522,9 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 
 	@Test
 	void testReplaceAllSequences04() {
-		Sequence<Integer> sequence = factory.toSequence("onomotopaea");
-		Sequence<Integer> expected = factory.toSequence("ɔɤnɔɤmɔɤtɔɤpaea");
-		Sequence<Integer> received = sequence.replaceAll(factory.toSequence("o"),
+		Sequence sequence = factory.toSequence("onomotopaea");
+		Sequence expected = factory.toSequence("ɔɤnɔɤmɔɤtɔɤpaea");
+		Sequence received = sequence.replaceAll(factory.toSequence("o"),
 				factory.toSequence("ɔɤ"));
 
 		assertEquals(expected, received);
@@ -532,7 +532,7 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 
 	@Test
 	void testStartsWith01() {
-		Sequence<Integer> sequence = factory.toSequence("tekton");
+		Sequence sequence = factory.toSequence("tekton");
 
 		assertTrue(sequence.startsWith(factory.toSequence("tekton")));
 		assertTrue(sequence.startsWith(factory.toSequence("tekto")));
@@ -543,7 +543,7 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 
 	@Test
 	void testStartsWith02() {
-		Sequence<Integer> sequence = factory.toSequence("ton");
+		Sequence sequence = factory.toSequence("ton");
 
 		assertTrue(sequence.startsWith(factory.toSequence("t")));
 		assertTrue(sequence.startsWith(factory.toSequence("to")));
@@ -559,31 +559,31 @@ class PhoneticSequenceTest extends PhoneticTestBase {
 
 	@Test
 	void testStartsWith03() {
-		Sequence<Integer> sequence = factory.toSequence("elə");
+		Sequence sequence = factory.toSequence("elə");
 
 		assertFalse(sequence.startsWith(factory.toSequence("eʔo")));
 	}
 
-	private static void assertIndexOf(String e, Sequence<Integer> q, int i) {
+	private static void assertIndexOf(String e, Sequence q, int i) {
 		assertEquals(i, q.indexOf(factory.toSequence(e)));
 	}
 
-	private static void assertNotStartsWith(Sequence<Integer> sequence, String string) {
-		Sequence<Integer> testSequence = factory.toSequence(string);
+	private static void assertNotStartsWith(Sequence sequence, String string) {
+		Sequence testSequence = factory.toSequence(string);
 		assertFalse(sequence.startsWith(testSequence));
 	}
 
-	private static void assertStartsWith(Sequence<Integer> sequence, String string) {
-		Sequence<Integer> testSequence = factory.toSequence(string);
+	private static void assertStartsWith(Sequence sequence, String string) {
+		Sequence testSequence = factory.toSequence(string);
 		assertTrue(sequence.startsWith(testSequence));
 	}
 
-	private static <T> void assertMatches(Sequence<T> exp, Sequence<T> act) {
+	private static <T> void assertMatches(Sequence exp, Sequence act) {
 		boolean matches = exp.matches(act);
 		assertTrue(matches, "'" + exp + "' does not match " + act);
 	}
 
-	private static <T> void assertNotMatches(Sequence<T> exp, Sequence<T> act) {
+	private static <T> void assertNotMatches(Sequence exp, Sequence act) {
 		assertFalse(exp.matches(act), "'" + exp + "' should not match " + act);
 	}
 }

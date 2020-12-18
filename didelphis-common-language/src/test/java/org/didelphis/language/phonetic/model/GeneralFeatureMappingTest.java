@@ -22,12 +22,10 @@ package org.didelphis.language.phonetic.model;
 import org.didelphis.io.ClassPathFileHandler;
 import org.didelphis.language.phonetic.PhoneticTestBase;
 import org.didelphis.language.phonetic.features.FeatureArray;
-import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.segments.SemidefinedSegment;
 import org.didelphis.language.phonetic.segments.UndefinedSegment;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -35,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GeneralFeatureMappingTest extends PhoneticTestBase {
 
-	private static FeatureMapping<Integer> mapping;
+	private static FeatureMapping mapping;
 
 	@BeforeAll
 	static void init() {
@@ -51,15 +49,15 @@ class GeneralFeatureMappingTest extends PhoneticTestBase {
 	@Test
 	void testLoad02() {
 		String resourceName = "AT_hybrid.mapping";
-		FeatureMapping<Integer> model = loadMapping(resourceName);
-		Assertions.assertNotNull(model.getSpecification());
+		FeatureMapping model = loadMapping(resourceName);
+		assertNotNull(model.getSpecification());
 		assertTrue(model.getSpecification().size() > 0);
 	}
 
 	@Test
 	void testLoad_AT_Hybrid() {
 		String resourceName = "AT_hybrid.model";
-		FeatureMapping<Integer> model = loadMapping(resourceName);
+		FeatureMapping model = loadMapping(resourceName);
 		assertFalse(model.getFeatureMap().isEmpty());
 		assertFalse(model.getModifiers().isEmpty());
 	}
@@ -81,11 +79,11 @@ class GeneralFeatureMappingTest extends PhoneticTestBase {
 
 	@Test
 	void testParseSegment01() {
-		Segment<Integer> s1 = mapping.parseSegment("ts");
+		Segment s1 = mapping.parseSegment("ts");
 		assertFalse(s1 instanceof UndefinedSegment);
-		Segment<Integer> s2 = mapping.parseSegment("t͡s");
+		Segment s2 = mapping.parseSegment("t͡s");
 		assertFalse(s2 instanceof UndefinedSegment);
-		Segment<Integer> s3 = mapping.parseSegment("t͜s");
+		Segment s3 = mapping.parseSegment("t͜s");
 		assertFalse(s3 instanceof UndefinedSegment);
 
 		assertEquals(s1.getFeatures(), s2.getFeatures());
@@ -94,22 +92,21 @@ class GeneralFeatureMappingTest extends PhoneticTestBase {
 
 	@Test
 	void testParseSegmentMissingModifier() {
-		Segment<Integer> segment1 = mapping.parseSegment("n");
-		Segment<Integer> segment2 = mapping.parseSegment("n᷄");
+		Segment segment1 = mapping.parseSegment("n");
+		Segment segment2 = mapping.parseSegment("n᷄");
 		assertFalse(segment1 instanceof SemidefinedSegment);
 		assertTrue(segment2 instanceof SemidefinedSegment);
 	}
 
 	private static void testBestSymbol(String string) {
-		Segment<Integer> segment = mapping.parseSegment(string);
-		FeatureArray<Integer> array = segment.getFeatures();
+		Segment segment = mapping.parseSegment(string);
+		FeatureArray array = segment.getFeatures();
 		String bestSymbol = mapping.findBestSymbol(array);
 		assertEquals(string, bestSymbol);
 	}
 
-	private static FeatureMapping<Integer> loadMapping(String resourceName) {
-		FeatureModelLoader<Integer> loader = new FeatureModelLoader<>(
-				IntegerFeature.INSTANCE,
+	private static FeatureMapping loadMapping(String resourceName) {
+		FeatureModelLoader loader = new FeatureModelLoader(
 				ClassPathFileHandler.INSTANCE,
 				resourceName);
 		return loader.getFeatureMapping();

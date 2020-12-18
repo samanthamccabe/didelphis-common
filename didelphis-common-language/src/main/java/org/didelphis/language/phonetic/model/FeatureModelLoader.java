@@ -31,6 +31,7 @@ import org.didelphis.language.automata.matching.Match;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.FeatureType;
+import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.features.SparseFeatureArray;
 import org.didelphis.structures.maps.GeneralMultiMap;
 import org.didelphis.structures.maps.interfaces.MultiMap;
@@ -61,7 +62,7 @@ import static org.didelphis.utilities.Splitter.*;
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EqualsAndHashCode
-public final class FeatureModelLoader<T> {
+public final class FeatureModelLoader {
 
 	private static final Logger LOG = LogManager.getLogger(FeatureModelLoader.class);
 
@@ -81,16 +82,16 @@ public final class FeatureModelLoader<T> {
 	final String               basePath;
 	final List<String>         featureNames;
 	final Map<String, Integer> featureIndices;
-	final FeatureType<T>       featureType;
+	final FeatureType          featureType;
 	final FileHandler          fileHandler;
 
 	FeatureSpecification specification;
-	FeatureModel<T>      featureModel;
-	FeatureMapping<T>    featureMapping;
+	FeatureModel      featureModel;
+	FeatureMapping    featureMapping;
 	/*>-----------------------------------------------------------------------*/
 
-	public FeatureModelLoader(FeatureType<T> featureType) {
-		this.featureType = featureType;
+	public FeatureModelLoader() {
+		featureType = IntegerFeature.INSTANCE;
 		fileHandler = NullFileHandler.INSTANCE;
 		featureNames = new ArrayList<>();
 		featureIndices = new HashMap<>();
@@ -99,24 +100,23 @@ public final class FeatureModelLoader<T> {
 		basePath = "";
 
 		specification = new DefaultFeatureSpecification();
-		featureModel = new GeneralFeatureModel<>(featureType,
+		featureModel = new GeneralFeatureModel(
 				specification,
 				Collections.emptyList(),
 				Collections.emptyMap()
 		);
 
-		featureMapping = new GeneralFeatureMapping<>(featureModel,
+		featureMapping = new GeneralFeatureMapping(featureModel,
 				Collections.emptyMap(),
 				Collections.emptyMap()
 		);
 	}
 
 	public FeatureModelLoader(
-			@NonNull FeatureType<T> featureType,
 			@NonNull FileHandler fileHandler,
 			@NonNull String path
 	) {
-		this.featureType = featureType;
+		featureType = IntegerFeature.INSTANCE;
 		this.fileHandler = fileHandler;
 
 		featureNames = new ArrayList<>();
@@ -133,19 +133,18 @@ public final class FeatureModelLoader<T> {
 			parse(lines(read));
 			populate();
 		} catch (IOException e) {
-			LOG.error("Unexpected failure encountered: {}", e);
+			LOG.error("Unexpected failure encountered", e);
 			throw new ParseException("Failed to read from path " + path, e);
 		}
 	}
 
 	public FeatureModelLoader(
-			@NonNull FeatureType<T> featureType,
 			@NonNull FileHandler fileHandler,
 			@NonNull Iterable<String> lines,
 			@NonNull String basePath
 	) {
 		this.basePath = basePath;
-		this.featureType = featureType;
+		featureType = IntegerFeature.INSTANCE;
 		this.fileHandler = fileHandler;
 
 		featureNames = new ArrayList<>();
@@ -161,7 +160,7 @@ public final class FeatureModelLoader<T> {
 	}
 
 	@NonNull
-	public Constraint<T> parseConstraint(@NonNull String entry) {
+	public Constraint parseConstraint(@NonNull String entry) {
 		List<String> split = TRANSFORM.split(entry, 2);
 
 		if (split.size() < 2) {
@@ -170,9 +169,9 @@ public final class FeatureModelLoader<T> {
 
 		String source = split.get(0);
 		String target = split.get(1);
-		FeatureArray<T> sMap = featureModel.parseFeatureString(source);
-		FeatureArray<T> tMap = featureModel.parseFeatureString(target);
-		return new Constraint<>(sMap, tMap);
+		FeatureArray sMap = featureModel.parseFeatureString(source);
+		FeatureArray tMap = featureModel.parseFeatureString(target);
+		return new Constraint(sMap, tMap);
 	}
 
 	@NonNull
@@ -181,22 +180,22 @@ public final class FeatureModelLoader<T> {
 	}
 
 	@NonNull
-	public FeatureModel<T> getFeatureModel() {
+	public FeatureModel getFeatureModel() {
 		return featureModel;
 	}
 
 	@NonNull
-	public FeatureMapping<T> getFeatureMapping() {
+	public FeatureMapping getFeatureMapping() {
 		return featureMapping;
 	}
 
 	private void populate() {
 		specification = parseSpecification();
 
-		Map<String, FeatureArray<T>> aliases = new HashMap<>();
-		List<Constraint<T>> constraints = new ArrayList<>();
+		Map<String, FeatureArray> aliases = new HashMap<>();
+		List<Constraint> constraints = new ArrayList<>();
 
-		featureModel = new GeneralFeatureModel<>(featureType,
+		featureModel = new GeneralFeatureModel(
 				specification,
 				constraints,
 				aliases
@@ -211,11 +210,11 @@ public final class FeatureModelLoader<T> {
 
 		// populate constraints
 		for (String s : zoneData.get(ParseZone.CONSTRAINTS)) {
-			Constraint<T> constraint = parseConstraint(s);
+			Constraint constraint = parseConstraint(s);
 			constraints.add(constraint);
 		}
 
-		featureMapping = new GeneralFeatureMapping<>(featureModel,
+		featureMapping = new GeneralFeatureMapping(featureModel,
 				populateSymbols(),
 				populateModifiers()
 		);
@@ -294,8 +293,8 @@ public final class FeatureModelLoader<T> {
 	}
 
 	@NonNull
-	private Map<String, FeatureArray<T>> populateModifiers() {
-		Map<String, FeatureArray<T>> diacritics = new LinkedHashMap<>();
+	private Map<String, FeatureArray> populateModifiers() {
+		Map<String, FeatureArray> diacritics = new LinkedHashMap<>();
 		Iterable<String> lines = zoneData.get(ParseZone.MODIFIERS);
 		for (String entry : lines) {
 			Match<String> matcher = SYMBOL_PATTERN.match(entry);
@@ -303,7 +302,7 @@ public final class FeatureModelLoader<T> {
 				String symbol = matcher.group(1);
 				String group = matcher.group(2);
 				List<String> values = TAB_PATTERN.split(group, -1);
-				FeatureArray<T> array = new SparseFeatureArray<>(featureModel);
+				FeatureArray array = new SparseFeatureArray(featureModel);
 				int i = 0;
 				for (String value : values) {
 					if (!value.isEmpty()) {
@@ -322,8 +321,8 @@ public final class FeatureModelLoader<T> {
 	}
 
 	@NonNull
-	private Map<String, FeatureArray<T>> populateSymbols() {
-		Map<String, FeatureArray<T>> featureMap = new LinkedHashMap<>();
+	private Map<String, FeatureArray> populateSymbols() {
+		Map<String, FeatureArray> featureMap = new LinkedHashMap<>();
 		Iterable<String> lines = zoneData.get(ParseZone.SYMBOLS);
 		for (String entry : lines) {
 			Match<String> match = SYMBOL_PATTERN.match(entry);
@@ -342,8 +341,8 @@ public final class FeatureModelLoader<T> {
 					throw new ParseException(message);
 				}
 
-				FeatureArray<T> features
-						= new SparseFeatureArray<>(featureModel);
+				FeatureArray features
+						= new SparseFeatureArray(featureModel);
 				for (int i = 0; i < size; i++) {
 					String value = values.get(i);
 					features.set(i, featureType.parseValue(value));
@@ -375,11 +374,11 @@ public final class FeatureModelLoader<T> {
 
 	private static <T> boolean checkFeatureCollisions(
 			@NonNull String symbol,
-			@NonNull Map<String, FeatureArray<T>> featureMap,
-			@NonNull FeatureArray<T> features
+			@NonNull Map<String, FeatureArray> featureMap,
+			@NonNull FeatureArray features
 	) {
 		if (featureMap.containsValue(features)) {
-			for (Entry<String, FeatureArray<T>> e : featureMap.entrySet()) {
+			for (Entry<String, FeatureArray> e : featureMap.entrySet()) {
 				if (features.equals(e.getValue())) {
 					LOG.warn("Collision between features {} and {} --- both "
 							+ "have value {}", symbol, e.getKey(), features);

@@ -24,18 +24,18 @@
     <parent>
         <groupId>org.didelphis.common</groupId>
         <artifactId>didelphis-common</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>0.5.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>didelphis-common-io</artifactId>
-    <version>0.4.0-SNAPSHOT</version>
+    <version>0.5.0-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
             <groupId>org.didelphis.common</groupId>
             <artifactId>didelphis-common-utilities</artifactId>
-            <version>0.4.0-SNAPSHOT</version>
+            <version>0.5.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

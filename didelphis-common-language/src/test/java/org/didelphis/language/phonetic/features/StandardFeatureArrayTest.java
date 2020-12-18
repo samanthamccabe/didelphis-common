@@ -35,10 +35,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class StandardFeatureArrayTest extends PhoneticTestBase {
 
 	private static final Integer NULL = null;
-	private static FeatureModel<Integer> empty;
-	private static FeatureModel<Integer> model;
+	private static FeatureModel empty;
+	private static FeatureModel model;
 
-	private StandardFeatureArray<Integer> array;
+	private StandardFeatureArray array;
 
 	@BeforeAll
 	static void initModel() {
@@ -48,22 +48,22 @@ class StandardFeatureArrayTest extends PhoneticTestBase {
 
 	@BeforeEach
 	void initArray() {
-		array = new StandardFeatureArray<>(1, model);
+		array = new StandardFeatureArray(1, model);
 	}
 
 	@Test
 	void testConstructor() {
 
-		Segment<Integer> segment = factory.toSegment("a");
+		Segment segment = factory.toSegment("a");
 
-		FeatureArray<Integer> features = segment.getFeatures();
+		FeatureArray features = segment.getFeatures();
 
 		List<Integer> list = new ArrayList<>();
 		for (Integer integer : features) {
 			list.add(integer);
 		}
 
-		FeatureArray<Integer> array = new StandardFeatureArray<>(
+		FeatureArray array = new StandardFeatureArray(
 				list,
 				features.getFeatureModel()
 		);
@@ -92,12 +92,12 @@ class StandardFeatureArrayTest extends PhoneticTestBase {
 
 	@Test
 	void matches() {
-		assertTrue(array.matches(new StandardFeatureArray<>(NULL, model)));
+		assertTrue(array.matches(new StandardFeatureArray(NULL, model)));
 	}
 
 	@Test
 	void alter() {
-		FeatureArray<Integer> mask = new StandardFeatureArray<>(NULL, model);
+		FeatureArray mask = new StandardFeatureArray(NULL, model);
 		mask.set(10, 9);
 		array.alter(mask);
 
@@ -109,7 +109,7 @@ class StandardFeatureArrayTest extends PhoneticTestBase {
 	void alterException() {
 		assertThrows(
 				IllegalArgumentException.class,
-				() -> array.alter(new StandardFeatureArray<>(NULL, empty))
+				() -> array.alter(new StandardFeatureArray(NULL, empty))
 		);
 	}
 
@@ -117,7 +117,7 @@ class StandardFeatureArrayTest extends PhoneticTestBase {
 	void matchesException() {
 		assertThrows(
 				IllegalArgumentException.class,
-				() -> array.matches(new StandardFeatureArray<>(NULL, empty))
+				() -> array.matches(new StandardFeatureArray(NULL, empty))
 		);
 	}
 
@@ -125,7 +125,7 @@ class StandardFeatureArrayTest extends PhoneticTestBase {
 	void compareToException() {
 		assertThrows(
 				IllegalArgumentException.class,
-				() -> array.compareTo(new StandardFeatureArray<>(0, empty))
+				() -> array.compareTo(new StandardFeatureArray(0, empty))
 		);
 	}
 
@@ -137,9 +137,9 @@ class StandardFeatureArrayTest extends PhoneticTestBase {
 
 	@Test
 	void compareTo() {
-		FeatureArray<Integer> array1 = new StandardFeatureArray<>(array);
-		FeatureArray<Integer> array2 = new StandardFeatureArray<>(array);
-		FeatureArray<Integer> array3 = new StandardFeatureArray<>(array);
+		FeatureArray array1 = new StandardFeatureArray(array);
+		FeatureArray array2 = new StandardFeatureArray(array);
+		FeatureArray array3 = new StandardFeatureArray(array);
 
 		array1.set(0, -1);
 		array2.set(0, 3);
@@ -151,9 +151,9 @@ class StandardFeatureArrayTest extends PhoneticTestBase {
 
 	@Test
 	void compareToNulls() {
-		FeatureArray<Integer> array1 = new StandardFeatureArray<>(0, model);
-		FeatureArray<Integer> array2 = new StandardFeatureArray<>(NULL, model);
-		FeatureArray<Integer> array3 = new StandardFeatureArray<>(array);
+		FeatureArray array1 = new StandardFeatureArray(0, model);
+		FeatureArray array2 = new StandardFeatureArray(NULL, model);
+		FeatureArray array3 = new StandardFeatureArray(array);
 
 		array1.set(3, NULL);
 		array1.set(5, NULL);
@@ -164,13 +164,13 @@ class StandardFeatureArrayTest extends PhoneticTestBase {
 		assertEquals(1, array1.compareTo(array2));
 		assertEquals(-1, array2.compareTo(array1));
 		assertEquals(0, array.compareTo(array3));
-		assertEquals(0, array2.compareTo(new StandardFeatureArray<>(NULL, model)));
+		assertEquals(0, array2.compareTo(new StandardFeatureArray(NULL, model)));
 	}
 
 	@Test
 	void equals() {
-		assertEquals(array, new StandardFeatureArray<>(1, model));
-		assertNotEquals(array, new StandardFeatureArray<>(-1, model));
+		assertEquals(array, new StandardFeatureArray(1, model));
+		assertNotEquals(array, new StandardFeatureArray(-1, model));
 	}
 
 	@Test

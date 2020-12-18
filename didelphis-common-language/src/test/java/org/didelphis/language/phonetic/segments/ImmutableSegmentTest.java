@@ -37,21 +37,21 @@ import static org.junit.jupiter.api.Assertions.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 class ImmutableSegmentTest extends PhoneticTestBase {
 
-	Segment<Integer> segment1 = factory.toSegment("a");
-	Segment<Integer> segment2 = factory.toSegment("b");
+	Segment segment1 = factory.toSegment("a");
+	Segment segment2 = factory.toSegment("b");
 
-	Segment<Integer> segment3 = factory.toSegment("a");
-	Segment<Integer> segment4 = factory.toSegment("b");
+	Segment segment3 = factory.toSegment("a");
+	Segment segment4 = factory.toSegment("b");
 
-	Segment<Integer> immutable1 = new ImmutableSegment<>(segment1);
-	Segment<Integer> immutable2 = new ImmutableSegment<>(segment2);
+	Segment immutable1 = new ImmutableSegment(segment1);
+	Segment immutable2 = new ImmutableSegment(segment2);
 
-	Segment<Integer> immutable3 = new ImmutableSegment<>(segment3);
-	Segment<Integer> immutable4 = new ImmutableSegment<>(segment4);
+	Segment immutable3 = new ImmutableSegment(segment3);
+	Segment immutable4 = new ImmutableSegment(segment4);
 
 	@Test
 	void testEmptyConstructor() {
-		ImmutableSegment<Integer> segment = new ImmutableSegment<>(
+		ImmutableSegment segment = new ImmutableSegment(
 				segment1.getSymbol(),
 				segment2.getFeatureModel()
 		);
@@ -60,7 +60,7 @@ class ImmutableSegmentTest extends PhoneticTestBase {
 
 	@Test
 	void testStandardConstructor() {
-		ImmutableSegment<Integer> segment = new ImmutableSegment<>(
+		ImmutableSegment segment = new ImmutableSegment(
 				segment1.getSymbol(),
 				segment2.getFeatures()
 		);

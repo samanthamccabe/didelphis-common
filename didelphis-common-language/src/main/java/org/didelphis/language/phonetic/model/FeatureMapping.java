@@ -25,6 +25,7 @@ import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.ModelBearer;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.segments.Segment;
+import org.didelphis.language.phonetic.sequences.Sequence;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -41,7 +42,7 @@ import java.util.Set;
  *
  * @since 0.1.0
  */
-public interface FeatureMapping<T> extends ModelBearer<T> {
+public interface FeatureMapping extends ModelBearer {
 
 	/**
 	 * Computes a canonical {@code String} representation from the provided
@@ -53,7 +54,34 @@ public interface FeatureMapping<T> extends ModelBearer<T> {
 	 * @return a {@code String} representing a human-readable symbol which
 	 *      corresponds to the provided feature array. Not Null.
 	 */
-	@NonNull String findBestSymbol(@NonNull FeatureArray<T> featureArray);
+	@NonNull String findBestSymbol(@NonNull FeatureArray featureArray);
+
+	/**
+	 * Computes a canonical {@code String} representation from the provided
+	 * sequence. Output should be deterministic and consistent with the
+	 * implementation of {@link #parseSegment}
+	 *
+	 * @param sequence the {@code Sequence} to decode
+	 *
+	 * @return a {@code String} representing a human-readable symbols which
+	 *      correspond to the provided sequence. Not Null.
+	 */
+	@NonNull default String findBestSymbols(@NonNull Sequence sequence) {
+		StringBuilder sb = new StringBuilder();
+		if (getSpecification().size() > 0) {
+			for (Segment segment : sequence) {
+				if (segment.isDefinedInModel()) {
+					FeatureArray features = segment.getFeatures();
+					sb.append(findBestSymbol(features));
+				} else {
+					sb.append(segment.getSymbol());
+				}
+			}
+		} else {
+			sb.append(sequence);
+		}
+		return sb.toString();
+	}
 
 	/**
 	 * Returns all symbols defined in the mapping.
@@ -77,7 +105,7 @@ public interface FeatureMapping<T> extends ModelBearer<T> {
 	 * @return a maps containing the relevant data; it is recommended that
 	 *      this not be modifiable; not null
 	 */
-	@NonNull Map<String, FeatureArray<T>> getFeatureMap();
+	@NonNull Map<String, FeatureArray> getFeatureMap();
 
 	/**
 	 * Provides a contained maps from symbols to features for modifier and
@@ -86,7 +114,7 @@ public interface FeatureMapping<T> extends ModelBearer<T> {
 	 * @return a maps containing the relevant data; it is recommended that
 	 *      this not be modifiable; not null
 	 */
-	@NonNull Map<String, FeatureArray<T>> getModifiers();
+	@NonNull Map<String, FeatureArray> getModifiers();
 
 	/**
 	 * Looks up the {@code FeatureArray} stored in the mapping under the
@@ -96,7 +124,7 @@ public interface FeatureMapping<T> extends ModelBearer<T> {
 	 *
 	 * @return an associated {@code FeatureArray}; may be null if not found
 	 */
-	@Nullable FeatureArray<T> getFeatureArray(@NonNull String key);
+	@Nullable FeatureArray getFeatureArray(@NonNull String key);
 
 	/**
 	 * Parses as string into a {@link Segment}
@@ -117,5 +145,5 @@ public interface FeatureMapping<T> extends ModelBearer<T> {
 	 * @throws ParseException if the provided string is ill-formed or contains
 	 *      character not present in the mapping
 	 */
-	@NonNull Segment<T> parseSegment(@NonNull String string);
+	@NonNull Segment parseSegment(@NonNull String string);
 }

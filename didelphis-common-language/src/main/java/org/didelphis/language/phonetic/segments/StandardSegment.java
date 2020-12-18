@@ -39,17 +39,17 @@ import org.didelphis.language.phonetic.model.FeatureSpecification;
  * @since 0.1.0
  */
 @EqualsAndHashCode
-public class StandardSegment<T> implements Segment<T> {
+public class StandardSegment implements Segment {
 
 	private final String          symbol;
-	private final FeatureArray<T> features;
+	private final FeatureArray features;
 
 	/**
 	 * Copy constructor -
 	 *
 	 * @param segment the {@code Segment} to be copied
 	 */
-	public StandardSegment(@NonNull Segment<T> segment) {
+	public StandardSegment(@NonNull Segment segment) {
 		symbol = segment.getSymbol();
 		features = segment.getFeatures();
 	}
@@ -60,7 +60,7 @@ public class StandardSegment<T> implements Segment<T> {
 	 * @param symbol the phonetic symbol representing this segment
 	 * @param featureArray the feature array representing this segment
 	 */
-	public StandardSegment(String symbol, FeatureArray<T> featureArray) {
+	public StandardSegment(String symbol, FeatureArray featureArray) {
 		this.symbol = symbol;
 		features = featureArray;
 	}
@@ -74,7 +74,7 @@ public class StandardSegment<T> implements Segment<T> {
 	 * @return a new segment based on this one with modifications from the other
 	 */
 	@Override
-	public boolean alter(@NonNull Segment<T> segment) {
+	public boolean alter(@NonNull Segment segment) {
 		return features.alter(segment.getFeatures());
 	}
 
@@ -86,7 +86,7 @@ public class StandardSegment<T> implements Segment<T> {
 
 	@NonNull
 	@Override
-	public FeatureArray<T> getFeatures() {
+	public FeatureArray getFeatures() {
 		return features;
 	}
 
@@ -97,7 +97,7 @@ public class StandardSegment<T> implements Segment<T> {
 
 	@NonNull
 	@Override
-	public FeatureModel<T> getFeatureModel() {
+	public FeatureModel getFeatureModel() {
 		return features.getFeatureModel();
 	}
 

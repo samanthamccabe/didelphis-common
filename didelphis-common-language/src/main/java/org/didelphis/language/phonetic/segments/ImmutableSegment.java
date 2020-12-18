@@ -30,14 +30,14 @@ import org.didelphis.language.phonetic.model.FeatureModel;
  *
  * @since 0.1.0
  */
-public class ImmutableSegment<T> extends StandardSegment<T> {
+public class ImmutableSegment extends StandardSegment {
 
 	/**
 	 * Copy constructor -
 	 *
 	 * @param segment the {@link Segment} to be copied
 	 */
-	public ImmutableSegment(@NonNull Segment<T> segment) {
+	public ImmutableSegment(@NonNull Segment segment) {
 		super(segment);
 	}
 
@@ -47,16 +47,16 @@ public class ImmutableSegment<T> extends StandardSegment<T> {
 	 * @param symbol the phonetic symbol representing this segment
 	 * @param featureArray the feature array representing this segment
 	 */
-	public ImmutableSegment(String symbol, FeatureArray<T> featureArray) {
+	public ImmutableSegment(String symbol, FeatureArray featureArray) {
 		super(symbol, featureArray);
 	}
 
-	public ImmutableSegment(String symbol, FeatureModel<T> model) {
-		this(symbol, new EmptyFeatureArray<>(model));
+	public ImmutableSegment(String symbol, FeatureModel model) {
+		this(symbol, new EmptyFeatureArray(model));
 	}
 
 	@Override
-	public boolean alter(@NonNull Segment<T> segment) {
+	public boolean alter(@NonNull Segment segment) {
 		return false;
 	}
 

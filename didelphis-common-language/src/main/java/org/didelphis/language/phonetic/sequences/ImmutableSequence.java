@@ -34,19 +34,19 @@ import java.util.function.UnaryOperator;
  * @since 0.1.0
  */
 @SuppressWarnings ("ProhibitedExceptionThrown")
-public class ImmutableSequence<T> extends PhoneticSequence<T> {
+public class ImmutableSequence extends PhoneticSequence {
 
-	public ImmutableSequence(Sequence<T> sequence) {
+	public ImmutableSequence(Sequence sequence) {
 		super(sequence);
 	}
 
-	public ImmutableSequence(Segment<T> segment) {
+	public ImmutableSequence(Segment segment) {
 		super(segment);
 	}
 
 	@NonNull
 	@Override
-	public Segment<T> remove(int index) {
+	public Segment remove(int index) {
 		throw unsupported();
 	}
 
@@ -56,7 +56,7 @@ public class ImmutableSequence<T> extends PhoneticSequence<T> {
 	}
 
 	@Override
-	public void add(int index, Segment<T> element) {
+	public void add(int index, Segment element) {
 		throw unsupported();
 	}
 
@@ -67,12 +67,12 @@ public class ImmutableSequence<T> extends PhoneticSequence<T> {
 
 	@NonNull
 	@Override
-	public Segment<T> set(int index, Segment<T> element) {
+	public Segment set(int index, Segment element) {
 		throw unsupported();
 	}
 
 	@Override
-	public boolean addAll(@NonNull Collection<? extends Segment<T>> objects) {
+	public boolean addAll(@NonNull Collection<? extends Segment> objects) {
 		throw unsupported();
 	}
 
@@ -87,48 +87,48 @@ public class ImmutableSequence<T> extends PhoneticSequence<T> {
 	}
 
 	@Override
-	public void replaceAll(UnaryOperator<Segment<T>> operator) {
+	public void replaceAll(UnaryOperator<Segment> operator) {
 		throw unsupported();
 	}
 
 	@Override
-	public void sort(Comparator<? super Segment<T>> c) {
+	public void sort(Comparator<? super Segment> c) {
 		throw unsupported();
 	}
 
 	@Override
 	public boolean addAll(
-			int index, @NonNull Collection<? extends Segment<T>> objects
+			int index, @NonNull Collection<? extends Segment> objects
 	) {
 		throw unsupported();
 	}
 
 	@Override
-	public boolean removeIf(Predicate<? super Segment<T>> filter) {
+	public boolean removeIf(Predicate<? super Segment> filter) {
 		throw unsupported();
 	}
 
 	@Override
-	public void add(@NonNull Sequence<T> sequence) {
+	public void add(@NonNull Sequence sequence) {
 		throw unsupported();
 	}
 
 	@Override
-	public void insert(@NonNull Sequence<T> sequence, int index) {
+	public void insert(@NonNull Sequence sequence, int index) {
 		throw unsupported();
 	}
 
 	@NonNull
 	@Override
-	public Sequence<T> replaceAll(
-			@NonNull Sequence<T> source, @NonNull Sequence<T> target
+	public Sequence replaceAll(
+			@NonNull Sequence source, @NonNull Sequence target
 	) {
 		throw unsupported();
 	}
 
 	@NonNull
 	@Override
-	public PhoneticSequence<T> remove(int start, int end) {
+	public PhoneticSequence remove(int start, int end) {
 		throw unsupported();
 	}
 
@@ -139,7 +139,7 @@ public class ImmutableSequence<T> extends PhoneticSequence<T> {
 	}
 
 	@Override
-	public boolean add(@NonNull Segment<T> segment) {
+	public boolean add(@NonNull Segment segment) {
 		throw unsupported();
 	}
 

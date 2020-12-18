@@ -31,10 +31,10 @@ import org.didelphis.utilities.Templates;
  * @since 0.1.0
  */
 @FunctionalInterface
-public interface ModelBearer<T> extends SpecificationBearer {
+public interface ModelBearer extends SpecificationBearer {
 
 	@NonNull
-	FeatureModel<T> getFeatureModel();
+	FeatureModel getFeatureModel();
 
 	@NonNull
 	@Override
@@ -42,7 +42,7 @@ public interface ModelBearer<T> extends SpecificationBearer {
 		return getFeatureModel().getSpecification();
 	}
 
-	default void consistencyCheck(@NonNull ModelBearer<T> bearer) {
+	default void consistencyCheck(@NonNull ModelBearer bearer) {
 		if (!getFeatureModel().equals(bearer.getFeatureModel())) {
 			String message = Templates.create()
 					.add("Mismatch between models")

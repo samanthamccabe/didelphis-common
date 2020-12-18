@@ -50,21 +50,18 @@ import java.util.regex.Pattern;
 /**
  * Class {@code SequenceParser}
  *
- * @param <T> the feature type used by language objects supported by a given
- * instance of this parser.
- *
  * @since 0.1.0
  */
 @ToString
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
+public class SequenceParser extends AbstractDidelphisParser<Sequence> {
 
 	private static final Pattern DIGIT = Pattern.compile("\\d+");
 
-	Arc<Sequence<T>> dotArc       = new DotArc<>();
-	Arc<Sequence<T>> epsilonArc   = new EpsilonArc<>();
-	Arc<Sequence<T>> wordStartArc = new WordStartArc<>();
-	Arc<Sequence<T>> wordEndArc   = new WordEndArc<>();
+	Arc<Sequence> dotArc       = new DotArc<>();
+	Arc<Sequence> epsilonArc   = new EpsilonArc<>();
+	Arc<Sequence> wordStartArc = new WordStartArc<>();
+	Arc<Sequence> wordEndArc   = new WordEndArc<>();
 
 	private static final Map<String, String> DELIMITERS = new LinkedHashMap<>();
 	static {
@@ -74,25 +71,25 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 		DELIMITERS.put("[", "]");
 	}
 
-	SequenceFactory<T> factory;
-	MultiMap<String, Sequence<T>> specials;
+	SequenceFactory factory;
+	MultiMap<String, Sequence> specials;
 
-	Sequence<T> wordStart;
-	Sequence<T> wordEnd;
+	Sequence wordStart;
+	Sequence wordEnd;
 
-	public SequenceParser(@NonNull SequenceFactory<T> factory) {
+	public SequenceParser(@NonNull SequenceFactory factory) {
 		this(factory, new GeneralMultiMap<>());
 	}
 
 	public SequenceParser(
-			@NonNull SequenceFactory<T> factory,
-			@NonNull MultiMap<String, Sequence<T>> specials
+			@NonNull SequenceFactory factory,
+			@NonNull MultiMap<String, Sequence> specials
 	) {
 		this.factory = factory;
 		this.specials = specials;
 
 		// Generate epsilon / lambda symbol
-		FeatureModel<T> model = factory.getFeatureMapping().getFeatureModel();
+		FeatureModel model = factory.getFeatureMapping().getFeatureModel();
 		wordStart = immutable("#[", model);
 		wordEnd   = immutable("]#", model);
 	}
@@ -105,13 +102,13 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 
 	@NonNull
 	@Override
-	public Sequence<T> transform(String expression) {
+	public Sequence transform(String expression) {
 		return factory.toSequence(expression);
 	}
 
 	@NonNull
 	@Override
-	public Arc<Sequence<T>> getArc(String arc) {
+	public Arc<Sequence> getArc(String arc) {
 		if (arc.equals("#[")) return wordStartArc;
 		if (arc.equals("]#")) return wordEndArc;
 		if (arc.equals(".")) return dotArc;
@@ -123,24 +120,24 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 
 	@NonNull
 	@Override
-	public Arc<Sequence<T>> epsilon() {
+	public Arc<Sequence> epsilon() {
 		return epsilonArc;
 	}
 
 	@NonNull
 	@Override
-	public MultiMap<String, Sequence<T>> getSpecialsMap() {
+	public MultiMap<String, Sequence> getSpecialsMap() {
 		return specials;
 	}
 
 	@NonNull
 	@Override
-	public Arc<Sequence<T>> getDot() {
+	public Arc<Sequence> getDot() {
 		return dotArc;
 	}
 
 	@Override
-	public int lengthOf(@NonNull Sequence<T> segments) {
+	public int lengthOf(@NonNull Sequence segments) {
 		return segments.size();
 	}
 
@@ -156,15 +153,15 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 
 	@NonNull
 	@Override
-	public Sequence<T> subSequence(@NonNull Sequence<T> sequence, int start, int end) {
+	public Sequence subSequence(@NonNull Sequence sequence, int start, int end) {
 		return sequence.subsequence(start, end);
 	}
 
 	@NonNull
 	@Override
-	public Sequence<T> concatenate(
-			@NonNull Sequence<T> sequence1,
-			@NonNull Sequence<T> sequence2
+	public Sequence concatenate(
+			@NonNull Sequence sequence1,
+			@NonNull Sequence sequence2
 	) {
 		sequence1.add(sequence2);
 		return sequence1;
@@ -172,20 +169,20 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 
 	@NonNull
 	@Override
-	public Sequence<T> replaceGroups(
-			@NonNull Sequence<T> input,
-			@NonNull Match<Sequence<T>> match
+	public Sequence replaceGroups(
+			@NonNull Sequence input,
+			@NonNull Match<Sequence> match
 	) {
 
-		FeatureModel<T> featureModel = factory.getFeatureMapping().getFeatureModel();
-		Sequence<T> sequence = new PhoneticSequence<>(featureModel);
+		FeatureModel featureModel = factory.getFeatureMapping().getFeatureModel();
+		Sequence sequence = new PhoneticSequence(featureModel);
 		StringBuilder number = new StringBuilder();
 
 		int i = 0;
 		int cursor = 0;
 		boolean inGroup = false;
 		while (i < input.size()) {
-			Segment<T> segment = input.get(i);
+			Segment segment = input.get(i);
 			String symbol = segment.getSymbol();
 			// ASCII digits 0-9
 			if (DIGIT.matcher(symbol).matches() && inGroup) {
@@ -196,7 +193,7 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 				// parse and append group data
 				if (number.length() > 0) {
 					int groupNumber = Integer.parseInt(number.toString());
-					Sequence<T> group = match.group(groupNumber);
+					Sequence group = match.group(groupNumber);
 					if (group != null) {
 						sequence.add(group);
 					}
@@ -223,7 +220,7 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 		// parse and append group data
 		if (number.length() > 0) {
 			int groupNumber = Integer.parseInt(number.toString());
-			Sequence<T> group = match.group(groupNumber);
+			Sequence group = match.group(groupNumber);
 			if (group != null) {
 				sequence.add(group);
 			}
@@ -233,24 +230,24 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 	}
 
 	@NonNull
-	private static <T> Sequence<T> immutable(
+	private static <T> Sequence immutable(
 			@NonNull String symbol,
-			@NonNull FeatureModel<T> model
+			@NonNull FeatureModel model
 	) {
 		// Undefined segments can only match when the symbol matches
-		return new ImmutableSequence<>(new UndefinedSegment<>(symbol, model));
+		return new ImmutableSequence(new UndefinedSegment(symbol, model));
 	}
 
-	private static final class LiteralArc<T> implements Arc<Sequence<T>> {
+	private static final class LiteralArc<T> implements Arc<Sequence> {
 
-		private final Sequence<T> literal;
+		private final Sequence literal;
 
-		private LiteralArc(Sequence<T> literal) {
+		private LiteralArc(Sequence literal) {
 			this.literal = literal;
 		}
 
 		@Override
-		public int match(Sequence<T> sequence, int index) {
+		public int match(Sequence sequence, int index) {
 			if (sequence.subsequence(index).startsWith(literal)) {
 				return index + literal.size();
 			}
@@ -263,17 +260,17 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 		}
 	}
 
-	private static final class SetArc<T> implements Arc<Sequence<T>> {
+	private static final class SetArc<T> implements Arc<Sequence> {
 
-		private final List<Sequence<T>> strings;
+		private final List<Sequence> strings;
 
-		private SetArc(Collection<Sequence<T>> strings) {
+		private SetArc(Collection<Sequence> strings) {
 			this.strings = new ArrayList<>(strings);
 		}
 
 		@Override
-		public int match(Sequence<T> sequence, int index) {
-			for (Sequence<T> string : strings) {
+		public int match(Sequence sequence, int index) {
+			for (Sequence string : strings) {
 				if (sequence.subsequence(index).startsWith(string)) {
 					return index + string.size();
 				}
@@ -287,9 +284,9 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 		}
 	}
 
-	private static class EpsilonArc<T> implements Arc<Sequence<T>> {
+	private static class EpsilonArc<T> implements Arc<Sequence> {
 		@Override
-		public int match(Sequence<T> sequence, int index) {
+		public int match(Sequence sequence, int index) {
 			return index;
 		}
 
@@ -299,9 +296,9 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 		}
 	}
 
-	private static class WordStartArc<T> implements Arc<Sequence<T>> {
+	private static class WordStartArc<T> implements Arc<Sequence> {
 		@Override
-		public int match(Sequence<T> sequence, int index) {
+		public int match(Sequence sequence, int index) {
 			return index == 0 ? 0 : -1;
 		}
 
@@ -311,9 +308,9 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 		}
 	}
 
-	private static class DotArc<T> implements Arc<Sequence<T>> {
+	private static class DotArc<T> implements Arc<Sequence> {
 		@Override
-		public int match(Sequence<T> sequence, int index) {
+		public int match(Sequence sequence, int index) {
 			int length = sequence.size();
 			return (length > 0 && index < length) ? index + 1 : -1;
 		}
@@ -324,9 +321,9 @@ public class SequenceParser<T> extends AbstractDidelphisParser<Sequence<T>> {
 		}
 	}
 
-	private static class WordEndArc<T> implements Arc<Sequence<T>> {
+	private static class WordEndArc<T> implements Arc<Sequence> {
 		@Override
-		public int match(Sequence<T> sequence, int index) {
+		public int match(Sequence sequence, int index) {
 			int length = sequence.size();
 			return index == length ? length : -1;
 		}

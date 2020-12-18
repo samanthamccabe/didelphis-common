@@ -32,33 +32,33 @@ import java.util.List;
 
 
 @EqualsAndHashCode
-public class Lexicon<T> implements Streamable<List<Sequence<T>>> {
+public class Lexicon implements Streamable<List<Sequence>> {
 
-	private final Collection<List<Sequence<T>>> lexicon;
+	private final Collection<List<Sequence>> lexicon;
 
 	@NonNull
-	public static <T> Lexicon<T> fromSingleColumn(
-			@NonNull SequenceFactory<T> factory, @NonNull Iterable<String> list
+	public static Lexicon fromSingleColumn(
+			@NonNull SequenceFactory factory, @NonNull Iterable<String> list
 	) {
-		Lexicon<T> lexicon = new Lexicon<>();
+		Lexicon lexicon = new Lexicon();
 		for (String entry : list) {
-			Sequence<T> sequence = factory.toSequence(entry);
+			Sequence sequence = factory.toSequence(entry);
 			lexicon.add(sequence);
 		}
 		return lexicon;
 	}
 
 	@NonNull
-	public static <T> Lexicon<T> fromRows(
-			@NonNull SequenceFactory<T> factory,
+	public static Lexicon fromRows(
+			@NonNull SequenceFactory factory,
 			@NonNull Iterable<List<String>> lists
 	) {
-		Lexicon<T> lexicon = new Lexicon<>();
+		Lexicon lexicon = new Lexicon();
 
 		for (Iterable<String> row : lists) {
-			List<Sequence<T>> lexRow = new ArrayList<>();
+			List<Sequence> lexRow = new ArrayList<>();
 			for (String entry : row) {
-				Sequence<T> sequence = factory.toSequence(entry);
+				Sequence sequence = factory.toSequence(entry);
 				lexRow.add(sequence);
 			}
 			lexicon.add(lexRow);
@@ -70,20 +70,20 @@ public class Lexicon<T> implements Streamable<List<Sequence<T>>> {
 		lexicon = new ArrayList<>();
 	}
 
-	public Lexicon(@NonNull Iterable<List<Sequence<T>>> iterable) {
+	public Lexicon(@NonNull Iterable<List<Sequence>> iterable) {
 		lexicon = new ArrayList<>();
-		for (List<Sequence<T>> sequences : iterable) {
+		for (List<Sequence> sequences : iterable) {
 			lexicon.add(new ArrayList<>(sequences));
 		}
 	}
 
-	public void add(@NonNull Sequence<T> sequence) {
-		List<Sequence<T>> row = new ArrayList<>();
+	public void add(@NonNull Sequence sequence) {
+		List<Sequence> row = new ArrayList<>();
 		row.add(sequence);
 		lexicon.add(row);
 	}
 
-	public void add(@NonNull List<Sequence<T>> row) {
+	public void add(@NonNull List<Sequence> row) {
 		lexicon.add(row);
 	}
 
@@ -91,12 +91,12 @@ public class Lexicon<T> implements Streamable<List<Sequence<T>>> {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		Iterator<List<Sequence<T>>> iterator = lexicon.iterator();
+		Iterator<List<Sequence>> iterator = lexicon.iterator();
 		while (iterator.hasNext()) {
-			Collection<Sequence<T>> line = iterator.next();
-			Iterator<Sequence<T>> it = line.iterator();
+			Collection<Sequence> line = iterator.next();
+			Iterator<Sequence> it = line.iterator();
 			while (it.hasNext()) {
-				Sequence<T> sequence = it.next();
+				Sequence sequence = it.next();
 				sb.append(sequence);
 				if (it.hasNext()) {
 					sb.append("\\t");
@@ -111,7 +111,7 @@ public class Lexicon<T> implements Streamable<List<Sequence<T>>> {
 
 	@NonNull
 	@Override
-	public Iterator<List<Sequence<T>>> iterator() {
+	public Iterator<List<Sequence>> iterator() {
 		return lexicon.iterator();
 	}
 }

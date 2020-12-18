@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class EmptyFeatureArrayTest extends PhoneticTestBase {
 
-	private final FeatureArray<Integer> array = new EmptyFeatureArray<>(factory.getFeatureMapping().getFeatureModel());
+	private final FeatureArray array = new EmptyFeatureArray(factory.getFeatureMapping().getFeatureModel());
 
 	@Test
 	void testSet() {
@@ -52,9 +52,9 @@ class EmptyFeatureArrayTest extends PhoneticTestBase {
 
 	@Test
 	void testToString() {
-		FeatureArray<Integer> f1 = factory.toSegment("x").getFeatures();
-		FeatureArray<Integer> f2 = factory.toSegment("z").getFeatures();
-		FeatureArray<Integer> f3 = new EmptyFeatureArray<>(array);
+		FeatureArray f1 = factory.toSegment("x").getFeatures();
+		FeatureArray f2 = factory.toSegment("z").getFeatures();
+		FeatureArray f3 = new EmptyFeatureArray(array);
 
 		assertNotEquals(array.toString(), f1.toString());
 		assertNotEquals(array.toString(), f2.toString());
@@ -64,14 +64,14 @@ class EmptyFeatureArrayTest extends PhoneticTestBase {
 
 	@Test
 	void testMatches() {
-		FeatureArray<Integer> features = factory.toSegment("a").getFeatures();
+		FeatureArray features = factory.toSegment("a").getFeatures();
 		assertFalse(array.matches(features));
 		assertTrue(array.matches(array));
 	}
 
 	@Test
 	void testAlter() {
-		FeatureArray<Integer> features = factory.toSegment("a").getFeatures();
+		FeatureArray features = factory.toSegment("a").getFeatures();
 		assertThrows(
 				UnsupportedOperationException.class,
 				() -> array.alter(features)
@@ -89,9 +89,9 @@ class EmptyFeatureArrayTest extends PhoneticTestBase {
 
 	@Test
 	void testCompareTo() {
-		FeatureArray<Integer> f1 = factory.toSegment("x").getFeatures();
-		FeatureArray<Integer> f2 = factory.toSegment("z").getFeatures();
-		FeatureArray<Integer> f3 = new EmptyFeatureArray<>(array);
+		FeatureArray f1 = factory.toSegment("x").getFeatures();
+		FeatureArray f2 = factory.toSegment("z").getFeatures();
+		FeatureArray f3 = new EmptyFeatureArray(array);
 
 		assertEquals(-1, array.compareTo(f1));
 		assertEquals(-1, array.compareTo(f2));
