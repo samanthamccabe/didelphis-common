@@ -156,17 +156,18 @@ public class Splitter {
 	) {
 		List<String> list = new ArrayList<>();
 		int cursor = 0;
-		for (int i = 0; i < string.length(); ) {
-			if (isWhitespace(string.charAt(i))) {
-				if (i != cursor) {
-					String chunk = string.substring(cursor, i);
+		int index = 0;
+		while (index < string.length()) {
+			if (isWhitespace(string.charAt(index))) {
+				if (index != cursor) {
+					String chunk = string.substring(cursor, index);
 					list.add(chunk);
 				}
-				i++;
-				cursor = i;
+				index++;
+				cursor = index;
 			} else {
-				int end = parseParens(string, delimiters, new HashSet<>(), i);
-				i = (end > i) ? end : i + 1;
+				int end = parseParens(string, delimiters, new HashSet<>(), index);
+				index = (end > index) ? end : index + 1;
 			}
 		}
 

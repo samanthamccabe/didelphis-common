@@ -86,6 +86,8 @@ public interface Segment extends ModelBearer, Comparable<Segment> {
 	 * symbol.
 	 * @return
 	 */
+	// TODO: (2021-12-10) questioning whether the existence o
+	//  this method indicates a failure of design
 	boolean isDefinedInModel();
 
 	@Override
@@ -100,7 +102,7 @@ public interface Segment extends ModelBearer, Comparable<Segment> {
 				int difference = getSymbol().compareTo(o.getSymbol());
 				// however, calling compareTo on Strings is not like an object
 				// which implements Comparable; returned values can be larger
-				// than |1|
+				// than abs(1)
 				if (difference > 0) {
 					return 1;
 				} else if (difference < 0) {

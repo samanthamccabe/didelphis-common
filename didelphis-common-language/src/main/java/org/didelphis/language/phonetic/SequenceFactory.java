@@ -31,6 +31,7 @@ import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureSpecification;
 import org.didelphis.language.phonetic.segments.Segment;
 import org.didelphis.language.phonetic.segments.StandardSegment;
+import org.didelphis.language.phonetic.segments.UndefinedSegment;
 import org.didelphis.language.phonetic.sequences.PhoneticSequence;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.didelphis.utilities.Sort;
@@ -58,21 +59,21 @@ public class SequenceFactory {
 		DELIMITERS.put("[", "]");
 	}
 
-	FeatureMapping  featureMapping;
+	FeatureMapping     featureMapping;
 	FormatterMode      formatterMode;
 	Collection<String> reservedStrings;
 
 	public SequenceFactory(
 			@NonNull FeatureMapping featureMapping,
-			@NonNull FormatterMode formatterMode
+			@NonNull FormatterMode  formatterMode
 	) {
 		this(featureMapping, new HashSet<>(), formatterMode);
 	}
 
 	public SequenceFactory(
-			@NonNull FeatureMapping featureMapping,
+			@NonNull FeatureMapping     featureMapping,
 			@NonNull Collection<String> reservedStrings,
-			@NonNull FormatterMode formatterMode
+			@NonNull FormatterMode      formatterMode
 	) {
 		/* ----------------------------------------------------------------- <*/
 		this.featureMapping  = featureMapping;
@@ -92,6 +93,8 @@ public class SequenceFactory {
 		if (specification.size() > 0 && string.startsWith("[")) {
 			FeatureArray array = featureModel.parseFeatureString(string);
 			return new StandardSegment(string, array);
+		} else if (reservedStrings.contains(string)) {
+			return new UndefinedSegment(string, featureModel);
 		} else {
 			return featureMapping.parseSegment(string);
 		}

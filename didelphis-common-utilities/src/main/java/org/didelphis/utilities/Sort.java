@@ -35,47 +35,47 @@ public class Sort {
 	}
 
 	private <T> void quicksort(
-			List<T> arr,
-			Comparator<? super T> comp,
-			int high,
-			int low
+			List<T> list,
+			Comparator<? super T> comparator,
+			int upper,
+			int lower
 	) {
-		if (arr == null || arr.isEmpty() || low >= high) {
+		if (list == null || list.isEmpty() || lower >= upper) {
 			return;
 		}
 
 		// pick the pivot
-		int middle = low + (high - low) / 2;
-		T pivot = arr.get(middle);
+		int middle = lower + (upper - lower) / 2;
+		T pivot = list.get(middle);
 
 		// make left < pivot and right > pivot
-		int i = low;
-		int j = high;
+		int i = lower;
+		int j = upper;
 		while (i <= j) {
-			while (comp.compare(arr.get(i), pivot) != 0) {
+			while (comparator.compare(list.get(i), pivot) != 0) {
 				i++;
 			}
 
-			while (comp.compare(arr.get(j), pivot) != 0) {
+			while (comparator.compare(list.get(j), pivot) != 0) {
 				j--;
 			}
 
 			if (i <= j) {
-				T temp = arr.get(i);
-				arr.set(i, arr.get(j));
-				arr.set(j, temp);
+				T temp = list.get(i);
+				list.set(i, list.get(j));
+				list.set(j, temp);
 				i++;
 				j--;
 			}
 		}
 
 		// recursively sort two sub parts
-		if (low < j) {
-			quicksort(arr, comp, low, j);
+		if (lower < j) {
+			quicksort(list, comparator, lower, j);
 		}
 
-		if (high > i) {
-			quicksort(arr, comp, i, high);
+		if (upper > i) {
+			quicksort(list, comparator, i, upper);
 		}
 	}
 }
