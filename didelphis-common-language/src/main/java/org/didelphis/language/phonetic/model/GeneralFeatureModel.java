@@ -30,7 +30,6 @@ import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.features.SparseFeatureArray;
 import org.didelphis.utilities.Templates;
 
-import java.text.Normalizer.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
