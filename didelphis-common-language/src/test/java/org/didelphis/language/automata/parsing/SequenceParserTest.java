@@ -24,7 +24,6 @@ import org.didelphis.language.automata.matching.BasicMatch;
 import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.SequenceFactory;
-import org.didelphis.language.phonetic.features.BinaryFeature;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
 import org.didelphis.language.phonetic.sequences.Sequence;
 import org.didelphis.structures.graph.Arc;
@@ -41,17 +40,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SequenceParserTest {
 
-	private final SequenceParser<Boolean> parser;
-	private final SequenceFactory<Boolean> factory;
+	private final SequenceParser parser;
+	private final SequenceFactory factory;
 
 	SequenceParserTest() {
-		FeatureModelLoader<Boolean> loader
-				= new FeatureModelLoader<>(BinaryFeature.INSTANCE);
-		factory = new SequenceFactory<>(
+		FeatureModelLoader loader = new FeatureModelLoader();
+		factory = new SequenceFactory(
 				loader.getFeatureMapping(),
 				FormatterMode.NONE
 		);
-		parser = new SequenceParser<>(factory);
+		parser = new SequenceParser(factory);
 	}
 
 	@Nested
@@ -260,9 +258,9 @@ class SequenceParserTest {
 
 		@Test
 		void testSpecials01() {
-			MultiMap<String, Sequence<Boolean>> specials = new GeneralMultiMap<>();
+			MultiMap<String, Sequence> specials = new GeneralMultiMap<>();
 			specials.add("CH",  parser.transform("th"));
-			SequenceParser<?> p = new SequenceParser<>(factory, specials);
+			SequenceParser p = new SequenceParser(factory, specials);
 			Expression ex1 = p.parseExpression("ataCHam");
 			assertTrue(ex1.hasChildren());
 			List<Expression> children = ex1.getChildren();
@@ -276,14 +274,14 @@ class SequenceParserTest {
 
 		@Test
 		void testReplaceGroups() {
-			Sequence<Boolean> sequence = parser.transform("ao");
-			BasicMatch<Sequence<Boolean>> match = new BasicMatch<>(sequence,0,2);
+			Sequence sequence = parser.transform("ao");
+			BasicMatch<Sequence> match = new BasicMatch<>(sequence,0,2);
 			match.addGroup(0, 2, sequence);
 			match.addGroup(0, 1, parser.transform("a"));
 			match.addGroup(1, 2, parser.transform("o"));
-			Sequence<Boolean> input = parser.transform("$1x$2");
-			Sequence<Boolean> replaced = parser.replaceGroups(input, match);
-			Sequence<Boolean> expected = parser.transform("axo");
+			Sequence input = parser.transform("$1x$2");
+			Sequence replaced = parser.replaceGroups(input, match);
+			Sequence expected = parser.transform("axo");
 			assertEquals(expected, replaced);
 		}
 	}
@@ -294,14 +292,14 @@ class SequenceParserTest {
 
 		@Test
 		void testEpsilon() {
-			Arc<Sequence<Boolean>> epsilon = parser.epsilon();
+			Arc<Sequence> epsilon = parser.epsilon();
 			assertEquals(0,epsilon.match(parser.transform("a"),0));
 			assertEquals("", epsilon.toString());
 		}
 
 		@Test
 		void testWordStart() {
-			Arc<Sequence<Boolean>> arc = parser.getArc("#[");
+			Arc<Sequence> arc = parser.getArc("#[");
 			assertEquals("^", arc.toString());
 			assertEquals(0,  arc.match(factory.toSequence("aa"), 0));
 			assertEquals(-1, arc.match(factory.toSequence("aa"), 1));
@@ -309,7 +307,7 @@ class SequenceParserTest {
 
 		@Test
 		void testWordEnd() {
-			Arc<Sequence<Boolean>> arc = parser.getArc("]#");
+			Arc<Sequence> arc = parser.getArc("]#");
 			assertEquals("$", arc.toString());
 			assertEquals(-1, arc.match(factory.toSequence("aa"), 0));
 			assertEquals( 2, arc.match(factory.toSequence("aa"), 2));
@@ -317,7 +315,7 @@ class SequenceParserTest {
 
 		@Test
 		void testDot() {
-			Arc<Sequence<Boolean>> arc = parser.getDot();
+			Arc<Sequence> arc = parser.getDot();
 			assertEquals(".", arc.toString());
 			assertEquals( 1, arc.match(factory.toSequence("aa"), 0));
 			assertEquals( 2, arc.match(factory.toSequence("aa"), 1));

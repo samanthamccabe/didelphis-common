@@ -42,17 +42,17 @@ import java.util.Iterator;
  */
 @ToString
 @EqualsAndHashCode
-public final class EmptyFeatureArray<T> implements FeatureArray<T> {
+public final class EmptyFeatureArray implements FeatureArray {
 
-	private final FeatureModel<T> featureModel;
+	private final FeatureModel featureModel;
 	private final int size;
 
-	public EmptyFeatureArray(FeatureModel<T> featureModel) {
+	public EmptyFeatureArray(FeatureModel featureModel) {
 		this.featureModel = featureModel;
 		size = featureModel.getSpecification().size();
 	}
 
-	public EmptyFeatureArray(FeatureArray<T> featureArray) {
+	public EmptyFeatureArray(FeatureArray featureArray) {
 		featureModel = featureArray.getFeatureModel();
 		size = featureModel.getSpecification().size();
 	}
@@ -63,7 +63,7 @@ public final class EmptyFeatureArray<T> implements FeatureArray<T> {
 	}
 
 	@Override
-	public void set(int index, @Nullable T value) {
+	public void set(int index, @Nullable Integer value) {
 		String message = Templates.create()
 				.add("{} is immutable and does not support method #set")
 				.with(getClass())
@@ -72,7 +72,7 @@ public final class EmptyFeatureArray<T> implements FeatureArray<T> {
 	}
 
 	@Override
-	public @Nullable T get(int index) {
+	public @Nullable Integer get(int index) {
 		if (index >= size) {
 			throw new IndexOutOfBoundsException("Index: " + index + ", Size: " +
 					featureModel.getSpecification().size());
@@ -81,12 +81,12 @@ public final class EmptyFeatureArray<T> implements FeatureArray<T> {
 	}
 
 	@Override
-	public boolean matches(@NonNull FeatureArray<T> array) {
+	public boolean matches(@NonNull FeatureArray array) {
 		return array instanceof EmptyFeatureArray;
 	}
 
 	@Override
-	public boolean alter(@NonNull FeatureArray<T> array) {
+	public boolean alter(@NonNull FeatureArray array) {
 		String message = Templates.create()
 				.add("{} is immutable and does not support method #alter")
 				.with(getClass())
@@ -95,24 +95,24 @@ public final class EmptyFeatureArray<T> implements FeatureArray<T> {
 	}
 
 	@Override
-	public boolean contains(@Nullable T value) {
+	public boolean contains(@Nullable Integer value) {
 		return false;
 	}
 
 	@Override
-	public int compareTo(@NonNull FeatureArray<T> o) {
+	public int compareTo(@NonNull FeatureArray o) {
 		return equals(o) ? 0 : -1;
 	}
 
 	@NonNull
 	@Override
-	public Iterator<T> iterator() {
+	public Iterator<Integer> iterator() {
 		return Collections.emptyIterator();
 	}
 
 	@NonNull
 	@Override
-	public FeatureModel<T> getFeatureModel() {
+	public FeatureModel getFeatureModel() {
 		return featureModel;
 	}
 }

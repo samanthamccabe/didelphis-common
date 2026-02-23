@@ -22,7 +22,6 @@ package org.didelphis.language.phonetic.model;
 import org.didelphis.io.ClassPathFileHandler;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.PhoneticTestBase;
-import org.didelphis.language.phonetic.features.DoubleFeature;
 import org.didelphis.language.phonetic.features.FeatureArray;
 import org.didelphis.language.phonetic.features.IntegerFeature;
 
@@ -40,18 +39,18 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class GeneralFeatureModelTest extends PhoneticTestBase {
 
-	private static FeatureModel<Integer> model;
-	private static FeatureModel<Integer> other;
-	private static FeatureModel<Integer> empty;
+	private static FeatureModel model;
+	private static FeatureModel other;
+	private static FeatureModel empty;
 
 	@BeforeAll
 	static void init() {
 		model = loader.getFeatureModel();
-		other = new FeatureModelLoader<>(IntegerFeature.INSTANCE,
+		other = new FeatureModelLoader(
 				ClassPathFileHandler.INSTANCE,
 				"AT_hybrid.model"
 		).getFeatureModel();
-		empty = new FeatureModelLoader<>(IntegerFeature.INSTANCE,
+		empty = new FeatureModelLoader(
 				ClassPathFileHandler.INSTANCE,
 				Collections.emptyList(), ""
 		).getFeatureModel();
@@ -86,7 +85,7 @@ class GeneralFeatureModelTest extends PhoneticTestBase {
 
 	@Test
 	void parseFeatureString() {
-		FeatureArray<Integer> arr = model.parseFeatureString("[+consonantal]");
+		FeatureArray arr = model.parseFeatureString("[+consonantal]");
 		assertEquals(1,
 				(int) arr.get(model.getSpecification().getIndex("consonantal"))
 		);
@@ -110,7 +109,6 @@ class GeneralFeatureModelTest extends PhoneticTestBase {
 	@Test
 	void getFeatureType() {
 		assertEquals(IntegerFeature.INSTANCE, model.getFeatureType());
-		assertNotEquals(DoubleFeature.INSTANCE, model.getFeatureType());
 	}
 
 	@Test

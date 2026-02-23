@@ -27,11 +27,9 @@ import org.didelphis.language.phonetic.features.FeatureArray;
 /**
  * Interface {@code Segment}
  *
- * @param <T> the type of feature data used by the segment's model
- *
  * @since 0.1.0
  */
-public interface Segment<T> extends ModelBearer<T>, Comparable<Segment<T>> {
+public interface Segment extends ModelBearer, Comparable<Segment> {
 
 	/**
 	 * Combines the two segments, applying all fully specified features from the
@@ -45,7 +43,7 @@ public interface Segment<T> extends ModelBearer<T>, Comparable<Segment<T>> {
 	 * empty segment (with no defined features) will make no changes and will
 	 * return false
 	 */
-	boolean alter(@NonNull Segment<T> segment);
+	boolean alter(@NonNull Segment segment);
 
 	/**
 	 * Determines if a segment is consistent with this segment. Two segments are
@@ -56,7 +54,7 @@ public interface Segment<T> extends ModelBearer<T>, Comparable<Segment<T>> {
 	 * @return true if all specified (non NaN) features in either segment are
 	 *      equal
 	 */
-	default boolean matches(@NonNull Segment<T> segment) {
+	default boolean matches(@NonNull Segment segment) {
 		if (getFeatureModel().getSpecification().size() == 0 &&
 				segment.getFeatureModel().getSpecification().size() == 0) {
 			return getSymbol().equals(segment.getSymbol());
@@ -79,7 +77,7 @@ public interface Segment<T> extends ModelBearer<T>, Comparable<Segment<T>> {
 	 * @return the feature object representing this segment
 	 */
 	@NonNull
-	FeatureArray<T> getFeatures();
+	FeatureArray getFeatures();
 
 	/**
 	 * Indicates whether a segment is properly defined it's {@link
@@ -88,10 +86,12 @@ public interface Segment<T> extends ModelBearer<T>, Comparable<Segment<T>> {
 	 * symbol.
 	 * @return
 	 */
+	// TODO: (2021-12-10) questioning whether the existence o
+	//  this method indicates a failure of design
 	boolean isDefinedInModel();
 
 	@Override
-	default int compareTo(@NonNull Segment<T> o) {
+	default int compareTo(@NonNull Segment o) {
 		if (equals(o)) {
 			return 0;
 		} else {
@@ -102,7 +102,7 @@ public interface Segment<T> extends ModelBearer<T>, Comparable<Segment<T>> {
 				int difference = getSymbol().compareTo(o.getSymbol());
 				// however, calling compareTo on Strings is not like an object
 				// which implements Comparable; returned values can be larger
-				// than |1|
+				// than abs(1)
 				if (difference > 0) {
 					return 1;
 				} else if (difference < 0) {

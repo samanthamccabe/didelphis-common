@@ -32,13 +32,13 @@ import java.util.Objects;
  *
  * @since 0.1.0
  */
-public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
+public abstract class AbstractFeatureArray implements FeatureArray {
 
-	private final FeatureModel<T> featureModel;
+	private final FeatureModel featureModel;
 	private final int size;
 	private final FeatureSpecification specification;
 
-	protected AbstractFeatureArray(@NonNull FeatureModel<T> featureModel) {
+	protected AbstractFeatureArray(@NonNull FeatureModel featureModel) {
 		this.featureModel = featureModel;
 
 		specification = featureModel.getSpecification();
@@ -51,13 +51,13 @@ public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
 	}
 
 	@Override
-	public int compareTo(@NonNull FeatureArray<T> o) {
+	public int compareTo(@NonNull FeatureArray o) {
 		sizeCheck(o);
 
-		FeatureType<T> featureType = featureModel.getFeatureType();
+		FeatureType featureType = featureModel.getFeatureType();
 		for (int i = 0; i < size(); i++) {
-			T x = get(i);
-			T y = o.get(i);
+			Integer x = get(i);
+			Integer y = o.get(i);
 			int comparison = featureType.compare(x, y);
 			if (comparison != 0) {
 				return comparison;
@@ -75,7 +75,7 @@ public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
 
 	@NonNull
 	@Override
-	public FeatureModel<T> getFeatureModel() {
+	public FeatureModel getFeatureModel() {
 		return featureModel;
 	}
 
@@ -94,9 +94,9 @@ public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (!(obj instanceof AbstractFeatureArray)) return false;
-		FeatureArray<?> that = (FeatureArray<?>) obj;
+		FeatureArray that = (FeatureArray) obj;
 		for (int i = 0; i < size; i++) {
-			T t1 = get(i);
+			Integer t1 = get(i);
 			Object t2 = that.get(i);
 			if (!Objects.equals(t1, t2)) {
 				return false;
@@ -105,13 +105,13 @@ public abstract class AbstractFeatureArray<T> implements FeatureArray<T> {
 		return specification.equals(that.getSpecification());
 	}
 
-	protected final void sizeCheck(@NonNull FeatureArray<T> o) {
+	protected final void sizeCheck(@NonNull FeatureArray o) {
 		if (size() != o.size()) throw buildException(o);
 	}
 
 	@NonNull
 	private IllegalArgumentException buildException(
-			@NonNull FeatureArray<T> featureArray
+			@NonNull FeatureArray featureArray
 	) {
 		String message = Templates.create()
 				.add("Attempting to compare objects with different specified")

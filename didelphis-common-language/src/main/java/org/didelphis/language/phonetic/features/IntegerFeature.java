@@ -36,15 +36,15 @@ import static java.text.Normalizer.*;
  *
  * @since 0.1.0
  */
-public enum IntegerFeature implements FeatureType<Integer> {
+public enum IntegerFeature implements FeatureType {
 	INSTANCE;
 
 	public static final Set<Integer> UNDEFINED = Collections.singleton(null);
 
 	@NonNull
 	@Override
-	public FeatureModelLoader<Integer> emptyLoader() {
-		return new FeatureModelLoader<>(INSTANCE);
+	public FeatureModelLoader emptyLoader() {
+		return new FeatureModelLoader();
 	}
 
 	@NonNull

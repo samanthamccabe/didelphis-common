@@ -23,8 +23,6 @@ import org.didelphis.io.ClassPathFileHandler;
 import org.didelphis.io.NullFileHandler;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.PhoneticTestBase;
-import org.didelphis.language.phonetic.features.BinaryFeature;
-import org.didelphis.language.phonetic.features.DoubleFeature;
 import org.didelphis.language.phonetic.features.FeatureType;
 import org.didelphis.language.phonetic.features.IntegerFeature;
 
@@ -38,49 +36,33 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FeatureModelLoaderTest extends PhoneticTestBase {
 
-	private static final FeatureModelLoader<Integer> LOADER
+	private static final FeatureModelLoader LOADER
 			= IntegerFeature.INSTANCE.emptyLoader();
 
 	@Test
 	void testConstructorFeatureType() {
-		FeatureModelLoader<?> loader1
-				= new FeatureModelLoader<>(IntegerFeature.INSTANCE);
-		FeatureModelLoader<?> loader2
-				= new FeatureModelLoader<>(BinaryFeature.INSTANCE);
+		FeatureModelLoader loader1 = new FeatureModelLoader();
 
 		assertEquals(LOADER, loader1);
-		assertNotEquals(LOADER, loader2);
 
 		assertEquals(LOADER.hashCode(), loader1.hashCode());
-		assertNotEquals(LOADER.hashCode(), loader2.hashCode());
 
 		assertEquals(LOADER.toString(), loader1.toString());
-		assertNotEquals(LOADER.toString(), loader2.toString());
 	}
 
 	@Test
 	void testConstructorHandlerAndPath() {
 		String path = "AT_hybrid.model";
-		FeatureModelLoader<?> loader1 = new FeatureModelLoader<>(
-				IntegerFeature.INSTANCE,
-				ClassPathFileHandler.INSTANCE,
-				path
-		);
-
-		FeatureModelLoader<?> loader2 = new FeatureModelLoader<>(
-				DoubleFeature.INSTANCE,
+		FeatureModelLoader loader1 = new FeatureModelLoader(
 				ClassPathFileHandler.INSTANCE,
 				path
 		);
 
 		assertEquals(loader, loader1);
-		assertNotEquals(loader, loader2);
 
 		assertEquals(loader.hashCode(), loader1.hashCode());
-		assertNotEquals(loader.hashCode(), loader2.hashCode());
 
 		assertEquals(loader.toString(), loader1.toString());
-		assertNotEquals(loader.toString(), loader2.toString());
 	}
 
 	@Test
@@ -93,8 +75,7 @@ class FeatureModelLoaderTest extends PhoneticTestBase {
 				"w\t+\t+"
 		);
 
-		assertThrows(ParseException.class, () -> new FeatureModelLoader<>(
-				IntegerFeature.INSTANCE,
+		assertThrows(ParseException.class, () -> new FeatureModelLoader(
 				NullFileHandler.INSTANCE,
 				lines,
 				""
@@ -105,8 +86,7 @@ class FeatureModelLoaderTest extends PhoneticTestBase {
 	void testParseInvalidFeature() {
 		List<String> lines = Arrays.asList("FEATURES", "foo\tfoo\tbinary", ";");
 
-		assertThrows(ParseException.class, () -> new FeatureModelLoader<>(
-				IntegerFeature.INSTANCE,
+		assertThrows(ParseException.class, () -> new FeatureModelLoader(
 				NullFileHandler.INSTANCE,
 				lines,
 				""
@@ -115,8 +95,7 @@ class FeatureModelLoaderTest extends PhoneticTestBase {
 
 	@Test
 	void testConstructorWithBadPath() {
-		assertThrows(ParseException.class, () -> new FeatureModelLoader<>(
-				IntegerFeature.INSTANCE,
+		assertThrows(ParseException.class, () -> new FeatureModelLoader(
 				ClassPathFileHandler.INSTANCE,
 				"bad_link"
 		));
@@ -126,8 +105,7 @@ class FeatureModelLoaderTest extends PhoneticTestBase {
 	void testBadImport() {
 		List<String> lines = Collections.singletonList("import 'bad_link'");
 
-		assertThrows(ParseException.class, () -> new FeatureModelLoader<>(
-				IntegerFeature.INSTANCE,
+		assertThrows(ParseException.class, () -> new FeatureModelLoader(
 				ClassPathFileHandler.INSTANCE,
 				lines,
 				""
@@ -154,8 +132,7 @@ class FeatureModelLoaderTest extends PhoneticTestBase {
 				"\t\t-\t-"
 		);
 
-		FeatureModelLoader<Integer> loader1 = new FeatureModelLoader<>(
-				IntegerFeature.INSTANCE,
+		FeatureModelLoader loader1 = new FeatureModelLoader(
 				NullFileHandler.INSTANCE,
 				lines,
 				""
@@ -166,7 +143,7 @@ class FeatureModelLoaderTest extends PhoneticTestBase {
 		assertEquals(0, specification.getIndex("foo"));
 		assertEquals(1, specification.getIndex("bar"));
 
-		FeatureMapping<Integer> mapping = loader1.getFeatureMapping();
+		FeatureMapping mapping = loader1.getFeatureMapping();
 		assertTrue(mapping.containsKey("w"));
 		assertTrue(mapping.containsKey("x"));
 		assertTrue(mapping.containsKey("y"));
@@ -179,7 +156,7 @@ class FeatureModelLoaderTest extends PhoneticTestBase {
 	@Test
 	void parseConstraint() {
 		String entry = "[+lateral] > [-nasal]";
-		Constraint<Integer> constraint = loader.parseConstraint(entry);
+		Constraint constraint = loader.parseConstraint(entry);
 
 		FeatureSpecification specification = loader.getSpecification();
 
@@ -196,7 +173,7 @@ class FeatureModelLoaderTest extends PhoneticTestBase {
 
 	@Test
 	void getFeatureModel() {
-		FeatureType<?> featureType = LOADER.getFeatureModel().getFeatureType();
+		FeatureType featureType = LOADER.getFeatureModel().getFeatureType();
 		assertEquals(IntegerFeature.INSTANCE, featureType);
 	}
 

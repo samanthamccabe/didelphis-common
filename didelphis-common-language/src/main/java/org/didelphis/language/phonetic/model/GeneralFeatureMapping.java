@@ -48,21 +48,21 @@ import static org.didelphis.language.phonetic.model.ModelConstants.*;
 
 
 @ToString(exclude = "hash")
-public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
+public class GeneralFeatureMapping implements FeatureMapping {
 
 	private final FeatureSpecification specification;
-	private final FeatureModel<T> featureModel;
+	private final FeatureModel featureModel;
 
-	private final Map<String, FeatureArray<T>> featureMap;
-	private final Map<String, FeatureArray<T>> modifiers;
+	private final Map<String, FeatureArray> featureMap;
+	private final Map<String, FeatureArray> modifiers;
 	private final List<String> orderedKeys;
 
 	private int hash;
 
 	public GeneralFeatureMapping(
-			@NonNull FeatureModel<T> featureModel,
-			@NonNull Map<String, FeatureArray<T>> featureMap,
-			@NonNull Map<String, FeatureArray<T>> modifiers
+			@NonNull FeatureModel featureModel,
+			@NonNull Map<String, FeatureArray> featureMap,
+			@NonNull Map<String, FeatureArray> modifiers
 	) {
 		specification = featureModel.getSpecification();
 		this.featureModel = featureModel;
@@ -79,16 +79,16 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 
 	@NonNull
 	@Override
-	public String findBestSymbol(@NonNull FeatureArray<T> featureArray) {
+	public String findBestSymbol(@NonNull FeatureArray featureArray) {
 
-		FeatureType<T> type = featureModel.getFeatureType();
+		FeatureType type = featureModel.getFeatureType();
 
 		String bestSymbol = "";
 		double minimum = Double.MAX_VALUE;
 
-		FeatureArray<T> bestFeatures = null;
+		FeatureArray bestFeatures = null;
 		for (String key : orderedKeys) {
-			FeatureArray<T> features = featureMap.get(key);
+			FeatureArray features = featureMap.get(key);
 			double difference = type.difference(featureArray, features);
 			if (difference < minimum) {
 				bestSymbol = key;
@@ -126,46 +126,46 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 
 	@NonNull
 	@Override
-	public Map<String, FeatureArray<T>> getFeatureMap() {
+	public Map<String, FeatureArray> getFeatureMap() {
 		return featureMap;
 	}
 
 	@NonNull
 	@Override
-	public Map<String, FeatureArray<T>> getModifiers() {
+	public Map<String, FeatureArray> getModifiers() {
 		return modifiers;
 	}
 
 	@NonNull
 	@Override
-	public FeatureArray<T> getFeatureArray(@NonNull String key) {
+	public FeatureArray getFeatureArray(@NonNull String key) {
 		key = Normalizer.normalize(key, Normalizer.Form.NFD);
 		return featureMap.containsKey(key)
-				? new StandardFeatureArray<>(featureMap.get(key))
-				: new SparseFeatureArray<>(featureModel);
+				? new StandardFeatureArray(featureMap.get(key))
+				: new SparseFeatureArray(featureModel);
 	}
 
 	@NonNull
 	@Override
-	public Segment<T> parseSegment(@NonNull String string) {
+	public Segment parseSegment(@NonNull String string) {
 		string = Normalizer.normalize(string, Normalizer.Form.NFD);
 
 		if (featureMap.isEmpty()) {
-			FeatureArray<T> array = new EmptyFeatureArray<>(featureModel);
-			return new StandardSegment<>(string, array);
+			FeatureArray array = new EmptyFeatureArray(featureModel);
+			return new StandardSegment(string, array);
 		}
 
 		if (string.startsWith("[")) {
-			FeatureArray<T> array = featureModel.parseFeatureString(string);
-			return new StandardSegment<>(string, array);
+			FeatureArray array = featureModel.parseFeatureString(string);
+			return new StandardSegment(string, array);
 		}
 
-		FeatureArray<T> modifierArray = new SparseFeatureArray<>(featureModel);
+		FeatureArray modifierArray = new SparseFeatureArray(featureModel);
 		int index = 0;
 		for (int i = string.length() - 1; i >= 0; i--) {
 			String substring = string.substring(i, i + 1);
 			if (modifiers.containsKey(substring)) {
-				FeatureArray<T> array = modifiers.get(substring);
+				FeatureArray array = modifiers.get(substring);
 				modifierArray.alter(array);
 				index = i;
 			}
@@ -175,25 +175,25 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 
 		String best = findBestPrimarySymbol(substring);
 		if ((best.isEmpty())) {
-			return new UndefinedSegment<>(string, featureModel);
+			return new UndefinedSegment(string, featureModel);
 		}
 
-		FeatureArray<T> array = getFeatureArray(best);
+		FeatureArray array = getFeatureArray(best);
 		array.alter(modifierArray);
 
 		String[] split = substring.split(best);
 		if (split.length == 0) {
-			return new StandardSegment<>(string, array);
+			return new StandardSegment(string, array);
 		} else if (split.length == 1) {
-			return new SemidefinedSegment<>(string, split[0], "", array);
+			return new SemidefinedSegment(string, split[0], "", array);
 		} else {
-			return new SemidefinedSegment<>(string, split[0], split[1], array);
+			return new SemidefinedSegment(string, split[0], split[1], array);
 		}
 	}
 
 	@NonNull
 	@Override
-	public FeatureModel<T> getFeatureModel() {
+	public FeatureModel getFeatureModel() {
 		return featureModel;
 	}
 
@@ -221,7 +221,7 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
-		GeneralFeatureMapping<?> that = (GeneralFeatureMapping<?>) o;
+		GeneralFeatureMapping that = (GeneralFeatureMapping) o;
 		return specification.equals(that.specification) &&
 				featureModel.equals(that.featureModel) &&
 				featureMap.equals(that.featureMap) &&
@@ -244,20 +244,20 @@ public class GeneralFeatureMapping<T> implements FeatureMapping<T> {
 
 	@NonNull
 	private Collection<String> getBestDiacritic(
-			@NonNull FeatureArray<T> featureArray,
-			@NonNull FeatureArray<T> bestFeatures,
+			@NonNull FeatureArray featureArray,
+			@NonNull FeatureArray bestFeatures,
 			double lastMinimum
 	) {
 
-		FeatureType<T> type = featureModel.getFeatureType();
+		FeatureType type = featureModel.getFeatureType();
 
 		String bestDiacritic = "";
 		double minimumDifference = lastMinimum;
-		FeatureArray<T> best = new SparseFeatureArray<>(featureModel);
+		FeatureArray best = new SparseFeatureArray(featureModel);
 
-		for (Map.Entry<String, FeatureArray<T>> entry : modifiers.entrySet()) {
-			FeatureArray<T> diacriticFeatures = entry.getValue();
-			FeatureArray<T> compiled = new StandardFeatureArray<>(bestFeatures);
+		for (Map.Entry<String, FeatureArray> entry : modifiers.entrySet()) {
+			FeatureArray diacriticFeatures = entry.getValue();
+			FeatureArray compiled = new StandardFeatureArray(bestFeatures);
 			compiled.alter(diacriticFeatures);
 
 			if (!compiled.equals(bestFeatures)) {

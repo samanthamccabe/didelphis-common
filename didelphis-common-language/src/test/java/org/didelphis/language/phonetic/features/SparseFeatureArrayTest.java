@@ -38,15 +38,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SparseFeatureArrayTest extends PhoneticTestBase {
 
-	private static FeatureModel<Integer> empty;
-	private static FeatureModel<Integer> model;
-	private SparseFeatureArray<Integer> array;
+	private static FeatureModel empty;
+	private static FeatureModel model;
+	private SparseFeatureArray array;
 
 	@BeforeAll
 	static void initModel() {
 		model = loader.getFeatureModel();
-		empty = new FeatureModelLoader<>(
-				IntegerFeature.INSTANCE,
+		empty = new FeatureModelLoader(
 				ClassPathFileHandler.INSTANCE,
 				Collections.emptyList(), ""
 		).getFeatureModel();
@@ -54,13 +53,13 @@ class SparseFeatureArrayTest extends PhoneticTestBase {
 
 	@BeforeEach
 	void initArray() {
-		array = new SparseFeatureArray<>(model);
+		array = new SparseFeatureArray(model);
 	}
 
 	@Test
 	void testListConstructorEmpty() {
 		List<Integer> array = new ArrayList<>();
-		FeatureArray<Integer> empty = new SparseFeatureArray<>(array, model);
+		FeatureArray empty = new SparseFeatureArray(array, model);
 		assertEquals(this.array, empty);
 	}
 
@@ -70,7 +69,7 @@ class SparseFeatureArrayTest extends PhoneticTestBase {
 		array.set(3, 4);
 		array.set(6, 8);
 		List<Integer> list = Arrays.asList(null, 2, null, 4, null, null, 8);
-		FeatureArray<Integer> array1 = new SparseFeatureArray<>(list, model);
+		FeatureArray array1 = new SparseFeatureArray(list, model);
 		assertEquals(array, array1);
 	}
 
@@ -102,7 +101,7 @@ class SparseFeatureArrayTest extends PhoneticTestBase {
 
 	@Test
 	void matches() {
-		FeatureArray<Integer> array1 = new StandardFeatureArray<>(1, model);
+		FeatureArray array1 = new StandardFeatureArray(1, model);
 		array.set(2, 1);
 		array.set(4, 1);
 
@@ -111,7 +110,7 @@ class SparseFeatureArrayTest extends PhoneticTestBase {
 
 	@Test
 	void alter() {
-		FeatureArray<Integer> array1 = new StandardFeatureArray<>(1, model);
+		FeatureArray array1 = new StandardFeatureArray(1, model);
 		array.set(2, 1);
 		array.set(4, 1);
 
@@ -124,19 +123,19 @@ class SparseFeatureArrayTest extends PhoneticTestBase {
 	@Test
 	void alterIllegalArgument() {
 		assertThrows(IllegalArgumentException.class,
-				() -> array.alter(new SparseFeatureArray<>(empty)));
+				() -> array.alter(new SparseFeatureArray(empty)));
 	}
 
 	@Test
 	void matchesIllegalArgument() {
 		assertThrows(IllegalArgumentException.class,
-				() -> array.matches(new SparseFeatureArray<>(empty)));
+				() -> array.matches(new SparseFeatureArray(empty)));
 	}
 
 	@Test
 	void compareIllegalArgument() {
 		assertThrows(IllegalArgumentException.class,
-				() -> array.compareTo(new SparseFeatureArray<>(empty)));
+				() -> array.compareTo(new SparseFeatureArray(empty)));
 	}
 
 	@Test
@@ -156,9 +155,9 @@ class SparseFeatureArrayTest extends PhoneticTestBase {
 
 	@Test
 	void compareTo() {
-		FeatureArray<Integer> array1 = new SparseFeatureArray<>(array);
-		FeatureArray<Integer> array2 = new SparseFeatureArray<>(array);
-		FeatureArray<Integer> array3 = new SparseFeatureArray<>(array);
+		FeatureArray array1 = new SparseFeatureArray(array);
+		FeatureArray array2 = new SparseFeatureArray(array);
+		FeatureArray array3 = new SparseFeatureArray(array);
 
 		array1.set(0, 0);
 		array2.set(0, 0);
@@ -184,7 +183,7 @@ class SparseFeatureArrayTest extends PhoneticTestBase {
 		assertEquals( 1, array3.compareTo(array2));
 		assertEquals( 1, array3.compareTo(array1));
 
-		FeatureArray<Integer> array4 = new SparseFeatureArray<>(array3);
+		FeatureArray array4 = new SparseFeatureArray(array3);
 		assertEquals(0, array3.compareTo(array4));
 		assertEquals(0, array4.compareTo(array3));
 	}
@@ -200,8 +199,8 @@ class SparseFeatureArrayTest extends PhoneticTestBase {
 
 	@Test
 	void equals() {
-		FeatureArray<Integer> array1 = new SparseFeatureArray<>(array);
-		FeatureArray<Integer> array2 = new SparseFeatureArray<>(array);
+		FeatureArray array1 = new SparseFeatureArray(array);
+		FeatureArray array2 = new SparseFeatureArray(array);
 
 		array2.set(4, 1);
 
@@ -221,9 +220,9 @@ class SparseFeatureArrayTest extends PhoneticTestBase {
 
 	@Test
 	void testHashCode() {
-		assertEquals(array.hashCode(), new SparseFeatureArray<>(array).hashCode());
-		assertNotEquals(array.hashCode(), new SparseFeatureArray<>(empty));
-		FeatureArray<Integer> array1 = new SparseFeatureArray<>(array);
+		assertEquals(array.hashCode(), new SparseFeatureArray(array).hashCode());
+		assertNotEquals(array.hashCode(), new SparseFeatureArray(empty));
+		FeatureArray array1 = new SparseFeatureArray(array);
 		array1.set(0, 0);
 		assertNotEquals(array.hashCode(), array1.hashCode());
 	}

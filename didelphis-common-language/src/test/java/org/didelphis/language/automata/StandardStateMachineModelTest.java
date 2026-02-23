@@ -27,7 +27,6 @@ import org.didelphis.language.automata.statemachines.StateMachine;
 import org.didelphis.language.parsing.FormatterMode;
 import org.didelphis.language.parsing.ParseException;
 import org.didelphis.language.phonetic.SequenceFactory;
-import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.model.FeatureMapping;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
 import org.didelphis.language.phonetic.sequences.Sequence;
@@ -38,10 +37,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-class StandardStateMachineModelTest extends StateMachineTestBase<Sequence<Integer>> {
+class StandardStateMachineModelTest extends StateMachineTestBase<Sequence> {
 
-	private static SequenceFactory<Integer> factory;
-	private static SequenceParser<Integer> parser;
+	private static SequenceFactory factory;
+	private static SequenceParser parser;
 
 	@BeforeAll
 	static void loadModel() {
@@ -49,13 +48,12 @@ class StandardStateMachineModelTest extends StateMachineTestBase<Sequence<Intege
 
 		FormatterMode mode = FormatterMode.INTELLIGENT;
 
-		FeatureModelLoader<Integer> loader = new FeatureModelLoader<>(
-				IntegerFeature.INSTANCE,
+		FeatureModelLoader loader = new FeatureModelLoader(
 				ClassPathFileHandler.INSTANCE,
 				name
 		);
-		FeatureMapping<Integer> featureMapping = loader.getFeatureMapping();
-		factory = new SequenceFactory<>(featureMapping, mode);
+		FeatureMapping featureMapping = loader.getFeatureMapping();
+		factory = new SequenceFactory(featureMapping, mode);
 	}
 
 	@Test
@@ -65,7 +63,7 @@ class StandardStateMachineModelTest extends StateMachineTestBase<Sequence<Intege
 
 	@Test
 	void testDot() {
-		StateMachine<Sequence<Integer>> machine = getMachine(".");
+		StateMachine<Sequence> machine = getMachine(".");
 
 		assertMatches(machine, "a");
 		assertMatches(machine, "b");
@@ -78,14 +76,14 @@ class StandardStateMachineModelTest extends StateMachineTestBase<Sequence<Intege
 
 	@Test
 	void testDotEmptyString() {
-		StateMachine<Sequence<Integer>> machine = getMachine(".");
+		StateMachine<Sequence> machine = getMachine(".");
 		assertNotMatches(machine, "");
 	}
 
 	@Test
 	void testBasicStateMachine01() {
 		String exp = "[-con, +son, -hgh, +frn, -atr, +voice]";
-		StateMachine<Sequence<Integer>> machine = getMachine(exp);
+		StateMachine<Sequence> machine = getMachine(exp);
 
 		assertMatches(machine, "a");
 		assertMatches(machine, "aa");
@@ -97,7 +95,7 @@ class StandardStateMachineModelTest extends StateMachineTestBase<Sequence<Intege
 	@Test
 	void testBasicStateMachine03() {
 		String exp = "a[-con, +son, -hgh, +frn]+";
-		StateMachine<Sequence<Integer>> machine = getMachine(exp);
+		StateMachine<Sequence> machine = getMachine(exp);
 
 		assertNotMatches(machine, "a");
 		assertMatches(machine, "aa");
@@ -111,7 +109,7 @@ class StandardStateMachineModelTest extends StateMachineTestBase<Sequence<Intege
 
 	@Test
 	void testBasicStateMachine02() {
-		StateMachine<Sequence<Integer>> machine = getMachine("aaa");
+		StateMachine<Sequence> machine = getMachine("aaa");
 
 		assertMatches(machine, "aaa");
 
@@ -123,7 +121,7 @@ class StandardStateMachineModelTest extends StateMachineTestBase<Sequence<Intege
 
 	@Test
 	void testStateMachineStar() {
-		StateMachine<Sequence<Integer>> machine = getMachine("aa*");
+		StateMachine<Sequence> machine = getMachine("aa*");
 
 		assertMatches(machine, "a");
 		assertMatches(machine, "aa");
@@ -136,7 +134,7 @@ class StandardStateMachineModelTest extends StateMachineTestBase<Sequence<Intege
 	@Test
 	void testComplex01() {
 		String exp = "{a e o ā ē ō}{n m l r}?{pʰ tʰ kʰ cʰ}us";
-		StateMachine<Sequence<Integer>> machine = getMachine(exp);
+		StateMachine<Sequence> machine = getMachine(exp);
 
 		assertMatches(machine, "ācʰus");
 		assertMatches(machine, "āncʰus");
@@ -158,7 +156,7 @@ class StandardStateMachineModelTest extends StateMachineTestBase<Sequence<Intege
 	@Test
 	void testComplex02() {
 		String exp = "{r l}?{a e o ā ē ō}{i u}?{n m l r}?{pʰ tʰ kʰ cʰ}us";
-		StateMachine<Sequence<Integer>> machine = getMachine(exp);
+		StateMachine<Sequence> machine = getMachine(exp);
 
 		assertMatches(machine, "ācʰus");
 		assertMatches(machine, "rācʰus");
@@ -196,7 +194,7 @@ class StandardStateMachineModelTest extends StateMachineTestBase<Sequence<Intege
 	@Test
 	void testComplex03() {
 		String exp = "a?{pʰ tʰ kʰ cʰ}us";
-		StateMachine<Sequence<Integer>> machine = getMachine(exp);
+		StateMachine<Sequence> machine = getMachine(exp);
 
 		assertMatches(machine, "pʰus");
 		assertMatches(machine, "tʰus");
@@ -208,7 +206,7 @@ class StandardStateMachineModelTest extends StateMachineTestBase<Sequence<Intege
 	@Test
 	void testComplex04() {
 		String exp = "{a e o ā ē ō}{pʰ tʰ kʰ cʰ}us";
-		StateMachine<Sequence<Integer>> machine = getMachine(exp);
+		StateMachine<Sequence> machine = getMachine(exp);
 
 		assertMatches(machine, "apʰus");
 		assertMatches(machine, "atʰus");
@@ -249,7 +247,7 @@ class StandardStateMachineModelTest extends StateMachineTestBase<Sequence<Intege
 	@Test
 	void testComplex05() {
 		String exp = "[-con, +voice, -creaky][-son, -voice, +vot]us";
-		StateMachine<Sequence<Integer>> machine = getMachine(exp);
+		StateMachine<Sequence> machine = getMachine(exp);
 
 		assertMatches(machine, "apʰus");
 		assertMatches(machine, "atʰus");
@@ -297,14 +295,14 @@ class StandardStateMachineModelTest extends StateMachineTestBase<Sequence<Intege
 		assertNotMatches(machine, "a̰cʰus");
 	}
 
-	private static StateMachine<Sequence<Integer>> getMachine(String exp) {
-		parser = new SequenceParser<>(factory);
+	private static StateMachine<Sequence> getMachine(String exp) {
+		parser = new SequenceParser(factory);
 		Expression expression = parser.parseExpression(exp);
 		return StandardStateMachine.create("M0", expression, parser);
 	}
 
 	@Override
-	protected Sequence<Integer> transform(String input) {
+	protected Sequence transform(String input) {
 		return input.isEmpty()
 				? factory.toSequence(input)
 				: parser.transform(input);

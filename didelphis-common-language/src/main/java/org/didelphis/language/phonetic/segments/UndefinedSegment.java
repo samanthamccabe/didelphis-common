@@ -39,23 +39,23 @@ import org.didelphis.language.phonetic.model.FeatureModel;
  * behavior.
  */
 @EqualsAndHashCode (exclude = "model")
-public class UndefinedSegment<T> implements Segment<T> {
+public class UndefinedSegment implements Segment {
 
-	private final FeatureModel<T> model;
-	private final FeatureArray<T> features;
+	private final FeatureModel model;
+	private final FeatureArray features;
 	private final String          symbol;
 
 	public UndefinedSegment(
-			@NonNull String symbol, @NonNull FeatureModel<T> model
+			@NonNull String symbol, @NonNull FeatureModel model
 	) {
 		this.model = model;
 		this.symbol = symbol;
 
-		features = new EmptyFeatureArray<>(model);
+		features = new EmptyFeatureArray(model);
 	}
 
 	@Override
-	public boolean alter(@NonNull Segment<T> segment) {
+	public boolean alter(@NonNull Segment segment) {
 		// no-op
 		return false;
 	}
@@ -68,7 +68,7 @@ public class UndefinedSegment<T> implements Segment<T> {
 
 	@NonNull
 	@Override
-	public FeatureArray<T> getFeatures() {
+	public FeatureArray getFeatures() {
 		return features;
 	}
 
@@ -84,7 +84,7 @@ public class UndefinedSegment<T> implements Segment<T> {
 
 	@NonNull
 	@Override
-	public FeatureModel<T> getFeatureModel() {
+	public FeatureModel getFeatureModel() {
 		return model;
 	}
 }

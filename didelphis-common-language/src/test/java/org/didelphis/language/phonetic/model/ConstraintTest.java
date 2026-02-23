@@ -34,9 +34,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ConstraintTest extends PhoneticTestBase {
 
-	private static FeatureModel<Integer> model;
-	private static Constraint<Integer> constraint1;
-	private static Constraint<Integer> constraint2;
+	private static FeatureModel model;
+	private static Constraint constraint1;
+	private static Constraint constraint2;
 
 	@BeforeAll
 	static void init() {
@@ -49,11 +49,11 @@ class ConstraintTest extends PhoneticTestBase {
 	@Test
 	void getTarget() {
 		String features = "[+con,-son,-cnt,-vce]";
-		FeatureArray<Integer> array = model.parseFeatureString(features);
-		FeatureArray<Integer> target = constraint1.getTarget();
+		FeatureArray array = model.parseFeatureString(features);
+		FeatureArray target = constraint1.getTarget();
 		assertEquals(target, array);
 
-		FeatureArray<Integer> featureArray = new SparseFeatureArray<>(model);
+		FeatureArray featureArray = new SparseFeatureArray(model);
 		featureArray.set(0, 1);
 		featureArray.set(1, -1);
 		featureArray.set(2, -1);
@@ -64,19 +64,19 @@ class ConstraintTest extends PhoneticTestBase {
 	@Test
 	void getSource() {
 		String features = "[+eje]";
-		FeatureArray<Integer> array = model.parseFeatureString(features);
-		FeatureArray<Integer> source = constraint1.getSource();
+		FeatureArray array = model.parseFeatureString(features);
+		FeatureArray source = constraint1.getSource();
 		assertEquals(source, array);
 
-		FeatureArray<Integer> featureArray = new SparseFeatureArray<>(model);
+		FeatureArray featureArray = new SparseFeatureArray(model);
 		featureArray.set(3, 1);
 		assertEquals(source, featureArray);
 	}
 
 	@Test
 	void equals() {
-		assertEquals(constraint1, new Constraint<>(constraint1));
-		assertEquals(constraint2, new Constraint<>(constraint2));
+		assertEquals(constraint1, new Constraint(constraint1));
+		assertEquals(constraint2, new Constraint(constraint2));
 
 		assertNotEquals(constraint1, constraint2);
 
@@ -87,15 +87,15 @@ class ConstraintTest extends PhoneticTestBase {
 
 	@Test
 	void testHashCode() {
-		assertEquals(constraint1.hashCode(), new Constraint<>(constraint1).hashCode());
-		assertEquals(constraint2.hashCode(), new Constraint<>(constraint2).hashCode());
+		assertEquals(constraint1.hashCode(), new Constraint(constraint1).hashCode());
+		assertEquals(constraint2.hashCode(), new Constraint(constraint2).hashCode());
 		assertNotEquals(constraint1.hashCode(), constraint2.hashCode());
 	}
 
 	@Test
 	void testToString() {
-		assertEquals(constraint1.toString(), new Constraint<>(constraint1).toString());
-		assertEquals(constraint2.toString(), new Constraint<>(constraint2).toString());
+		assertEquals(constraint1.toString(), new Constraint(constraint1).toString());
+		assertEquals(constraint2.toString(), new Constraint(constraint2).toString());
 		assertNotEquals(constraint1.toString(), constraint2.toString());
 	}
 
@@ -112,18 +112,18 @@ class ConstraintTest extends PhoneticTestBase {
 	@Test
 	void testConsistencyFailure() {
 
-		FeatureModelLoader<Integer> loader1 = IntegerFeature.INSTANCE.emptyLoader();
-		SequenceFactory<Integer> factory1 = new SequenceFactory<>(
+		FeatureModelLoader loader1 = IntegerFeature.INSTANCE.emptyLoader();
+		SequenceFactory factory1 = new SequenceFactory(
 				loader1.getFeatureMapping(),
 				FormatterMode.NONE
 		);
 
-		FeatureArray<Integer> segment1 = factory.toSegment("a").getFeatures();
-		FeatureArray<Integer> segment2 = factory1.toSegment("x").getFeatures();
+		FeatureArray segment1 = factory.toSegment("a").getFeatures();
+		FeatureArray segment2 = factory1.toSegment("x").getFeatures();
 
 		assertThrows(
 				IllegalArgumentException.class,
-				() -> new Constraint<>(segment1, segment2)
+				() -> new Constraint(segment1, segment2)
 		);
 	}
 }

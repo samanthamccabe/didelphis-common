@@ -21,17 +21,15 @@ package org.didelphis.language.phonetic;
 
 import org.didelphis.io.ClassPathFileHandler;
 import org.didelphis.language.parsing.FormatterMode;
-import org.didelphis.language.phonetic.features.IntegerFeature;
 import org.didelphis.language.phonetic.model.FeatureModelLoader;
 
 public abstract class PhoneticTestBase {
 
-	protected static final FeatureModelLoader<Integer> loader = new FeatureModelLoader<>(
-			IntegerFeature.INSTANCE,
+	protected static final FeatureModelLoader loader = new FeatureModelLoader(
 			ClassPathFileHandler.INSTANCE,
 			"AT_hybrid.model");
-	
-	protected static final SequenceFactory<Integer> factory = new SequenceFactory<>(
+
+	protected static final SequenceFactory factory = new SequenceFactory(
 			loader.getFeatureMapping(),
 			FormatterMode.INTELLIGENT);
 }

@@ -37,14 +37,14 @@ import java.util.List;
  *
  * @since 0.1.0
  */
-public interface FeatureModel<T> extends SpecificationBearer {
+public interface FeatureModel extends SpecificationBearer {
 
 	/**
 	 * Retrieve this model's value {@link Constraint}s
 	 *
 	 * @return a list of feature value constraints; should be immutable
 	 */
-	@NonNull List<Constraint<T>> getConstraints();
+	@NonNull List<Constraint> getConstraints();
 
 	/**
 	 * Parses a well-formed feature {@link String} into the corresponding array
@@ -55,10 +55,10 @@ public interface FeatureModel<T> extends SpecificationBearer {
 	 *
 	 * @throws ParseException if the
 	 */
-	@NonNull FeatureArray<T> parseFeatureString(@NonNull String string);
+	@NonNull FeatureArray parseFeatureString(@NonNull String string);
 
 	/**
 	 * @return the feature type used by this model
 	 */
-	@NonNull FeatureType<T> getFeatureType();
+	@NonNull FeatureType getFeatureType();
 }

@@ -26,37 +26,37 @@ import org.didelphis.language.phonetic.segments.Segment;
 
 import java.util.List;
 
-public interface Sequence<T>
-		extends ModelBearer<T>, List<Segment<T>>, Comparable<Sequence<T>> {
+public interface Sequence
+		extends ModelBearer, List<Segment>, Comparable<Sequence> {
 
-	void add(@NonNull Sequence<T> sequence);
+	void add(@NonNull Sequence sequence);
 
-	void insert(@NonNull Sequence<T> sequence, int index);
+	void insert(@NonNull Sequence sequence, int index);
 
-	int indexOf(@NonNull Sequence<T> target);
+	int indexOf(@NonNull Sequence target);
 
-	int indexOf(@NonNull Sequence<T> target, int start);
+	int indexOf(@NonNull Sequence target, int start);
 
-	@NonNull Sequence<T> replaceAll(
-			@NonNull Sequence<T> source,
-			@NonNull Sequence<T> target
+	@NonNull Sequence replaceAll(
+			@NonNull Sequence source,
+			@NonNull Sequence target
 	);
 
-	boolean contains(@NonNull Sequence<T> sequence);
+	boolean contains(@NonNull Sequence sequence);
 
-	boolean startsWith(@NonNull Segment<T> segment);
+	boolean startsWith(@NonNull Segment segment);
 
-	boolean startsWith(@NonNull Sequence<T> sequence);
+	boolean startsWith(@NonNull Sequence sequence);
 
-	@NonNull Sequence<T> remove(int start, int end);
+	@NonNull Sequence remove(int start, int end);
 
-	boolean matches(@NonNull Sequence<T> sequence);
+	boolean matches(@NonNull Sequence sequence);
 
-	@NonNull Sequence<T> subsequence(int from, int to);
+	@NonNull Sequence subsequence(int from, int to);
 
-	@NonNull Sequence<T> subsequence(int from);
+	@NonNull Sequence subsequence(int from);
 
-	@NonNull List<Integer> indicesOf(@NonNull Sequence<T> sequence);
+	@NonNull List<Integer> indicesOf(@NonNull Sequence sequence);
 
-	@NonNull Sequence<T> getReverseSequence();
+	@NonNull Sequence getReverseSequence();
 }

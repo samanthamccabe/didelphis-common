@@ -39,15 +39,10 @@ import java.util.Collection;
  * should be interpreted when parsing {@link String}s. Similarly, it specifies
  * what values should be considered undefined, such as {@code null}, or other
  * values.
- *
- * @param <T> the value type of the feature
  */
-public interface FeatureType<T> {
+public interface FeatureType {
 
-	/**
-	 * @return
-	 */
-	FeatureModelLoader<T> emptyLoader();
+	FeatureModelLoader emptyLoader();
 
 	/**
 	 * Parses the {@code String} argument as a value of type {@code <T>}. This
@@ -64,9 +59,9 @@ public interface FeatureType<T> {
 	 * @throws NumberFormatException if the {@code String} does not contain a
 	 *      parseable value;.
 	 */
-	@NonNull T parseValue(@NonNull String string);
+	@NonNull Integer parseValue(@NonNull String string);
 
-	@NonNull Collection<T> listUndefined();
+	@NonNull Collection<Integer> listUndefined();
 
 	/**
 	 * Checks if the given value is defined or undefined according to the this
@@ -76,7 +71,7 @@ public interface FeatureType<T> {
 	 *
 	 * @return true iff the value is defined
 	 */
-	default boolean isDefined(@Nullable T value) {
+	default boolean isDefined(@Nullable Integer value) {
 		return value != null && !listUndefined().contains(value);
 	}
 
@@ -95,7 +90,7 @@ public interface FeatureType<T> {
 	 *
 	 * @see Comparable;
 	 */
-	int compare(@Nullable T v1, @Nullable T v2);
+	int compare(@Nullable Integer v1, @Nullable Integer v2);
 
 	/**
 	 * Determines the absolute value of the difference between the inputs.
@@ -105,7 +100,7 @@ public interface FeatureType<T> {
 	 *
 	 * @return the absolute value of the difference as a {@code double}
 	 */
-	double difference(@Nullable T v1, @Nullable T v2);
+	double difference(@Nullable Integer v1, @Nullable Integer v2);
 
 	/**
 	 * Returns the {@code int} value of this given value;
@@ -114,7 +109,7 @@ public interface FeatureType<T> {
 	 *
 	 * @return the {@code int} represented by a given value
 	 */
-	int intValue(@Nullable T value);
+	int intValue(@Nullable Integer value);
 
 	/**
 	 * Returns the {@code double} value of this given value;
@@ -123,7 +118,7 @@ public interface FeatureType<T> {
 	 *
 	 * @return the {@code double} represented by a given value
 	 */
-	double doubleValue(@Nullable T value);
+	double doubleValue(@Nullable Integer value);
 
 	/**
 	 * A convenience function for determining the total difference between
@@ -137,8 +132,8 @@ public interface FeatureType<T> {
 	 */
 	default double difference(
 			int index,
-			@NonNull FeatureArray<T> left,
-			@NonNull FeatureArray<T> right
+			@NonNull FeatureArray left,
+			@NonNull FeatureArray right
 	) {
 		return difference(left.get(index), right.get(index));
 	}
@@ -150,7 +145,7 @@ public interface FeatureType<T> {
 	 * @return
 	 */
 	default double difference(
-			@NonNull FeatureArray<T> left, @NonNull FeatureArray<T> right
+			@NonNull FeatureArray left, @NonNull FeatureArray right
 	) {
 		assert left.size() == right.size() : "Feature arrays not of same size.";
 		double sum = 0.0;

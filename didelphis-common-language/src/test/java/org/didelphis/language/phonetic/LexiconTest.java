@@ -34,9 +34,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class LexiconTest extends PhoneticTestBase {
 
-	private static Lexicon<Integer> lexicon;
-	private static Lexicon<Integer> empty;
-	private static Lexicon<Integer> copy;
+	private static Lexicon lexicon;
+	private static Lexicon empty;
+	private static Lexicon copy;
 
 	@BeforeAll
 	static void init() {
@@ -47,26 +47,26 @@ class LexiconTest extends PhoneticTestBase {
 		);
 
 		lexicon = Lexicon.fromRows(factory, words);
-		empty = new Lexicon<>();
-		copy = new Lexicon<>(lexicon);
+		empty = new Lexicon();
+		copy = new Lexicon(lexicon);
 	}
 
 	@Test
 	void add() {
-		Lexicon<Integer> fromLists = new Lexicon<>();
+		Lexicon fromLists = new Lexicon();
 		fromLists.add(factory.toSequence("foo"));
 		fromLists.add(factory.toSequence("bof"));
 		fromLists.add(factory.toSequence("fob"));
 
 		List<String> list = Arrays.asList("foo", "bof", "fob");
-		Lexicon<Integer> expected = Lexicon.fromSingleColumn(factory, list);
+		Lexicon expected = Lexicon.fromSingleColumn(factory, list);
 		assertEquals(fromLists, expected);
 		assertNotEquals(fromLists, lexicon);
 	}
 
 	@Test
 	void addList() {
-		Lexicon<Integer> lists = new Lexicon<>(lexicon);
+		Lexicon lists = new Lexicon(lexicon);
 		lists.add(Arrays.asList(
 				factory.toSequence("boo"),
 				factory.toSequence("aff")
@@ -94,13 +94,13 @@ class LexiconTest extends PhoneticTestBase {
 
 	@Test
 	void iterator() {
-		Collection<List<Sequence<Integer>>> lex =new ArrayList<>();
+		Collection<List<Sequence>> lex =new ArrayList<>();
 		lexicon.iterator().forEachRemaining(lex::add);
 
-		Collection<List<Sequence<Integer>>> cpy = new ArrayList<>();
+		Collection<List<Sequence>> cpy = new ArrayList<>();
 		copy.iterator().forEachRemaining(cpy::add);
 
-		Collection<List<Sequence<Integer>>> emt = new ArrayList<>();
+		Collection<List<Sequence>> emt = new ArrayList<>();
 		empty.iterator().forEachRemaining(emt::add);
 
 		assertEquals(lex, cpy);

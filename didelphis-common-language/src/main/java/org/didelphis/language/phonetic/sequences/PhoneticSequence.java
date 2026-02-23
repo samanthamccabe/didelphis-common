@@ -26,58 +26,75 @@ import org.didelphis.language.phonetic.SpecificationBearer;
 import org.didelphis.language.phonetic.model.FeatureModel;
 import org.didelphis.language.phonetic.model.FeatureSpecification;
 import org.didelphis.language.phonetic.segments.Segment;
-import org.didelphis.utilities.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
- * Class {@code BasicSequence}
+ * Class {@code PhoneticSequence}
+ *
  * @param <T>
  */
-@EqualsAndHashCode(callSuper = true)
-public class BasicSequence<T> extends AbstractSequence<T> {
+@EqualsAndHashCode
+public class PhoneticSequence implements Sequence {
 
-	private static final Logger LOG = Logger.create(BasicSequence.class);
+	private static final Logger LOG = LogManager.getLogger(PhoneticSequence.class);
 
-	public BasicSequence(Sequence<T> sequence) {
-		super(sequence);
+	private final List<Segment> segments;
+	private final FeatureModel  featureModel;
+
+	public PhoneticSequence(Sequence sequence) {
+		segments = new ArrayList<>(sequence);
+		featureModel = sequence.getFeatureModel();
 	}
 
-	public BasicSequence(Segment<T> segment) {
-		super(segment);
+	public PhoneticSequence(Segment segment) {
+		featureModel = segment.getFeatureModel();
+		segments = new LinkedList<>();
+		segments.add(segment);
 	}
 
-	public BasicSequence(FeatureModel<T> featureSpecification) {
-		super(featureSpecification);
+	public PhoneticSequence(FeatureModel model) {
+		segments = new LinkedList<>();
+		featureModel = model;
 	}
 
-	public BasicSequence(Collection<Segment<T>> segments, FeatureModel<T> model) {
-		super(segments, model);
+	public PhoneticSequence(
+			Collection<Segment> segments,
+			FeatureModel model
+	) {
+		this.segments = new LinkedList<>(segments);
+		featureModel = model;
 	}
 
 	@Override
-	public void add(@NonNull Sequence<T> sequence) {
+	public void add(@NonNull Sequence sequence) {
 		validateModelOrFail(sequence);
-		getSegments().addAll(sequence);
+		segments.addAll(sequence);
 	}
 
 	@Override
-	public void insert(@NonNull Sequence<T> sequence, int index) {
+	public void insert(@NonNull Sequence sequence, int index) {
 		validateModelOrFail(sequence);
-		getSegments().addAll(index, sequence);
+		segments.addAll(index, sequence);
 	}
 
 	@Override
-	public int indexOf(@NonNull Sequence<T> target) {
+	public int indexOf(@NonNull Sequence target) {
 		return indexOf(target, 0);
 	}
 
 	@Override
-	public int indexOf(@NonNull Sequence<T> target, int start) {
+	public int indexOf(@NonNull Sequence target, int start) {
 		if (validateModelOrWarn(target)) {
 			return -1;
 		}
@@ -88,7 +105,7 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 
 		int index = start;
 		while (index >= 0 && index + size <= size()) {
-			Sequence<T> subsequence = subsequence(index, index + size);
+			Sequence subsequence = subsequence(index, index + size);
 			if (target.matches(subsequence)) {
 				return index;
 			}
@@ -99,10 +116,13 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 
 	@NonNull
 	@Override
-	public Sequence<T> replaceAll(@NonNull Sequence<T> source, @NonNull Sequence<T> target) {
+	public Sequence replaceAll(
+			@NonNull Sequence source,
+			@NonNull Sequence target
+	) {
 		validateModelOrFail(source);
 		validateModelOrFail(target);
-		Sequence<T> result = new BasicSequence<>(this);
+		Sequence result = new PhoneticSequence(this);
 
 		int index = result.indexOf(source);
 		while (index >= 0) {
@@ -111,7 +131,7 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 				result.insert(target, index);
 			}
 			int from = index + target.size();
-			Sequence<T> subsequence = result.subsequence(from);
+			Sequence subsequence = result.subsequence(from);
 			index = subsequence.indexOf(source);
 			if (index < 0) {
 				break;
@@ -122,7 +142,7 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 	}
 
 	@Override
-	public boolean contains(@NonNull Sequence<T> sequence) {
+	public boolean contains(@NonNull Sequence sequence) {
 		if (validateModelOrWarn(sequence)) {
 			return false;
 		}
@@ -130,15 +150,15 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 	}
 
 	@Override
-	public boolean startsWith(@NonNull Segment<T> segment) {
+	public boolean startsWith(@NonNull Segment segment) {
 		if (validateModelOrWarn(segment)) {
 			return false;
 		}
-		return !isEmpty() && getSegments().get(0).matches(segment);
+		return !isEmpty() && segments.get(0).matches(segment);
 	}
 
 	@Override
-	public boolean startsWith(@NonNull Sequence<T> sequence) {
+	public boolean startsWith(@NonNull Sequence sequence) {
 		if (sequence.size() > size()) {
 			return false;
 		}
@@ -153,8 +173,8 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 
 	@NonNull
 	@Override
-	public BasicSequence<T> remove(int start, int end) {
-		BasicSequence<T> q = new BasicSequence<>(getFeatureModel());
+	public PhoneticSequence remove(int start, int end) {
+		PhoneticSequence q = new PhoneticSequence(featureModel);
 		for (int i = 0; i < end - start; i++) {
 			q.add(remove(start));
 		}
@@ -168,11 +188,12 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 	 * each sequence, all corresponding features are equal OR one is undefined.
 	 *
 	 * @param sequence a segments to check against this one
+	 *
 	 * @return true if, for each segment in both sequences, all defined features
-	 *      in either segment are equal
+	 * 		in either segment are equal
 	 */
 	@Override
-	public boolean matches(@NonNull Sequence<T> sequence) {
+	public boolean matches(@NonNull Sequence sequence) {
 		validateModelOrFail(sequence);
 		if (getSpecification().size() == 0) {
 			return equals(sequence);
@@ -182,8 +203,8 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 		if (size >= sequence.size()) {
 			matches = true;
 			for (int i = 0; i < size && matches; i++) {
-				Segment<T> x = get(i);
-				Segment<T> y = sequence.get(i);
+				Segment x = get(i);
+				Segment y = sequence.get(i);
 				matches = x.matches(y);
 			}
 		}
@@ -192,21 +213,19 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 
 	@NonNull
 	@Override
-	public Sequence<T> subsequence(int from, int to) {
-		return new BasicSequence<>(subList(from, to), getFeatureModel());
+	public Sequence subsequence(int from, int to) {
+		return new PhoneticSequence(subList(from, to), featureModel);
 	}
 
 	@NonNull
 	@Override
-	public Sequence<T> subsequence(int from) {
-		return new BasicSequence<>(subList(from, size()),
-				getFeatureModel()
-		);
+	public Sequence subsequence(int from) {
+		return new PhoneticSequence(subList(from, size()), featureModel);
 	}
 
 	@NonNull
 	@Override
-	public List<Integer> indicesOf(@NonNull Sequence<T> sequence) {
+	public List<Integer> indicesOf(@NonNull Sequence sequence) {
 		List<Integer> indices = new ArrayList<>();
 		int index = indexOf(sequence);
 		while (index >= 0) {
@@ -216,34 +235,152 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 		return indices;
 	}
 
+	@NonNull
+	@Override
+	public PhoneticSequence getReverseSequence() {
+		Deque<Segment> linkedList = new LinkedList<>();
+		for (Segment segment : segments) {
+			linkedList.addFirst(segment);
+		}
+		return new PhoneticSequence(linkedList, featureModel);
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		for (Segment<T> segment : getSegments()) {
+		for (Segment segment : segments) {
 			String symbol = segment.getSymbol();
 			sb.append(symbol);
 		}
 		return sb.toString();
 	}
 
-	@NonNull
 	@Override
-	public BasicSequence<T> getReverseSequence() {
-		Deque<Segment<T>> linkedList = new LinkedList<>();
-		for (Segment<T> segment : getDelegate()) {
-			linkedList.addFirst(segment);
-		}
-		return new BasicSequence<>(linkedList, getFeatureModel());
+	public int size() {
+		return segments.size();
 	}
 
 	@Override
-	public boolean add(Segment<T> segment) {
+	public boolean isEmpty() {
+		return segments.isEmpty();
+	}
+
+	@Override
+	public boolean contains(Object object) {
+		return segments.contains(object);
+	}
+
+	@NotNull
+	@Override
+	public Iterator<Segment> iterator() {
+		return segments.iterator();
+	}
+
+	@NotNull
+	@Override
+	public Object[] toArray() {
+		return segments.toArray();
+	}
+
+	@NotNull
+	@Override
+	public <E> E[] toArray(@NotNull E[] array) {
+		return segments.toArray(array);
+	}
+
+	@Override
+	public boolean add(Segment segment) {
 		validateModelOrFail(segment);
-		return getSegments().add(segment);
+		return segments.add(segment);
 	}
 
 	@Override
-	public int compareTo(@NonNull Sequence<T> o) {
+	public boolean remove(Object object) {
+		return segments.remove(object);
+	}
+
+	@Override
+	public boolean containsAll(@NotNull Collection<?> objects) {
+		return segments.containsAll(objects);
+	}
+
+	@Override
+	public boolean addAll(@NotNull Collection<? extends Segment> objects) {
+		return segments.addAll(objects);
+	}
+
+	@Override
+	public boolean addAll(
+			int index, @NotNull Collection<? extends Segment> objects
+	) {
+		return segments.addAll(index, objects);
+	}
+
+	@Override
+	public boolean removeAll(@NotNull Collection<?> objects) {
+		return segments.removeAll(objects);
+	}
+
+	@Override
+	public boolean retainAll(@NotNull Collection<?> objects) {
+		return segments.retainAll(objects);
+	}
+
+	@Override
+	public void clear() {
+		segments.clear();
+	}
+
+	@Override
+	public Segment get(int index) {
+		return segments.get(index);
+	}
+
+	@Override
+	public Segment set(int index, Segment element) {
+		return segments.set(index, element);
+	}
+
+	@Override
+	public void add(int index, Segment element) {
+		segments.add(index, element);
+	}
+
+	@Override
+	public Segment remove(int index) {
+		return segments.remove(index);
+	}
+
+	@Override
+	public int indexOf(Object object) {
+		return segments.indexOf(object);
+	}
+
+	@Override
+	public int lastIndexOf(Object object) {
+		return segments.lastIndexOf(object);
+	}
+
+	@NotNull
+	@Override
+	public ListIterator<Segment> listIterator() {
+		return segments.listIterator();
+	}
+
+	@NotNull
+	@Override
+	public ListIterator<Segment> listIterator(int index) {
+		return segments.listIterator(index);
+	}
+
+	@NotNull
+	@Override
+	public List<Segment> subList(int fromIndex, int toIndex) {
+		return segments.subList(fromIndex, toIndex);
+	}
+
+	@Override
+	public int compareTo(@NonNull Sequence o) {
 		for (int i = 0; i < size() && i < o.size(); i++) {
 			int value = get(i).compareTo(o.get(i));
 			if (value != 0) {
@@ -253,16 +390,22 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 		return size() > o.size() ? 1 : -1;
 	}
 
+	@Override
+	@NonNull
+	public FeatureModel getFeatureModel() {
+		return featureModel;
+	}
+
 	@NonNull
 	@Override
 	public FeatureSpecification getSpecification() {
-		return getFeatureModel().getSpecification();
+		return featureModel.getSpecification();
 	}
 
 	private boolean validateModelOrWarn(@NonNull SpecificationBearer that) {
 		if (!getSpecification().equals(that.getSpecification())) {
 			LOG.warn("Attempting to check a {} with an incompatible model!\n\t{}\t{}\n\t{}\t{}",
-					that.getClass(), this, that, getFeatureModel(), that.getSpecification());
+					that.getClass(), this, that, featureModel, that.getSpecification());
 			return true;
 		}
 		return false;
@@ -270,10 +413,8 @@ public class BasicSequence<T> extends AbstractSequence<T> {
 
 	private void validateModelOrFail(@NonNull SpecificationBearer that) {
 		if (!getSpecification().equals(that.getSpecification())) {
-			throw new IllegalArgumentException("Attempting to add " + that.getClass() +
-					" with an incompatible model!\n" + '\t' + this + '\t' +
-					getFeatureModel() + '\n' + '\t' + that + '\t' +
-					that.getSpecification());
+			throw new IllegalArgumentException(String.format("Attempting to add %s with an incompatible model!\n\t%s\t%s\n\t%s\t%s",
+					that.getClass(), this, featureModel, that, that.getSpecification()));
 		}
 	}
 }

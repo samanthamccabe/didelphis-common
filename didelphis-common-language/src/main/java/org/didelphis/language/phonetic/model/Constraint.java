@@ -35,20 +35,20 @@ import org.didelphis.language.phonetic.features.FeatureArray;
  */
 @EqualsAndHashCode(exclude = "featureModel")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class Constraint<T> implements ModelBearer<T> {
+public class Constraint implements ModelBearer {
 
-	@Getter FeatureModel<T> featureModel;
-	@Getter FeatureArray<T> source;
-	@Getter FeatureArray<T> target;
+	@Getter FeatureModel featureModel;
+	@Getter FeatureArray source;
+	@Getter FeatureArray target;
 
-	public Constraint(FeatureArray<T> source, FeatureArray<T> target) {
+	public Constraint(FeatureArray source, FeatureArray target) {
 		source.consistencyCheck(target);
 		featureModel = source.getFeatureModel();
 		this.source = source;
 		this.target = target;
 	}
 
-	public Constraint(@NonNull Constraint<T> constraint) {
+	public Constraint(@NonNull Constraint constraint) {
 		source = constraint.source;
 		target = constraint.target;
 		featureModel = constraint.featureModel;

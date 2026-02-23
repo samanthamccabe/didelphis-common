@@ -21,7 +21,6 @@ package org.didelphis.language.phonetic.model;
 
 import org.didelphis.io.ClassPathFileHandler;
 import org.didelphis.language.phonetic.PhoneticTestBase;
-import org.didelphis.language.phonetic.features.IntegerFeature;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,8 +38,8 @@ class FeatureSpecificationTest extends PhoneticTestBase {
 
 	@Test
 	void testImport() {
-		FeatureSpecification other = new FeatureModelLoader<>(
-				IntegerFeature.INSTANCE, ClassPathFileHandler.INSTANCE,
+		FeatureSpecification other = new FeatureModelLoader(
+				ClassPathFileHandler.INSTANCE,
 				"AT_hybrid.mapping").getSpecification();
 		assertEquals(specification, other);
 	}

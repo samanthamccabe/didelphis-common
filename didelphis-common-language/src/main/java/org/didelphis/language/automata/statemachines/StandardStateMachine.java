@@ -25,6 +25,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 
 import org.didelphis.language.automata.expressions.Expression;
 import org.didelphis.language.automata.matching.BasicMatch;
@@ -36,6 +37,12 @@ import org.didelphis.structures.maps.interfaces.MultiMap;
 import org.didelphis.structures.tuples.Tuple;
 import org.didelphis.structures.tuples.Twin;
 
+import guru.nidi.graphviz.engine.Format;
+import guru.nidi.graphviz.engine.Graphviz;
+import guru.nidi.graphviz.model.Factory;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -45,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+@Slf4j
 @EqualsAndHashCode
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public final class StandardStateMachine<S> implements StateMachine<S> {
@@ -142,6 +150,24 @@ public final class StandardStateMachine<S> implements StateMachine<S> {
 		List<Expression> list = Collections.singletonList(expression);
 		String endState = parse(0, startStateId, "Z", list, captures);
 		acceptingStates.add(endState);
+	}
+
+	public void toDOT(String path, int height, Format format) {
+		guru.nidi.graphviz.model.Graph graph = Factory.graph(id).directed();
+
+		// TODO: stuff goes here
+		//       - create and style nodes
+//		graph.graphAttr()
+
+
+		try {
+			Graphviz.fromGraph(graph)
+					.height(height)
+					.render(format)
+					.toFile(new File(path));
+		} catch (IOException e) {
+			log.error("Failed to write GraphViz output: {} -> {}",id, path, e);
+		}
 	}
 
 	@NonNull

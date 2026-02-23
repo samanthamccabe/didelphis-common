@@ -18,7 +18,7 @@ import org.didelphis.language.phonetic.features.FeatureArray;
  */
 @Getter
 @EqualsAndHashCode (callSuper = true)
-public final class SemidefinedSegment<T> extends StandardSegment<T> {
+public final class SemidefinedSegment extends StandardSegment {
 
 	private final String prefix;
 	private final String suffix;
@@ -27,7 +27,7 @@ public final class SemidefinedSegment<T> extends StandardSegment<T> {
 			String symbol,
 			String prefix,
 			String suffix,
-			FeatureArray<T> featureArray
+			FeatureArray featureArray
 	) {
 		super(symbol, featureArray);
 		this.prefix = prefix;

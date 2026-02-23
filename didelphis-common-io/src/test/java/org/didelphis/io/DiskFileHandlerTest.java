@@ -19,8 +19,8 @@
 
 package org.didelphis.io;
 
-import org.didelphis.utilities.Logger;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DiskFileHandlerTest {
 
-	private static final Logger LOG = Logger.create(DiskFileHandlerTest.class);
+	private static final Logger LOG = LogManager.getLogger(DiskFileHandlerTest.class);
 
 	private final DiskFileHandler handler = new DiskFileHandler("UTF-8");
 

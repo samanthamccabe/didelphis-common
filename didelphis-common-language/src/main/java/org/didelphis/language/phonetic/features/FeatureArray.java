@@ -30,8 +30,8 @@ import org.jetbrains.annotations.Nullable;
  * @version 0.1.0
  * @since 2016-03-26
  */
-public interface FeatureArray<T>
-		extends Comparable<FeatureArray<T>>, Streamable<T>, ModelBearer<T> {
+public interface FeatureArray
+		extends Comparable<FeatureArray>, Streamable<Integer>, ModelBearer {
 
 	/**
 	 * Returns the number of elements in this array.
@@ -53,7 +53,7 @@ public interface FeatureArray<T>
 	 * @throws NullPointerException - if the specified element is null and
 	 *      this array does not permit null elements
 	 */
-	void set(int index, @Nullable T value);
+	void set(int index, @Nullable Integer value);
 
 	/**
 	 * Returns the element at the specified position in this object.
@@ -66,7 +66,7 @@ public interface FeatureArray<T>
 	 *      < 0 || index >= size())
 	 */
 	@Nullable
-	T get(int index);
+	Integer get(int index);
 
 	/**
 	 * Determines if another feature array is consistent with this one. Two
@@ -76,7 +76,7 @@ public interface FeatureArray<T>
 	 * @param array another feature array to compare to this one
 	 * @return true if all features in either segment are equal or undefined
 	 */
-	boolean matches(@NonNull FeatureArray<T> array);
+	boolean matches(@NonNull FeatureArray array);
 
 	/**
 	 * Combines a feature array onto this one, applying all fully specified
@@ -89,7 +89,7 @@ public interface FeatureArray<T>
 	 *      empty array (with no defined features) will make no changes and will
 	 *      return false
 	 */
-	boolean alter(@NonNull FeatureArray<T> array);
+	boolean alter(@NonNull FeatureArray array);
 
 	/**
 	 * Returns true if and only if this array contains the specified value.
@@ -97,5 +97,5 @@ public interface FeatureArray<T>
 	 * @param value the value to search for
 	 * @return true if this array contains {@code value}, false otherwise
 	 */
-	boolean contains(@Nullable T value);
+	boolean contains(@Nullable Integer value);
 }
