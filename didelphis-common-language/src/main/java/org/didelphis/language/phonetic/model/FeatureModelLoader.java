@@ -253,7 +253,7 @@ public final class FeatureModelLoader {
 						parse(list);
 						continue;
 					} catch (IOException e) {
-						LOG.error("Unexpected failure encountered: {}", e);
+						LOG.error("Unexpected failure encountered", e);
 						throw new ParseException("Unable to read from "
 								+ filePath, e);
 					}
@@ -328,7 +328,8 @@ public final class FeatureModelLoader {
 			Match<String> match = SYMBOL_PATTERN.match(entry);
 			if (match.end() >= 0) {
 				String symbol = match.group(1);
-				List<String> values = TAB_PATTERN.split(match.group(2), -1);
+				String group = match.group(2);
+				List<String> values = TAB_PATTERN.split(group, -1);
 				int size = featureModel.getSpecification().size();
 
 				if (size > values.size()) {

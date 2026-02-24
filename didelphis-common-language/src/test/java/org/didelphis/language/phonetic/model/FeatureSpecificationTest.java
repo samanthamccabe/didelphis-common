@@ -32,7 +32,7 @@ class FeatureSpecificationTest extends PhoneticTestBase {
 	private static FeatureSpecification specification;
 
 	@BeforeEach
-	private void load() {
+	void load() {
 		specification =  loader.getSpecification();
 	}
 

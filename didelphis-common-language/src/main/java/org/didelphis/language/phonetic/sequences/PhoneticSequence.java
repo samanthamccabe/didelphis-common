@@ -31,18 +31,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 /**
  * Class {@code PhoneticSequence}
- *
- * @param <T>
  */
 @EqualsAndHashCode
 public class PhoneticSequence implements Sequence {
@@ -154,7 +146,7 @@ public class PhoneticSequence implements Sequence {
 		if (validateModelOrWarn(segment)) {
 			return false;
 		}
-		return !isEmpty() && segments.get(0).matches(segment);
+		return !isEmpty() && segments.getFirst().matches(segment);
 	}
 
 	@Override
@@ -301,7 +293,7 @@ public class PhoneticSequence implements Sequence {
 
 	@Override
 	public boolean containsAll(@NotNull Collection<?> objects) {
-		return segments.containsAll(objects);
+		return new HashSet<>(segments).containsAll(objects);
 	}
 
 	@Override
@@ -381,6 +373,10 @@ public class PhoneticSequence implements Sequence {
 
 	@Override
 	public int compareTo(@NonNull Sequence o) {
+		if (equals(o)) {
+			return 0;
+		}
+
 		for (int i = 0; i < size() && i < o.size(); i++) {
 			int value = get(i).compareTo(o.get(i));
 			if (value != 0) {

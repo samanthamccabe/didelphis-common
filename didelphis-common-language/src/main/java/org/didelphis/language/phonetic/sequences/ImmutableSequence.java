@@ -87,7 +87,7 @@ public class ImmutableSequence extends PhoneticSequence {
 	}
 
 	@Override
-	public void replaceAll(UnaryOperator<Segment> operator) {
+	public void replaceAll(@NonNull UnaryOperator<Segment> operator) {
 		throw unsupported();
 	}
 
@@ -104,7 +104,7 @@ public class ImmutableSequence extends PhoneticSequence {
 	}
 
 	@Override
-	public boolean removeIf(Predicate<? super Segment> filter) {
+	public boolean removeIf(@NonNull Predicate<? super Segment> filter) {
 		throw unsupported();
 	}
 

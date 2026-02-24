@@ -134,7 +134,7 @@ public interface FeatureMapping extends ModelBearer {
 	 * <p>
 	 * {@code findBestSymbol(parseSegment(string)) == string}
 	 *
-	 * @param string a well formed {@link String} whose constituent characters
+	 * @param string a well-formed {@link String} whose constituent characters
 	 *      are present in this mapping. Cannot be {@code null}.
 	 *
 	 * @return a new {@link Segment} parsed from the provided {@link String}. If

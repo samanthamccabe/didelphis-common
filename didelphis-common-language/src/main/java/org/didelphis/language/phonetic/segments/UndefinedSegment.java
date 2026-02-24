@@ -30,7 +30,7 @@ import org.didelphis.language.phonetic.model.FeatureModel;
  * Class {@code UndefinedSegment}
  * Stores segments which are not identifiable within a {@link FeatureModel} or
  * {@link org.didelphis.language.phonetic.model.FeatureMapping} and cannot be
- * defined in terms of features. It is only defined by it's symbol, but still
+ * defined in terms of features. It is only defined by its symbol, but still
  * provides provenance for the model that generated it.
  * <p>
  * This is included for compatibility, and to avoid errors, namely that a {@link
@@ -43,7 +43,7 @@ public class UndefinedSegment implements Segment {
 
 	private final FeatureModel model;
 	private final FeatureArray features;
-	private final String          symbol;
+	private final String       symbol;
 
 	public UndefinedSegment(
 			@NonNull String symbol, @NonNull FeatureModel model

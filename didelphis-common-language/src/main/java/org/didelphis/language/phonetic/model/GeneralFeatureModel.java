@@ -79,7 +79,7 @@ public final class GeneralFeatureModel implements FeatureModel {
 	@Override
 	public FeatureArray parseFeatureString(@NonNull String string) {
 		String normal = normalize(string, Form.NFKC);
-		String pattern = BRACKET_PATTERN.replace(normal, "$1");
+ 		String pattern = BRACKET_PATTERN.replace(normal, "$1");
 		FeatureArray arr = new SparseFeatureArray(this);
 		Map<String, Integer> indices = specification.getFeatureIndices();
 		for (String element : FEATURE_PATTERN.split(pattern)) {

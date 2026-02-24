@@ -118,7 +118,7 @@ public enum FormatterMode implements Segmenter, Formatter {
 				// Get the word from current position on
 				int index = parseParens(word, delimiters, new HashSet<>(), i);
 				if (index > 0) {
-					if (sb.length() > 0) {
+					if (!sb.isEmpty()) {
 						strings.add(sb.toString());
 					}
 					String substring = word.substring(i, index);
@@ -130,7 +130,7 @@ public enum FormatterMode implements Segmenter, Formatter {
 					// Find the longest string in keys which the substring
 					// starts
 					String key = getBestMatch(substring, special);
-					if (sb.length() == 0) {
+					if (sb.isEmpty()) {
 						// Assume that the first sb must be a base-character
 						// This doesn't universally work (pre-nasalized,
 						// pre-aspirated), but we don't support this in our
@@ -155,7 +155,7 @@ public enum FormatterMode implements Segmenter, Formatter {
 							sb.append(ch);
 						} else  {
 							// Not a diacritic
-							if (sb.length() > 0) {
+							if (!sb.isEmpty()) {
 								strings.add(sb.toString());
 							}
 							sb = new StringBuilder();
@@ -170,7 +170,7 @@ public enum FormatterMode implements Segmenter, Formatter {
 					i++;
 				}
 			}
-			if (sb.length() > 0) {
+			if (!sb.isEmpty()) {
 				strings.add(sb.toString());
 			}
 			return strings;

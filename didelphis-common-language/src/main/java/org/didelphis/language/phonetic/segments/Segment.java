@@ -103,13 +103,7 @@ public interface Segment extends ModelBearer, Comparable<Segment> {
 				// however, calling compareTo on Strings is not like an object
 				// which implements Comparable; returned values can be larger
 				// than abs(1)
-				if (difference > 0) {
-					return 1;
-				} else if (difference < 0) {
-					return -1;
-				} else {
-					return 0;
-				}
+                return Integer.compare(difference, 0);
 			}
 			return value;
 		}
